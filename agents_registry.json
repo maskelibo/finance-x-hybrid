@@ -1,0 +1,387 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "registry_version": "1.0.0",
+  "platform": "Finance X",
+  "last_updated": "2026-04-10",
+  "agents": [
+    {
+      "agent_id": "ceo",
+      "display_name": "CEO Meta-Agent",
+      "group": "management",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "mandate_interpretation",
+        "agent_assignment",
+        "output_review",
+        "contradiction_detection",
+        "fallback_governance",
+        "audit_logging",
+        "agent_hiring",
+        "session_approval"
+      ],
+      "reports_to": null,
+      "supervises": ["qa_review"],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "orchestrator",
+      "display_name": "Orchestrator Agent",
+      "group": "management",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "task_sequencing",
+        "parallel_coordination",
+        "dependency_management",
+        "session_state_tracking",
+        "handoff_management"
+      ],
+      "reports_to": "ceo",
+      "supervises": ["data_collection", "parse_standardization", "reconciliation", "context_extraction", "financial_analysis", "sector_competition", "macro_analysis", "technical_analysis", "strategic_synthesis", "final_summary", "kap_watch", "event_classification", "event_impact_mapper", "event_timeline_alert"],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "qa_review",
+      "display_name": "QA Review Agent",
+      "group": "management",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "output_review",
+        "rubric_scoring",
+        "contradiction_detection",
+        "revision_request",
+        "approval_decision"
+      ],
+      "reports_to": "ceo",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "agent_factory",
+      "display_name": "Agent Factory",
+      "group": "management",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "agent_design",
+        "prompt_engineering",
+        "schema_generation",
+        "capability_gap_resolution"
+      ],
+      "reports_to": "ceo",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "cost_performance_optimizer",
+      "display_name": "Cost & Performance Optimizer",
+      "group": "management",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "cost_tracking",
+        "latency_monitoring",
+        "budget_enforcement",
+        "performance_reporting",
+        "optimization_recommendations"
+      ],
+      "reports_to": "ceo",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "agent_performance_review",
+      "display_name": "Agent Performance Review & Continuous Improvement Agent",
+      "group": "management",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "agent_output_evaluation",
+        "gap_analysis",
+        "feedback_generation",
+        "memory_update_automation",
+        "performance_trend_tracking",
+        "quality_scoring",
+        "institutional_investor_readiness_assessment",
+        "persistent_issue_detection",
+        "escalation_management"
+      ],
+      "reports_to": "ceo",
+      "supervises": [],
+      "monitors": [
+        "financial_analysis",
+        "macro_analysis",
+        "sector_competition",
+        "technical_analysis",
+        "context_extraction",
+        "strategic_synthesis",
+        "final_summary"
+      ],
+      "execution_trigger": "post_report_generation",
+      "last_updated": "2026-04-10"
+    },
+    {
+      "agent_id": "data_collection",
+      "display_name": "Data Collection Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "kap_scraping",
+        "financial_statement_retrieval",
+        "annual_report_download",
+        "market_data_fetch",
+        "document_archiving"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "parse_standardization",
+      "display_name": "Document Parse & Standardization Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "pdf_parsing",
+        "xbrl_parsing",
+        "financial_statement_normalization",
+        "line_item_mapping",
+        "disclosure_text_extraction"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "reconciliation",
+      "display_name": "Data Quality & Reconciliation Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "internal_consistency_check",
+        "cross_statement_validation",
+        "accounting_integrity_check",
+        "duplicate_detection",
+        "data_quality_scoring"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "context_extraction",
+      "display_name": "Activity Report Context Extraction Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "business_model_extraction",
+        "segment_analysis",
+        "fx_sensitivity_detection",
+        "seasonal_pattern_identification",
+        "customer_structure_analysis",
+        "risk_factor_extraction"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "financial_analysis",
+      "display_name": "Financial Analysis Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "ratio_computation",
+        "trend_analysis",
+        "profitability_analysis",
+        "liquidity_analysis",
+        "leverage_analysis",
+        "working_capital_analysis",
+        "cash_flow_analysis",
+        "context_informed_interpretation"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "sector_competition",
+      "display_name": "Sector & Competition Analysis Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "industry_structure_analysis",
+        "peer_identification",
+        "peer_comparison",
+        "market_positioning",
+        "swot_analysis"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "macro_analysis",
+      "display_name": "Macro Analysis Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "turkey_macro_analysis",
+        "inflation_impact_assessment",
+        "interest_rate_analysis",
+        "fx_impact_assessment",
+        "policy_sensitivity_analysis",
+        "macro_to_company_transmission"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "technical_analysis",
+      "display_name": "Technical Analysis Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "trend_analysis",
+        "moving_average_analysis",
+        "support_resistance_detection",
+        "volume_analysis",
+        "scenario_generation"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "strategic_synthesis",
+      "display_name": "Strategic Synthesis Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "cross_layer_integration",
+        "contradiction_synthesis",
+        "multi_source_narrative_building",
+        "confidence_aggregation",
+        "analytical_coherence_check"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "final_summary",
+      "display_name": "Final Summary Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "executive_summary_generation",
+        "fundamental_report_formatting",
+        "technical_report_formatting",
+        "disclosure_compilation",
+        "report_packaging"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": ["report_formatter"],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "report_formatter",
+      "display_name": "Report Formatter & Executive Presentation Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "markdown_cleanup",
+        "executive_formatting",
+        "visual_hierarchy",
+        "table_formatting",
+        "content_distillation",
+        "professional_tone_enforcement",
+        "c_level_presentation"
+      ],
+      "reports_to": "final_summary",
+      "supervises": [],
+      "last_updated": "2026-04-10"
+    },
+    {
+      "agent_id": "kap_watch",
+      "display_name": "KAP Watch Agent",
+      "group": "event",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "kap_monitoring",
+        "disclosure_detection",
+        "materiality_screening",
+        "disclosure_archiving",
+        "event_feed_generation"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "event_classification",
+      "display_name": "Event Classification Agent",
+      "group": "event",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "event_type_classification",
+        "materiality_scoring",
+        "event_entity_extraction",
+        "disclosure_metadata_structuring"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "event_impact_mapper",
+      "display_name": "Event Impact Mapper Agent",
+      "group": "event",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "financial_impact_mapping",
+        "affected_line_item_identification",
+        "timing_horizon_estimation",
+        "impact_quantification",
+        "confidence_assignment"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "event_timeline_alert",
+      "display_name": "Event Timeline & Alert Agent",
+      "group": "event",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "timeline_construction",
+        "forward_looking_alert_generation",
+        "event_clustering",
+        "impact_sequence_modeling",
+        "monitoring_flag_setting"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-09"
+    }
+  ]
+}

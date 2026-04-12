@@ -1,0 +1,29 @@
+{
+  "agent_id": "context_extraction",
+  "test_cases": [
+    {
+      "test_id": "ce-tc-001",
+      "name": "Full annual report context extraction",
+      "input": { "ticker": "EREGL", "available": ["annual_report", "investor_presentation", "kap_disclosures"] },
+      "expected_behavior": { "all_sections_populated": true, "management_guidance_tagged": true, "confidence_overall": "high" },
+      "pass_criteria": ["All 4 context sections populated", "Management guidance items tagged is_management_guidance=true", "Every item has source_document_id"],
+      "fail_criteria": ["Management guidance presented as analytical conclusion", "Missing evidence attribution"]
+    },
+    {
+      "test_id": "ce-tc-002",
+      "name": "IAS 29 detection and flagging",
+      "input": { "ticker": "TCELL", "accounting_note_contains_ias29": true },
+      "expected_behavior": { "inflation_accounting_applied": true, "warning_about_comparability": true },
+      "pass_criteria": ["inflation_accounting_applied = true", "Warning: comparability with non-IAS29 peers affected"],
+      "fail_criteria": ["IAS 29 not detected", "No comparability warning"]
+    },
+    {
+      "test_id": "ce-tc-003",
+      "name": "Quarterly report only — minimal context",
+      "input": { "ticker": "KORDS", "available_only": ["quarterly_report"] },
+      "expected_behavior": { "company_profile_populated": true, "strategic_initiatives_limited": true, "confidence_overall": "medium" },
+      "pass_criteria": ["Company profile populated from quarterly notes", "missing_inputs lists: annual_report, investor_presentation", "confidence = medium"],
+      "fail_criteria": ["Fabricated strategic initiatives not in quarterly filing"]
+    }
+  ]
+}

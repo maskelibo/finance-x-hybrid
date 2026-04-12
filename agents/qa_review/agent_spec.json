@@ -1,0 +1,60 @@
+{
+  "agent_id": "qa_review",
+  "version": "1.0.0",
+  "display_name": "QA Review Agent — Independent Quality Assurance",
+  "group": "management",
+  "purpose": "Provide independent second-opinion quality assessments of specialist agent outputs, operating in parallel with CEO review to maximize error detection rate.",
+  "mission": "Detect evidence failures, confidence miscalibration, and logical coherence issues in agent outputs before they reach CEO final approval or the user.",
+  "triggers": ["output_flagged_for_qa_review", "complex_output_auto_flagged", "ceo_escalation_received"],
+  "inputs": [
+    { "name": "agent_output_for_review", "type": "object", "required": true },
+    { "name": "output_schema_ref", "type": "string", "required": true },
+    { "name": "review_rubric_ref", "type": "string", "required": true },
+    { "name": "session_context", "type": "object", "required": false }
+  ],
+  "outputs": [
+    { "name": "qa_assessment_report", "type": "object", "schema_ref": "qa_review/output_schema.json" }
+  ],
+  "tools": ["schema_validator", "evidence_checker", "confidence_calibration_checker", "cross_reference_analyzer"],
+  "decision_rights": [
+    "Score any agent output on 5 rubric dimensions",
+    "Flag quality issues",
+    "Recommend escalation to CEO",
+    "Cross-reference against other session outputs"
+  ],
+  "decision_boundaries": [
+    "Must NOT override CEO decisions",
+    "Must NOT perform specialist analysis",
+    "Must NOT share scores with producing agent directly",
+    "Must NOT approve or reject — advisory only"
+  ],
+  "failure_modes": [
+    { "mode": "schema_validator_unavailable", "severity": "high", "action": "Proceed with content review only, flag schema check as skipped" },
+    { "mode": "session_context_unavailable", "severity": "low", "action": "Skip cross-reference analysis, note in output" }
+  ],
+  "fallback_behavior": "If QA agent fails, CEO proceeds without QA input. Session continues. No blocking.",
+  "kpis": [
+    { "metric": "qa_ceo_agreement_rate", "target": ">= 0.85" },
+    { "metric": "additional_flags_not_caught_by_ceo", "target": ">= 0.10" },
+    { "metric": "review_latency_p95", "target": "< 60 seconds" }
+  ],
+  "escalation_rules": [
+    { "trigger": "suspected_fabricated_evidence", "action": "Immediate CEO escalation with CRITICAL flag" },
+    { "trigger": "qa_fail_on_critical_path_output", "action": "Escalate to CEO immediately" }
+  ],
+  "confidence_policy": "QA agent does not assign confidence to claims. It assesses the calibration of confidence assigned by producing agents.",
+  "evidence_requirements": {},
+  "handoff_rules": [
+    { "from": "orchestrator", "to": "qa_review", "trigger": "output_flagged_for_qa" },
+    { "from": "qa_review", "to": "ceo_agent", "trigger": "qa_assessment_complete" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "qa_review_active": false },
+    "standard_institutional": { "qa_review_active": true, "outputs_reviewed": ["financial_analysis", "strategic_synthesis", "final_summary"] },
+    "deep_dive": { "qa_review_active": true, "outputs_reviewed": "all" }
+  },
+  "cost_budget": {
+    "standard_institutional": { "max_tokens_per_review": 3000 },
+    "deep_dive": { "max_tokens_per_review": 6000 }
+  }
+}

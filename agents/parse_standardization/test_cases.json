@@ -1,0 +1,29 @@
+{
+  "agent_id": "parse_standardization",
+  "test_cases": [
+    {
+      "test_id": "ps-tc-001",
+      "name": "XBRL direct parsing — high confidence expected",
+      "input": { "document_format": "XBRL", "ticker": "EREGL", "period": "FY2023" },
+      "expected_behavior": { "parser_confidence_avg": ">= 0.90", "balance_sheet_balanced": true, "all_statements_parsed": true },
+      "pass_criteria": ["All XBRL elements mapped to IFRS labels", "parser_confidence >= 0.90 for all items", "Balance sheet: assets = liabilities + equity"],
+      "fail_criteria": ["Any value fabricated for missing XBRL element", "Balance sheet imbalance not flagged"]
+    },
+    {
+      "test_id": "ps-tc-002",
+      "name": "PDF parsing with ambiguous line item",
+      "input": { "document_format": "PDF", "ticker": "KCHOL", "ambiguous_line": "Diğer Gelirler" },
+      "expected_behavior": { "ambiguity_flag": true, "ambiguity_note_present": true, "parser_confidence": "< 0.80" },
+      "pass_criteria": ["Ambiguous item flagged with both possible IFRS mappings", "Confidence reflects ambiguity"],
+      "fail_criteria": ["Ambiguity silently resolved without flag"]
+    },
+    {
+      "test_id": "ps-tc-003",
+      "name": "Restatement detection between current and prior filing",
+      "input": { "current_filing_period": "FY2023", "includes_restated_FY2022_comparative": true, "prior_filing_FY2022_value": 82000, "current_filing_FY2022_restated": 78500 },
+      "expected_behavior": { "restatement_flag_present": true, "affected_period": "FY2022", "magnitude_noted": true },
+      "pass_criteria": ["Restatement flagged for FY2022", "Both values reported (original and restated)", "Percentage change noted"],
+      "fail_criteria": ["Restatement not detected", "Only one value reported without noting the discrepancy"]
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.internal/schemas/shared/agent_output_contract.schema.json",
+  "title": "AgentOutputContract",
+  "description": "Universal output envelope that every Finance X agent must wrap its results in. Ensures all outputs are traceable, evidence-backed, and reviewable.",
+  "type": "object",
+  "required": ["output_id", "agent_id", "task_id", "output_type", "timestamp", "confidence_overall", "review_status"],
+  "additionalProperties": false,
+  "properties": {
+    "output_id": { "type": "string", "description": "Unique identifier for this output (UUID v4)." },
+    "agent_id": { "type": "string", "description": "ID of the agent that produced this output." },
+    "task_id": { "type": "string", "description": "ID of the task contract this output fulfills." },
+    "analysis_session_id": { "type": "string", "description": "Session this output belongs to." },
+    "output_type": {
+      "type": "string",
+      "enum": [
+        "data_collection_result",
+        "parsed_document",
+        "reconciliation_report",
+        "context_profile",
+        "financial_analysis_report",
+        "sector_competition_report",
+        "macro_analysis_report",
+        "technical_analysis_report",
+        "kap_watch_feed",
+        "event_classification_result",
+        "event_impact_assessment",
+        "event_timeline",
+        "strategic_synthesis_report",
+        "final_executive_summary",
+        "qa_review_decision",
+        "cost_optimization_report",
+        "agent_factory_output",
+        "ceo_session_summary",
+        "orchestrator_plan"
+      ]
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "company_ticker": { "type": "string", "description": "BIST ticker this output is about." },
+    "fiscal_period_covered": { "type": "string", "description": "E.g. '2024FY', '2024Q3', '2020-2024'" },
+    "runtime_mode": {
+      "type": "string",
+      "enum": ["fast_screening", "standard_institutional", "deep_dive"]
+    },
+    "confidence_overall": {
+      "$ref": "https://financex.internal/schemas/shared/confidence.schema.json",
+      "description": "Overall confidence for this entire output."
+    },
+    "claims": {
+      "type": "array",
+      "description": "Structured list of factual claims made in this output.",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "claim_text", "claim_type", "confidence", "evidence_refs"],
+        "properties": {
+          "claim_id": { "type": "string" },
+          "claim_text": { "type": "string", "minLength": 5 },
+          "claim_type": {
+            "type": "string",
+            "enum": ["fact", "inference", "scenario", "speculation"]
+          },
+          "confidence": { "$ref": "https://financex.internal/schemas/shared/confidence.schema.json" },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "https://financex.internal/schemas/shared/evidence.schema.json" }
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Non-blocking issues the downstream consumer must be aware of.",
+      "items": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "severity": { "type": "string", "enum": ["info", "warning", "error"] }
+        }
+      }
+    },
+    "missing_inputs": {
+      "type": "array",
+      "description": "Inputs that were expected but unavailable. Each reduces confidence.",
+      "items": {
+        "type": "object",
+        "required": ["input_name", "impact_on_output"],
+        "properties": {
+          "input_name": { "type": "string" },
+          "impact_on_output": { "type": "string", "enum": ["minor", "moderate", "major", "blocking"] },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "contradictions_detected": {
+      "type": "array",
+      "description": "Contradictions found within this output or relative to prior outputs.",
+      "items": { "$ref": "https://financex.internal/schemas/shared/contradiction_report.schema.json" }
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["pending_review", "approved", "rejected", "revision_requested", "no_review_required"],
+      "default": "pending_review"
+    },
+    "review_decision_id": {
+      "type": ["string", "null"],
+      "description": "ID of the review decision if reviewed."
+    },
+    "payload": {
+      "type": "object",
+      "description": "The actual agent-specific output content. Schema defined in each agent's output_schema.json.",
+      "additionalProperties": true
+    },
+    "processing_metadata": {
+      "type": "object",
+      "properties": {
+        "duration_ms": { "type": "integer" },
+        "tokens_used": { "type": "integer" },
+        "cost_usd": { "type": "number" },
+        "model_used": { "type": "string" },
+        "retry_count": { "type": "integer", "default": 0 }
+      }
+    }
+  }
+}

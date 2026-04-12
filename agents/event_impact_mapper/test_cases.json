@@ -1,0 +1,118 @@
+{
+  "agent_id": "event_impact_mapper",
+  "test_cases": [
+    {
+      "test_id": "eim-tc-001",
+      "name": "New contract event — EREGL wins major steel supply agreement",
+      "input": {
+        "classified_event": {
+          "event_id": "evt-001",
+          "event_type": "new_contract",
+          "company": "EREGL",
+          "summary": "EREGL announced a 3-year steel supply agreement with a major automotive manufacturer worth TRY 12 billion over the contract term.",
+          "disclosure_id": "kap-eregl-2024-0142",
+          "classification_confidence": "high"
+        },
+        "financial_context": {
+          "revenue_ttm": 95243,
+          "ebitda_ttm": 18500
+        }
+      },
+      "expected_behavior": {
+        "event_type": "new_contract",
+        "affected_statements_includes": "income_statement",
+        "affected_line_items_includes": "revenue",
+        "impact_direction": "positive",
+        "timing_horizon": "near_term",
+        "effect_type": "confirmed",
+        "quantification_possible": true,
+        "materiality_computed": true
+      },
+      "pass_criteria": [
+        "affected_statements contains income_statement",
+        "impact_direction = positive",
+        "effect_type = confirmed (contract is signed)",
+        "quantification_notes explains IFRS 15 revenue recognition timing",
+        "materiality: TRY 4B annual ≈ 4.2% of TRY 95.2B revenue (near_term, not immediate)",
+        "evidence_refs cite kap-eregl-2024-0142"
+      ],
+      "fail_criteria": [
+        "No evidence ref for the event",
+        "Revenue recognized immediately at signing (IFRS 15 violation)",
+        "Buy/sell recommendation present"
+      ]
+    },
+    {
+      "test_id": "eim-tc-002",
+      "name": "Legal dispute — TUPRS faces environmental fine",
+      "input": {
+        "classified_event": {
+          "event_id": "evt-002",
+          "event_type": "legal_dispute",
+          "company": "TUPRS",
+          "summary": "TUPRS discloses regulatory investigation by Turkish Environment Ministry with potential fine up to TRY 500 million. No accrual has been made.",
+          "disclosure_id": "kap-tuprs-2024-0088",
+          "classification_confidence": "high"
+        },
+        "financial_context": {
+          "ebitda_ttm": 42000,
+          "provisions_existing": 1200
+        }
+      },
+      "expected_behavior": {
+        "event_type": "legal_dispute",
+        "effect_type": "plausible",
+        "confidence": "low",
+        "quantification_possible": true,
+        "quantification_notes_mentions_ias37": true,
+        "impact_direction": "negative"
+      },
+      "pass_criteria": [
+        "effect_type = plausible (not confirmed, no court ruling yet)",
+        "confidence = low (legal outcome uncertain)",
+        "IAS 37 cited: company has not accrued → probability judged < 50%",
+        "quantification_notes: TRY 500M = 1.19% of EBITDA",
+        "risks[] includes: adverse ruling, settlement above disclosed amount"
+      ],
+      "fail_criteria": [
+        "effect_type = confirmed (no court ruling exists)",
+        "Confidence labeled high",
+        "No IAS 37 reference"
+      ]
+    },
+    {
+      "test_id": "eim-tc-003",
+      "name": "Management change — BIMAS CEO departure",
+      "input": {
+        "classified_event": {
+          "event_id": "evt-003",
+          "event_type": "management_change",
+          "company": "BIMAS",
+          "summary": "BIMAS announces departure of founding CEO effective next quarter. Interim CEO named from board.",
+          "disclosure_id": "kap-bimas-2024-0055",
+          "classification_confidence": "high"
+        }
+      },
+      "expected_behavior": {
+        "event_type": "management_change",
+        "quantification_possible": false,
+        "effect_type": "speculative",
+        "confidence": "low",
+        "no_specific_financial_impact_claimed": true
+      },
+      "pass_criteria": [
+        "quantification_possible = false",
+        "effect_type = speculative",
+        "confidence = low",
+        "Output explicitly states: no direct financial statement impact mappable at this time",
+        "secondary_effects includes: possible strategy discontinuity, investor uncertainty period",
+        "Output does NOT map to specific revenue or margin figures"
+      ],
+      "fail_criteria": [
+        "Agent maps management change to specific revenue decline figure",
+        "Confidence labeled medium or high",
+        "quantification_possible = true"
+      ]
+    }
+  ]
+}

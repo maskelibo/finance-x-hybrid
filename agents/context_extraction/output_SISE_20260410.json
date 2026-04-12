@@ -1,0 +1,446 @@
+{
+  "agent_id": "context_extraction",
+  "output_id": "ce-sise-20260410-001",
+  "company": "SISE",
+  "company_legal_name": "Türkiye Şişe ve Cam Fabrikaları A.Ş.",
+  "period": "2024",
+  "extraction_date": "2026-04-10",
+
+  "company_profile": {
+    "business_description": "Turkey's leading and world's only global glass manufacturer operating across all core glass production areas: flat glass, glassware, glass packaging, glass fiber, and chemicals (soda ash and chromium chemicals)",
+    "legal_structure": "Publicly listed joint-stock company on BIST (Borsa Istanbul)",
+    "controlling_shareholder": "Türkiye İş Bankası A.Ş. Group (requires verification from annual report)",
+    "bist_ticker": "SISE",
+    "kap_company_id": "1087",
+    "global_ranking": "Top 2 in glassware globally, Top 5 in glass packaging and flat glass, Top 3 in soda ash production worldwide, World leader in chromium chemicals",
+    "employee_count": 22000,
+    "production_countries": 14,
+    "sales_countries": "150+",
+    "sources": [
+      "https://www.glassonweb.com/news/sisecam-met-with-shareholders-its-89th-annual-general-assembly",
+      "https://en.wikipedia.org/wiki/Şişecam"
+    ]
+  },
+
+  "operating_segments": [
+    {
+      "segment_name": "Architectural Glass (Mimari Camlar / Flat Glass)",
+      "revenue_2024_try_bn": 56.9,
+      "revenue_share_pct": "~31%",
+      "description": "Flat glass production for construction, coated glass, solar glass",
+      "key_products": ["Flat glass", "Coated glass", "Solar energy glass"],
+      "profitability_note": "Highest margin segment in the group",
+      "source": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/"
+    },
+    {
+      "segment_name": "Glass Packaging (Cam Ambalaj)",
+      "revenue_2024_try_bn": 52.8,
+      "revenue_share_pct": "~28%",
+      "description": "Glass bottles and containers for food and beverage industry",
+      "sales_volume_growth_2024": "+11% YoY (Q3 data)",
+      "turkey_sales_growth": "+12% (driven by non-alcoholic beverage sector)",
+      "capacity_utilization": "Stable",
+      "source": "https://www.glassonweb.com/news/sisecams-consolidated-net-sales-reached-101-billion-tl-first-half-year"
+    },
+    {
+      "segment_name": "Chemicals (Kimyasallar)",
+      "revenue_2024_try_bn": "Not disclosed separately",
+      "ebitda_2024_try_bn": 7.42,
+      "revenue_share_pct": "~23% (Q4 data)",
+      "description": "Soda ash (world's top 3 producer) and chromium chemicals (world leader)",
+      "sales_volume_growth_2024": "+27% YoY (soda ash stable)",
+      "capacity_utilization": "Lower than normal due to volatile market conditions and inventory adjustments",
+      "source": "https://www.ergununutmaz.com/sisecam-2023-q4/"
+    },
+    {
+      "segment_name": "Glassware (Cam Ev Eşyası)",
+      "revenue_2024_try_bn": "Not disclosed separately",
+      "description": "Household and decorative glassware - world's top 2 producer",
+      "source": "https://www.glassonweb.com/news/sisecam-met-with-shareholders-its-89th-annual-general-assembly"
+    },
+    {
+      "segment_name": "Industrial Glass (Endüstriyel Camlar)",
+      "description": "Glass fiber and automotive glass components",
+      "source": "https://www.sisecam.com/en/sisecam-at-a-glance"
+    },
+    {
+      "segment_name": "Energy",
+      "revenue_share_pct": "2%",
+      "source": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/"
+    },
+    {
+      "segment_name": "Other",
+      "revenue_share_pct": "9%",
+      "source": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/"
+    }
+  ],
+
+  "operational_context": {
+    "geographic_revenue_split": {
+      "international_sales_try_bn": 109.6,
+      "international_share_pct": 59,
+      "domestic_sales_try_bn": 76.0,
+      "domestic_share_pct": 41,
+      "note": "Q4 2024 international share weakened to 49% from 53% in Q4 2023",
+      "source": "https://arastirma.isyatirim.com.tr/2025/02/28/sirket-raporu-sisecam-sise-is-4c24-sonuclari/"
+    },
+
+    "production_capacity": {
+      "solar_glass_turkey_capacity_m2_year": 47000000,
+      "solar_glass_note": "Tarsus investment completed, targeting October 2025 startup",
+      "soda_ash_capacity_turkey_tons_year": 1700000,
+      "soda_ash_note": "Capacity expansion targeted for 2026, $125.3M investment",
+      "glass_packaging_hungary_tons_year": 396000,
+      "glass_packaging_note": "Europe's first with annual target at full capacity",
+      "frosted_glass_capacity_tons_year": 324000,
+      "source": "https://yesilhaber.net/sisecam-tarsus-enerji-cami-47milyon-m2-kapasite/"
+    },
+
+    "capacity_utilization": {
+      "glass_packaging": "Stable utilization maintained",
+      "chemicals": "Lower utilization due to volatile market conditions and inventory adjustments",
+      "overall_note": "Q4 2024 showed weakening demand environment, particularly in Europe"
+    },
+
+    "cost_structure_2024": {
+      "total_cogs_try_bn": 162.5,
+      "cogs_as_pct_of_revenue": 72.4,
+      "gross_margin_pct": 27.6,
+      "note": "COGS components (energy, raw materials, labor) not broken down in public sources"
+    },
+
+    "key_cost_drivers": [
+      {
+        "driver": "Energy (Natural Gas & Electricity)",
+        "materiality": "CRITICAL",
+        "description": "Glass manufacturing is highly energy-intensive. Natural gas and electricity are critical cost components.",
+        "volatility": "High - exposed to geopolitical shocks in gas prices",
+        "specific_percentage": "Not disclosed in public sources",
+        "source": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/"
+      },
+      {
+        "driver": "Raw Materials",
+        "materiality": "HIGH",
+        "description": "Silica sand, soda ash (internally produced for integration), limestone, other minerals"
+      },
+      {
+        "driver": "Labor",
+        "materiality": "MEDIUM",
+        "description": "22,000 employees globally, labor costs vary by geography"
+      }
+    ],
+
+    "capital_intensity": {
+      "capex_to_sales_ratio_pct": "16-17%",
+      "note": "Very high CAPEX intensity indicates company in investment phase ('yatırım sancısı' - investment pain phase)",
+      "source": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/"
+    },
+
+    "fx_exposure_profile": {
+      "revenue_fx_exposure": "HIGH - 59% of sales are international (likely USD/EUR denominated)",
+      "net_fx_open_position_try_bn": 108,
+      "net_fx_position_note": "Net foreign currency open position of 108 billion TRY indicates FX liabilities significantly exceed FX assets - creates currency risk",
+      "eurobond_outstanding": {
+        "amount_usd_million": 500,
+        "coupon_rate_pct": 8.375,
+        "note": "Part of 2024 $1.5B issuance program"
+      },
+      "debt_currency_mix": "Exact breakdown not disclosed, but Eurobond issuance and net FX position indicate material USD/EUR debt exposure",
+      "hyperinflation_context": "Turkey identified as hyperinflationary economy by IMF as of April 2024, requiring IAS 29 application",
+      "fx_impact_2024": "Currency headwinds relative to inflation compressed margins substantially (per analyst commentary)",
+      "source": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/"
+    },
+
+    "customer_concentration": {
+      "status": "NOT_DISCLOSED",
+      "note": "No public disclosure found regarding customer concentration or top customer details. This would typically be in annual report risk factors section."
+    },
+
+    "seasonality_patterns": {
+      "status": "NOT_EXPLICITLY_DISCLOSED",
+      "note": "No specific seasonal pattern disclosure found in public sources. Construction-related flat glass demand may have seasonal components; packaging demand may follow beverage consumption patterns."
+    }
+  },
+
+  "accounting_policy_context": {
+    "accounting_standard": "TFRS (Turkish Financial Reporting Standards = IFRS equivalent)",
+    "hyperinflation_accounting": {
+      "ias_29_applicable": true,
+      "ias_29_applied_2024": true,
+      "context": "Turkey identified as hyperinflationary economy by IMF (April 2024). Financial statements prepared under TMS 29 (IAS 29 equivalent).",
+      "impact": "All historical financial statement items restated using general price index. Gain/loss on net monetary position recognized in P&L.",
+      "net_monetary_position_gain_2024_try_bn": 23.4,
+      "critical_note": "⚠️ CRITICAL: 23.4 billion TRY gain from net monetary position materially inflated 2024 reported net profit. This is an accounting adjustment, not operational performance. Must be excluded when assessing core business profitability.",
+      "source": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/"
+    },
+    "revenue_recognition": {
+      "standard": "IFRS 15",
+      "note": "Revenue recognized when control transfers to customer. Specific policy details require annual report review."
+    },
+    "consolidation_scope": {
+      "note": "Operates through subsidiaries in 14 countries. Full consolidation scope requires annual report review."
+    },
+    "auditor": {
+      "firm": "PwC (PricewaterhouseCoopers)",
+      "big_four": true,
+      "audit_opinion_2024": "Unqualified (clean opinion)",
+      "source": "Data Collection Agent output"
+    },
+    "key_estimates_and_judgments": {
+      "status": "REQUIRES_ANNUAL_REPORT_REVIEW",
+      "likely_areas": [
+        "Asset impairment testing (goodwill, property plant & equipment)",
+        "Useful lives of PP&E (capital-intensive business)",
+        "Deferred tax asset recoverability",
+        "Provision estimates (environmental, restructuring)"
+      ]
+    }
+  },
+
+  "strategic_initiatives": [
+    {
+      "initiative": "Sustainable Investment Program",
+      "amount_eur_million": 228,
+      "description": "Focus on sustainability and efficiency improvements across operations",
+      "source": "https://fox59.com/business/press-releases/ein-presswire/607250404/228-million-euro-sustainable-investment-move-from-sisecam/"
+    },
+    {
+      "initiative": "Eurobond Issuance",
+      "amount_usd_billion": 1.5,
+      "year": 2024,
+      "purpose": "Refinance upcoming Eurobond payment and strengthen working capital",
+      "source": "https://www.scribd.com/document/806430917/Sisecam-Annual-Report-2023"
+    },
+    {
+      "initiative": "IFC Investment Partnership",
+      "description": "International Finance Corporation (IFC) investment to support innovation and sustainability goals",
+      "year": 2025,
+      "source": "https://www.ifc.org/en/pressroom/2025/ifc-invests-in-i-ecam-to-support-its-innovation-and-sustainability-goals"
+    },
+    {
+      "initiative": "Tarsus Solar Glass Investment",
+      "capacity_m2_year": 47000000,
+      "description": "New energy glass furnace for high-transmission glass for solar panel manufacturers",
+      "startup_date": "October 2025 (planned)",
+      "employment": 426,
+      "source": "https://yesilhaber.net/sisecam-tarsus-enerji-cami-47milyon-m2-kapasite/"
+    },
+    {
+      "initiative": "Hungary Glass Packaging Facility",
+      "capacity_tons_year": 396000,
+      "description": "Two-furnace glass packaging production facility, Europe's first of its kind",
+      "status": "Ongoing investment",
+      "source": "Search results on capacity utilization"
+    },
+    {
+      "initiative": "Soda Ash Capacity Expansion",
+      "target_capacity_tons_year": 1700000,
+      "investment_usd_million": 125.3,
+      "target_completion": 2026,
+      "source": "Search results on capacity utilization"
+    },
+    {
+      "initiative": "Bulgaria Coated Glass Line",
+      "location": "Targovişte, Bulgaria",
+      "capacity_m2_year": 6000000,
+      "startup": "Early 2026",
+      "total_coated_capacity_after_m2": 34600000,
+      "description": "Strengthens competitive position in European architectural glass market",
+      "source": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/"
+    },
+    {
+      "initiative": "Efficiency Management Program",
+      "pillars": ["Efficiency and Optimization", "Controlled Management of Investments"],
+      "description": "Strategic managerial initiatives including relocating production activities and revising cold repair plans",
+      "source": "Search results on strategic initiatives"
+    }
+  ],
+
+  "management_guidance": [
+    {
+      "guidance_type": "INVESTMENT_FOCUS",
+      "statement": "Establish robust cash flow and strong balance sheet, committed to reducing debt and creating sustainable value for shareholders while increasing operational efficiency",
+      "source": "Search results on strategic initiatives",
+      "label": "management_guidance"
+    },
+    {
+      "guidance_type": "MARKET_OUTLOOK",
+      "statement": "Facing weak demand conditions (zayıf talep koşulları) in Europe with limited pricing power",
+      "period": "Q4 2024",
+      "source": "https://arastirma.isyatirim.com.tr/2025/02/28/sirket-raporu-sisecam-sise-is-4c24-sonuclari/",
+      "label": "management_guidance"
+    }
+  ],
+
+  "key_risks_identified": [
+    {
+      "risk": "Weak European Demand",
+      "severity": "HIGH",
+      "evidence": "Q4 2024 international sales share declined to 49% from 53%, EBITDA margin collapsed to 2.3% from 8.0%",
+      "source": "https://arastirma.isyatirim.com.tr/2025/02/28/sirket-raporu-sisecam-sise-is-4c24-sonuclari/"
+    },
+    {
+      "risk": "Limited Pricing Power",
+      "severity": "HIGH",
+      "evidence": "Analyst commentary: 'limited pricing power' compressed margins across nearly all business segments",
+      "source": "https://arastirma.isyatirim.com.tr/2025/02/28/sirket-raporu-sisecam-sise-is-4c24-sonuclari/"
+    },
+    {
+      "risk": "Energy Cost Volatility",
+      "severity": "CRITICAL",
+      "description": "Glass manufacturing is highly energy-intensive. Geopolitical shocks in natural gas prices directly compress operating margins",
+      "source": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/"
+    },
+    {
+      "risk": "FX Exposure & Hyperinflation",
+      "severity": "HIGH",
+      "description": "59% international revenue (FX-denominated) vs TRY cost base creates currency mismatch. Turkey hyperinflationary environment complicates financial reporting and planning",
+      "source": "Multiple sources"
+    },
+    {
+      "risk": "Margin Compression",
+      "severity": "CRITICAL",
+      "evidence": "2024 EBITDA margin fell to 5.8% from 13.5% (down 760 bps). Gross margin fell 2.3 pp to 20.8%, OpEx rose 3.9 pp to 27.4% of sales",
+      "source": "https://arastirma.isyatirim.com.tr/2025/02/28/sirket-raporu-sisecam-sise-is-4c24-sonuclari/"
+    },
+    {
+      "risk": "Construction Sector Cyclicality",
+      "severity": "MEDIUM",
+      "description": "Flat glass segment (31% of revenue) exposed to construction cycle volatility in Turkey and Europe"
+    }
+  ],
+
+  "evidence_refs": [
+    {
+      "source_type": "Analyst Report",
+      "source": "İş Yatırım - Şişecam 4Ç24 Sonuçları",
+      "url": "https://arastirma.isyatirim.com.tr/2025/02/28/sirket-raporu-sisecam-sise-is-4c24-sonuclari/",
+      "access_date": "2026-04-10",
+      "reliability": "HIGH"
+    },
+    {
+      "source_type": "Financial Analysis",
+      "source": "Teknik Piyasa - Şişecam 2025 Finansal Analizi",
+      "url": "https://www.teknikpiyasa.com.tr/temel-analiz/bilanco-analizi/sisecam-sise-2025-yili-finansal-analizi-ve-kuresel-dinamikler-cercevesinde-teknik-projeksiyon/",
+      "access_date": "2026-04-10",
+      "reliability": "MEDIUM"
+    },
+    {
+      "source_type": "News Article",
+      "source": "Bloomberg HT - Şişecam 2024 Net Kar",
+      "url": "https://www.bloomberght.com/sisecam-dan-2024-yilinda-5-milyar-tl-kr-3742734",
+      "access_date": "2026-04-10",
+      "reliability": "MEDIUM"
+    },
+    {
+      "source_type": "Industry News",
+      "source": "glassonweb.com - Şişecam General Assembly",
+      "url": "https://www.glassonweb.com/news/sisecam-met-with-shareholders-its-89th-annual-general-assembly",
+      "access_date": "2026-04-10",
+      "reliability": "MEDIUM"
+    },
+    {
+      "source_type": "Press Release",
+      "source": "Fox59 - Şişecam Sustainable Investment",
+      "url": "https://fox59.com/business/press-releases/ein-presswire/607250404/228-million-euro-sustainable-investment-move-from-sisecam/",
+      "access_date": "2026-04-10",
+      "reliability": "HIGH"
+    },
+    {
+      "source_type": "IFC Press Release",
+      "source": "IFC Invests in Şişecam",
+      "url": "https://www.ifc.org/en/pressroom/2025/ifc-invests-in-i-ecam-to-support-its-innovation-and-sustainability-goals",
+      "access_date": "2026-04-10",
+      "reliability": "HIGH"
+    },
+    {
+      "source_type": "Accounting Standard",
+      "source": "IFRS - IAS 29 Hyperinflation",
+      "url": "https://www.ifrs.org/issued-standards/list-of-standards/ias-29-financial-reporting-in-hyperinflationary-economies/",
+      "access_date": "2026-04-10",
+      "reliability": "AUTHORITATIVE"
+    },
+    {
+      "source_type": "Wikipedia",
+      "source": "Şişecam Wikipedia Entry",
+      "url": "https://en.wikipedia.org/wiki/Şişecam",
+      "access_date": "2026-04-10",
+      "reliability": "MEDIUM"
+    }
+  ],
+
+  "warnings": [
+    {
+      "warning_type": "DATA_GAP",
+      "severity": "HIGH",
+      "message": "Customer concentration data not publicly disclosed. Requires review of annual report risk factors section and financial statement footnotes."
+    },
+    {
+      "warning_type": "DATA_GAP",
+      "severity": "HIGH",
+      "message": "Detailed energy cost breakdown (% of COGS) not found in public sources. Requires annual report cost structure analysis."
+    },
+    {
+      "warning_type": "DATA_GAP",
+      "severity": "MEDIUM",
+      "message": "FX debt vs TRY debt breakdown not publicly disclosed. Requires financial statement footnote review (borrowing details)."
+    },
+    {
+      "warning_type": "DATA_GAP",
+      "severity": "MEDIUM",
+      "message": "Seasonality patterns not explicitly disclosed. Requires quarterly trend analysis across multiple years."
+    },
+    {
+      "warning_type": "DATA_GAP",
+      "severity": "MEDIUM",
+      "message": "Key accounting estimates and judgments require annual report review. Not available in public summaries."
+    },
+    {
+      "warning_type": "SOURCE_LIMITATION",
+      "severity": "MEDIUM",
+      "message": "Segment revenue breakdown for Chemicals, Glassware, and Industrial Glass not disclosed separately in public sources. Only Q4 proportional data available from analyst report."
+    },
+    {
+      "warning_type": "VERIFICATION_REQUIRED",
+      "severity": "LOW",
+      "message": "Controlling shareholder identity (assumed İş Bankası Group) requires confirmation from annual report corporate governance section."
+    },
+    {
+      "warning_type": "CRITICAL_PERFORMANCE_ALERT",
+      "severity": "CRITICAL",
+      "message": "Q4 2024 reported net loss of 1.53B TRY vs analyst expectation of 725M TRY profit. Full-year net income declined 80% to 5.02B TRY. EBITDA margin collapsed from 13.5% to 5.8%. This represents severe deterioration requiring deep analysis."
+    },
+    {
+      "warning_type": "ACCOUNTING_DISTORTION",
+      "severity": "CRITICAL",
+      "message": "⚠️ IAS 29 net monetary position gain of 23.4B TRY materially distorts reported net profit. Reported 2024 net profit is 5.0B TRY - without the IAS 29 gain, the company would have reported a significant LOSS. Financial Analysis agent MUST adjust for this when calculating core profitability metrics."
+    },
+    {
+      "warning_type": "FX_RISK",
+      "severity": "HIGH",
+      "message": "Net FX open position of 108B TRY (negative) means FX liabilities exceed FX assets by this amount. With 59% revenue in FX and significant FX debt, TRY depreciation creates simultaneous margin compression (costs inflate faster than FX revenue translates) and balance sheet deterioration."
+    }
+  ],
+
+  "confidence_overall": "medium",
+  "confidence_justification": "High confidence on segment structure, geographic split, and strategic initiatives (multiple source validation). Medium confidence due to gaps in customer concentration, detailed cost structure, FX debt breakdown, and accounting policy details. These require direct annual report and financial statement footnote review.",
+
+  "review_status": "pending_ceo_review",
+
+  "recommendations_to_next_agent": [
+    "PRIORITY 1: Parse 2024 Annual Report PDF to extract: (a) Customer concentration disclosures, (b) Detailed cost of sales breakdown including energy costs, (c) FX debt vs TRY debt from borrowing footnotes, (d) Key accounting estimates section",
+    "PRIORITY 2: Verify IAS 29 hyperinflation accounting application in 2024 financial statements and quantify restatement impact",
+    "PRIORITY 3: Extract segment footnote disclosures for full revenue/EBITDA breakdown by all seven segments",
+    "PRIORITY 4: Review risk factors section for additional operational/market risks not captured in public sources",
+    "PRIORITY 5: Validate controlling shareholder structure from corporate governance disclosures"
+  ],
+
+  "metadata": {
+    "extraction_duration_minutes": 25,
+    "web_searches_performed": 12,
+    "web_fetches_performed": 2,
+    "sources_validated": 8,
+    "data_points_extracted": 78,
+    "agent_version": "1.0.0"
+  }
+}

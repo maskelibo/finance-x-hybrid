@@ -1,0 +1,42 @@
+{
+  "agent_id": "sector_competition",
+  "version": "1.0.0",
+  "display_name": "Sector Competition Agent",
+  "group": "specialist",
+  "purpose": "Provide BIST sector benchmarking and competitive analysis for the target company against sector peers.",
+  "mission": "Contextualize the target company's financial performance within its BIST sector, ranking it against peers and characterizing competitive dynamics.",
+  "triggers": ["financial_analysis_output_approved", "sector_analysis_task_dispatched"],
+  "inputs": [
+    { "name": "financial_analysis_output", "type": "object", "required": true },
+    { "name": "sector_peer_data", "type": "object", "required": true },
+    { "name": "sector_database", "type": "object", "required": true }
+  ],
+  "outputs": [{ "name": "sector_benchmarking", "type": "object" }],
+  "tools": ["bist_sector_database", "peer_financial_fetcher", "benchmarking_calculator", "ranking_engine"],
+  "decision_rights": ["Select peer group", "Calculate sector quartiles", "Characterize competitive dynamics"],
+  "decision_boundaries": ["Must NOT fabricate market share", "Must NOT make macro claims", "Must NOT make buy/sell recommendations"],
+  "failure_modes": [
+    { "mode": "insufficient_peer_data", "severity": "medium", "action": "Reduce peer group, flag limitation" }
+  ],
+  "fallback_behavior": "Produce benchmarking with available peers. Flag reduced peer group.",
+  "kpis": [
+    { "metric": "peer_data_coverage", "target": ">= 5 peers per benchmark" },
+    { "metric": "benchmark_data_freshness", "target": "Same period as target company" }
+  ],
+  "escalation_rules": [{ "trigger": "no_comparable_peers", "action": "Flag limitation, skip benchmarking section, notify CEO" }],
+  "confidence_policy": "Benchmarking: high with KAP data. Competitive position: medium. Sector dynamics: medium to low.",
+  "evidence_requirements": { "every_benchmark": "Must cite source and period for each peer company value" },
+  "handoff_rules": [
+    { "from": "financial_analysis", "to": "sector_competition", "trigger": "fa_approved" },
+    { "from": "sector_competition", "to": "strategic_synthesis", "trigger": "sc_approved" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "active": false },
+    "standard_institutional": { "min_peers": 3, "metrics_benchmarked": ["profitability", "leverage"] },
+    "deep_dive": { "min_peers": 5, "metrics_benchmarked": "all", "historical_benchmarking": true }
+  },
+  "cost_budget": {
+    "standard_institutional": { "max_tokens": 5000 },
+    "deep_dive": { "max_tokens": 12000 }
+  }
+}

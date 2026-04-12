@@ -1,0 +1,310 @@
+{
+  "agent_id": "reconciliation",
+  "output_id": "rec-sise-20260410",
+  "session_id": "sise-deep-dive-20260410",
+  "company_ticker": "SISE",
+  "timestamp": "2026-04-10T00:00:00Z",
+
+  "reconciliation_summary": {
+    "total_discrepancies_found": 5,
+    "critical_discrepancies": 2,
+    "high_priority_issues": 2,
+    "medium_priority_observations": 1,
+    "material_unresolved": 2,
+    "overall_data_quality_score": 0.42
+  },
+
+  "discrepancy_report": [
+    {
+      "discrepancy_id": "REC-SISE-001",
+      "severity": "CRITICAL",
+      "category": "data_integrity_violation",
+      "metric": "Net Profit vs EBITDA (2021)",
+      "source_a": {"name": "Fintables_2021", "metric": "EBITDA", "value": 7.6, "unit": "B TRY"},
+      "source_b": {"name": "Fintables_2021", "metric": "Net Profit", "value": 9.1, "unit": "B TRY"},
+      "discrepancy_magnitude": {"absolute": 1.5, "percentage": 19.7, "direction": "Net Profit > EBITDA"},
+      "materiality": "CRITICAL",
+      "is_material": true,
+      "resolution_status": "ESCALATED",
+      "resolution_method": "CEO_INTERVENTION_REQUIRED",
+      "resolution_notes": "Mathematical impossibility: Net Profit cannot exceed EBITDA. One or both values are incorrect. Requires re-extraction from 2021 audited financial statements.",
+      "impact_on_analysis": "2021 data is INVALID. Financial_analysis agent must exclude 2021 from trend analysis or use with extreme caution flag.",
+      "recommended_action": "Parse 2021 KAP annual report (XBRL or audited PDF) to obtain correct values"
+    },
+    {
+      "discrepancy_id": "REC-SISE-002",
+      "severity": "CRITICAL",
+      "category": "multi_source_conflict",
+      "metric": "Total Equity (2024)",
+      "source_a": {"name": "Fintables", "value": 208.1, "unit": "B TRY", "confidence": 0.75},
+      "source_b": {"name": "Alternative_Source", "value": 186.06, "unit": "B TRY", "confidence": "unknown"},
+      "discrepancy_magnitude": {"absolute": 22.04, "percentage": 10.6},
+      "materiality": "MATERIAL",
+      "is_material": true,
+      "materiality_test": {
+        "absolute_threshold": 0.05,
+        "actual_absolute": 22.04,
+        "relative_threshold_pct": 1.0,
+        "actual_relative_pct": 10.6,
+        "passes_materiality": true
+      },
+      "resolution_status": "UNRESOLVED",
+      "resolution_method": "PREFERRED_SOURCE",
+      "resolution_notes": "Applying source priority rule: KAP XBRL Annual (audited) > KAP PDF Annual > Fintables. Requires verification from primary authoritative source.",
+      "impact_on_analysis": "ROE calculation uncertain. Balance sheet integrity questionable. Cannot validate Balance Sheet equation without knowing correct equity value.",
+      "recommended_action": "Extract Total Equity from 2024 Audited Financial Statement (KAP primary filing)"
+    },
+    {
+      "discrepancy_id": "REC-SISE-003",
+      "severity": "HIGH",
+      "category": "missing_statement",
+      "metric": "Cash Flow Statement (all periods)",
+      "status": "NOT_EXTRACTED",
+      "verification": "Statement confirmed present via KAP regulatory requirements",
+      "is_material": true,
+      "resolution_status": "DATA_NOT_AVAILABLE",
+      "resolution_method": "PDF_PARSING_REQUIRED",
+      "resolution_notes": "Cash Flow Statement exists but was not extracted by parse_standardization agent. Cannot perform cross-statement validation checks.",
+      "blocked_validation_checks": [
+        "OCF vs Net Profit reconciliation (quality of earnings)",
+        "Working Capital change validation (Balance Sheet ↔ Cash Flow)",
+        "CAPEX validation (Cash Flow ↔ Asset growth)",
+        "Equity movement reconciliation (Retained Earnings bridge)"
+      ],
+      "impact_on_analysis": "Critical validation checks cannot be performed. Downstream agents will work with unvalidated data. Cash generation quality assessment impossible.",
+      "recommended_action": "Parse 2024 Annual Report and Q1 2025 PDFs to extract full Cash Flow Statement"
+    },
+    {
+      "discrepancy_id": "REC-SISE-004",
+      "severity": "HIGH",
+      "category": "incomplete_time_series",
+      "metric": "Balance Sheet (2022, 2021)",
+      "missing_periods": ["2022", "2021"],
+      "available_periods": ["2024", "2023", "2020"],
+      "is_material": true,
+      "resolution_status": "INCOMPLETE_DATA",
+      "resolution_method": "DATA_COLLECTION_GAP",
+      "resolution_notes": "2022 and 2021 balance sheet data missing. Multi-year trend validation impossible. Cannot bridge 2020→2023 asset growth of 851%.",
+      "impact_on_analysis": "Cannot validate multi-year balance sheet trends. Anomaly detection blocked. ROA/ROE trend analysis incomplete.",
+      "recommended_action": "Collect 2022 and 2021 full balance sheets from KAP or accept limited trend validation"
+    },
+    {
+      "discrepancy_id": "REC-SISE-005",
+      "severity": "MEDIUM",
+      "category": "anomaly_flagged",
+      "metric": "Revenue Growth Pattern (2021-2023)",
+      "observation": "Three consecutive years with >50% YoY revenue growth",
+      "growth_rates": {
+        "2021": 50.7,
+        "2022": 196.9,
+        "2023": 130.3
+      },
+      "is_material": false,
+      "resolution_status": "FLAGGED_FOR_INVESTIGATION",
+      "resolution_method": "CONTEXT_EXTRACTION_REQUIRED",
+      "resolution_notes": "Extreme growth pattern unusual for mature industrial manufacturer. Likely causes: (1) TRY hyperinflation effect, (2) M&A activity, (3) accounting policy change, or (4) data error. Requires qualitative context extraction.",
+      "impact_on_analysis": "Financial_analysis agent must be warned that growth may not be organic. Context_extraction agent should review annual reports for M&A disclosures and accounting changes.",
+      "recommended_action": "Review 2022-2023 KAP disclosures for acquisition announcements. Check annual reports for accounting policy changes."
+    }
+  ],
+
+  "cross_statement_validation": {
+    "income_statement_internal_consistency": {
+      "status": "FAILED",
+      "failed_checks": [
+        {"period": "2021", "issue": "Net Profit (9.1B) > EBITDA (7.6B)", "severity": "CRITICAL"}
+      ]
+    },
+    "balance_sheet_equation": {
+      "status": "CANNOT_VERIFY",
+      "reason": "Total Liabilities not provided in parsed data"
+    },
+    "balance_sheet_equity_movement": {
+      "status": "CANNOT_VERIFY",
+      "reason": "Cash Flow Statement missing (dividends paid unknown)"
+    },
+    "multi_period_trend_validation": {
+      "status": "INCOMPLETE",
+      "reason": "2022-2021 balance sheet data missing"
+    }
+  },
+
+  "reconciled_data": {
+    "note": "Due to unresolved critical discrepancies, reconciled dataset is provided with warnings and confidence scores",
+
+    "income_statement": {
+      "2024": {
+        "revenue": {"value": 185.6, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2024", "validated": true},
+        "ebitda": {"value": 10.8, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2024", "validated": true},
+        "net_profit": {"value": 5.0, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2024", "validated": true}
+      },
+      "2023": {
+        "revenue": {"value": 219.5, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2023", "validated": true},
+        "ebitda": {"value": 29.7, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2023", "validated": true},
+        "net_profit": {"value": 24.8, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2023", "validated": true}
+      },
+      "2022": {
+        "revenue": {"value": 95.3, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2022", "validated": true},
+        "ebitda": {"value": 20.5, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2022", "validated": true},
+        "net_profit": {"value": 19.3, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2022", "validated": true}
+      },
+      "2021": {
+        "revenue": {"value": 32.1, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2021", "validated": true},
+        "ebitda": {"value": 7.6, "unit": "B TRY", "confidence": 0.00, "source": "Fintables_2021", "validated": false, "warning": "INVALID - Net Profit exceeds EBITDA"},
+        "net_profit": {"value": 9.1, "unit": "B TRY", "confidence": 0.00, "source": "Fintables_2021", "validated": false, "warning": "INVALID - Exceeds EBITDA"}
+      },
+      "2020": {
+        "revenue": {"value": 21.3, "unit": "B TRY", "confidence": 0.75, "source": "Secondary_Sources", "validated": true},
+        "ebitda": null,
+        "net_profit": null
+      }
+    },
+
+    "balance_sheet": {
+      "2024": {
+        "total_assets": {"value": 399.0, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2024", "validated": true},
+        "total_equity": {"value": 208.1, "unit": "B TRY", "confidence": 0.50, "source": "Fintables_2024", "validated": false, "warning": "UNRESOLVED DISCREPANCY - Alternative source shows 186.06B"}
+      },
+      "2023": {
+        "total_assets": {"value": 420.6, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2023", "validated": true},
+        "total_equity": {"value": 205.0, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2023", "validated": true}
+      },
+      "2022": null,
+      "2021": null,
+      "2020": {
+        "total_assets": {"value": 44.2, "unit": "B TRY", "confidence": 0.75, "source": "Secondary_Sources", "validated": false},
+        "total_equity": {"value": 22.5, "unit": "B TRY", "confidence": 0.75, "source": "Secondary_Sources", "validated": false}
+      }
+    },
+
+    "cash_flow_statement": {
+      "status": "NOT_AVAILABLE",
+      "all_periods": null
+    }
+  },
+
+  "data_quality_scores": {
+    "by_statement": {
+      "income_statement": {
+        "completeness": 0.35,
+        "accuracy": 0.60,
+        "confidence": 0.70,
+        "overall": 0.55,
+        "notes": "Accuracy downgraded due to 2021 mathematical impossibility"
+      },
+      "balance_sheet": {
+        "completeness": 0.25,
+        "accuracy": 0.75,
+        "confidence": 0.60,
+        "overall": 0.53,
+        "notes": "Moderate accuracy due to unresolved 2024 equity discrepancy"
+      },
+      "cash_flow_statement": {
+        "completeness": 0.00,
+        "accuracy": null,
+        "confidence": 0.00,
+        "overall": 0.00,
+        "notes": "Statement not extracted"
+      },
+      "notes_disclosures": {
+        "completeness": 0.00,
+        "accuracy": null,
+        "confidence": 0.00,
+        "overall": 0.00,
+        "notes": "Not extracted"
+      }
+    },
+    "overall_quality_score": 0.42,
+    "quality_grade": "LOW",
+    "quality_issues_count": {
+      "critical": 2,
+      "high": 2,
+      "medium": 1
+    }
+  },
+
+  "unresolved_material_discrepancies": [
+    {
+      "id": "REC-SISE-001",
+      "description": "2021 Net Profit exceeds EBITDA (mathematical impossibility)",
+      "materiality": "CRITICAL",
+      "requires_ceo_intervention": true
+    },
+    {
+      "id": "REC-SISE-002",
+      "description": "2024 Total Equity: 186B vs 208B TRY (22B difference, 10.6% discrepancy)",
+      "materiality": "CRITICAL",
+      "requires_ceo_intervention": true
+    }
+  ],
+
+  "evidence_refs": [
+    {"source": "Fintables_2024", "url": "fintables.com/SISE", "reliability": 0.85},
+    {"source": "KAP_Disclosures", "url": "kap.org.tr", "reliability": 0.95},
+    {"source": "Parse_Standardization_Output", "file": "/Users/ibrahimpeyman/Documents/Finance X/agents/parse_standardization/output_SISE_20260410.json", "reliability": 0.90}
+  ],
+
+  "confidence_overall": "LOW",
+  "confidence_rationale": "Two unresolved critical discrepancies (2021 data integrity violation, 2024 equity conflict), missing Cash Flow Statement, incomplete balance sheet time series. Data quality score 0.42/1.00.",
+
+  "warnings": [
+    "CRITICAL: 2021 financial data contains mathematical impossibility - DO NOT USE for analysis without verification",
+    "CRITICAL: 2024 Total Equity discrepancy unresolved - ROE calculations uncertain",
+    "HIGH: Cash Flow Statement missing - cannot validate cash generation quality",
+    "HIGH: 2022-2021 balance sheet data missing - trend analysis incomplete",
+    "MEDIUM: Revenue growth 2021-2023 anomalous - likely M&A or currency effect, requires investigation"
+  ],
+
+  "recommendations_to_ceo": [
+    {
+      "priority": "CRITICAL",
+      "action": "Activate PDF parser to extract 2024 Audited Financial Statements",
+      "purpose": "Resolve 2024 equity discrepancy and extract Cash Flow Statement",
+      "blocking": true
+    },
+    {
+      "priority": "CRITICAL",
+      "action": "Re-collect 2021 financial data from KAP XBRL or audited PDF",
+      "purpose": "Fix Net Profit > EBITDA mathematical impossibility",
+      "blocking": true
+    },
+    {
+      "priority": "HIGH",
+      "action": "Collect 2022 and 2021 full balance sheets",
+      "purpose": "Enable multi-year trend validation and bridge analysis",
+      "blocking": false
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Task context_extraction agent to review 2022-2023 annual reports for M&A disclosures",
+      "purpose": "Explain anomalous revenue growth pattern",
+      "blocking": false
+    }
+  ],
+
+  "downstream_agent_warnings": {
+    "financial_analysis": [
+      "2021 data INVALID - exclude from analysis or flag with extreme caution",
+      "2024 ROE calculation uncertain due to equity discrepancy",
+      "Cannot validate cash generation quality - CF statement missing",
+      "Revenue growth 2021-2023 may reflect M&A or currency effects, not organic growth"
+    ],
+    "context_extraction": [
+      "Review 2022-2023 annual reports for acquisition disclosures",
+      "Identify accounting policy changes or restatements",
+      "Extract segment breakdown (SISE has multiple business lines)"
+    ]
+  },
+
+  "review_status": "PENDING_CEO_REVIEW",
+  "next_agent_recommendation": "BLOCKED - CEO must resolve critical discrepancies before proceeding to financial_analysis",
+
+  "metadata": {
+    "reconciliation_duration_minutes": 8,
+    "validation_checks_performed": 12,
+    "validation_checks_passed": 7,
+    "validation_checks_failed": 2,
+    "validation_checks_blocked": 3,
+    "sources_cross_referenced": 3
+  }
+}

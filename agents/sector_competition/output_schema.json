@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/sector_competition/output",
+  "title": "Sector Competition Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "peer_group", "benchmarking_scorecard", "confidence_overall", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "sector_competition" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "company": { "type": "object" },
+    "peer_group": {
+      "type": "object",
+      "properties": {
+        "sector_code": { "type": "string" },
+        "peers": { "type": "array", "items": { "type": "object", "properties": { "ticker": { "type": "string" }, "name": { "type": "string" }, "rationale": { "type": "string" } } } },
+        "comparability_notes": { "type": "string" }
+      }
+    },
+    "benchmarking_scorecard": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["metric", "target_value", "sector_median", "target_rank", "confidence"],
+        "properties": {
+          "metric": { "type": "string" },
+          "target_value": { "type": "number" },
+          "sector_median": { "type": "number" },
+          "sector_top_quartile": { "type": "number" },
+          "sector_bottom_quartile": { "type": "number" },
+          "target_rank": { "type": "integer" },
+          "peer_count": { "type": "integer" },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "competitive_position": { "type": "object" },
+    "sector_dynamics_summary": { "type": "object" },
+    "evidence_refs": { "type": "array", "items": { "type": "object" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "missing_inputs": { "type": "array", "items": { "type": "string" } },
+    "confidence_overall": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+    "contradictions_detected": { "type": "array", "items": { "type": "object" } },
+    "review_status": { "type": "string", "enum": ["pending_ceo_review", "approved", "rejected", "revision_requested"] }
+  },
+  "additionalProperties": false
+}

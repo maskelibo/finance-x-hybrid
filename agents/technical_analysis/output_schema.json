@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/technical_analysis/output",
+  "title": "Technical Analysis Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "price_trend", "momentum_indicators", "technical_summary", "confidence_overall", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "technical_analysis" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "company": { "type": "object" },
+    "price_trend": {
+      "type": "object",
+      "properties": {
+        "current_price": { "type": "number" },
+        "52w_high": { "type": "number" },
+        "52w_low": { "type": "number" },
+        "primary_trend": { "type": "string", "enum": ["uptrend", "downtrend", "sideways", "indeterminate"] },
+        "ma_20": { "type": "number" },
+        "ma_50": { "type": "number" },
+        "ma_200": { "type": "number" },
+        "price_vs_ma200": { "type": "string", "enum": ["above", "below", "at"] },
+        "confidence": { "type": "string", "enum": ["medium", "low"] }
+      }
+    },
+    "momentum_indicators": {
+      "type": "object",
+      "properties": {
+        "rsi_14": { "type": "number" },
+        "rsi_condition": { "type": "string", "enum": ["overbought", "oversold", "neutral"] },
+        "macd_signal": { "type": "string", "enum": ["bullish", "bearish", "neutral"] },
+        "confidence": { "type": "string", "enum": ["medium", "low"] }
+      }
+    },
+    "volume_analysis": {
+      "type": "object",
+      "properties": {
+        "avg_daily_volume_20d": { "type": "number" },
+        "volume_trend": { "type": "string", "enum": ["expanding", "contracting", "stable"] },
+        "confidence": { "type": "string", "enum": ["medium", "low"] }
+      }
+    },
+    "relative_performance": {
+      "type": "object",
+      "properties": {
+        "vs_bist100_1m_pct": { "type": "number" },
+        "vs_bist100_3m_pct": { "type": "number" },
+        "vs_bist100_12m_pct": { "type": "number" }
+      }
+    },
+    "key_levels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["level_type", "price", "confidence"],
+        "properties": {
+          "level_type": { "type": "string", "enum": ["support", "resistance"] },
+          "price": { "type": "number" },
+          "basis": { "type": "string" },
+          "confidence": { "type": "string", "enum": ["medium", "low"] }
+        }
+      }
+    },
+    "technical_summary": {
+      "type": "object",
+      "required": ["condition", "confidence"],
+      "properties": {
+        "condition": { "type": "string", "enum": ["bullish", "bearish", "neutral", "mixed"] },
+        "confidence": { "type": "string", "enum": ["medium", "low"] },
+        "summary_text": { "type": "string" }
+      }
+    },
+    "evidence_refs": { "type": "array", "items": { "type": "object" } },
+    "warnings": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "missing_inputs": { "type": "array", "items": { "type": "string" } },
+    "confidence_overall": { "type": "string", "enum": ["medium", "low"] },
+    "contradictions_detected": { "type": "array", "items": { "type": "object" } },
+    "review_status": { "type": "string", "enum": ["pending_ceo_review", "approved", "rejected", "revision_requested"] }
+  },
+  "additionalProperties": false
+}

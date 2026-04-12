@@ -1,0 +1,66 @@
+{
+  "agent_id": "data_collection",
+  "test_cases": [
+    {
+      "test_id": "dc-tc-001",
+      "name": "Full data availability for major BIST100 company — BIMAS",
+      "input": { "ticker": "BIMAS", "requested_periods": ["FY2023", "FY2022", "FY2021"], "runtime_mode": "standard_institutional" },
+      "expected_behavior": {
+        "documents_found": ">= 6",
+        "statement_coverage_all_true": true,
+        "kap_documents_present": true,
+        "confidence_overall": "high",
+        "data_gaps_empty": true
+      },
+      "pass_criteria": [
+        "Manifest contains at least 1 KAP annual report per requested year",
+        "All 4 statement types marked available",
+        "All document entries have valid document_id and url",
+        "confidence_overall = high",
+        "No interpretation of financial figures"
+      ],
+      "fail_criteria": ["Any analytical claim about financial results", "document_id = null for any available document"]
+    },
+    {
+      "test_id": "dc-tc-002",
+      "name": "Newly listed company with limited history — partial coverage",
+      "input": { "ticker": "NEWCO", "requested_periods": ["FY2023", "FY2022", "FY2021"], "runtime_mode": "standard_institutional" },
+      "expected_behavior": {
+        "periods_available": ["FY2023"],
+        "data_gaps_populated": true,
+        "confidence_overall": "low",
+        "no_fabricated_documents": true
+      },
+      "pass_criteria": [
+        "data_gaps[] lists FY2022 and FY2021 as unavailable",
+        "confidence_overall = low due to limited history",
+        "No document IDs fabricated for unavailable periods",
+        "warning: limited_financial_history present"
+      ],
+      "fail_criteria": ["Fabricated document IDs for FY2022 or FY2021", "data_gaps empty despite missing periods"]
+    },
+    {
+      "test_id": "dc-tc-003",
+      "name": "KAP API unavailable — fallback to cache",
+      "input": {
+        "ticker": "EREGL",
+        "requested_periods": ["FY2023"],
+        "runtime_mode": "fast_screening",
+        "platform_state": { "kap_api_available": false, "cache_available": true, "cache_age_days": 2 }
+      },
+      "expected_behavior": {
+        "cache_used": true,
+        "warning_about_cache_recency": true,
+        "confidence_overall": "medium",
+        "documents_sourced_from_cache": true
+      },
+      "pass_criteria": [
+        "Agent falls back to cache and produces manifest from cached data",
+        "Warning: KAP API unavailable, using cached data from [date]",
+        "Confidence reduced to medium",
+        "Cache age noted in source_quality_summary.concerns"
+      ],
+      "fail_criteria": ["Agent returns null with no fallback", "No warning about cache usage"]
+    }
+  ]
+}

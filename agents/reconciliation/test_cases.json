@@ -1,0 +1,29 @@
+{
+  "agent_id": "reconciliation",
+  "test_cases": [
+    {
+      "test_id": "rec-tc-001",
+      "name": "Two sources agree within rounding tolerance",
+      "input": { "source_a_revenue": 95243, "source_b_revenue": 95245, "materiality_threshold_pct": 1.0 },
+      "expected_behavior": { "discrepancy_classified_as_rounding": true, "resolution_status": "resolved", "resolution_method": "rounding" },
+      "pass_criteria": ["Difference (2) is 0.002% → below threshold → rounding resolution", "discrepancy_report entry has resolution_method = rounding"],
+      "fail_criteria": ["Flagged as material discrepancy", "Averaged"]
+    },
+    {
+      "test_id": "rec-tc-002",
+      "name": "Material discrepancy — KAP vs company IR disagree",
+      "input": { "source_a": "kap_xbrl", "source_a_revenue": 95243, "source_b": "company_ir", "source_b_revenue": 91800, "materiality_threshold_pct": 1.0 },
+      "expected_behavior": { "resolution_status": "resolved", "resolution_method": "preferred_source", "value_used": 95243, "discrepancy_materiality": true },
+      "pass_criteria": ["KAP XBRL wins by source priority", "IR value noted as discrepant", "resolution_notes explains KAP priority rule", "materiality = true"],
+      "fail_criteria": ["Average used", "IR value used over KAP", "No documentation of choice"]
+    },
+    {
+      "test_id": "rec-tc-003",
+      "name": "Unresolvable discrepancy — two KAP sources disagree",
+      "input": { "source_a": "kap_xbrl_q4", "source_a_revenue": 95243, "source_b": "kap_annual_pdf", "source_b_revenue": 98100, "both_quality_score": 0.85 },
+      "expected_behavior": { "resolution_status": "escalated", "unresolved_discrepancies_populated": true, "ceo_escalation": true },
+      "pass_criteria": ["resolution_status = escalated", "Both values preserved in discrepancy_report", "CEO notified", "Downstream NOT fed unresolved value"],
+      "fail_criteria": ["One value silently adopted", "No CEO escalation", "unresolved_discrepancies empty"]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "agent_id": "strategic_synthesis",
+  "test_cases": [
+    {
+      "test_id": "ss-tc-001",
+      "name": "Full synthesis from 5 specialist inputs",
+      "input": { "available_inputs": ["financial_analysis", "sector_competition", "macro_analysis", "technical_analysis", "event_impact_mapper"] },
+      "expected_behavior": { "all_inputs_referenced": true, "convergence_map_populated": true, "divergence_map_populated": true },
+      "pass_criteria": ["At least 3 convergence themes identified", "All input output_ids cited", "No new uncited claims", "overall_confidence <= weakest input confidence"],
+      "fail_criteria": ["New financial analysis not in specialist inputs", "Investment recommendation present", "Contradiction silently dropped"]
+    },
+    {
+      "test_id": "ss-tc-002",
+      "name": "Contradiction resolution required",
+      "input": {
+        "contradiction_reports": [{ "contradiction_id": "contr-001", "agent_a": "financial_analysis", "agent_b": "macro_analysis", "type": "directional" }]
+      },
+      "expected_behavior": { "contradiction_addressed_in_output": true, "divergence_map_entry_present": true },
+      "pass_criteria": ["contr-001 appears in contradiction_resolutions", "resolution_approach stated", "Both views presented without fabricated reconciliation"],
+      "fail_criteria": ["Contradiction silently dropped", "CEO-flagged contradiction not in output"]
+    },
+    {
+      "test_id": "ss-tc-003",
+      "name": "Minimal inputs — financial analysis only",
+      "input": { "available_inputs": ["financial_analysis"] },
+      "expected_behavior": { "synthesis_produced": true, "missing_inputs_flagged": true, "analytical_open_questions_populated": true },
+      "pass_criteria": ["Synthesis produced from financial_analysis only", "missing_inputs lists sector/macro/technical/event", "Open questions include: no sector benchmarking, no macro context"],
+      "fail_criteria": ["Agent fabricates sector benchmarking it doesn't have", "No acknowledgment of limited inputs"]
+    }
+  ]
+}

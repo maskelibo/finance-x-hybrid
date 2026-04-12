@@ -1,0 +1,102 @@
+{
+  "agent_id": "report_formatter",
+  "version": "1.0.0",
+  "display_name": "Report Formatter Agent",
+  "group": "backbone",
+  "purpose": "Transform raw analytical outputs into professional, visually rich HTML reports with interactive charts, styled tables, and executive-grade formatting suitable for PDF export.",
+  "mission": "Produce a complete HTML document with embedded Chart.js visualizations that can be directly converted to PDF via Puppeteer. The report must match institutional research quality with proper cover page, KPI cards, data tables, risk dashboards, and sector comparisons.",
+  "triggers": ["final_summary_output_ready"],
+  "inputs": [
+    { "name": "final_summary_output", "type": "object", "required": true },
+    { "name": "financial_analysis_output", "type": "object", "required": true },
+    { "name": "technical_analysis_output", "type": "object", "required": true },
+    { "name": "macro_analysis_output", "type": "object", "required": true },
+    { "name": "sector_competition_output", "type": "object", "required": true },
+    { "name": "strategic_synthesis_output", "type": "object", "required": true },
+    { "name": "event_impact_mapper_output", "type": "object", "required": false },
+    { "name": "qa_review_output", "type": "object", "required": false },
+    { "name": "context_extraction_output", "type": "object", "required": false }
+  ],
+  "outputs": [
+    { "name": "report_formatter_output", "type": "object", "description": "Contains formatted_html field with full HTML document ready for Puppeteer PDF conversion" }
+  ],
+  "decision_rights": [
+    "Design visual layout and chart types",
+    "Select which data points to visualize vs. tabulate",
+    "Structure section hierarchy and page breaks",
+    "Clean agent meta-text and internal references"
+  ],
+  "decision_boundaries": [
+    "Must NOT change numbers, ratios, or analytical conclusions",
+    "Must NOT add new analysis or insights not in source data",
+    "Must NOT remove risk disclosures, warnings, or data quality flags",
+    "Must NOT fabricate data for charts",
+    "Must NOT suppress source citations or confidence levels"
+  ],
+  "output_format": "html",
+  "output_requirements": {
+    "structure": [
+      "Cover page (company name, ticker, date, analysis type)",
+      "Executive Summary with KPI cards (1-2 pages)",
+      "Financial Performance Trend (charts + tables, 2-3 pages)",
+      "Asset Quality / Balance Sheet Analysis (1-2 pages)",
+      "Sector Comparison with peer benchmarking (1 page)",
+      "Macro Environment (1 page)",
+      "Corporate Events / KAP Mapping (1 page)",
+      "Technical Analysis with support/resistance (1 page)",
+      "Risk Dashboard with scored risk bars (1 page)",
+      "Valuation and Scenario Analysis (1 page)",
+      "Final Assessment and Monitoring Plan (1 page)",
+      "Mandatory Disclosures and Data Sources (1 page)"
+    ],
+    "visual_elements": [
+      "Chart.js bar/line/radar charts for financial trends",
+      "KPI cards with color-coded change indicators",
+      "Styled HTML tables with alternating row colors",
+      "Risk dashboard with horizontal bar chart",
+      "Peer comparison grouped bar chart",
+      "Color-coded callout boxes (green=positive, red=risk, amber=warning, blue=info)"
+    ],
+    "cleaning_rules": [
+      "Remove ALL agent metadata (agent_id, session_id, output_id, timestamps)",
+      "Remove ALL internal references ('Kaynak: QA Review', 'Kaynak: Stratejik Sentez')",
+      "Remove ALL 'next steps for downstream agents' sections",
+      "Remove ALL 'agent performance metadata' sections",
+      "Remove emoji from analytical content (allowed only in callout headers)",
+      "Convert confidence levels to styled badges"
+    ],
+    "minimum_pages": 12,
+    "target_pages": "13-16"
+  },
+  "html_template_requirements": {
+    "css": "Inline CSS (no external stylesheets for PDF compatibility)",
+    "charts": "Chart.js v4.x loaded from CDN, rendered via inline <script> tags",
+    "fonts": "Segoe UI, system fallbacks",
+    "page_breaks": "CSS page-break-after: always between sections",
+    "print_background": true,
+    "color_scheme": {
+      "primary": "#0f4c75",
+      "accent": "#0d9488",
+      "positive": "#059669",
+      "negative": "#dc2626",
+      "warning": "#d97706",
+      "info": "#3b82f6",
+      "background": "#ffffff"
+    }
+  },
+  "failure_modes": [
+    { "mode": "missing_final_summary", "severity": "critical", "action": "Cannot proceed — escalate to orchestrator" },
+    { "mode": "missing_financial_data", "severity": "high", "action": "Produce report with placeholder sections marked '[DATA UNAVAILABLE]'" },
+    { "mode": "chart_data_incomplete", "severity": "medium", "action": "Use tables instead of charts for incomplete data" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "max_pages": 6, "charts": false, "tables_only": true },
+    "standard_institutional": { "max_pages": 12, "charts": true, "full_sections": true },
+    "deep_dive": { "max_pages": 18, "charts": true, "full_sections": true, "appendices": true }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_tokens": 8000 },
+    "standard_institutional": { "max_tokens": 16000 },
+    "deep_dive": { "max_tokens": 32000 }
+  }
+}

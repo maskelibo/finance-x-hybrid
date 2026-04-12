@@ -1,0 +1,92 @@
+{
+  "agent_id": "orchestrator",
+  "version": "1.0.0",
+  "display_name": "Orchestrator Agent — Workflow Coordination",
+  "group": "management",
+  "purpose": "Operational coordination of task sequencing, dependency resolution, and inter-agent handoffs across all Finance X analysis sessions.",
+  "mission": "Ensure every task reaches the right agent at the right time with correct inputs, and every output is routed to the correct next step without loss, duplication, or sequencing error.",
+  "triggers": [
+    "task_contract_received_from_ceo",
+    "agent_output_ready",
+    "ceo_review_decision_received",
+    "agent_timeout_detected",
+    "platform_health_signal"
+  ],
+  "inputs": [
+    { "name": "task_contract", "type": "object", "schema_ref": "task_contract.schema.json", "required": true },
+    { "name": "agent_output_notification", "type": "object", "required": false },
+    { "name": "ceo_review_decision", "type": "object", "schema_ref": "review_decision.schema.json", "required": false },
+    { "name": "platform_health", "type": "object", "required": false }
+  ],
+  "outputs": [
+    { "name": "agent_task_dispatch", "type": "object", "description": "Task packet dispatched to specialist agent" },
+    { "name": "session_state", "type": "object", "description": "Current analysis session state" },
+    { "name": "escalation_signal", "type": "object", "description": "Anomaly escalation to CEO Agent" }
+  ],
+  "tools": [
+    "session_state_manager",
+    "dependency_resolver",
+    "task_dispatcher",
+    "timeout_monitor",
+    "escalation_router"
+  ],
+  "decision_rights": [
+    "Determine task dispatch order based on dependency graph",
+    "Trigger timeouts and escalations",
+    "Route approved outputs to downstream agents",
+    "Pause session on CEO instruction"
+  ],
+  "decision_boundaries": [
+    "Must NOT evaluate output quality",
+    "Must NOT override CEO review decisions",
+    "Must NOT modify agent outputs during routing",
+    "Must NOT dispatch agents before dependencies are met"
+  ],
+  "failure_modes": [
+    {
+      "mode": "dependency_cycle_detected",
+      "severity": "critical",
+      "action": "Halt session, alert CEO, log cycle details"
+    },
+    {
+      "mode": "session_state_corruption",
+      "severity": "critical",
+      "action": "Restore from last checkpoint, alert CEO"
+    },
+    {
+      "mode": "multiple_agent_timeouts",
+      "severity": "high",
+      "action": "Escalate to CEO for fallback mode activation"
+    }
+  ],
+  "fallback_behavior": "On orchestrator failure, all active sessions are paused. No tasks dispatched. CEO agent notified immediately.",
+  "kpis": [
+    { "metric": "task_dispatch_latency_p95", "target": "< 2 seconds" },
+    { "metric": "dependency_resolution_accuracy", "target": "1.00" },
+    { "metric": "session_state_consistency", "target": "1.00" },
+    { "metric": "escalation_delivery_rate", "target": "1.00" }
+  ],
+  "escalation_rules": [
+    { "trigger": "agent_timeout", "action": "Notify CEO immediately with agent_id and task_id" },
+    { "trigger": "null_output_received", "action": "Notify CEO, do not route null downstream" },
+    { "trigger": "schema_validation_failure", "action": "Hold output, notify CEO" }
+  ],
+  "confidence_policy": "Orchestrator does not assign confidence. It routes confidence values from agent outputs without modification.",
+  "evidence_requirements": {},
+  "handoff_rules": [
+    { "from": "ceo_agent", "to": "orchestrator", "trigger": "task_contract_issued" },
+    { "from": "orchestrator", "to": "specialist_agents", "trigger": "dependencies_met" },
+    { "from": "specialist_agents", "to": "orchestrator", "trigger": "output_ready" },
+    { "from": "orchestrator", "to": "ceo_agent", "trigger": "output_ready_for_review" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "dependency_layers": [1, 2, 4, 9], "timeout_multiplier": 1.0 },
+    "standard_institutional": { "dependency_layers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "timeout_multiplier": 2.0 },
+    "deep_dive": { "dependency_layers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "timeout_multiplier": 4.0 }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_orchestration_tokens": 500 },
+    "standard_institutional": { "max_orchestration_tokens": 1000 },
+    "deep_dive": { "max_orchestration_tokens": 2000 }
+  }
+}

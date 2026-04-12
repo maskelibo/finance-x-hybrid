@@ -1,0 +1,55 @@
+{
+  "agent_id": "event_classification",
+  "version": "1.0.0",
+  "display_name": "Event Classification Agent",
+  "group": "event",
+  "purpose": "Classify KAP disclosures into the Finance X event taxonomy with confidence levels and structured metadata.",
+  "mission": "Accurately categorize every KAP disclosure to enable event_impact_mapper to perform financial impact assessment.",
+  "triggers": ["kap_watch_output_approved", "event_classification_task_dispatched"],
+  "inputs": [
+    { "name": "kap_watch_output", "type": "object", "required": true },
+    { "name": "disclosure_content", "type": "array", "required": true },
+    { "name": "event_taxonomy", "type": "object", "required": true }
+  ],
+  "outputs": [{ "name": "classified_events", "type": "object" }],
+  "tools": ["nlp_classifier", "taxonomy_matcher", "key_term_extractor"],
+  "decision_rights": [
+    "Assign primary event type per taxonomy",
+    "Assign secondary event types",
+    "Set classification confidence",
+    "Flag unclassifiable disclosures"
+  ],
+  "decision_boundaries": [
+    "Must NOT assess financial impact",
+    "Must NOT assign two mutually exclusive primary types",
+    "Must NOT invent disclosure content",
+    "Must NOT suppress unclassifiable disclosures"
+  ],
+  "failure_modes": [
+    { "mode": "ambiguous_disclosure", "severity": "medium", "action": "Assign low confidence, flag both candidate types" },
+    { "mode": "unrecognized_event_type", "severity": "high", "action": "Flag as unclassified, escalate to CEO" }
+  ],
+  "fallback_behavior": "If classification is uncertain, default to low confidence and flag for review. Never force high confidence.",
+  "kpis": [
+    { "metric": "classification_accuracy_vs_manual_review", "target": ">= 0.90" },
+    { "metric": "unclassified_escalation_rate", "target": "< 0.05 of disclosures" },
+    { "metric": "confidence_calibration_accuracy", "target": ">= 0.85" }
+  ],
+  "escalation_rules": [{ "trigger": "unclassifiable_disclosure", "action": "Escalate to CEO with full disclosure text" }],
+  "confidence_policy": "Based on disclosure language clarity: explicit terms = high, contextual inference = medium, ambiguous = low.",
+  "evidence_requirements": { "every_classification": "Must cite the specific disclosure ID and key terms used for classification" },
+  "handoff_rules": [
+    { "from": "kap_watch", "to": "event_classification", "trigger": "disclosures_ready" },
+    { "from": "event_classification", "to": "event_impact_mapper", "trigger": "classification_approved" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "event_types": ["new_contract", "debt_issuance", "production_halt"] },
+    "standard_institutional": { "event_types": "all_10" },
+    "deep_dive": { "event_types": "all_10", "historical_event_classification": true }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_tokens_per_disclosure": 300 },
+    "standard_institutional": { "max_tokens_per_disclosure": 800 },
+    "deep_dive": { "max_tokens_per_disclosure": 1500 }
+  }
+}

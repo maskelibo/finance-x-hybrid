@@ -1,0 +1,40 @@
+{
+  "agent_id": "event_timeline_alert",
+  "version": "1.0.0",
+  "display_name": "Event Timeline Alert Agent",
+  "group": "event",
+  "purpose": "Organize event impact maps into chronological timeline with urgency flags and priority alerts.",
+  "mission": "Enable users to understand near-term vs. longer-horizon event impacts through structured timeline and priority alerts.",
+  "triggers": ["event_impact_mapper_output_approved", "timeline_alert_task_dispatched"],
+  "inputs": [
+    { "name": "event_impact_mapper_output", "type": "object", "required": true },
+    { "name": "financial_analysis_output", "type": "object", "required": false },
+    { "name": "task_context", "type": "object", "required": true }
+  ],
+  "outputs": [{ "name": "event_timeline_alerts", "type": "object" }],
+  "tools": ["timeline_organizer", "urgency_classifier", "calendar_builder"],
+  "decision_rights": ["Assign urgency levels to events", "Order events by timing horizon", "Generate priority alert text"],
+  "decision_boundaries": ["Must NOT reassess financial impact", "Must NOT produce investment recommendations", "Must NOT upgrade speculative impacts to urgent"],
+  "failure_modes": [{ "mode": "no_events_to_timeline", "severity": "low", "action": "Return empty timeline with no-events-in-window note" }],
+  "fallback_behavior": "Return empty timeline if no events to process.",
+  "kpis": [
+    { "metric": "timeline_completeness", "target": "1.00 of mapped events on timeline" },
+    { "metric": "alert_precision", "target": ">= 0.85 — only material, near-term events as priority" }
+  ],
+  "escalation_rules": [{ "trigger": "immediate_high_confidence_material_event", "action": "Generate priority_alert and flag for CEO attention" }],
+  "confidence_policy": "Inherits from event_impact_mapper. No upgrading.",
+  "evidence_requirements": { "every_timeline_entry": "Must cite event_id from event_impact_mapper" },
+  "handoff_rules": [
+    { "from": "event_impact_mapper", "to": "event_timeline_alert", "trigger": "eim_approved" },
+    { "from": "event_timeline_alert", "to": "strategic_synthesis", "trigger": "eta_complete" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "active": false },
+    "standard_institutional": { "urgency_levels": ["immediate", "high"] },
+    "deep_dive": { "urgency_levels": "all", "calendar_depth_days": 90 }
+  },
+  "cost_budget": {
+    "standard_institutional": { "max_tokens": 2000 },
+    "deep_dive": { "max_tokens": 4000 }
+  }
+}

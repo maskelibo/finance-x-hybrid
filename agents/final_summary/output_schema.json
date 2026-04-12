@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/final_summary/output",
+  "title": "Final Summary Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company_overview", "financial_highlights", "key_findings", "analytical_limitations", "mandatory_disclosures", "confidence_overall", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "final_summary" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "output_format": { "type": "string", "enum": ["executive_summary", "institutional_report", "bullet_brief"] },
+    "company_overview": {
+      "type": "object",
+      "required": ["name", "ticker", "sector", "analysis_period"],
+      "properties": {
+        "name": { "type": "string" },
+        "ticker": { "type": "string" },
+        "sector": { "type": "string" },
+        "analysis_period": { "type": "string" },
+        "runtime_mode": { "type": "string" }
+      }
+    },
+    "financial_highlights": {
+      "type": "object",
+      "properties": {
+        "revenue": { "type": "object" },
+        "ebitda_margin": { "type": "object" },
+        "net_income": { "type": "object" },
+        "net_debt_ebitda": { "type": "object" },
+        "free_cash_flow": { "type": "object" },
+        "source_output_id": { "type": "string" }
+      }
+    },
+    "key_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding", "confidence", "source_output_id"],
+        "properties": {
+          "finding": { "type": "string" },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+          "source_output_id": { "type": "string" },
+          "is_convergent": { "type": "boolean" }
+        }
+      }
+    },
+    "risk_factors": { "type": "array", "items": { "type": "object" } },
+    "recent_events_impact": { "type": "array", "items": { "type": "object" } },
+    "analytical_limitations": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "unresolved_contradictions": { "type": "array", "items": { "type": "object" } },
+    "mandatory_disclosures": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3,
+      "description": "Must include no-investment-advice disclaimer, confidence notice, and professional advice recommendation"
+    },
+    "confidence_overall": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+    "evidence_refs": { "type": "array", "items": { "type": "object" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "review_status": { "type": "string", "enum": ["pending_ceo_review", "approved", "rejected", "revision_requested"] }
+  },
+  "additionalProperties": false
+}

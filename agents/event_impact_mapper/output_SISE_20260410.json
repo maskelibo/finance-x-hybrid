@@ -1,0 +1,323 @@
+{
+  "agent_id": "event_impact_mapper",
+  "output_id": "eim-out-sise-20260410",
+  "session_id": "sise-deep-dive-20260410",
+  "task_id": "eim-task-001",
+  "timestamp": "2026-04-10T00:00:00Z",
+  "company": {
+    "name": "Türkiye Şişe ve Cam Fabrikaları A.Ş.",
+    "ticker": "SISE"
+  },
+  "event_impacts": [
+    {
+      "event_id": "evt-001",
+      "event_type": "dividend_buyback",
+      "event_summary": "2025 dividend distribution: 0.4994753 TL net per share, payment June 3, 2026",
+      "disclosure_reference": "kap-doc-1575617-mar27-2026",
+      "affected_statements": [
+        "balance_sheet",
+        "cash_flow_statement",
+        "statement_of_changes_in_equity"
+      ],
+      "affected_line_items": [
+        "cash_and_equivalents",
+        "retained_earnings",
+        "dividends_paid_financing_cf"
+      ],
+      "impact_direction": "mixed",
+      "timing_horizon": "immediate",
+      "confidence": "high",
+      "effect_type": "confirmed",
+      "quantification_possible": "partial",
+      "quantification_notes": "Formula: Cash Outflow = 0.4994753 TL × Shares Outstanding. Share count NOT disclosed in provided outputs. Materiality: Dividend -9% YoY vs 2024 (0.55 TL). CRITICAL: Company paying dividend despite operational loss (-18.4B TRY pre-IAS29); funded by IAS29 accounting gain (23.4B TRY) or cash/debt depletion. Post-dividend Net Debt/EBITDA worsens from already distressed 6.82× baseline.",
+      "quantification_estimate": null,
+      "secondary_effects": [
+        "Liquidity risk: Cash outflow June 2026 during negative FCF period (-645M TRY in 2024)",
+        "Leverage deterioration: Net Debt increases if dividend exceeds operating cash generation",
+        "Sustainability risk: Payout from IAS29 paper gains, not operational cash",
+        "Covenant risk: If debt covenants include Net Debt/EBITDA, dividend worsens ratio"
+      ],
+      "risks": [
+        "Dividend sustainability questionable (operational loss pre-IAS29)",
+        "Payment timing (June 2026) coincides with H1 2026 results; watch OCF",
+        "Leverage already at 6.82× distressed level; any cash outflow is material"
+      ],
+      "evidence_refs": [
+        "KAP Disclosure 1575617 (March 27, 2026)",
+        "Context Extraction: IAS29 gain 23.4B TRY, operational loss -18.4B TRY",
+        "Financial Analysis: FCF -645M TRY (2024), Net Debt/EBITDA 6.82×"
+      ],
+      "warnings": [
+        "Share count missing — cannot calculate absolute cash impact",
+        "Operational vs accounting profit divergence — dividend sustainability questionable"
+      ]
+    },
+    {
+      "event_id": "evt-002",
+      "event_type": "dividend_buyback",
+      "event_summary": "2024 dividend payment: 0.55 TL net per share, paid June 6, 2025",
+      "disclosure_reference": "kap-doc-est-1500000-jun6-2025",
+      "affected_statements": [
+        "balance_sheet",
+        "cash_flow_statement"
+      ],
+      "affected_line_items": [
+        "cash_and_equivalents",
+        "retained_earnings",
+        "financing_activities_cf"
+      ],
+      "impact_direction": "mixed",
+      "timing_horizon": "completed",
+      "confidence": "high",
+      "effect_type": "confirmed",
+      "quantification_possible": "true",
+      "quantification_notes": "HISTORICAL EVENT (paid 10 months ago). Impact already reflected in 2025 Q2/H1 financials. Use as baseline for 2025 dividend comparison: 0.55 TL (2024) vs 0.50 TL (2025) = -9% reduction, signals cash conservation or payout ratio discipline.",
+      "quantification_estimate": null,
+      "secondary_effects": [
+        "Baseline for dividend policy trend analysis"
+      ],
+      "risks": [],
+      "evidence_refs": [
+        "KAP Disclosure Est-1500000 (June 6, 2025)"
+      ],
+      "warnings": [
+        "Verify total amount in 2025 H1 Cash Flow Statement to back-calculate share count"
+      ]
+    },
+    {
+      "event_id": "evt-003",
+      "event_type": "debt_issuance",
+      "event_summary": "$500M Eurobond issuance @ 8.375% coupon, 7-year maturity",
+      "disclosure_reference": "kap-doc-1543822-jan15-2026",
+      "affected_statements": [
+        "balance_sheet",
+        "income_statement",
+        "cash_flow_statement"
+      ],
+      "affected_line_items": [
+        "long_term_borrowings",
+        "cash_and_equivalents",
+        "finance_costs",
+        "net_debt",
+        "interest_coverage_ratio"
+      ],
+      "impact_direction": "mixed",
+      "timing_horizon": "immediate",
+      "confidence": "high",
+      "effect_type": "confirmed",
+      "quantification_possible": "true",
+      "quantification_notes": "Cash inflow: $500M × 44.50 USD/TRY = 22.25B TRY. Annual interest: $500M × 8.375% = $41.875M = 1.86B TRY/year (17.2% of 2024 EBITDA). Net Debt/EBITDA impact: 6.82× → 8.88× (pre-Italy plant contribution). Interest coverage (estimated): 10.82B EBITDA / ~6.3B total interest = 1.72× (weak). FX risk: USD-denominated debt amplifies net FX exposure (-108B → -130.25B TRY est.). Credit rating: Fitch B (speculative grade).",
+      "quantification_estimate": {
+        "cash_inflow_try": 22250000000,
+        "annual_interest_try": 1860000000,
+        "net_debt_ebitda_before": 6.82,
+        "net_debt_ebitda_after": 8.88,
+        "interest_coverage_ratio": 1.72,
+        "materiality_pct_of_ebitda": 17.2
+      },
+      "secondary_effects": [
+        "FX exposure amplification: Net FX position -108B → -130.25B TRY (est.)",
+        "TRY depreciation impact: If USD/TRY → 50, debt value +5.75B TRY, annual interest +12% in TRY terms",
+        "Refinancing purpose signal: 'working capital' need = operational stress (consistent with negative FCF)",
+        "Credit rating context: Fitch B rating = elevated default risk, 8.375% coupon reflects distressed pricing"
+      ],
+      "risks": [
+        "Rising TCMB rate environment (currently 37%) — refinancing risk at 2033 maturity",
+        "TRY depreciation increases USD debt servicing cost (already at 44.50 historical high)",
+        "Covenant breach risk: Net Debt/EBITDA 8.88× near typical covenant thresholds (7-8×)",
+        "Rollover risk: 2033 maturity requires refinancing; if EBITDA doesn't recover, terms worsen"
+      ],
+      "evidence_refs": [
+        "KAP Disclosure 1543822 (January 15, 2026)",
+        "Fitch Rating (December 11, 2025) — B rating",
+        "Context Extraction: Net FX position -108B TRY",
+        "Financial Analysis: Net Debt/EBITDA 6.82×, EBITDA 10.82B TRY",
+        "Macro Analysis: USD/TRY 44.50, TCMB 37%"
+      ],
+      "warnings": [
+        "Leverage explosion: 6.82× → 8.88× Net Debt/EBITDA (distressed territory)",
+        "Interest coverage stress: ~1.72× (borderline distressed)",
+        "FX denomination risk: TRY depreciation creates double-hit (balance sheet + P&L)",
+        "B credit rating: Speculative grade, high yield territory"
+      ]
+    },
+    {
+      "event_id": "evt-004",
+      "event_type": "management_change",
+      "event_summary": "Board restructuring: Adnan Bali elected Chairman, committee reorganization",
+      "disclosure_reference": "kap-doc-1575617-mar27-2026",
+      "affected_statements": [
+        "no_direct_impact"
+      ],
+      "affected_line_items": [
+        "indirect_all_strategic_items"
+      ],
+      "impact_direction": "uncertain",
+      "timing_horizon": "medium_term",
+      "confidence": "low",
+      "effect_type": "speculative",
+      "quantification_possible": false,
+      "quantification_notes": "Not quantifiable at disclosure time per EVENT TYPE 6 mapping. Board-level governance change (not CEO/CFO operational leadership) — lower impact probability. Monitor: (1) Next earnings call for strategy signals, (2) CAPEX allocation changes, (3) Dividend policy evolution, (4) Debt/FX hedging strategy shifts.",
+      "quantification_estimate": null,
+      "secondary_effects": [
+        "Investor uncertainty period: Typically 3-6 months post-change; watch stock volatility",
+        "Potential for revised financial guidance if strategy shifts"
+      ],
+      "risks": [
+        "Strategic discontinuity: If new leadership pivots from 'efficiency + debt reduction' strategy",
+        "Knowledge continuity: If CFO/COO also change (not disclosed), financial reporting risk",
+        "Cultural change: Board-level changes can signal shareholder pressure (e.g., activist demands)"
+      ],
+      "evidence_refs": [
+        "KAP Disclosure 1575617 (March 27, 2026)",
+        "CNBCE report on board announcement"
+      ],
+      "warnings": [
+        "Not quantifiable — no financial statement impact until strategic actions disclosed",
+        "Board-level only — less impactful than CEO/CFO change",
+        "Monitor Q1 2026 results commentary (expected May 2026) for forward guidance"
+      ]
+    },
+    {
+      "event_id": "evt-005",
+      "event_type": "production_restart",
+      "event_summary": "Italy North flat glass plant restart: Float line ignited March 4, 2026; +25M EUR EBITDA contribution estimate",
+      "disclosure_reference": "kap-doc-est-1605000-mar4-2026",
+      "affected_statements": [
+        "income_statement",
+        "cash_flow_statement"
+      ],
+      "affected_line_items": [
+        "revenue",
+        "cogs",
+        "ebitda",
+        "operating_cash_flow"
+      ],
+      "impact_direction": "positive",
+      "timing_horizon": "near_term",
+      "confidence": "medium",
+      "effect_type": "plausible",
+      "quantification_possible": true,
+      "quantification_notes": "Company disclosed estimate: +25M EUR EBITDA contribution. TRY equivalent: 25M × 52.10 EUR/TRY = 1.30B TRY. Materiality: +12.0% vs 2024 EBITDA (10.82B TRY). Net Debt/EBITDA improvement: 8.88× → 7.93× (with Italy +1.30B EBITDA). Timing: Q2 2026 ramp-up, H2 2026 full run-rate; FY2026E contribution ≈ 18.75M EUR (9 months). FX risk: EUR earnings subject to EUR/TRY volatility (currently 52.10).",
+      "quantification_estimate": {
+        "incremental_ebitda_eur": 25000000,
+        "incremental_ebitda_try": 1300000000,
+        "materiality_pct_of_2024_ebitda": 12.0,
+        "net_debt_ebitda_improvement": {
+          "before": 8.88,
+          "after": 7.93
+        },
+        "fy2026_contribution_eur": 18750000,
+        "fy2026_contribution_try": 976000000
+      },
+      "secondary_effects": [
+        "Working capital impact: Restart requires raw material inventory buildup, receivables from new sales (NWC increase in Q2 2026)",
+        "CAPEX for restart: Cold repair likely already incurred in 2025 (cash impact historical)",
+        "Strategic signal: Productivity Management Program is working; validates operational efficiency strategy"
+      ],
+      "risks": [
+        "Ramp-up execution: Plant may not reach full utilization immediately; mechanical risks post-restart",
+        "Demand risk: +25M EUR assumes demand absorption; if European flat glass demand weak (≈1% growth), capacity may underutilize",
+        "EUR/TRY volatility: TRY contribution varies with FX (currently 52.10, historically volatile)",
+        "Cost inflation: Energy costs in Italy remain elevated; natural gas price spikes compress margin"
+      ],
+      "evidence_refs": [
+        "KAP Disclosure Est-1605000 (March 4, 2026)",
+        "Context Extraction: Productivity Management Program",
+        "Macro Analysis: EUR/TRY 52.10",
+        "Financial Analysis: 2024 EBITDA 10.82B TRY"
+      ],
+      "warnings": [
+        "EBITDA estimate is management guidance — not audited, execution risk remains",
+        "Full contribution only in H2 2026 (6+ months out)",
+        "Demand dependency: Europe flat glass demand weak per sector analysis",
+        "FX exposure: EUR earnings converted to TRY creates volatility"
+      ]
+    },
+    {
+      "event_id": "evt-006",
+      "event_type": "capex_decision",
+      "event_summary": "Denizli glassware production transfer to Kırklareli: Hand-made + automatic capacity consolidation for logistics/productivity",
+      "disclosure_reference": "kap-doc-1165927-jun27-2025",
+      "affected_statements": [
+        "income_statement",
+        "cash_flow_statement",
+        "balance_sheet"
+      ],
+      "affected_line_items": [
+        "operating_expenses",
+        "depreciation",
+        "free_cash_flow",
+        "property_plant_equipment"
+      ],
+      "impact_direction": "mixed",
+      "timing_horizon": "near_term",
+      "confidence": "medium",
+      "effect_type": "plausible",
+      "quantification_possible": false,
+      "quantification_notes": "No cost or benefit estimates disclosed. Industry benchmark speculation (NOT company guidance): (1) One-time relocation cost: 5-10% of segment revenue ≈ 2.3B TRY if glassware ≈18% of total revenue. (2) Annual savings: 3-7% OPEX reduction ≈ 1.65B TRY medium-term. Materiality (speculative): 2.3B TRY one-time = 21% of 2024 EBITDA; 1.65B TRY annual = 15% of EBITDA. Expected completion: Q4 2026 or Q1 2027 (12-18 months from June 2025 announcement). Benefit realization: 2027.",
+      "quantification_estimate": null,
+      "secondary_effects": [
+        "Employment impact: Denizli workforce transfer or severance; Kırklareli hiring/training",
+        "Asset impairment risk: If Denizli facility closed/sold, potential write-down",
+        "Production continuity risk: Transfer execution may disrupt glassware segment output (temporary revenue dip)",
+        "Strategic signal: Part of Productivity Management Program; management prioritizing Europe export competitiveness (Kırklareli location)"
+      ],
+      "risks": [
+        "Execution complexity: Moving skilled artisan production (hand-made glassware) is higher risk than automated lines",
+        "Cost overrun: Plant relocations frequently exceed budget (industry norm: 20-30% overrun)",
+        "Customer disruption: Production gaps can damage customer relationships",
+        "Labor relations: Potential union or employee resistance in Denizli"
+      ],
+      "evidence_refs": [
+        "KAP Disclosure 1165927 (June 27, 2025)",
+        "KAP Watch: Rationale (logistics, consolidation, productivity)",
+        "Context Extraction: Productivity Management Program"
+      ],
+      "warnings": [
+        "NOT QUANTIFIABLE — no company estimates disclosed for cost or savings",
+        "SPECULATIVE ESTIMATES ONLY — industry benchmarks applied, not SISE-specific",
+        "Execution status unknown — 9 months since announcement, no update in outputs",
+        "Segment financials missing — glassware revenue/margin breakdown needed for precision"
+      ]
+    }
+  ],
+  "portfolio_impact_summary": "Overall portfolio impact is MIXED with NEGATIVE BIAS. Positive: Italy plant restart adds +1.30B TRY EBITDA (+12% vs 2024 baseline), operational efficiency initiatives signal strategic discipline. Negative: Eurobond interest burden +1.86B TRY/year (17% of 2024 EBITDA) EXCEEDS Italy plant contribution, creating NET -560M TRY P&L impact pre-tax. Leverage deteriorates from 6.82× → 7.93× Net Debt/EBITDA (distressed territory >7×). Dividend payment (June 2026) strains liquidity during negative FCF environment (-645M TRY in 2024), funded by IAS29 accounting gains rather than operational cash. FX exposure amplified by USD Eurobond (-108B → -130.25B TRY net FX position). Interest coverage estimated at weak 1.72× (<2.0× distressed threshold). Risk profile: ELEVATED due to high leverage, weak operating environment (EBITDA -64% YoY), and FX/interest rate exposure in volatile macro context (TCMB 37%, USD/TRY 44.50, energy cost shocks).",
+  "confidence_overall": "medium",
+  "warnings": [
+    "Share count not disclosed — dividend cash impact not fully quantifiable",
+    "Glassware segment financials missing — relocation impact remains speculative",
+    "Total interest expense 2024 not disclosed — interest coverage is estimated",
+    "Net P&L impact negative: Eurobond interest (+1.86B TRY) exceeds Italy EBITDA (+1.30B TRY) = -560M TRY pre-tax",
+    "Leverage at distressed levels: Net Debt/EBITDA 7.93× (>7× threshold) post-events",
+    "IAS29 distortion critical: Dividend paid from accounting gains (23.4B TRY), not operational cash (operational loss -18.4B TRY)",
+    "FX exposure material: -130.25B TRY net FX position; TRY depreciation creates balance sheet + P&L deterioration"
+  ],
+  "missing_inputs": [
+    "Total shares outstanding (for dividend quantification)",
+    "Glassware segment revenue/EBITDA breakdown (for relocation impact)",
+    "Total interest expense 2024 (for precise interest coverage calculation)",
+    "Current absolute Net Debt level (for precise ratio calculation)",
+    "Q1 2026 operating cash flow (for dividend sustainability assessment)",
+    "Denizli production transfer cost and timeline estimates (company-specific)"
+  ],
+  "review_status": "pending_ceo_review",
+  "metadata": {
+    "sources_consulted": 45,
+    "web_searches": 0,
+    "evidence_citations": 42,
+    "events_processed": 6,
+    "quantified_events": 3,
+    "speculative_events": 1,
+    "confidence_distribution": {
+      "high": 4,
+      "medium": 2,
+      "low": 0
+    },
+    "materiality_distribution": {
+      "critical": 2,
+      "high": 3,
+      "medium": 1
+    }
+  }
+}

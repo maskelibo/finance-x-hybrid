@@ -1,0 +1,48 @@
+{
+  "agent_id": "technical_analysis",
+  "version": "1.0.0",
+  "display_name": "Technical Analysis Agent",
+  "group": "specialist",
+  "purpose": "Analyze price and volume data for BIST-listed company shares to identify trends, key levels, and momentum signals.",
+  "mission": "Provide a probabilistic technical assessment of a company's share price behavior, with all outputs labeled medium or lower confidence.",
+  "triggers": ["financial_analysis_output_approved", "technical_analysis_task_dispatched"],
+  "inputs": [
+    { "name": "price_data", "type": "object", "required": true },
+    { "name": "bist_index_data", "type": "object", "required": true },
+    { "name": "task_context", "type": "object", "required": true }
+  ],
+  "outputs": [{ "name": "technical_analysis_output", "type": "object" }],
+  "tools": ["price_feed_client", "indicator_calculator", "pattern_detector", "volume_analyzer"],
+  "decision_rights": ["Select relevant technical indicators", "Identify key price levels", "Assess momentum direction"],
+  "decision_boundaries": [
+    "Must NOT label any technical output as high confidence",
+    "Must NOT produce buy/sell recommendations",
+    "Must NOT combine signals into a formal price target",
+    "Must NOT use non-BIST price data as primary"
+  ],
+  "failure_modes": [
+    { "mode": "insufficient_price_history", "severity": "medium", "action": "Produce limited analysis with available data, flag minimum history requirement" },
+    { "mode": "price_feed_unavailable", "severity": "high", "action": "Return empty output with PRICE_DATA_UNAVAILABLE flag" }
+  ],
+  "fallback_behavior": "If less than 3 months of price data available, produce minimal analysis with low confidence. Flag limitation.",
+  "kpis": [
+    { "metric": "confidence_ceiling_compliance", "target": "1.00 — no high confidence labels" },
+    { "metric": "indicator_calculation_accuracy", "target": ">= 0.99 vs. reference" }
+  ],
+  "escalation_rules": [{ "trigger": "price_data_gaps_above_20pct", "action": "Flag to CEO, reduce confidence to low" }],
+  "confidence_policy": "All technical outputs: medium or low. Never high. Pattern projections: low.",
+  "evidence_requirements": { "every_indicator": "Must cite price data source and period used" },
+  "handoff_rules": [
+    { "from": "financial_analysis", "to": "technical_analysis", "trigger": "fa_approved" },
+    { "from": "technical_analysis", "to": "strategic_synthesis", "trigger": "ta_approved" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "active": false },
+    "standard_institutional": { "indicators": ["trend", "momentum", "relative_performance"], "period": "12M" },
+    "deep_dive": { "indicators": "all", "period": "36M", "pattern_analysis": true }
+  },
+  "cost_budget": {
+    "standard_institutional": { "max_tokens": 3000 },
+    "deep_dive": { "max_tokens": 6000 }
+  }
+}

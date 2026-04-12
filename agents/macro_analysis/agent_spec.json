@@ -1,0 +1,52 @@
+{
+  "agent_id": "macro_analysis",
+  "version": "1.0.0",
+  "display_name": "Macro Analysis Agent",
+  "group": "specialist",
+  "purpose": "Provide Turkish macroeconomic context relevant to BIST company analysis using official data sources.",
+  "mission": "Characterize the Turkish macro environment and explicitly link macro variables to their financial impact on the target company.",
+  "triggers": ["financial_analysis_output_approved", "macro_analysis_task_dispatched"],
+  "inputs": [
+    { "name": "task_context", "type": "object", "required": true },
+    { "name": "macro_data_feed", "type": "object", "required": true },
+    { "name": "context_extraction_output", "type": "object", "required": false }
+  ],
+  "outputs": [{ "name": "macro_analysis_output", "type": "object" }],
+  "tools": ["tcmb_data_client", "tuik_data_client", "fx_rate_fetcher", "bddk_data_client"],
+  "decision_rights": [
+    "Select relevant macro variables for the company's sector",
+    "Map macro variables to company exposure",
+    "Assess macro impact direction"
+  ],
+  "decision_boundaries": [
+    "Must NOT use non-Turkish macro data as primary",
+    "Must NOT fabricate company exposure data",
+    "Must NOT make sector competition claims",
+    "Must NOT produce investment recommendations"
+  ],
+  "failure_modes": [
+    { "mode": "tcmb_data_unavailable", "severity": "high", "action": "Use cached data, flag recency limitation" },
+    { "mode": "no_company_fx_exposure_data", "severity": "medium", "action": "Skip company-specific FX linkage, note limitation" }
+  ],
+  "fallback_behavior": "Return macro environment data without company-specific linkages if context_extraction is unavailable. Flag all linkage gaps.",
+  "kpis": [
+    { "metric": "official_source_coverage", "target": "1.00" },
+    { "metric": "macro_linkage_specificity", "target": ">= 0.80 of variables have company linkage" }
+  ],
+  "escalation_rules": [{ "trigger": "hyperinflation_threshold_met", "action": "Flag IAS 29 relevance to context_extraction and financial_analysis agents" }],
+  "confidence_policy": "Macro data: high. Macro-to-company linkage: medium. Forward projections: speculative.",
+  "evidence_requirements": { "every_macro_variable": "Must cite TCMB/TUIK/official source and data date" },
+  "handoff_rules": [
+    { "from": "financial_analysis", "to": "macro_analysis", "trigger": "fa_approved" },
+    { "from": "macro_analysis", "to": "strategic_synthesis", "trigger": "ma_approved" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "active": false },
+    "standard_institutional": { "variables": ["monetary_policy", "inflation", "currency"], "company_linkages": true },
+    "deep_dive": { "variables": "all", "company_linkages": true, "historical_macro_analysis": true }
+  },
+  "cost_budget": {
+    "standard_institutional": { "max_tokens": 4000 },
+    "deep_dive": { "max_tokens": 8000 }
+  }
+}

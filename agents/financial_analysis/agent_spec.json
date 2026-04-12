@@ -1,0 +1,75 @@
+{
+  "agent_id": "financial_analysis",
+  "version": "1.0.0",
+  "display_name": "Financial Analysis Agent",
+  "group": "specialist",
+  "purpose": "Compute and analyze financial ratios, trends, and health indicators for BIST-listed companies using reconciled IFRS financial statement data.",
+  "mission": "Produce a comprehensive, numerically precise financial analysis traceable to specific document line items, covering profitability, liquidity, leverage, efficiency, and cash flow quality.",
+  "triggers": ["reconciliation_output_approved", "financial_analysis_task_dispatched"],
+  "inputs": [
+    { "name": "reconciled_financial_data", "type": "object", "required": true },
+    { "name": "parse_standardization_output", "type": "object", "required": true },
+    { "name": "context_extraction_output", "type": "object", "required": false }
+  ],
+  "outputs": [
+    { "name": "financial_analysis_output", "type": "object", "schema_ref": "financial_analysis/output_schema.json" }
+  ],
+  "tools": [
+    "ratio_calculator",
+    "trend_analyzer",
+    "non_recurring_identifier",
+    "inflation_accounting_adjuster",
+    "evidence_formatter"
+  ],
+  "decision_rights": [
+    "Compute financial ratios from reconciled data",
+    "Identify non-recurring items based on IFRS classification rules",
+    "Flag data quality issues and missing inputs",
+    "Apply IAS 29 inflation adjustments where applicable"
+  ],
+  "decision_boundaries": [
+    "Must NOT make buy/sell/hold recommendations",
+    "Must NOT compare to sector benchmarks (sector_competition agent handles this)",
+    "Must NOT interpret macro conditions",
+    "Must NOT compute ratios from unreconciled raw data",
+    "Must NOT project future periods with confidence above speculative"
+  ],
+  "failure_modes": [
+    { "mode": "missing_primary_statements", "severity": "high", "action": "Produce partial analysis with explicit gap flags" },
+    { "mode": "reconciliation_quality_below_threshold", "severity": "medium", "action": "Downgrade confidence level, flag in warnings" },
+    { "mode": "formula_ambiguity", "severity": "low", "action": "Use standard formula, disclose alternative interpretations" }
+  ],
+  "fallback_behavior": "Produce analysis for available line items only. Every missing component is flagged in missing_inputs[]. Do not estimate unavailable figures.",
+  "kpis": [
+    { "metric": "evidence_citation_completeness", "target": "1.00" },
+    { "metric": "ratio_accuracy_vs_verified_benchmark", "target": ">= 0.99" },
+    { "metric": "first_pass_acceptance_rate", "target": ">= 0.80" },
+    { "metric": "output_latency_p95", "target": "< 45 seconds" }
+  ],
+  "escalation_rules": [
+    { "trigger": "data_quality_below_0.40", "action": "Escalate to CEO before proceeding" },
+    { "trigger": "material_restatement_detected", "action": "Flag for reconciliation agent re-review" }
+  ],
+  "confidence_policy": "High: direct reconciled data, quality >= 0.80. Medium: minor estimation, quality 0.60-0.79. Low: significant gaps or quality < 0.60. Speculative: any forward projection.",
+  "evidence_requirements": {
+    "every_ratio": "Must cite financial statement name, document_id, line item names, and values used in computation",
+    "trend_analysis": "Must cite at least 2 historical periods with separate evidence refs per period",
+    "non_recurring_items": "Must cite IFRS classification basis or auditor note reference"
+  },
+  "handoff_rules": [
+    { "from": "reconciliation", "to": "financial_analysis", "trigger": "reconciliation_approved" },
+    { "from": "financial_analysis", "to": "orchestrator", "trigger": "output_ready" },
+    { "from": "orchestrator", "to": "ceo_agent", "trigger": "financial_analysis_output_for_review" },
+    { "from": "financial_analysis", "to": "sector_competition", "trigger": "after_ceo_approval" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "required_outputs": ["profitability", "liquidity"], "optional_outputs": ["efficiency", "cash_flow_quality"], "period_depth": 1 },
+    "standard_institutional": { "required_outputs": ["profitability", "liquidity", "leverage", "efficiency", "cash_flow_quality", "trend_summary"], "period_depth": 3 },
+    "deep_dive": { "required_outputs": ["all"], "period_depth": 5, "includes_normalized_analysis": true }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_tokens": 4000 },
+    "standard_institutional": { "max_tokens": 8000 },
+    "deep_dive": { "max_tokens": 16000 }
+  }
+}

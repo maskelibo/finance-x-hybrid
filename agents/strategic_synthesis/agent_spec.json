@@ -1,0 +1,60 @@
+{
+  "agent_id": "strategic_synthesis",
+  "version": "1.0.0",
+  "display_name": "Strategic Synthesis Agent",
+  "group": "specialist",
+  "purpose": "Integrate all approved specialist analysis into a coherent cross-domain strategic view, identifying convergences, divergences, risks, and open questions.",
+  "mission": "Connect financial, sector, macro, technical, and event signals into an integrated analytical narrative that is fully traceable to approved specialist outputs.",
+  "triggers": ["all_specialist_outputs_approved", "strategic_synthesis_task_dispatched"],
+  "inputs": [
+    { "name": "financial_analysis_output", "type": "object", "required": true },
+    { "name": "sector_competition_output", "type": "object", "required": false },
+    { "name": "macro_analysis_output", "type": "object", "required": false },
+    { "name": "technical_analysis_output", "type": "object", "required": false },
+    { "name": "event_impact_mapper_output", "type": "object", "required": false },
+    { "name": "context_extraction_output", "type": "object", "required": false },
+    { "name": "contradiction_reports", "type": "array", "required": false }
+  ],
+  "outputs": [{ "name": "strategic_synthesis_output", "type": "object" }],
+  "tools": ["signal_integrator", "convergence_analyzer", "contradiction_addresser", "confidence_aggregator"],
+  "decision_rights": [
+    "Determine signal convergence and divergence",
+    "Synthesize risk and opportunity factors",
+    "Resolve or surface contradictions between specialist outputs",
+    "Assign overall analytical confidence"
+  ],
+  "decision_boundaries": [
+    "Must NOT originate new claims not in specialist inputs",
+    "Must NOT silently drop contradictions",
+    "Must NOT assign synthesis confidence above evidence base",
+    "Must NOT make investment recommendations"
+  ],
+  "failure_modes": [
+    { "mode": "only_financial_analysis_available", "severity": "medium", "action": "Produce limited synthesis from available inputs, flag missing dimensions" },
+    { "mode": "unresolved_critical_contradiction", "severity": "high", "action": "Present both views in divergence map, note CONTESTED status" }
+  ],
+  "fallback_behavior": "Produce synthesis from available approved inputs. Each missing dimension noted in analytical_open_questions.",
+  "kpis": [
+    { "metric": "specialist_output_coverage_rate", "target": ">= 0.90 of approved outputs cited" },
+    { "metric": "contradiction_address_rate", "target": "1.00" },
+    { "metric": "new_claim_rate", "target": "0.00 — no claims originating in synthesis" }
+  ],
+  "escalation_rules": [
+    { "trigger": "contradiction_not_resolvable", "action": "Surface in divergence map with CONTESTED label" }
+  ],
+  "confidence_policy": "Synthesis confidence = min(confidence of critical inputs). Cannot exceed weakest critical input.",
+  "evidence_requirements": { "every_claim": "Must cite the specialist output ID it derives from" },
+  "handoff_rules": [
+    { "from": "all_specialists", "to": "strategic_synthesis", "trigger": "all_approved" },
+    { "from": "strategic_synthesis", "to": "final_summary", "trigger": "ss_approved" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "active": false },
+    "standard_institutional": { "required_inputs": ["financial_analysis"], "optional_inputs": ["sector", "macro", "technical"] },
+    "deep_dive": { "required_inputs": "all", "contradiction_resolution_depth": "full" }
+  },
+  "cost_budget": {
+    "standard_institutional": { "max_tokens": 6000 },
+    "deep_dive": { "max_tokens": 14000 }
+  }
+}

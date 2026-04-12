@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/agent_factory/output",
+  "title": "Agent Factory Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "hiring_request_id", "designed_agent_id", "design_package", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "agent_factory" },
+    "output_id": { "type": "string" },
+    "hiring_request_id": { "type": "string" },
+    "designed_agent_id": { "type": "string" },
+    "design_package": {
+      "type": "object",
+      "required": ["system_prompt", "agent_spec", "output_schema", "test_cases"],
+      "properties": {
+        "system_prompt": { "type": "string", "minLength": 500 },
+        "agent_spec": { "type": "object" },
+        "output_schema": { "type": "object" },
+        "test_cases": { "type": "array", "minItems": 3 }
+      }
+    },
+    "design_notes": { "type": "string" },
+    "estimated_integration_effort": { "type": "string" },
+    "review_status": { "type": "string", "enum": ["pending_human_review", "approved", "rejected"] }
+  },
+  "additionalProperties": false
+}

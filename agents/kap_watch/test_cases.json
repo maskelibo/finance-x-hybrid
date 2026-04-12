@@ -1,0 +1,29 @@
+{
+  "agent_id": "kap_watch",
+  "test_cases": [
+    {
+      "test_id": "kw-tc-001",
+      "name": "Normal monitoring — new material disclosures found",
+      "input": { "watch_list": ["EREGL", "BIMAS"], "window_days": 30, "new_kap_disclosures": 3 },
+      "expected_behavior": { "new_disclosures_reported": 3, "no_duplicates": true },
+      "pass_criteria": ["3 disclosures in inventory", "All have valid kap_url", "No duplicates", "No content interpretation"],
+      "fail_criteria": ["Fewer than 3 reported", "Fabricated KAP IDs", "Content interpretation present"]
+    },
+    {
+      "test_id": "kw-tc-002",
+      "name": "KAP API rate limit hit",
+      "input": { "kap_api_response": "rate_limited" },
+      "expected_behavior": { "retrieval_status_includes_rate_limited": true, "backoff_applied": true, "ceo_not_alerted_for_brief_limit": true },
+      "pass_criteria": ["Disclosures marked rate_limited", "Warning about rate limiting present", "Retry queued"],
+      "fail_criteria": ["Agent returns empty with no explanation", "Alert sent to CEO for normal rate limiting"]
+    },
+    {
+      "test_id": "kw-tc-003",
+      "name": "No new disclosures in window",
+      "input": { "watch_list": ["QUIET_COMPANY"], "window_days": 7, "new_disclosures": 0 },
+      "expected_behavior": { "disclosure_inventory_empty": true, "monitoring_summary_accurate": true },
+      "pass_criteria": ["Empty disclosure_inventory returned (not null)", "monitoring_summary reports 0 new disclosures"],
+      "fail_criteria": ["Null output", "Fabricated disclosures"]
+    }
+  ]
+}

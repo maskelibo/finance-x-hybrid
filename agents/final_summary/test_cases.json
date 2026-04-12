@@ -1,0 +1,29 @@
+{
+  "agent_id": "final_summary",
+  "test_cases": [
+    {
+      "test_id": "fs-tc-001",
+      "name": "Mandatory disclosures always present",
+      "input": { "runtime_mode": "fast_screening", "output_format": "bullet_brief" },
+      "expected_behavior": { "mandatory_disclosures_count": ">= 3", "investment_advice_disclaimer_present": true },
+      "pass_criteria": ["All 3 mandatory disclosure texts present", "No investment recommendation in any section"],
+      "fail_criteria": ["Any mandatory disclosure missing", "Buy/sell language in output"]
+    },
+    {
+      "test_id": "fs-tc-002",
+      "name": "Confidence labels on all findings",
+      "input": { "strategic_synthesis_overall_confidence": "medium" },
+      "expected_behavior": { "all_findings_have_confidence_label": true, "confidence_overall": "medium" },
+      "pass_criteria": ["Every finding in key_findings has confidence field", "confidence_overall = medium (not upgraded)", "analytical_limitations non-empty"],
+      "fail_criteria": ["Confidence labels missing", "confidence_overall upgraded above synthesis"]
+    },
+    {
+      "test_id": "fs-tc-003",
+      "name": "Unresolved contradiction surfaced in output",
+      "input": { "unresolved_contradictions_from_session": [{ "contradiction_id": "contr-001", "description": "Revenue figures conflict" }] },
+      "expected_behavior": { "unresolved_contradictions_in_output": true, "user_informed_of_conflict": true },
+      "pass_criteria": ["unresolved_contradictions section populated", "User-readable description of conflict present", "No synthetic resolution presented"],
+      "fail_criteria": ["Contradiction hidden from user", "Averaged values presented as resolved"]
+    }
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "agent_id": "ceo_agent",
+  "version": "1.0.0",
+  "test_suite_version": "1.0.0",
+  "test_cases": [
+    {
+      "test_id": "ceo-tc-001",
+      "name": "Standard Full Analysis Request — Happy Path",
+      "description": "CEO receives a standard institutional analysis request for BIST-listed Eregli Demir ve Celik (EREGL) and correctly activates the full agent set, reviews outputs, and issues final approval.",
+      "runtime_mode": "standard_institutional",
+      "input": {
+        "user_analysis_request": {
+          "task_id": "req-eregl-2024-001",
+          "target_company": "Eregli Demir ve Celik Fabrikalari",
+          "ticker": "EREGL",
+          "analysis_scope": "full_integrated_analysis",
+          "runtime_mode": "standard_institutional",
+          "output_format": "institutional_report",
+          "special_instructions": "Focus on steel sector conditions and recent capacity expansion",
+          "deadline": "2024-01-15T10:30:00Z"
+        }
+      },
+      "expected_behavior": {
+        "task_contract_issued": true,
+        "agents_activated": [
+          "data_collection",
+          "parse_standardization",
+          "reconciliation",
+          "context_extraction",
+          "financial_analysis",
+          "sector_competition",
+          "macro_analysis",
+          "technical_analysis",
+          "strategic_synthesis",
+          "final_summary",
+          "qa_review",
+          "kap_watch",
+          "event_classification"
+        ],
+        "runtime_mode_set": "standard_institutional",
+        "quality_threshold_applied": 0.75,
+        "retry_policy": { "max_retries": 2, "escalate_after": 2 }
+      },
+      "pass_criteria": [
+        "task_contract issued to orchestrator within 10 seconds",
+        "All 13 standard agents are in the assigned_agents list",
+        "Quality thresholds set to >= 0.75 for each agent",
+        "Audit log entry created with event_type AGENT_ASSIGNED for each agent",
+        "CEO does not attempt to perform any financial analysis itself"
+      ],
+      "fail_criteria": [
+        "Fewer than 10 agents activated",
+        "Quality threshold set below 0.70",
+        "No audit log entries created",
+        "CEO produces financial ratios or data interpretation"
+      ]
+    },
+    {
+      "test_id": "ceo-tc-002",
+      "name": "Contradiction Detection — Numerical Conflict Between financial_analysis and reconciliation",
+      "description": "financial_analysis reports EREGL revenue of TRY 95.2B for FY2023; reconciliation agent reports TRY 91.8B from a different source. CEO must detect, log, and handle this CRITICAL contradiction.",
+      "runtime_mode": "standard_institutional",
+      "input": {
+        "output_a": {
+          "agent_id": "financial_analysis",
+          "output_id": "fa-out-001",
+          "claims": [
+            {
+              "claim_id": "fa-claim-001",
+              "claim_text": "EREGL reported consolidated revenue of TRY 95.2 billion for FY2023",
+              "confidence": "high",
+              "evidence_refs": [
+                { "source_type": "financial_statement", "document_id": "eregl-annual-2023-ifrs", "page_ref": "12" }
+              ]
+            }
+          ]
+        },
+        "output_b": {
+          "agent_id": "reconciliation",
+          "output_id": "rec-out-001",
+          "claims": [
+            {
+              "claim_id": "rec-claim-001",
+              "claim_text": "KAP consolidated revenue disclosure for EREGL FY2023 shows TRY 91.8 billion",
+              "confidence": "high",
+              "evidence_refs": [
+                { "source_type": "kap_disclosure", "document_id": "kap-eregl-2024-003", "page_ref": "1" }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_behavior": {
+        "contradiction_detected": true,
+        "contradiction_severity": "critical",
+        "contradiction_type": "NUMERICAL_CONTRADICTION",
+        "both_outputs_held": true,
+        "reconciliation_agent_reactivated": true,
+        "audit_log_entry_created": true,
+        "audit_event_type": "CONTRADICTION_DETECTED",
+        "final_approval_blocked": true
+      },
+      "pass_criteria": [
+        "Contradiction flagged as CRITICAL within review cycle",
+        "Both output IDs marked CONTRADICTION_HOLD",
+        "Reconciliation agent receives new task contract with contradiction details",
+        "Audit log entry: CONTRADICTION_DETECTED with both agent IDs and affected metric",
+        "Final approval NOT issued while contradiction is unresolved"
+      ],
+      "fail_criteria": [
+        "Contradiction not detected",
+        "CEO averages the two values (95.2 + 91.8 / 2)",
+        "Final approval issued with unresolved CRITICAL contradiction",
+        "No audit log entry created"
+      ]
+    },
+    {
+      "test_id": "ceo-tc-003",
+      "name": "Hard Rejection — False Certainty in Forward-Looking Claim",
+      "description": "strategic_synthesis agent submits an output containing the claim: 'EREGL will achieve TRY 110B revenue in FY2024' labeled as high confidence. CEO must hard-reject this output.",
+      "runtime_mode": "standard_institutional",
+      "input": {
+        "agent_output": {
+          "agent_id": "strategic_synthesis",
+          "output_id": "ss-out-001",
+          "claims": [
+            {
+              "claim_id": "ss-claim-001",
+              "claim_text": "EREGL will achieve TRY 110 billion in revenue for FY2024",
+              "confidence": "high",
+              "evidence_refs": [
+                { "source_type": "management_guidance", "document_id": "eregl-investor-day-2023", "page_ref": "8" }
+              ]
+            }
+          ],
+          "warnings": [],
+          "missing_inputs": []
+        }
+      },
+      "expected_behavior": {
+        "decision": "rejected",
+        "rejection_reason_code": "FALSE_CERTAINTY",
+        "retry_triggered": true,
+        "revision_instructions_issued": true,
+        "revision_instruction_content": "Forward-looking revenue projection cannot be labeled high confidence. Must be relabeled speculative or low and include explicit assumptions and scenario disclaimers.",
+        "audit_log_entry_type": "OUTPUT_REJECTED"
+      },
+      "pass_criteria": [
+        "Decision = rejected (NOT revision_requested — this is a hard rejection)",
+        "Rejection reason code = FALSE_CERTAINTY",
+        "Revision instructions require relabeling to speculative",
+        "Revision instructions specify what disclosures are required",
+        "Audit log entry: OUTPUT_REJECTED with reason FALSE_CERTAINTY",
+        "Retry triggered automatically"
+      ],
+      "fail_criteria": [
+        "Output approved with high-confidence forward-looking claim intact",
+        "Decision = revision_requested instead of rejected",
+        "No audit log entry",
+        "CEO modifies the claim itself instead of requiring agent revision"
+      ]
+    },
+    {
+      "test_id": "ceo-tc-004",
+      "name": "Fallback Activation — financial_analysis Agent Null Output After Retries",
+      "description": "financial_analysis agent returns null output on initial attempt and both retries. CEO must activate degraded mode and surface the gap.",
+      "runtime_mode": "fast_screening",
+      "input": {
+        "agent_failure_events": [
+          { "agent_id": "financial_analysis", "attempt": 1, "output": null },
+          { "agent_id": "financial_analysis", "attempt": 2, "output": null },
+          { "agent_id": "financial_analysis", "attempt": 3, "output": null }
+        ]
+      },
+      "expected_behavior": {
+        "degraded_mode_activated": true,
+        "final_output_contains_disclosure": true,
+        "disclosure_text_contains": "financial analysis section",
+        "analysis_delivered": "partial",
+        "analysis_aborted": false,
+        "agent_frozen": true,
+        "audit_entries": ["RETRY_TRIGGERED", "RETRY_TRIGGERED", "AGENT_DEGRADED", "AGENT_FROZEN", "FALLBACK_ACTIVATED"],
+        "hiring_review_triggered": false
+      },
+      "pass_criteria": [
+        "Degraded mode activated after 3rd null output",
+        "Analysis continues with data_collection and final_summary (if available)",
+        "Final output includes explicit disclosure: financial analysis unavailable",
+        "User receives partial analysis, not a failure message with no output",
+        "Audit log shows complete sequence: RETRY x2 → AGENT_DEGRADED → FALLBACK_ACTIVATED",
+        "CEO does NOT fill in financial analysis from its own knowledge"
+      ],
+      "fail_criteria": [
+        "Analysis aborted entirely",
+        "CEO produces financial ratios to substitute for failed agent",
+        "No disclosure in final output",
+        "Audit log incomplete",
+        "Hiring request triggered (too early — requires 3 sessions)"
+      ]
+    },
+    {
+      "test_id": "ceo-tc-005",
+      "name": "Cost Budget Breach — Auto-Suspension of Non-Critical Agents",
+      "description": "In standard_institutional mode, cumulative token cost reaches 115% of budget mid-session. CEO must suspend lowest-priority optional agents and continue.",
+      "runtime_mode": "standard_institutional",
+      "input": {
+        "budget_status": {
+          "budget_limit_tokens": 100000,
+          "current_usage_tokens": 115000,
+          "overage_percent": 15,
+          "agents_active": [
+            "data_collection", "parse_standardization", "reconciliation",
+            "financial_analysis", "macro_analysis", "sector_competition",
+            "technical_analysis", "strategic_synthesis", "final_summary"
+          ],
+          "agents_completed": ["data_collection", "parse_standardization", "reconciliation", "financial_analysis"]
+        }
+      },
+      "expected_behavior": {
+        "agents_suspended": ["macro_analysis"],
+        "analysis_continues": true,
+        "user_notified": false,
+        "audit_event_type": "COST_BREACH_DETECTED",
+        "cost_reduction_achieved": true,
+        "final_output_notes_suspended_sections": true
+      },
+      "pass_criteria": [
+        "macro_analysis suspended first (per priority order)",
+        "sector_competition NOT suspended (cost reduction achieved with macro_analysis suspension)",
+        "Analysis continues without user interruption",
+        "Audit log: COST_BREACH_DETECTED with action taken",
+        "Final output includes note: macro analysis section unavailable due to resource constraints",
+        "core outputs (financial_analysis, final_summary) NOT suspended"
+      ],
+      "fail_criteria": [
+        "financial_analysis or final_summary suspended",
+        "All agents suspended",
+        "User not notified when overage exceeds 25%",
+        "No audit log entry",
+        "Macro section delivered without disclosure that it was suspended"
+      ]
+    }
+  ]
+}

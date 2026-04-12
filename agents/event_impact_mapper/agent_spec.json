@@ -1,0 +1,76 @@
+{
+  "agent_id": "event_impact_mapper",
+  "version": "1.0.0",
+  "display_name": "Event Impact Mapper Agent",
+  "group": "event",
+  "purpose": "Map classified corporate events to financial statement impacts, line item effects, timing horizons, confidence levels, and quantification frameworks.",
+  "mission": "For every classified event disclosed via KAP or other monitored channels, produce a rigorous, evidence-anchored financial impact map covering affected statements, line items, direction, timing, confidence, and quantification methodology.",
+  "triggers": ["event_classification_output_approved", "event_impact_mapping_task_dispatched"],
+  "inputs": [
+    { "name": "event_classification_output", "type": "object", "required": true },
+    { "name": "financial_analysis_output", "type": "object", "required": false },
+    { "name": "context_extraction_output", "type": "object", "required": false }
+  ],
+  "outputs": [
+    { "name": "event_impact_maps", "type": "object", "schema_ref": "event_impact_mapper/output_schema.json" }
+  ],
+  "tools": [
+    "impact_mapping_engine",
+    "ifrs_rule_lookup",
+    "materiality_calculator",
+    "quantification_framework",
+    "evidence_formatter"
+  ],
+  "decision_rights": [
+    "Apply event-to-impact mapping table",
+    "Determine confidence level per impact dimension",
+    "Determine whether quantification is methodologically possible",
+    "Assess materiality relative to company financial profile",
+    "Flag secondary effects and risks"
+  ],
+  "decision_boundaries": [
+    "Must NOT classify events (that is event_classification agent's role)",
+    "Must NOT assert confirmed impacts from unconfirmed events",
+    "Must NOT quantify speculative synergies as confirmed",
+    "Must NOT produce investment recommendations",
+    "Must NOT map management changes to specific financial impacts without explicit strategy disclosure"
+  ],
+  "failure_modes": [
+    { "mode": "unknown_event_type", "severity": "medium", "action": "Flag event as unmapped, request CEO guidance, do not produce impact map" },
+    { "mode": "financial_context_unavailable", "severity": "medium", "action": "Produce directional impact map only, flag quantification as not_possible due to missing context" },
+    { "mode": "ambiguous_disclosure", "severity": "medium", "action": "Map to most conservative interpretation, flag ambiguity" }
+  ],
+  "fallback_behavior": "Produce directional-only impact map when quantification inputs are unavailable. Flag all limitations explicitly.",
+  "kpis": [
+    { "metric": "event_type_coverage", "target": "1.00 for all defined event types" },
+    { "metric": "quantification_accuracy_vs_realized", "target": ">= 0.70 directionally" },
+    { "metric": "evidence_citation_rate", "target": "1.00" },
+    { "metric": "first_pass_acceptance_rate", "target": ">= 0.75" }
+  ],
+  "escalation_rules": [
+    { "trigger": "event_type_not_in_mapping_table", "action": "Escalate to CEO, request hiring_request for new event type coverage" },
+    { "trigger": "potential_material_impact_high_severity", "action": "Flag for immediate CEO review" }
+  ],
+  "confidence_policy": "High: clear event with fully disclosed terms and straightforward IFRS mechanism. Medium: partially disclosed terms, standard industry assumptions needed. Low: ambiguous event type or key terms missing. Speculative: management change, synergy estimates, unquantifiable future effects.",
+  "evidence_requirements": {
+    "every_impact_map": "Must cite the KAP disclosure ID that triggered the mapping",
+    "every_quantification": "Must state formula, all inputs, and estimated vs. confirmed inputs",
+    "ifrs_applications": "Must cite the specific IFRS standard applied (e.g., IAS 37, IFRS 15)"
+  },
+  "handoff_rules": [
+    { "from": "event_classification", "to": "event_impact_mapper", "trigger": "classification_approved" },
+    { "from": "event_impact_mapper", "to": "orchestrator", "trigger": "impact_maps_complete" },
+    { "from": "event_impact_mapper", "to": "strategic_synthesis", "trigger": "after_ceo_approval" },
+    { "from": "event_impact_mapper", "to": "event_timeline_alert", "trigger": "after_ceo_approval" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "event_types_processed": ["new_contract", "debt_issuance", "production_halt"], "quantification": false },
+    "standard_institutional": { "event_types_processed": "all_10_types", "quantification": true },
+    "deep_dive": { "event_types_processed": "all_10_types", "quantification": true, "secondary_effects_depth": "full", "historical_event_comparison": true }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_tokens_per_event": 500, "max_events": 5 },
+    "standard_institutional": { "max_tokens_per_event": 1500, "max_events": 20 },
+    "deep_dive": { "max_tokens_per_event": 3000, "max_events": 50 }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "agent_id": "parse_standardization",
+  "version": "1.0.0",
+  "display_name": "Parse & Standardization Agent",
+  "group": "specialist",
+  "purpose": "Parse raw BIST/KAP financial documents and normalize them into IFRS-aligned structured data with full source traceability.",
+  "mission": "Transform raw financial documents into clean, standardized financial statements ready for reconciliation, with parser confidence scoring on every extracted value.",
+  "triggers": ["data_collection_output_approved", "parse_task_dispatched"],
+  "inputs": [
+    { "name": "data_manifest", "type": "object", "required": true },
+    { "name": "raw_documents", "type": "array", "required": true },
+    { "name": "bist_taxonomy_map", "type": "object", "required": true },
+    { "name": "task_context", "type": "object", "required": true }
+  ],
+  "outputs": [
+    { "name": "standardized_statements", "type": "object", "schema_ref": "parse_standardization/output_schema.json" }
+  ],
+  "tools": ["xbrl_parser", "pdf_table_extractor", "html_parser", "bist_taxonomy_mapper", "balance_checker", "restatement_detector"],
+  "decision_rights": [
+    "Select extraction method per document format",
+    "Apply BIST-to-IFRS taxonomy mapping",
+    "Flag ambiguous mappings",
+    "Detect balance sheet imbalances"
+  ],
+  "decision_boundaries": [
+    "Must NOT analyze or interpret data",
+    "Must NOT fabricate values",
+    "Must NOT silently resolve ambiguous extractions",
+    "Must NOT suppress restatement flags"
+  ],
+  "failure_modes": [
+    { "mode": "pdf_unreadable", "severity": "high", "action": "Mark document as parse_failed, continue with remaining documents" },
+    { "mode": "taxonomy_mapping_failure", "severity": "medium", "action": "Flag line item as unmapped, return raw Turkish label" },
+    { "mode": "balance_sheet_imbalance", "severity": "high", "action": "Flag BALANCE_SHEET_IMBALANCE, proceed but reduce confidence" }
+  ],
+  "fallback_behavior": "Return partial parsed data for successfully extracted documents. Mark failed documents explicitly.",
+  "kpis": [
+    { "metric": "extraction_accuracy_vs_xbrl_reference", "target": ">= 0.99" },
+    { "metric": "taxonomy_mapping_coverage", "target": ">= 0.95" },
+    { "metric": "parse_latency_p95", "target": "< 30 seconds" }
+  ],
+  "escalation_rules": [
+    { "trigger": "all_documents_parse_failed", "action": "Escalate to CEO, abort session" },
+    { "trigger": "material_balance_sheet_imbalance", "action": "Escalate to reconciliation agent for investigation" }
+  ],
+  "confidence_policy": "Based on extraction method: XBRL >= 0.90, PDF structured 0.75-0.89, PDF unstructured 0.50-0.74.",
+  "evidence_requirements": {
+    "every_value": "Must cite source_document_id, source_line_item_original, page_reference"
+  },
+  "handoff_rules": [
+    { "from": "data_collection", "to": "parse_standardization", "trigger": "manifest_approved" },
+    { "from": "parse_standardization", "to": "reconciliation", "trigger": "parsing_complete" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "statements_required": ["income_statement", "balance_sheet"], "notes_extraction": false },
+    "standard_institutional": { "statements_required": ["income_statement", "balance_sheet", "cash_flow_statement"], "notes_extraction": "key_items" },
+    "deep_dive": { "statements_required": "all", "notes_extraction": "full" }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_tokens": 3000 },
+    "standard_institutional": { "max_tokens": 8000 },
+    "deep_dive": { "max_tokens": 20000 }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/data_collection/output",
+  "title": "Data Collection Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "data_manifest", "coverage_assessment", "data_gaps", "warnings", "confidence_overall", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "data_collection" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "company": {
+      "type": "object",
+      "required": ["name", "ticker"],
+      "properties": {
+        "name": { "type": "string" },
+        "ticker": { "type": "string" },
+        "kap_id": { "type": "string" },
+        "bist_code": { "type": "string" }
+      }
+    },
+    "data_manifest": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_type", "document_id", "availability_status", "data_quality_score", "retrieval_timestamp"],
+        "properties": {
+          "source_type": {
+            "type": "string",
+            "enum": ["kap_financial_report", "kap_material_disclosure", "company_ir", "bist_official", "tcmb", "tuik", "price_feed", "external_data_provider"]
+          },
+          "document_id": { "type": "string" },
+          "document_name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "period_covered": { "type": "string" },
+          "language": { "type": "string", "enum": ["TR", "EN", "TR+EN"] },
+          "format": { "type": "string", "enum": ["PDF", "XBRL", "HTML", "JSON", "CSV"] },
+          "availability_status": {
+            "type": "string",
+            "enum": ["available", "unavailable", "access_restricted", "rate_limited", "not_found"]
+          },
+          "data_quality_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+          "is_audited": { "type": "boolean" },
+          "auditor": { "type": "string" },
+          "audit_opinion": { "type": "string", "enum": ["unqualified", "qualified", "adverse", "disclaimer", "not_applicable", "unknown"] },
+          "file_size_kb": { "type": "integer" },
+          "retrieval_timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "coverage_assessment": {
+      "type": "object",
+      "properties": {
+        "periods_available": { "type": "array", "items": { "type": "string" } },
+        "statement_coverage": {
+          "type": "object",
+          "properties": {
+            "income_statement": { "type": "boolean" },
+            "balance_sheet": { "type": "boolean" },
+            "cash_flow_statement": { "type": "boolean" },
+            "statement_of_equity": { "type": "boolean" }
+          }
+        },
+        "kap_disclosure_count": { "type": "integer" },
+        "latest_quarterly_available": { "type": "string" },
+        "latest_annual_available": { "type": "string" },
+        "xbrl_available": { "type": "boolean" }
+      }
+    },
+    "source_quality_summary": {
+      "type": "object",
+      "properties": {
+        "overall_quality_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "primary_source": { "type": "string" },
+        "concerns": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "data_gaps": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "missing_inputs": { "type": "array", "items": { "type": "string" } },
+    "confidence_overall": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+    "contradictions_detected": { "type": "array", "items": { "type": "object" } },
+    "review_status": { "type": "string", "enum": ["pending_ceo_review", "approved", "rejected", "revision_requested"] }
+  },
+  "additionalProperties": false
+}

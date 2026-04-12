@@ -1,0 +1,29 @@
+{
+  "agent_id": "sector_competition",
+  "test_cases": [
+    {
+      "test_id": "sc-tc-001",
+      "name": "EREGL steel sector benchmarking",
+      "input": { "ticker": "EREGL", "bist_sector": "Temel Metal", "peers": ["KRDMD", "ISGYO"], "ebitda_margin_target": 0.194 },
+      "expected_behavior": { "peer_group_defined": true, "benchmarking_scorecard_populated": true, "rank_computed": true },
+      "pass_criteria": ["Peer group includes at least KRDMD", "EBITDA margin rank computed vs. peers", "Source cited for each peer value"],
+      "fail_criteria": ["Macro claims about Turkish steel sector", "Market share figures not from official disclosures"]
+    },
+    {
+      "test_id": "sc-tc-002",
+      "name": "No comparable BIST peers available",
+      "input": { "ticker": "NICHE_CO", "bist_sector": "Spesifik Sektör", "peers": [] },
+      "expected_behavior": { "benchmarking_skipped": true, "no_peers_flag": true, "ceo_notified": true },
+      "pass_criteria": ["Output clearly states no comparable peers found", "CEO notified", "No fabricated benchmark data"],
+      "fail_criteria": ["Fabricated sector medians without peer data", "Analysis proceeds without flag"]
+    },
+    {
+      "test_id": "sc-tc-003",
+      "name": "IAS 29 comparability issue in peer group",
+      "input": { "ticker": "TCELL", "ias29_applied": true, "peers": ["TURKCELL_PEERS"], "some_peers_ias29": false },
+      "expected_behavior": { "comparability_note_present": true, "confidence_reduced": true },
+      "pass_criteria": ["Comparability note: some peers do not apply IAS 29, margins not directly comparable", "confidence = medium for affected benchmarks"],
+      "fail_criteria": ["No comparability note about IAS 29 differences"]
+    }
+  ]
+}

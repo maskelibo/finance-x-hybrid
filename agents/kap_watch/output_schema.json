@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/kap_watch/output",
+  "title": "KAP Watch Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "monitoring_window", "disclosure_inventory", "monitoring_summary", "confidence_overall", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "kap_watch" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "monitoring_window": {
+      "type": "object",
+      "required": ["from", "to"],
+      "properties": {
+        "from": { "type": "string", "format": "date-time" },
+        "to": { "type": "string", "format": "date-time" }
+      }
+    },
+    "disclosure_inventory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kap_disclosure_id", "kap_url", "company_ticker", "disclosure_type", "disclosure_date", "is_new", "is_material", "retrieval_status"],
+        "properties": {
+          "kap_disclosure_id": { "type": "string" },
+          "kap_url": { "type": "string", "format": "uri" },
+          "company_ticker": { "type": "string" },
+          "company_kap_id": { "type": "string" },
+          "disclosure_type": { "type": "string" },
+          "disclosure_title": { "type": "string" },
+          "disclosure_date": { "type": "string", "format": "date-time" },
+          "document_ids": { "type": "array", "items": { "type": "string" } },
+          "is_new": { "type": "boolean" },
+          "is_material": { "type": "boolean" },
+          "retrieval_status": { "type": "string", "enum": ["success", "failed", "rate_limited"] }
+        }
+      }
+    },
+    "monitoring_summary": {
+      "type": "object",
+      "properties": {
+        "total_disclosures_in_window": { "type": "integer" },
+        "new_disclosures_count": { "type": "integer" },
+        "failed_retrievals_count": { "type": "integer" },
+        "companies_monitored": { "type": "integer" },
+        "next_check_recommended": { "type": "string", "format": "date-time" }
+      }
+    },
+    "confidence_overall": { "type": "string", "enum": ["high", "medium", "low"] },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "review_status": { "type": "string", "enum": ["pending_ceo_review", "approved", "rejected", "revision_requested"] }
+  },
+  "additionalProperties": false
+}

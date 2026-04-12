@@ -1,0 +1,232 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/ceo/hiring_request",
+  "title": "Agent Hiring Request Schema",
+  "description": "Schema for formal agent hiring and redesign requests issued by the CEO Agent when capability gaps or persistent quality failures are detected in the Finance X platform.",
+  "type": "object",
+  "required": [
+    "request_id",
+    "request_type",
+    "triggered_by",
+    "created_at",
+    "created_by",
+    "gap_description",
+    "evidence_of_gap",
+    "priority",
+    "proposed_resolution"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "pattern": "^hiring-req-[a-f0-9\\-]{36}$",
+      "description": "Unique identifier for this hiring/redesign request"
+    },
+    "request_type": {
+      "type": "string",
+      "enum": ["new_agent", "agent_redesign", "capability_extension"],
+      "description": "Whether this request is for a new agent, a redesign of an existing one, or an extension of capabilities"
+    },
+    "existing_agent_id": {
+      "type": ["string", "null"],
+      "description": "For redesign requests, the agent being redesigned. Null for new agent requests."
+    },
+    "triggered_by": {
+      "type": "object",
+      "required": ["trigger_type", "session_ids"],
+      "properties": {
+        "trigger_type": {
+          "type": "string",
+          "enum": [
+            "FIRST_PASS_RATE_BELOW_THRESHOLD",
+            "REVISION_RATE_ABOVE_THRESHOLD",
+            "PERSISTENT_EVIDENCE_FAILURE",
+            "PERSISTENT_SCOPE_VIOLATION",
+            "MISSING_CAPABILITY_DETECTED",
+            "REGULATORY_CHANGE",
+            "USER_REQUEST_PATTERN",
+            "PERFORMANCE_BENCHMARK_MISS"
+          ]
+        },
+        "session_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Analysis sessions where the gap was observed"
+        },
+        "failure_count": {
+          "type": "integer",
+          "description": "Number of times the gap or failure was observed"
+        },
+        "observation_window_days": {
+          "type": "integer",
+          "description": "Rolling window over which the failures were counted"
+        },
+        "metric_value": {
+          "type": "number",
+          "description": "The metric value that triggered this request (e.g., 0.52 first-pass rate)"
+        },
+        "metric_threshold": {
+          "type": "number",
+          "description": "The threshold that was breached (e.g., 0.60)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string",
+      "const": "ceo_agent"
+    },
+    "gap_description": {
+      "type": "string",
+      "minLength": 50,
+      "description": "Detailed description of the capability gap or quality problem"
+    },
+    "evidence_of_gap": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["evidence_type", "description"],
+        "properties": {
+          "evidence_type": {
+            "type": "string",
+            "enum": [
+              "failed_review_record",
+              "rejection_log",
+              "revision_cycle_log",
+              "missing_output_type",
+              "user_complaint",
+              "performance_metric_history"
+            ]
+          },
+          "description": { "type": "string" },
+          "reference_id": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low"],
+      "description": "Priority of this request based on business impact"
+    },
+    "business_impact": {
+      "type": "string",
+      "description": "Description of the business impact of the gap"
+    },
+    "affected_analysis_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "full_integrated_analysis",
+          "fundamental_only",
+          "technical_only",
+          "event_driven_update",
+          "degraded_mode"
+        ]
+      }
+    },
+    "proposed_resolution": {
+      "type": "object",
+      "required": ["resolution_type"],
+      "properties": {
+        "resolution_type": {
+          "type": "string",
+          "enum": ["new_agent", "redesign_existing", "extend_existing", "update_prompt"]
+        },
+        "proposed_agent_name": {
+          "type": "string",
+          "description": "Name of the new or redesigned agent"
+        },
+        "proposed_agent_id": {
+          "type": "string",
+          "description": "Proposed agent_id following Finance X naming conventions"
+        },
+        "proposed_group": {
+          "type": "string",
+          "enum": ["management", "specialist", "event"],
+          "description": "Which agent group this agent belongs to"
+        },
+        "required_capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["capability_name", "description"],
+            "properties": {
+              "capability_name": { "type": "string" },
+              "description": { "type": "string" },
+              "priority": {
+                "type": "string",
+                "enum": ["must_have", "should_have", "nice_to_have"]
+              }
+            }
+          }
+        },
+        "required_tools": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "required_inputs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "expected_outputs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "integration_points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["other_agent_id", "integration_type"],
+            "properties": {
+              "other_agent_id": { "type": "string" },
+              "integration_type": {
+                "type": "string",
+                "enum": ["receives_from", "sends_to", "bidirectional"]
+              },
+              "payload_description": { "type": "string" }
+            }
+          }
+        },
+        "estimated_implementation_effort": {
+          "type": "string",
+          "enum": ["days", "weeks", "months"]
+        },
+        "design_notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": ["pending", "approved", "rejected", "in_progress", "completed"],
+      "default": "pending"
+    },
+    "approved_by": {
+      "type": ["string", "null"],
+      "description": "Identifier of the human or system that approved this request"
+    },
+    "approved_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "implementation_started_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "audit_entry_id": {
+      "type": "string",
+      "description": "Reference to the audit log entry created when this request was issued"
+    }
+  },
+  "additionalProperties": false
+}

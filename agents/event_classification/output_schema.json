@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/event_classification/output",
+  "title": "Event Classification Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "classified_events", "confidence_overall", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "event_classification" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "classified_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["disclosure_id", "primary_type", "classification_confidence", "classification_rationale", "company_ticker", "disclosure_date"],
+        "properties": {
+          "disclosure_id": { "type": "string" },
+          "primary_type": {
+            "type": "string",
+            "enum": ["new_contract", "production_halt", "debt_issuance", "capex_decision", "legal_dispute", "management_change", "dividend_buyback", "asset_sale", "partnership_jv_acquisition", "regulatory_event", "routine_filing"]
+          },
+          "secondary_types": { "type": "array", "items": { "type": "string" } },
+          "classification_confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+          "classification_rationale": { "type": "string" },
+          "key_terms_extracted": { "type": "array", "items": { "type": "string" } },
+          "company_ticker": { "type": "string" },
+          "disclosure_date": { "type": "string", "format": "date-time" },
+          "is_material": { "type": "boolean" },
+          "kap_url": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "unclassified_disclosures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["disclosure_id", "reason"],
+        "properties": {
+          "disclosure_id": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "confidence_overall": { "type": "string", "enum": ["high", "medium", "low"] },
+    "evidence_refs": { "type": "array", "items": { "type": "object" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "review_status": { "type": "string", "enum": ["pending_ceo_review", "approved", "rejected", "revision_requested"] }
+  },
+  "additionalProperties": false
+}

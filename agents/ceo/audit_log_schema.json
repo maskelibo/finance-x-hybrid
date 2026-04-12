@@ -1,0 +1,272 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/ceo/audit_log",
+  "title": "CEO Agent Audit Log Entry Schema",
+  "description": "Immutable audit log entry schema for all significant decisions made by the CEO Agent in Finance X. Entries are append-only and cannot be modified after creation.",
+  "type": "object",
+  "required": [
+    "entry_id",
+    "session_id",
+    "event_type",
+    "timestamp",
+    "actor",
+    "details"
+  ],
+  "properties": {
+    "entry_id": {
+      "type": "string",
+      "pattern": "^audit-[a-f0-9\\-]{36}$",
+      "description": "Unique, immutable identifier for this audit log entry"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "The analysis session this entry belongs to"
+    },
+    "sequence_number": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Sequential position of this entry within the session audit log"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "AGENT_ASSIGNED",
+        "OUTPUT_RECEIVED",
+        "OUTPUT_APPROVED",
+        "OUTPUT_REJECTED",
+        "REVISION_REQUESTED",
+        "REVISION_RECEIVED",
+        "CONTRADICTION_DETECTED",
+        "CONTRADICTION_RESOLVED",
+        "CONTRADICTION_ESCALATED",
+        "FALLBACK_ACTIVATED",
+        "AGENT_DEGRADED",
+        "AGENT_FROZEN",
+        "COST_BREACH_DETECTED",
+        "RUNTIME_MODE_CHANGED",
+        "HIRING_REQUEST_ISSUED",
+        "FINAL_APPROVAL_GRANTED",
+        "SESSION_ABORTED",
+        "USER_NOTIFICATION_SENT",
+        "SCHEMA_VALIDATION_FAILURE",
+        "RETRY_TRIGGERED",
+        "QUALITY_THRESHOLD_BREACH"
+      ],
+      "description": "The type of event being logged"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this event occurred"
+    },
+    "actor": {
+      "type": "string",
+      "description": "The entity responsible for this event (always 'ceo_agent' or 'system')"
+    },
+    "target_agent": {
+      "type": ["string", "null"],
+      "description": "The agent this event pertains to, if applicable"
+    },
+    "target_output_id": {
+      "type": ["string", "null"],
+      "description": "The agent output ID this event pertains to, if applicable"
+    },
+    "details": {
+      "type": "object",
+      "description": "Event-specific detail object",
+      "oneOf": [
+        { "$ref": "#/definitions/AgentAssignedDetails" },
+        { "$ref": "#/definitions/OutputReviewDetails" },
+        { "$ref": "#/definitions/RevisionDetails" },
+        { "$ref": "#/definitions/ContradictionDetails" },
+        { "$ref": "#/definitions/FallbackDetails" },
+        { "$ref": "#/definitions/CostBreachDetails" },
+        { "$ref": "#/definitions/HiringRequestDetails" },
+        { "$ref": "#/definitions/FinalApprovalDetails" },
+        { "$ref": "#/definitions/GenericEventDetails" }
+      ]
+    },
+    "prior_entry_id": {
+      "type": ["string", "null"],
+      "description": "Reference to the previous audit log entry in this session for chain-of-custody verification"
+    },
+    "integrity_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of this entry's content for tamper detection"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "AgentAssignedDetails": {
+      "type": "object",
+      "required": ["task_contract_id", "agent_id", "runtime_mode", "priority"],
+      "properties": {
+        "task_contract_id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "runtime_mode": {
+          "type": "string",
+          "enum": ["fast_screening", "standard_institutional", "deep_dive"]
+        },
+        "priority": { "type": "integer" },
+        "dependencies": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "quality_threshold": { "type": "number" },
+        "deadline_seconds": { "type": "integer" }
+      }
+    },
+    "OutputReviewDetails": {
+      "type": "object",
+      "required": ["review_id", "agent_id", "decision", "overall_score"],
+      "properties": {
+        "review_id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "decision": {
+          "type": "string",
+          "enum": ["approved", "rejected", "revision_requested"]
+        },
+        "overall_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "rubric_scores": {
+          "type": "object",
+          "properties": {
+            "evidence_sufficiency": { "type": "number" },
+            "confidence_calibration": { "type": "number" },
+            "claim_support": { "type": "number" },
+            "completeness": { "type": "number" },
+            "scope_compliance": { "type": "number" }
+          }
+        },
+        "rejection_reason_codes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "retry_count": { "type": "integer" }
+      }
+    },
+    "RevisionDetails": {
+      "type": "object",
+      "required": ["revision_id", "agent_id", "failure_types", "instruction_count"],
+      "properties": {
+        "revision_id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "failure_types": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "instruction_count": { "type": "integer" },
+        "priority": {
+          "type": "string",
+          "enum": ["urgent", "standard", "low"]
+        },
+        "deadline": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ContradictionDetails": {
+      "type": "object",
+      "required": ["contradiction_id", "agent_a", "agent_b", "contradiction_type", "severity"],
+      "properties": {
+        "contradiction_id": { "type": "string" },
+        "agent_a": { "type": "string" },
+        "agent_b": { "type": "string" },
+        "contradiction_type": {
+          "type": "string",
+          "enum": [
+            "NUMERICAL_CONTRADICTION",
+            "DIRECTIONAL_CONTRADICTION",
+            "INFERENCE_CONTRADICTION",
+            "SCOPE_OVERLAP_CONTRADICTION"
+          ]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "resolution_status": {
+          "type": "string",
+          "enum": ["pending", "resolved", "escalated_to_user", "held"]
+        },
+        "affected_metric": { "type": "string" }
+      }
+    },
+    "FallbackDetails": {
+      "type": "object",
+      "required": ["fallback_type", "trigger_reason", "degraded_agents"],
+      "properties": {
+        "fallback_type": {
+          "type": "string",
+          "enum": [
+            "AGENT_NULL_OUTPUT",
+            "REPEATED_EVIDENCE_FAILURE",
+            "UNRESOLVABLE_CONTRADICTION",
+            "BUDGET_EXCEEDED",
+            "LOW_CONFIDENCE_ACROSS_AGENTS"
+          ]
+        },
+        "trigger_reason": { "type": "string" },
+        "degraded_agents": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "analysis_sections_affected": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "runtime_mode_before": { "type": "string" },
+        "runtime_mode_after": { "type": "string" }
+      }
+    },
+    "CostBreachDetails": {
+      "type": "object",
+      "required": ["budget_limit", "actual_cost", "overage_percent"],
+      "properties": {
+        "budget_limit": { "type": "number" },
+        "actual_cost": { "type": "number" },
+        "overage_percent": { "type": "number" },
+        "action_taken": { "type": "string" },
+        "agents_disabled": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "HiringRequestDetails": {
+      "type": "object",
+      "required": ["request_id", "gap_description", "priority"],
+      "properties": {
+        "request_id": { "type": "string" },
+        "gap_description": { "type": "string" },
+        "proposed_agent": { "type": "string" },
+        "priority": { "type": "string" },
+        "triggered_by_failure_count": { "type": "integer" }
+      }
+    },
+    "FinalApprovalDetails": {
+      "type": "object",
+      "required": ["approval_id", "agents_activated_count", "total_outputs_reviewed", "final_confidence"],
+      "properties": {
+        "approval_id": { "type": "string" },
+        "agents_activated_count": { "type": "integer" },
+        "total_outputs_reviewed": { "type": "integer" },
+        "outputs_approved_first_pass": { "type": "integer" },
+        "outputs_requiring_revision": { "type": "integer" },
+        "outputs_rejected": { "type": "integer" },
+        "contradictions_detected": { "type": "integer" },
+        "contradictions_resolved": { "type": "integer" },
+        "final_confidence": { "type": "string" },
+        "session_duration_seconds": { "type": "integer" }
+      }
+    },
+    "GenericEventDetails": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string" },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

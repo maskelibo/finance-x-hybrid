@@ -1,0 +1,62 @@
+{
+  "agent_id": "reconciliation",
+  "version": "1.0.0",
+  "display_name": "Reconciliation Agent",
+  "group": "specialist",
+  "purpose": "Identify and document discrepancies between multiple data sources for the same company and period, resolve where possible by established rules, escalate where not.",
+  "mission": "Deliver a single authoritative reconciled financial dataset with a complete discrepancy report, ensuring downstream agents work from validated data.",
+  "triggers": ["parse_standardization_output_approved", "reconciliation_task_dispatched", "ceo_contradiction_resolution_request"],
+  "inputs": [
+    { "name": "parsed_statements_set", "type": "array", "required": true },
+    { "name": "data_manifest", "type": "object", "required": true },
+    { "name": "task_context", "type": "object", "required": true }
+  ],
+  "outputs": [
+    { "name": "reconciled_dataset", "type": "object", "schema_ref": "reconciliation/output_schema.json" }
+  ],
+  "tools": ["discrepancy_detector", "source_priority_resolver", "materiality_calculator", "escalation_router"],
+  "decision_rights": [
+    "Choose preferred source per reconciliation rules",
+    "Classify discrepancies by materiality",
+    "Apply rounding tolerance rules",
+    "Apply restatement precedence rules"
+  ],
+  "decision_boundaries": [
+    "Must NOT average conflicting values",
+    "Must NOT suppress material discrepancies",
+    "Must NOT forward unresolved material discrepancies without CEO flag",
+    "Must NOT perform financial analysis on reconciled data"
+  ],
+  "failure_modes": [
+    { "mode": "all_sources_disagree_materially", "severity": "high", "action": "Escalate to CEO, flag all discrepancies" },
+    { "mode": "single_source_available", "severity": "medium", "action": "Use single source, flag no reconciliation possible" }
+  ],
+  "fallback_behavior": "If only one source available, use it as authoritative. Flag: single_source_no_reconciliation.",
+  "kpis": [
+    { "metric": "discrepancy_detection_rate", "target": "1.00" },
+    { "metric": "resolution_documentation_rate", "target": "1.00" },
+    { "metric": "escalation_precision", "target": ">= 0.90" }
+  ],
+  "escalation_rules": [
+    { "trigger": "unresolvable_material_discrepancy", "action": "Escalate to CEO with full discrepancy report" }
+  ],
+  "confidence_policy": "High: all sources agree within rounding. Medium: resolved material discrepancy with documented choice. Low: unresolved discrepancy present.",
+  "evidence_requirements": {
+    "every_discrepancy": "Must cite both source_ids and their quality scores"
+  },
+  "handoff_rules": [
+    { "from": "parse_standardization", "to": "reconciliation", "trigger": "parsing_complete" },
+    { "from": "reconciliation", "to": "financial_analysis", "trigger": "reconciliation_complete" },
+    { "from": "reconciliation", "to": "context_extraction", "trigger": "reconciliation_complete" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "materiality_threshold_pct": 2.0, "sources_compared": 1 },
+    "standard_institutional": { "materiality_threshold_pct": 1.0, "sources_compared": 2 },
+    "deep_dive": { "materiality_threshold_pct": 0.5, "sources_compared": "all" }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_tokens": 2000 },
+    "standard_institutional": { "max_tokens": 5000 },
+    "deep_dive": { "max_tokens": 12000 }
+  }
+}

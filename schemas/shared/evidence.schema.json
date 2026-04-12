@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.internal/schemas/shared/evidence.schema.json",
+  "title": "EvidenceReference",
+  "description": "A pointer to a specific source that supports a claim within the Finance X platform. All claims in analysis outputs must carry at least one evidence reference.",
+  "type": "object",
+  "required": ["evidence_id", "source_type", "document_id", "timestamp"],
+  "additionalProperties": false,
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "description": "Unique identifier for this evidence reference (UUID)."
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "kap_disclosure",
+        "financial_statement_balance_sheet",
+        "financial_statement_income",
+        "financial_statement_cashflow",
+        "annual_report",
+        "activity_report",
+        "footnote",
+        "press_release",
+        "regulatory_filing",
+        "market_data_feed",
+        "analyst_estimate",
+        "management_commentary",
+        "computed_ratio",
+        "peer_comparison",
+        "macro_indicator",
+        "internal_inference"
+      ],
+      "description": "Category of the source document or data."
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Identifier of the source system or feed (e.g. 'KAP', 'BIST_MDP', 'TUIK')."
+    },
+    "document_id": {
+      "type": "string",
+      "description": "Unique identifier of the specific document within the source system."
+    },
+    "document_title": {
+      "type": "string",
+      "description": "Human-readable title of the source document."
+    },
+    "page_ref": {
+      "type": "string",
+      "description": "Page number, section, or paragraph within the document. E.g. 'page 47', 'Note 12', 'Section 3.2'."
+    },
+    "quote_or_excerpt": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Direct quote or relevant excerpt from the source that supports the claim. Required for KAP disclosures and financial statement line items."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Publication or disclosure timestamp of the source document (ISO 8601)."
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Finance X platform ingested or retrieved this document."
+    },
+    "fiscal_period": {
+      "type": "string",
+      "description": "Fiscal period the evidence relates to, if applicable. E.g. '2024Q3', '2023FY', '2024H1'."
+    },
+    "data_quality_score": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Quality score assigned by the Reconciliation Agent (0=unusable, 1=fully verified). Scores below 0.5 must trigger a warning."
+    },
+    "parser_confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence of the Parse & Standardization Agent in the accuracy of data extraction from this document."
+    },
+    "company_ticker": {
+      "type": "string",
+      "description": "BIST ticker symbol of the company this evidence pertains to. E.g. 'ASELS', 'EREGL'."
+    },
+    "language": {
+      "type": "string",
+      "enum": ["tr", "en"],
+      "description": "Language of the source document.",
+      "default": "tr"
+    },
+    "is_audited": {
+      "type": "boolean",
+      "description": "Whether the underlying financial data has been audited by an independent auditor."
+    },
+    "auditor": {
+      "type": "string",
+      "description": "Name of the independent auditor, if applicable."
+    }
+  }
+}
