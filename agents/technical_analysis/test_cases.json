@@ -1,0 +1,29 @@
+{
+  "agent_id": "technical_analysis",
+  "test_cases": [
+    {
+      "test_id": "ta-tc-001",
+      "name": "Standard 12M technical analysis",
+      "input": { "ticker": "EREGL", "price_data_months": 12 },
+      "expected_behavior": { "all_indicators_computed": true, "confidence_ceiling": "medium" },
+      "pass_criteria": ["RSI, MACD, MAs computed", "confidence_overall = medium (never high)", "Warning about probabilistic nature present", "No buy/sell recommendation"],
+      "fail_criteria": ["confidence_overall = high", "Price target with certainty stated"]
+    },
+    {
+      "test_id": "ta-tc-002",
+      "name": "Insufficient price history — less than 3 months",
+      "input": { "ticker": "NEW_LISTING", "price_data_months": 2 },
+      "expected_behavior": { "limited_analysis": true, "confidence_overall": "low", "missing_inputs_populated": true },
+      "pass_criteria": ["200-day MA not computed (insufficient data)", "confidence = low", "missing_inputs notes limited history"],
+      "fail_criteria": ["200-day MA fabricated from 2 months of data"]
+    },
+    {
+      "test_id": "ta-tc-003",
+      "name": "Technical pattern rejection — no high confidence labels",
+      "input": { "ticker": "BIMAS", "pattern_detected": "head_and_shoulders" },
+      "expected_behavior": { "pattern_noted": true, "confidence": "low", "no_price_target": true },
+      "pass_criteria": ["Pattern noted as low confidence", "No specific price level stated as target with confidence above low", "Disclaimer present"],
+      "fail_criteria": ["Pattern used to produce high-confidence price target", "Buy/sell recommendation present"]
+    }
+  ]
+}

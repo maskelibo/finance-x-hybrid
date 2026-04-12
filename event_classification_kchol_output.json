@@ -1,0 +1,284 @@
+{
+  "agent_id": "event_classification",
+  "session_id": "ec-session-20260410-kchol",
+  "output_id": "ec-out-kchol-20260410-001",
+  "analysis_period": {
+    "from": "2025-04-10",
+    "to": "2026-04-10"
+  },
+  "company_ticker": "KCHOL",
+  "company_name": "Koç Holding A.Ş.",
+  "total_disclosures_analyzed": 9,
+  "classified_events": [
+    {
+      "disclosure_id": "kchol-dividend-2026-03-18",
+      "kap_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s",
+      "disclosure_date": "2026-03-18",
+      "disclosure_type": "Özel Durum Açıklaması (Temettü Kararı)",
+      "disclosure_title": "2025 Kar Dağıtım Kararı - Temettü Açıklaması",
+      "primary_type": "dividend_buyback",
+      "secondary_types": [],
+      "classification_confidence": "high",
+      "classification_rationale": "Disclosure explicitly announces 2025 dividend decision with specific amounts: 6.83 TL gross per share, 5.8055 TL net per share. Total dividend payout of 17.32 billion TL. Clear dividend announcement with definite terms qualifies as high-confidence classification.",
+      "key_terms_extracted": [
+        "2025 Kar Dağıtım Kararı",
+        "Temettü",
+        "6.83 TL brüt",
+        "5.8055 TL net",
+        "Ex-dividend date: 2026-03-25",
+        "Toplam 17.32 milyar TL"
+      ],
+      "materiality": "high",
+      "materiality_reasoning": "Dividend declaration is a material event requiring immediate public disclosure per KAP regulations. Represents significant capital return to shareholders.",
+      "is_material": true,
+      "evidence": "KAP özel durum açıklaması, yatırım platformları (YatırımX, InfoYatırım)",
+      "sources": [
+        "https://www.yatirimx.com.tr/sirket-haberleri/koc-holding-2026-temettu-detaylari/",
+        "https://infoyatirim.com/blog/temettu/koc-holding-kchol-2026-temettu-kararini-acikladi"
+      ]
+    },
+    {
+      "disclosure_id": "kchol-board-approval-2026-04-10",
+      "kap_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s",
+      "disclosure_date": "2026-04-10",
+      "disclosure_type": "Özel Durum Açıklaması (Yönetim Kurulu Üyesi Aday Onayı)",
+      "disclosure_title": "Bağımsız Yönetim Kurulu Üyesi Adaylarına SPK Onayı",
+      "primary_type": "management_change",
+      "secondary_types": [
+        "13_kurumsal_yonetisim"
+      ],
+      "classification_confidence": "high",
+      "classification_rationale": "Disclosure announces SPK (Capital Markets Board) approval of independent board member candidates: Birkan Erdal, Faik Eken, Recep Nadi Köklü. Board appointments are explicitly management_change events under Finance X taxonomy. Confidence is high due to clear governance appointment language and official SPK approval status.",
+      "key_terms_extracted": [
+        "Bağımsız Yönetim Kurulu Üyesi Aday",
+        "Birkan Erdal",
+        "Faik Eken",
+        "Recep Nadi Köklü",
+        "SPK (SMB) Onayı",
+        "CMB no negative opinion"
+      ],
+      "materiality": "high",
+      "materiality_reasoning": "Board member appointments directly impact corporate governance and management structure. SPK approval requirement and formal appointment process make this material per KAP disclosure taxonomy.",
+      "is_material": true,
+      "evidence": "KAP özel durum açıklaması, SPK resmi onayı",
+      "sources": [
+        "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s"
+      ]
+    },
+    {
+      "disclosure_id": "kchol-board-member-update-2026-01-02",
+      "kap_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s",
+      "disclosure_date": "2026-01-02",
+      "disclosure_type": "Özel Durum Açıklaması (Yönetim Kurulu Üyesi Aday Değişikliği)",
+      "disclosure_title": "Bağımsız Yönetim Kurulu Üyesi Aday: Kudret Önen - SPK Onayı Bildirimi",
+      "primary_type": "management_change",
+      "secondary_types": [
+        "13_kurumsal_yonetisim"
+      ],
+      "classification_confidence": "high",
+      "classification_rationale": "Disclosure notifies SPK approval for independent board member candidate Kudret Önen. This is an update/amendment to a prior nomination (announced 2025-12-19). Clear management change event with SPK approval confirmation. High confidence due to explicit governance appointment language.",
+      "key_terms_extracted": [
+        "Bağımsız Yönetim Kurulu Üyesi Aday",
+        "Kudret Önen",
+        "SPK Onayı",
+        "Orijinal duyuru: 2025-12-19",
+        "CMB no negative opinion"
+      ],
+      "materiality": "high",
+      "materiality_reasoning": "Board nomination updates with SPK approval are material corporate governance events subject to KAP disclosure requirements.",
+      "is_material": true,
+      "evidence": "KAP özel durum açıklaması, SPK resmi onayı",
+      "sources": [
+        "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s"
+      ]
+    },
+    {
+      "disclosure_id": "kchol-annual-report-2025-02-24",
+      "kap_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s",
+      "disclosure_date": "2026-02-24",
+      "disclosure_type": "Faaliyet Raporu (Konsolide)",
+      "disclosure_title": "2025 Yıllık Faaliyet Raporu - Konsolide",
+      "primary_type": "routine_filing",
+      "secondary_types": [],
+      "classification_confidence": "high",
+      "classification_rationale": "Per Finance X taxonomy rules: 'Financial reports and activity reports are routine_filing, not an event type.' This is KCHOL's mandatory annual consolidated activity report for FY 2025, published Feb 24, 2026. No corporate event classification applies.",
+      "key_terms_extracted": [
+        "Yıllık Faaliyet Raporu",
+        "Konsolide",
+        "2025 Mali Yıl",
+        "Bağımsız Denetim: Güney Bağımsız Denetim",
+        "Kurulu Kararı: 11"
+      ],
+      "materiality": "high",
+      "materiality_reasoning": "Mandatory periodic disclosure. While high materiality as required filing, it does not classify as an event type per taxonomy.",
+      "is_material": true,
+      "is_routine_filing": true,
+      "evidence": "KAP faaliyet raporu, Bigpara KAP-haberleri",
+      "sources": [
+        "https://mbigpara.hurriyet.com.tr/kap-haberleri/",
+        "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s"
+      ]
+    },
+    {
+      "disclosure_id": "kchol-activity-report-responsibility-2026-02-24",
+      "kap_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s",
+      "disclosure_date": "2026-02-24",
+      "disclosure_type": "Faaliyet Raporu Sorumluluk Beyanı",
+      "disclosure_title": "2025 Yıllık Faaliyet Raporu Sorumluluk Beyanı",
+      "primary_type": "routine_filing",
+      "secondary_types": [],
+      "classification_confidence": "high",
+      "classification_rationale": "Mandatory responsibility statement accompanying annual report. Standard corporate governance compliance filing. Classified as routine_filing per taxonomy.",
+      "key_terms_extracted": [
+        "Faaliyet Raporu",
+        "Sorumluluk Beyanı",
+        "2025 Mali Yıl"
+      ],
+      "materiality": "high",
+      "materiality_reasoning": "Mandatory periodic compliance disclosure. Required by Turkish Corporate Code and SPK regulations.",
+      "is_material": true,
+      "is_routine_filing": true,
+      "evidence": "KAP sorumluluk beyanı",
+      "sources": [
+        "https://mbigpara.hurriyet.com.tr/kap-haberleri/",
+        "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s"
+      ]
+    },
+    {
+      "disclosure_id": "kchol-q1-2025-financials-04-30",
+      "kap_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s",
+      "disclosure_date": "2025-04-30",
+      "disclosure_type": "Ara Dönem Finansal Tablolar",
+      "disclosure_title": "Q1 2025 Üç Aylık Konsolide Finansal Tablolar ve Faaliyet Raporu",
+      "primary_type": "routine_filing",
+      "secondary_types": [],
+      "classification_confidence": "high",
+      "classification_rationale": "Quarterly financial statements are routine periodic disclosures per KAP regulations. Per taxonomy: 'Financial reports and activity reports are routine_filing, not an event type.' No corporate event classification applies.",
+      "key_terms_extracted": [
+        "Ara Dönem Finansal Tablolar",
+        "Q1 2025",
+        "2025-01-01 to 2025-03-31",
+        "Sınırlı Bağımsız Denetim",
+        "SPK Düzenlemeleri"
+      ],
+      "materiality": "medium",
+      "materiality_reasoning": "Routine quarterly filing. Not flagged as material event per kap_watch assessment.",
+      "is_material": false,
+      "is_routine_filing": true,
+      "evidence": "KAP ara dönem finansal tablolar",
+      "sources": [
+        "https://getborsa.com/hisse/kchol/"
+      ]
+    },
+    {
+      "disclosure_id": "kchol-corporate-governance-form-2026-02-24",
+      "kap_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s",
+      "disclosure_date": "2026-02-24",
+      "disclosure_type": "Kurumsal Yönetim Bilgi Formu",
+      "disclosure_title": "Kurumsal Yönetim Bilgi Formu - 2026 Güncelleme",
+      "primary_type": "routine_filing",
+      "secondary_types": [],
+      "classification_confidence": "high",
+      "classification_rationale": "Annual corporate governance information form is a standard compliance filing. Per taxonomy, routine governance filings without specific management changes or regulatory events are classified as routine_filing. While form may contain governance updates, no discrete corporate event is disclosed.",
+      "key_terms_extracted": [
+        "Kurumsal Yönetim Bilgi Formu",
+        "Chairman: M. Ömer Koç",
+        "CEO: Levent Çakıroğlu",
+        "Investor meetings: 15",
+        "Investor participants: 400+"
+      ],
+      "materiality": "low",
+      "materiality_reasoning": "Standard annual compliance filing. No discrete material events reported within form.",
+      "is_material": false,
+      "is_routine_filing": true,
+      "evidence": "KAP kurumsal yönetim formu",
+      "sources": [
+        "https://mbigpara.hurriyet.com.tr/kap-haberleri/"
+      ]
+    },
+    {
+      "disclosure_id": "kchol-governance-compliance-2026-02-24",
+      "kap_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s",
+      "disclosure_date": "2026-02-24",
+      "disclosure_type": "Kurumsal Yönetim Uyum Raporu",
+      "disclosure_title": "Kurumsal Yönetim Uyum Raporu 2025",
+      "primary_type": "routine_filing",
+      "secondary_types": [],
+      "classification_confidence": "high",
+      "classification_rationale": "Annual corporate governance compliance report (uyum raporu) is a standard regulatory compliance disclosure per Turkish Corporate Code and SPK regulations. Classified as routine_filing.",
+      "key_terms_extracted": [
+        "Kurumsal Yönetim Uyum Raporu",
+        "2025 Mali Yıl"
+      ],
+      "materiality": "low",
+      "materiality_reasoning": "Mandatory compliance filing. No discrete corporate events disclosed.",
+      "is_material": false,
+      "is_routine_filing": true,
+      "evidence": "KAP uyum raporu",
+      "sources": [
+        "https://mbigpara.hurriyet.com.tr/kap-haberleri/"
+      ]
+    },
+    {
+      "disclosure_id": "kchol-sustainability-compliance-2025",
+      "kap_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s",
+      "disclosure_date": "2026-02-24",
+      "disclosure_type": "Sürdürülebilirlik Uyum Raporu",
+      "disclosure_title": "Sürdürülebilirlik Uyum Raporu",
+      "primary_type": "routine_filing",
+      "secondary_types": [],
+      "classification_confidence": "high",
+      "classification_rationale": "Annual sustainability compliance report is a standard ESG disclosure filing. Per taxonomy, routine ESG/sustainability reports without specific material ESG incidents are classified as routine_filing. No discrete ESG event (violation, accident, litigation) disclosed.",
+      "key_terms_extracted": [
+        "Sürdürülebilirlik Uyum Raporu",
+        "2025 Mali Yıl"
+      ],
+      "materiality": "low",
+      "materiality_reasoning": "Routine annual sustainability/ESG compliance report. No material ESG incidents flagged.",
+      "is_material": false,
+      "is_routine_filing": true,
+      "evidence": "KAP sürdürülebilirlik raporu",
+      "sources": [
+        "https://bigpara.hurriyet.com.tr/haberler/kap-haberleri/"
+      ]
+    }
+  ],
+  "unclassified_disclosures": [],
+  "classified_event_summary": {
+    "total_classified": 9,
+    "material_events": 5,
+    "routine_filings": 4,
+    "event_type_breakdown": {
+      "dividend_buyback": 1,
+      "management_change": 2,
+      "routine_filing": 4
+    },
+    "confidence_distribution": {
+      "high": 9,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  "confidence_overall": "high",
+  "key_findings": [
+    "Two corporate governance events identified: Board member appointments (April 10, 2026 and January 2, 2026) with SPK approval",
+    "Material dividend decision announced March 18, 2026: 6.83 TL/share gross (5.81 TL/share net), totaling 17.32 billion TL payout",
+    "All routine filings (annual report, quarterly financials, governance forms, sustainability report) properly classified as non-event routine_filings per taxonomy",
+    "No legal disputes, debt issuances, capex decisions, asset sales, production halts, or partnerships/M&A disclosed in 12-month window",
+    "Overall disclosure pattern: Routine compliance filing activity with two governance transitions and one dividend distribution"
+  ],
+  "warnings": [
+    "Note: kap_watch inventory included Q1 2025 financials (April 30, 2025 disclosure date) — this dates to beginning of analysis window and reflects spring 2025 periodic reporting",
+    "Context from other agents (macro_analysis, sector_competition, financial_analysis) references portfolio activity (TUPRS stake reduction March 2026) and 2024 earnings anomalies, but these are NOT disclosed as formal KAP events in this disclosure window",
+    "ESG/sustainability context (context_extraction) indicates active ESG commitments, but no material ESG incidents disclosed during period"
+  ],
+  "recommendations_for_event_impact_mapper": [
+    "Focus impact assessment on three material events: Dividend announcement (shareholder return), two board appointments (governance composition change)",
+    "Dividend event: Assess shareholder return profile, cash impact, signal regarding 2026 earnings expectations",
+    "Board appointments: Assess governance strength implications, independence metrics, strategic direction signals",
+    "Routine filings: No impact mapping required per taxonomy; these provide data inputs for other analyses but are not corporate events"
+  ],
+  "review_status": "ready_for_event_impact_mapper",
+  "agent_notes": "Classification completed with high confidence. All disclosures properly taxonomized according to Finance X event classification system. Two governance events and one dividend event identified as material corporate events requiring impact assessment. Remaining disclosures correctly classified as routine periodic filings per taxonomy definition.",
+  "timestamp": "2026-04-10T00:00:00Z"
+}

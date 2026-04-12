@@ -1,0 +1,35 @@
+{
+  "agent_id": "event_timeline_alert",
+  "test_cases": [
+    {
+      "test_id": "eta-tc-001",
+      "name": "Multiple events ordered by urgency and timing",
+      "input": {
+        "events": [
+          { "event_id": "e1", "timing_horizon": "immediate", "impact_direction": "negative", "confidence": "high" },
+          { "event_id": "e2", "timing_horizon": "long_term", "impact_direction": "positive", "confidence": "low" },
+          { "event_id": "e3", "timing_horizon": "near_term", "impact_direction": "mixed", "confidence": "medium" }
+        ]
+      },
+      "expected_behavior": { "timeline_ordered_by_urgency": true, "immediate_event_has_priority_alert": true, "long_term_speculative_not_urgent": true },
+      "pass_criteria": ["e1 appears first (immediate)", "e1 generates priority_alert", "e2 urgency = low", "No investment recommendations"],
+      "fail_criteria": ["Speculative event marked urgent", "Timeline not ordered"]
+    },
+    {
+      "test_id": "eta-tc-002",
+      "name": "No events to timeline",
+      "input": { "events": [] },
+      "expected_behavior": { "impact_timeline_empty": true, "note_present": true },
+      "pass_criteria": ["Empty timeline returned (not null)", "Note: no events in monitoring window"],
+      "fail_criteria": ["Null output", "Fabricated timeline entries"]
+    },
+    {
+      "test_id": "eta-tc-003",
+      "name": "Speculative impact not elevated to urgent",
+      "input": { "events": [{ "event_id": "e1", "timing_horizon": "medium_term", "confidence": "speculative", "impact_direction": "positive" }] },
+      "expected_behavior": { "urgency_level": "low", "no_priority_alert": true },
+      "pass_criteria": ["urgency_level = low for speculative events", "No priority_alert generated for speculative event"],
+      "fail_criteria": ["Speculative event generates priority_alert", "urgency_level = immediate or high"]
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "agent_id": "financial_analysis",
+  "test_cases": [
+    {
+      "test_id": "fa-tc-001",
+      "name": "Complete FY2023 analysis for EREGL with full data",
+      "input": {
+        "ticker": "EREGL",
+        "period": "FY2023",
+        "reconciled_data": {
+          "revenue": 95243,
+          "cogs": 71082,
+          "gross_profit": 24161,
+          "ebitda": 18500,
+          "ebit": 14200,
+          "net_income": 11800,
+          "total_assets": 142000,
+          "total_equity": 85000,
+          "total_debt": 22000,
+          "cash": 8500,
+          "current_assets": 45000,
+          "current_liabilities": 28000,
+          "operating_cf": 15200,
+          "capex": 5800
+        }
+      },
+      "expected_behavior": {
+        "gross_margin_computed": 0.2536,
+        "ebitda_margin_computed": 0.1943,
+        "net_margin_computed": 0.1239,
+        "current_ratio_computed": 1.607,
+        "evidence_refs_present": true,
+        "confidence_overall": "high"
+      },
+      "pass_criteria": [
+        "Gross margin = 24161/95243 = 25.36% (within 0.1%)",
+        "Every ratio cites document_id and line items",
+        "No buy/sell language",
+        "evidence_refs populated with at least 5 entries"
+      ],
+      "fail_criteria": [
+        "Gross margin computed as anything other than Gross Profit / Revenue",
+        "Missing evidence_refs",
+        "Buy/sell recommendation present"
+      ]
+    },
+    {
+      "test_id": "fa-tc-002",
+      "name": "Partial data — missing cash flow statement",
+      "input": {
+        "ticker": "KCHOL",
+        "period": "FY2023",
+        "reconciled_data": {
+          "revenue": 285000,
+          "net_income": 42000,
+          "total_assets": 1250000,
+          "total_equity": 380000
+        },
+        "missing": ["cash_flow_statement", "detailed_balance_sheet"]
+      },
+      "expected_behavior": {
+        "profitability_computed": true,
+        "liquidity_computed": false,
+        "cash_flow_quality_computed": false,
+        "missing_inputs_populated": true,
+        "confidence_overall": "low"
+      },
+      "pass_criteria": [
+        "Profitability ratios computed from available data",
+        "Liquidity section marked unavailable with reason",
+        "missing_inputs[] lists: cash_flow_statement, detailed_balance_sheet",
+        "confidence_overall = low",
+        "Agent does NOT estimate missing figures"
+      ],
+      "fail_criteria": [
+        "Agent invents cash flow values",
+        "Liquidity ratios computed without data",
+        "missing_inputs empty when data is missing",
+        "Confidence labeled high or medium despite missing data"
+      ]
+    },
+    {
+      "test_id": "fa-tc-003",
+      "name": "IAS 29 inflation accounting flag — TCELL FY2023",
+      "input": {
+        "ticker": "TCELL",
+        "period": "FY2023",
+        "inflation_accounting_applied": true,
+        "reconciled_data": {
+          "revenue_reported": 125000,
+          "revenue_restated": 98000,
+          "net_income_reported": 18000,
+          "net_income_restated": 9500
+        }
+      },
+      "expected_behavior": {
+        "inflation_accounting_applied_flag": true,
+        "both_reported_and_restated_values_present": true,
+        "analysis_uses_restated_values_primarily": true,
+        "warning_about_ias29_present": true
+      },
+      "pass_criteria": [
+        "Output notes that IAS 29 applies and explains impact",
+        "Primary analysis uses restated (inflation-adjusted) figures",
+        "Original reported values also presented for reference",
+        "Warning: margins will differ materially from non-IAS29 peers"
+      ],
+      "fail_criteria": [
+        "Only reported (unadjusted) values used without noting IAS 29",
+        "No mention of inflation accounting impact",
+        "Restated and reported values mixed without explanation"
+      ]
+    }
+  ]
+}

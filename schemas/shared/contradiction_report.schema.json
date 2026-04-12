@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.internal/schemas/shared/contradiction_report.schema.json",
+  "title": "ContradictionReport",
+  "description": "Structured record of a detected contradiction between two claims within the Finance X platform. Must be resolved before any output is approved.",
+  "type": "object",
+  "required": ["contradiction_id", "detected_by", "claim_a", "claim_b", "contradiction_type", "severity", "resolution_required"],
+  "additionalProperties": false,
+  "properties": {
+    "contradiction_id": { "type": "string", "description": "Unique contradiction identifier (UUID v4)." },
+    "analysis_session_id": { "type": "string" },
+    "detected_by": { "type": "string", "description": "agent_id that detected this contradiction." },
+    "detected_at": { "type": "string", "format": "date-time" },
+    "claim_a": {
+      "type": "object",
+      "required": ["claim_text", "source_agent", "source_output_id", "confidence"],
+      "properties": {
+        "claim_id": { "type": "string" },
+        "claim_text": { "type": "string" },
+        "source_agent": { "type": "string" },
+        "source_output_id": { "type": "string" },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+        "evidence_refs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "claim_b": {
+      "type": "object",
+      "required": ["claim_text", "source_agent", "source_output_id", "confidence"],
+      "properties": {
+        "claim_id": { "type": "string" },
+        "claim_text": { "type": "string" },
+        "source_agent": { "type": "string" },
+        "source_output_id": { "type": "string" },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+        "evidence_refs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "contradiction_type": {
+      "type": "string",
+      "enum": [
+        "numerical_mismatch",
+        "directional_conflict",
+        "temporal_inconsistency",
+        "logical_incompatibility",
+        "confidence_mismatch",
+        "scope_overlap_conflict",
+        "source_data_conflict"
+      ],
+      "description": "Classification of the contradiction."
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "major", "minor"],
+      "description": "critical=blocks output approval. major=requires explicit disclosure. minor=should be noted."
+    },
+    "affected_analysis_areas": {
+      "type": "array",
+      "description": "Which parts of the analysis are affected.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "revenue", "gross_margin", "ebitda", "net_income", "cash_flow",
+          "debt_leverage", "working_capital", "capex", "sector_positioning",
+          "macro_impact", "event_assessment", "technical_signal", "executive_summary"
+        ]
+      }
+    },
+    "resolution_required": {
+      "type": "boolean",
+      "description": "If true, this contradiction must be resolved before the output can be approved."
+    },
+    "resolution_instructions": {
+      "type": "string",
+      "description": "Specific instructions for the assigned agent to resolve this contradiction."
+    },
+    "resolution": {
+      "type": "object",
+      "description": "Populated when contradiction is resolved.",
+      "properties": {
+        "resolved_by": { "type": "string" },
+        "resolved_at": { "type": "string", "format": "date-time" },
+        "resolution_type": {
+          "type": "string",
+          "enum": ["claim_a_supersedes", "claim_b_supersedes", "both_disclosed_as_uncertain", "third_source_resolved", "scope_clarification"]
+        },
+        "resolution_notes": { "type": "string" },
+        "surviving_claim_id": { "type": ["string", "null"] }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "resolved", "disclosed_unresolved", "escalated"],
+      "default": "open"
+    }
+  }
+}

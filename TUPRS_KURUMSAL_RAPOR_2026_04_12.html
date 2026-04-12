@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUPRS — Türkiye Petrol Rafinerileri A.Ş. | Kurumsal Analiz Raporu | 2026</title>
+    <style>
+        :root {
+            --brand-primary: #D41F29;
+            --brand-secondary: #1A1A1A;
+            --brand-accent: #F5A623;
+            --brand-bg: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --border-color: #E2E8F0;
+            --success-color: #059669;
+            --warning-color: #D97706;
+            --danger-color: #DC2626;
+            --info-color: #3B82F6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 10pt;
+            line-height: 1.5;
+            color: var(--text-primary);
+            background: white;
+            color-scheme: light;
+        }
+
+        /* PAGE SETUP */
+        @page {
+            size: A4;
+            margin: 20mm 15mm;
+            @bottom-center { content: "—  " counter(page) "  —"; }
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ORPHAN/WIDOW CONTROL */
+        p, li, .analysis-block, .callout, table {
+            orphans: 4;
+            widows: 4;
+        }
+
+        h1, h2, h3, h4 {
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+
+        tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .analysis-block, .callout, .kpi-grid {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        h2 + p, h3 + p {
+            page-break-before: avoid;
+            break-before: avoid;
+        }
+
+        /* SECTIONS */
+        .section {
+            page-break-before: always;
+            break-before: page;
+            padding: 40px 0;
+            position: relative;
+        }
+
+        .section:first-child {
+            page-break-before: avoid;
+        }
+
+        .section > *:last-child {
+            page-break-after: avoid;
+        }
+
+        /* TYPOGRAPHY */
+        h1 {
+            font-size: 28pt;
+            font-weight: 700;
+            color: var(--brand-primary);
+            margin: 0 0 20px 0;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 16pt;
+            font-weight: 700;
+            color: var(--brand-primary);
+            margin: 24px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--brand-primary);
+        }
+
+        h3 {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #1E3A5F;
+            margin: 18px 0 10px 0;
+        }
+
+        h4 {
+            font-size: 11pt;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 12px 0 8px 0;
+        }
+
+        p {
+            margin: 10px 0;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        /* HEADER/FOOTER */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--brand-primary);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            margin-top: 0;
+            font-size: 9pt;
+        }
+
+        .page-header-left {
+            font-size: 9px;
+            color: var(--text-secondary);
+        }
+
+        .company-ticker {
+            font-weight: 700;
+            color: var(--brand-primary);
+            font-size: 11px;
+            margin-right: 12px;
+        }
+
+        .report-section {
+            color: var(--text-secondary);
+            font-size: 9px;
+        }
+
+        .page-header-right {
+            text-align: right;
+        }
+
+        .brand-mark {
+            background: var(--brand-primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 11px;
+            display: inline-block;
+        }
+
+        /* COVER PAGE */
+        .cover-page {
+            background: linear-gradient(135deg, var(--brand-primary) 0%, #A01820 100%);
+            color: white;
+            padding: 120px 40px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100%;
+            page-break-after: always;
+            break-after: page;
+        }
+
+        .cover-page .finance-x-badge {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-bottom: 80px;
+            letter-spacing: 1px;
+        }
+
+        .cover-page h1 {
+            font-size: 44pt;
+            color: white;
+            margin: 40px 0 20px 0;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .cover-page .ticker {
+            font-size: 18pt;
+            font-weight: 600;
+            opacity: 0.95;
+            margin: 10px 0 60px 0;
+        }
+
+        .cover-page .subtitle {
+            font-size: 13pt;
+            opacity: 0.9;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+
+        .cover-page .report-date {
+            font-size: 10pt;
+            opacity: 0.85;
+            margin-top: 80px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 20px;
+        }
+
+        /* KPI CARDS */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        .kpi-card {
+            border-left: 4px solid var(--brand-primary);
+            background: #F8FAFC;
+            padding: 16px;
+            border-radius: 4px;
+            page-break-inside: avoid;
+        }
+
+        .kpi-card.positive {
+            border-left-color: var(--success-color);
+        }
+
+        .kpi-card.negative {
+            border-left-color: var(--danger-color);
+        }
+
+        .kpi-label {
+            font-size: 8.5pt;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .kpi-value {
+            font-size: 14pt;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .kpi-change {
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .kpi-change.positive {
+            color: var(--success-color);
+        }
+
+        .kpi-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* ANALYSIS BLOCK (Metin Sandwich) */
+        .analysis-block {
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        .analysis-intro {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-size: 9pt;
+            border-left: 3px solid var(--brand-primary);
+            padding-left: 10px;
+            line-height: 1.6;
+        }
+
+        .analysis-commentary {
+            background: #F8FAFC;
+            border-radius: 4px;
+            padding: 12px 15px;
+            margin-top: 12px;
+            font-size: 9.5pt;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        /* TABLES */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 9pt;
+            page-break-inside: avoid;
+        }
+
+        .data-table thead tr {
+            background: var(--brand-primary);
+            color: white;
+        }
+
+        .data-table th {
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            border: none;
+        }
+
+        .data-table td {
+            padding: 10px 8px;
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table tbody tr:nth-child(odd) {
+            background: #F1F5F9;
+        }
+
+        .data-table tbody tr:hover {
+            background: #ECEFF1;
+        }
+
+        .data-table td:last-child,
+        .data-table th:last-child {
+            text-align: right;
+        }
+
+        /* CALLOUT BOXES */
+        .callout {
+            border-left: 4px solid var(--brand-primary);
+            background: #FEF3F2;
+            padding: 14px 16px;
+            margin: 16px 0;
+            border-radius: 4px;
+            font-size: 9.5pt;
+            line-height: 1.6;
+            page-break-inside: avoid;
+        }
+
+        .callout.callout-positive {
+            border-left-color: var(--success-color);
+            background: #ECFDF5;
+        }
+
+        .callout.callout-negative {
+            border-left-color: var(--danger-color);
+            background: #FEF3F2;
+        }
+
+        .callout.callout-warning {
+            border-left-color: var(--warning-color);
+            background: #FEF3C7;
+        }
+
+        .callout strong {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* CHARTS */
+        .chart-container {
+            margin: 20px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        .chart-container h3 {
+            margin: 0 0 12px 0;
+            font-size: 12pt;
+        }
+
+        .chart-container p {
+            font-size: 8.5pt;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .chart-container svg {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+        }
+
+        /* TWO COLUMN LAYOUT */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .two-column > * {
+            page-break-inside: avoid;
+        }
+
+        /* BADGES */
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 8pt;
+            font-weight: 600;
+            margin: 0 4px;
+        }
+
+        .badge-high {
+            background: #DCFCE7;
+            color: var(--success-color);
+        }
+
+        .badge-medium {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .badge-low {
+            background: #F3F4F6;
+            color: var(--text-secondary);
+        }
+
+        /* SCORE CARD */
+        .score-card {
+            background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .score-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .score-card-row:last-child {
+            border-bottom: none;
+        }
+
+        .score-label {
+            font-size: 9pt;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .score-bar {
+            width: 150px;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 12px;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: var(--brand-primary);
+            transition: width 0.3s ease;
+        }
+
+        .score-value {
+            font-size: 10pt;
+            font-weight: 700;
+            color: var(--brand-primary);
+            min-width: 30px;
+            text-align: right;
+        }
+
+        /* UTILITY */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt-20 { margin-top: 20px; }
+        .mb-20 { margin-bottom: 20px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<!-- ===== KAPAK SAYFASI ===== -->
+<div class="section cover-page">
+    <div class="finance-x-badge">FINANCE X | KURUMSAL ARAŞTIRMA</div>
+    <h1>TÜRKIYE PETROL RAFİNERİLERİ A.Ş.</h1>
+    <div class="ticker">TUPRS.IS</div>
+    <div class="subtitle">
+        Kapsamlı Şirket Analizi<br>
+        Ham Petrol Rafineri Sektörü
+    </div>
+    <div class="report-date">
+        Rapor Tarihi: 12 Nisan 2026<br>
+        Mevcut Fiyat: 254.50 TL<br>
+        Pazar Değeri: ~490 Milyar TL
+    </div>
+</div>
+
+<!-- ===== 1. YÖNETİCİ ÖZETI ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Yönetici Özeti</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Yönetici Özeti</h2>
+
+    <p>Türkiye Petrol Rafinerileri A.Ş. (TUPRS), Türkiye'nin tek entegre rafinerisidir ve ülkenin rafine petrol ihtiyacının yaklaşık %60'ını karşılamaktadır. Koç Holding kontrolünde (%50.7) faaliyet gösteren şirket, 2025 yılında zorlayıcı bir enerji döngüsü yaşamış olmasına rağmen güçlü bir bilanço ve nakit pozisyonu ile başarı göstermiştir. Aşağıdaki dört ana gösterge, TUPRS'un finansal sağlığını ve operasyonel kapasitesini özetlemektedir:</p>
+
+    <div class="kpi-grid">
+        <div class="kpi-card positive">
+            <div class="kpi-label">Net Satışlar</div>
+            <div class="kpi-value">830.4 Milyar TL</div>
+            <div class="kpi-change positive">▲ %102.8 (2024'e kıyasla)</div>
+        </div>
+        <div class="kpi-card positive">
+            <div class="kpi-label">Net Kar</div>
+            <div class="kpi-value">29.9 Milyar TL</div>
+            <div class="kpi-change positive">▲ %19.3 (2024'e kıyasla)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">FAVÖK Marjı</div>
+            <div class="kpi-value">7.5%</div>
+            <div class="kpi-change negative">▼ 3.5 pp (2023'e kıyasla)</div>
+        </div>
+        <div class="kpi-card positive">
+            <div class="kpi-label">Net Nakit Pozisyonu</div>
+            <div class="kpi-value">41.5 Milyar TL</div>
+            <div class="kpi-change positive">◆ Güçlü Likidite</div>
+        </div>
+    </div>
+
+    <h3>Temel Bulguları</h3>
+
+    <p><strong>Güçlü Yönler:</strong> TUPRS, sektörün en güçlü bilanço yapısına sahiptir. Net nakit pozisyonu -41.5 milyar TL'ye ulaşmış; Piotroski F-Skoru 8/9 (çok güçlü) ve Altman Z-Score 3.59 (güvenli bölge). İşletme sermayesi verimliliği kusursuz; Nakit Dönüştürme Döngüsü sadece 10 gün. 2025 yılında 29.3 milyar TL temettü ve 2026'da 33 milyar TL (14.56 TL/hisse) temettü ödemesine karar almış olması, yönetimin kâr kapasitesine olan güvenini yansıtmaktadır.</p>
+
+    <p><strong>Zayıf Yönler / Riskler:</strong> Rafineri marjı (2025: 7.0 $/bbl) sektör ortalamasının (%5-6 pp) altında; EPDK fiyat düzenlemeleri ve TRY volatilitesi nedeniyle marj geçişi kısıtlanmıştır. 2023'teki 15 $/bbl zirvesinden %46 düşüştür. Koç Holding kontrolü (%50.7) ve ilişkili taraf Opet (gelirin %18'i) yapısal çıkar çatışması riski taşımaktadır.</p>
+
+    <div class="callout callout-positive">
+        <strong>Analitik Görüş:</strong> TUPRS, kısa vadede rafineri marjı toparlanmasına bağlı bir turnaround şirketi konumundadır. Analist konsensüsü 2026 marjını 10.5 $/bbl'ye yükseltmektedir; bu, jeopolitik risk priminin (Hurmuz Boğazı gerilimi) sürmesine dayanmaktadır. İçsel veri (Tüpraş yönetimi rehberi: 6-7 $/bbl) ve dış veri (analist konsensüsü: 10.5 $/bbl) arasındaki %55 fark, temel belirsizliği göstermektedir. Oynak bir emtia döngüsünde güçlü finansal tampon önemlidir.
+    </div>
+
+    <h3>İnvestor Hedefleri</h3>
+
+    <div class="two-column">
+        <div>
+            <h4>Bull Senaryosu</h4>
+            <p><strong>Hedef Fiyat: 325 TL</strong><br>
+            Marj: 12.5 $/bbl | Brent: $100+<br>
+            Hurmuz premium korunması, Rusya crude maliyeti avantajı, OPEC+ kısıntısı. Olasılık: %20.</p>
+        </div>
+        <div>
+            <h4>Baz Senaryosu</h4>
+            <p><strong>Hedef Fiyat: 220 TL</strong><br>
+            Marj: 8.5 $/bbl | Brent: $90<br>
+            Jeopolitik prime normalizasyon, temperate iyileşme. Olasılık: %55.</p>
+        </div>
+    </div>
+
+    <div class="two-column">
+        <div>
+            <h4>Bear Senaryosu</h4>
+            <p><strong>Hedef Fiyat: 110 TL</strong><br>
+            Marj: 5.0 $/bbl | Brent: $75<br>
+            Hurmuz normalleşmesi, arz artışı, Çin talep zayıflığı. Olasılık: %25.</p>
+        </div>
+        <div>
+            <h4>Ağırlıklı Hedef</h4>
+            <p><strong>Ağırlıklı: ~228 TL</strong><br>
+            Mevcut fiyatın (254.50 TL) %10 altında.<br>
+            Risk-ödül dengeli; upside 34%, downside 30%.</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== 2. ŞİRKET PROFİLİ ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Şirket Profili</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Şirket Profili ve İş Modeli</h2>
+
+    <p>TUPRS, 1994 yılından beri Türkiye'nin entegre petrol rafinerisi olarak faaliyet göstermektedir. Ana faaliyet alanı, ham petrolün işlenerek benzin, motorin, jet yakıtı, fuel oil ve nafta gibi yüksek değerli ürünlere dönüştürülmesidir. Dönem içerisinde şirket teknoloji yatırımları ve kapasite genişletmeleriyle depo kapasitesini optimize etmiştir.</p>
+
+    <h3>Operasyonel Yapı</h3>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TUPRS dört ana rafineri tesisi ile Türkiye'nin ham petrol ihtiyacının yaklaşık %60'ını karşılamaktadır. Aşağıdaki tablo, her tesisin kapasite ve coğrafi önemini göstermektedir.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Rafineri Tesisi</th>
+                    <th>Konum</th>
+                    <th>Kurulu Kapasite (MMT/yıl)</th>
+                    <th>Ham Petrol Erişimi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>İzmit</strong></td>
+                    <td>Körfez, Batı</td>
+                    <td style="text-align:right">11.0</td>
+                    <td>Marine tanker</td>
+                </tr>
+                <tr>
+                    <td><strong>İzmir (Aliağa)</strong></td>
+                    <td>Ege kıyısı</td>
+                    <td style="text-align:right">11.0</td>
+                    <td>Marine tanker</td>
+                </tr>
+                <tr>
+                    <td><strong>Kırıkkale</strong></td>
+                    <td>Orta Anadolu</td>
+                    <td style="text-align:right">5.4</td>
+                    <td>Ceyhan boru hattı</td>
+                </tr>
+                <tr>
+                    <td><strong>Batman</strong></td>
+                    <td>Güneydoğu</td>
+                    <td style="text-align:right">1.1</td>
+                    <td>Yerli ham petrol</td>
+                </tr>
+                <tr style="background: var(--brand-primary); color: white;">
+                    <td><strong>TOPLAM</strong></td>
+                    <td></td>
+                    <td style="text-align:right"><strong>30.0 MMT/yıl</strong></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>TUPRS'un tesislerinin dağılımı stratejik bir avantaj sağlamaktadır. İzmit ve İzmir kıyı tesisleri dış ticaret (marine tanker) ile hamburgaz esnekliği sunarken, Kırıkkale, Ceyhan hattı (BTC – Bakü-Tiflis-Ceyhan) ve yerli kaynaklar aracılığıyla kopya riski azaltılmaktadır. 2025 yılında kapasite kullanım oranı %93 seviyesinde gerçekleşmiş olup, yönetim 2026'da %95-100 hedeflemektedir.</p>
+        </div>
+    </div>
+
+    <h3>Hissedarlik Yapısı</h3>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            Koç Grubu, TUPRS'un kontrol hissedarı konumundadır. Mart 2026'de gerçekleştirilen halka arzda %2 oranında satış yapılmasına rağmen, grup halen %50.7 kontrol gücünü elinde tutmaktadır.
+        </p>
+
+        <svg viewBox="0 0 400 200" style="width: 100%; max-width: 350px; margin: 20px auto;">
+            <!-- Pasta Grafik -->
+            <circle cx="150" cy="100" r="70" fill="none" stroke="#D41F29" stroke-width="50" stroke-dasharray="179.5 502.7" transform="rotate(-90 150 100)"/>
+            <circle cx="150" cy="100" r="70" fill="none" stroke="#0D9488" stroke-width="50" stroke-dasharray="121.7 502.7" stroke-dashoffset="-179.5" transform="rotate(-90 150 100)"/>
+            <circle cx="150" cy="100" r="70" fill="none" stroke="#94A3B8" stroke-width="50" stroke-dasharray="98.5 502.7" stroke-dashoffset="-301.2" transform="rotate(-90 150 100)"/>
+
+            <!-- Legend -->
+            <rect x="240" y="40" width="12" height="12" fill="#D41F29"/>
+            <text x="260" y="50" font-size="10" fill="#1E293B">Koç Grubu — %50.7</text>
+
+            <rect x="240" y="70" width="12" height="12" fill="#0D9488"/>
+            <text x="260" y="80" font-size="10" fill="#1E293B">Halka Açık — %48.9</text>
+
+            <rect x="240" y="100" width="12" height="12" fill="#94A3B8"/>
+            <text x="260" y="110" font-size="10" fill="#1E293B">Diğer — %0.4</text>
+        </svg>
+
+        <div class="analysis-commentary">
+            <p>Koç Grubu'nun %50.7 payı, tek hissedar tarafından kontrol garantisi sağlamaktadır. Halka açık kısım (%48.9) likiditeyi artırmış; uluslararası ve yerli yatırımcı katılımını teşvik etmiştir. Bağımsız Yönetim Kurulu oranı (%33) SPK minimumu seviyesinde olup, best practice standartlarının altındadır.</p>
+        </div>
+    </div>
+
+    <h3>İlişkili Taraf İşlemleri</h3>
+
+    <p>Opet Petrolcülük A.Ş., TUPRS'un %40 ortaklığında yer almakta ve aynı zamanda en büyük müşterisidir (satışların %18'i). Bu yapı, taraflar arasında ilişkili taraf işlem riskini artırmaktadır. Muhasebe politikası olarak karşılaştırılamayan fiyat (CUP) yöntemi kullanılmakta ve bağımsız doğrulama yapılmaktadır.</p>
+
+</div>
+
+<!-- ===== 3. FİNANSAL PERFORMANS ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Finansal Performans</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Finansal Performans (2021–2025)</h2>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TUPRS'un beş yıllık finansal seyri, petrol fiyatlarında meydana gelen volatilite ve küresel enerji döngüsüne sıkı bağlantısını göstermektedir. 2021-2022'deki düşük başlangıç, 2023'teki Orta Doğu kriziyle hızlı toparlanmış; 2024'te dip yaşamıştır.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th style="text-align:right">2021</th>
+                    <th style="text-align:right">2022</th>
+                    <th style="text-align:right">2023</th>
+                    <th style="text-align:right">2024</th>
+                    <th style="text-align:right">2025</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Net Satışlar (B TL)</strong></td>
+                    <td style="text-align:right">153.0</td>
+                    <td style="text-align:right">342.1</td>
+                    <td style="text-align:right">809.3</td>
+                    <td style="text-align:right">408.1</td>
+                    <td style="text-align:right">830.4</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Brüt Kar Marjı (%)</strong></td>
+                    <td style="text-align:right">8.41</td>
+                    <td style="text-align:right">8.62</td>
+                    <td style="text-align:right">9.52</td>
+                    <td style="text-align:right">8.39</td>
+                    <td style="text-align:right">9.78</td>
+                </tr>
+                <tr>
+                    <td><strong>FAVÖK (B TL)</strong></td>
+                    <td style="text-align:right">13.0</td>
+                    <td style="text-align:right">29.4</td>
+                    <td style="text-align:right">96.2</td>
+                    <td style="text-align:right">31.8</td>
+                    <td style="text-align:right">62.0</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>FAVÖK Marjı (%)</strong></td>
+                    <td style="text-align:right">8.5</td>
+                    <td style="text-align:right">8.6</td>
+                    <td style="text-align:right">11.9</td>
+                    <td style="text-align:right">7.8</td>
+                    <td style="text-align:right">7.5</td>
+                </tr>
+                <tr>
+                    <td><strong>Net Kar (B TL)</strong></td>
+                    <td style="text-align:right">5.5</td>
+                    <td style="text-align:right">11.2</td>
+                    <td style="text-align:right">55.8</td>
+                    <td style="text-align:right">25.1</td>
+                    <td style="text-align:right">29.9</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Net Kar Marjı (%)</strong></td>
+                    <td style="text-align:right">3.6</td>
+                    <td style="text-align:right">3.3</td>
+                    <td style="text-align:right">6.9</td>
+                    <td style="text-align:right">6.2</td>
+                    <td style="text-align:right">3.6</td>
+                </tr>
+                <tr>
+                    <td><strong>ROE (%)</strong></td>
+                    <td style="text-align:right">1.8</td>
+                    <td style="text-align:right">3.8</td>
+                    <td style="text-align:right">17.5</td>
+                    <td style="text-align:right">8.2</td>
+                    <td style="text-align:right">5.48</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>Net satışlar 2023'te zirvesine ulaşmış (809.3 B TL); 2024'te neredeyse yarıya inmiş; 2025'te %103 rebound göstermiştir. FAVÖK marjı 2023'te %11.9 (Orta Doğu krizinin jeopolitik prime) seviyesinde gerçekleşmiş; 2024'te %7.8; 2025'te %7.5'e düşmüştür. Net kar marjı %6.2 (2024) ve %3.6 (2025) arasında salınmakta olup, bu volatilite emtia çevrimselliğine işaret etmektedir. IAS 29 (Yüksek Enflasyon Muhasebesi) 2023-2024 yıllarında uygulanmış; 2025'te askıya alınmıştır; ROE karşılaştırmasına dikkat edilmelidir.</p>
+        </div>
+    </div>
+
+    <h3>Net Kar Trendi Grafik Analizi</h3>
+
+    <div class="chart-container">
+        <h3>Net Kar ve ROE (2021–2025)</h3>
+        <p>Çubuklar net kâr (milyar TL) göstermekte; çizgi ROE (%) temsil etmektedir.</p>
+
+        <svg viewBox="0 0 500 280" style="width: 100%; max-width: 500px;">
+            <!-- Grid -->
+            <line x1="50" y1="20" x2="50" y2="220" stroke="#E2E8F0" stroke-width="1"/>
+            <line x1="50" y1="220" x2="480" y2="220" stroke="#E2E8F0" stroke-width="1"/>
+
+            <!-- Y eksen labels (Kar) -->
+            <text x="40" y="225" font-size="9" fill="#64748B" text-anchor="end">0</text>
+            <text x="40" y="165" font-size="9" fill="#64748B" text-anchor="end">20</text>
+            <text x="40" y="105" font-size="9" fill="#64748B" text-anchor="end">40</text>
+            <text x="40" y="45" font-size="9" fill="#64748B" text-anchor="end">60</text>
+
+            <!-- Barlar (Net Kar) -->
+            <rect x="70" y="170" width="40" height="50" fill="#D41F29" rx="3"/>
+            <text x="90" y="235" font-size="9" fill="#1E293B" text-anchor="middle">2021</text>
+            <text x="90" y="160" font-size="9" fill="#1E293B" text-anchor="middle" font-weight="600">5.5</text>
+
+            <rect x="130" y="145" width="40" height="75" fill="#D41F29" rx="3"/>
+            <text x="150" y="235" font-size="9" fill="#1E293B" text-anchor="middle">2022</text>
+            <text x="150" y="135" font-size="9" fill="#1E293B" text-anchor="middle" font-weight="600">11.2</text>
+
+            <rect x="190" y="35" width="40" height="185" fill="#D41F29" rx="3"/>
+            <text x="210" y="235" font-size="9" fill="#1E293B" text-anchor="middle">2023</text>
+            <text x="210" y="15" font-size="9" fill="#1E293B" text-anchor="middle" font-weight="600">55.8</text>
+
+            <rect x="250" y="95" width="40" height="125" fill="#D41F29" rx="3"/>
+            <text x="270" y="235" font-size="9" fill="#1E293B" text-anchor="middle">2024</text>
+            <text x="270" y="85" font-size="9" fill="#1E293B" text-anchor="middle" font-weight="600">25.1</text>
+
+            <rect x="310" y="80" width="40" height="140" fill="#D41F29" rx="3"/>
+            <text x="330" y="235" font-size="9" fill="#1E293B" text-anchor="middle">2025</text>
+            <text x="330" y="70" font-size="9" fill="#1E293B" text-anchor="middle" font-weight="600">29.9</text>
+
+            <!-- ROE çizgisi -->
+            <polyline points="90,195 150,180 210,60 270,125 330,145" fill="none" stroke="#0D9488" stroke-width="2"/>
+            <circle cx="90" cy="195" r="3" fill="#0D9488"/>
+            <circle cx="150" cy="180" r="3" fill="#0D9488"/>
+            <circle cx="210" cy="60" r="3" fill="#0D9488"/>
+            <circle cx="270" cy="125" r="3" fill="#0D9488"/>
+            <circle cx="330" cy="145" r="3" fill="#0D9488"/>
+
+            <!-- Legend -->
+            <rect x="350" y="25" width="12" height="12" fill="#D41F29"/>
+            <text x="370" y="34" font-size="9" fill="#1E293B">Net Kar (B TL)</text>
+
+            <line x1="350" y1="50" x2="362" y2="50" stroke="#0D9488" stroke-width="2"/>
+            <text x="370" y="54" font-size="9" fill="#1E293B">ROE (%)</text>
+        </svg>
+    </div>
+
+</div>
+
+<!-- ===== 4. KARLILLIK ANALİZİ ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Karlılık Analizi</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Karlılık ve Rafineri Marjı Analizi</h2>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TUPRS'un kârlılığı rafineri marjı (refinery margin) tarafından belirlenebilir. Rafineri marjı, ham petrol alım fiyatı ile işlenmiş ürün satış fiyatı arasındaki spreaddir. 2023 zirvesinden %46 düştüğü 2025 yılında %7.0 $/bbl seviyesinde gerçekleşmiştir.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th style="text-align:right">2022</th>
+                    <th style="text-align:right">2023</th>
+                    <th style="text-align:right">2024</th>
+                    <th style="text-align:right">2025</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Net Rafineri Marjı ($/bbl)</strong></td>
+                    <td style="text-align:right">19.0</td>
+                    <td style="text-align:right">14–15</td>
+                    <td style="text-align:right">11.2</td>
+                    <td style="text-align:right">7.0</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Brent Ortalama ($/bbl)</strong></td>
+                    <td style="text-align:right">~100</td>
+                    <td style="text-align:right">~85</td>
+                    <td style="text-align:right">~82</td>
+                    <td style="text-align:right">~73</td>
+                </tr>
+                <tr>
+                    <td><strong>Kapasite Kullanım (%)</strong></td>
+                    <td style="text-align:right">~95</td>
+                    <td style="text-align:right">~94</td>
+                    <td style="text-align:right">~92</td>
+                    <td style="text-align:right">~93</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>FAVÖK (B TL) / 1 $/bbl Marj</strong></td>
+                    <td style="text-align:right">~5.5</td>
+                    <td style="text-align:right">~6.2</td>
+                    <td style="text-align:right">~5.8</td>
+                    <td style="text-align:right">~5.5–6.0</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>Rafineri marjının her 1 $/bbl değişimi, TUPRS'un FAVÖK seviyesinde yaklaşık 5–6 milyar TL etki yaratmaktadır. 2025'te 7.0 $/bbl realized marj, Brent'te (73 $/bbl) ve emtia çevrimselliğinde yaşanan baskıyı yansıtmaktadır. Analist konsensüsü (10.5 $/bbl), Hurmuz Boğazı jeopolitik risk priminin korunmasını öngörmektedir; bu durumda FAVÖK ~75 milyar TL'ye yükselecektir. Yönetim rehberi (6–7 $/bbl) daha muhafazakar; marj toparlanmasında kuşkuculuk göstermektedir.</p>
+        </div>
+    </div>
+
+    <h3>EPDK Düzenlemesi Riski</h3>
+
+    <p>Türkiye Petrol Ürünleri Pazarlama A.Ş. (TPAO) ve EPDK, akaryakıt fiyatlarını belirli politika çerçevesinde yönetmektedir. Enerji Piyasası Düzenleme Kurulu (EPDK), fiyat düzenlemeleri aracılığıyla rafineri marjını etkin şekilde sınırlandırmaktadır. Bu düzenleme TUPRS'un fiyat geçişini kısıtlayan yapısal bir faktördür ve sektöre özgü bir riskdir.</p>
+
+    <div class="callout callout-warning">
+        <strong>Dikkat:</strong> Rafineri marjı TUPRS'un kontrol edemeyeceği küresel emtia fiyatlarına ve yerel düzenlemelere bağımlıdır. Her 1 $/bbl swing ≈ 2–3 TL hisse fiyat etkisi. 2026 marjı belirsizliği, en büyük değerleme riskidir.
+    </div>
+
+</div>
+
+<!-- ===== 5. BİLANÇO VE BORÇLULUK ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Bilanço & Borçluluk</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Bilanço Analizi ve Borçluluk Durumu</h2>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TUPRS, sektörün en güçlü bilanço yapısını sürdürmektedir. 2024 yılında önemli bir kaldıraç azaltma gerçekleştirilmiş; net nakit pozisyonu ulaşılmıştır. Bu, şirketin uzun vadeli finansal riskini önemli ölçüde düşürmüştür.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th style="text-align:right">2021</th>
+                    <th style="text-align:right">2023</th>
+                    <th style="text-align:right">2024</th>
+                    <th style="text-align:right">2025</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Toplam Aktif (B TL)</strong></td>
+                    <td style="text-align:right">312.4</td>
+                    <td style="text-align:right">527.1</td>
+                    <td style="text-align:right">582.3</td>
+                    <td style="text-align:right">591.9</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Toplam Yükümlülük (B TL)</strong></td>
+                    <td style="text-align:right">196.8</td>
+                    <td style="text-align:right">274.2</td>
+                    <td style="text-align:right">256.3</td>
+                    <td style="text-align:right">217.9</td>
+                </tr>
+                <tr>
+                    <td><strong>Toplam Özkaynak (B TL)</strong></td>
+                    <td style="text-align:right">115.6</td>
+                    <td style="text-align:right">252.9</td>
+                    <td style="text-align:right">325.8</td>
+                    <td style="text-align:right">374.0</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Net Borç (B TL)</strong></td>
+                    <td style="text-align:right">~68.3</td>
+                    <td style="text-align:right">~12.4</td>
+                    <td style="text-align:right">-15.8</td>
+                    <td style="text-align:right">-41.5</td>
+                </tr>
+                <tr>
+                    <td><strong>Net Borç / FAVÖK (x)</strong></td>
+                    <td style="text-align:right">2.30</td>
+                    <td style="text-align:right">0.13</td>
+                    <td style="text-align:right">-0.50</td>
+                    <td style="text-align:right">-0.67</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Cari Oran</strong></td>
+                    <td style="text-align:right">1.07</td>
+                    <td style="text-align:right">2.03</td>
+                    <td style="text-align:right">2.73</td>
+                    <td style="text-align:right">3.09</td>
+                </tr>
+                <tr>
+                    <td><strong>Borç / Özkaynak (x)</strong></td>
+                    <td style="text-align:right">1.70</td>
+                    <td style="text-align:right">1.08</td>
+                    <td style="text-align:right">0.79</td>
+                    <td style="text-align:right">0.58</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>2021'de %37 borç/aktif oranı olan TUPRS, 2025'te net nakit pozisyonuna (nakit: 107 B TL > borç: 65.7 B TL) ulaşmıştır. Cari oran 1.07'den 3.09'a yükselmiş; likidite riski tamamen ortadan kalkmıştır. Net Borç/FAVÖK -0.67x (net nakit durumu) sektörde en güçlü metrik olup, %46 faiz ortamında önemli bir tampon sağlamaktadır. Bu bilanço gücü, marji döngüsünün en zayıf noktasında dahi temettü ödenmesini mümkün kılmaktadır.</p>
+        </div>
+    </div>
+
+    <h3>Likidite Göstergeleri</h3>
+
+    <div class="kpi-grid" style="margin-top: 20px;">
+        <div class="kpi-card positive">
+            <div class="kpi-label">Nakit Pozisyonu</div>
+            <div class="kpi-value">107.2 B TL</div>
+            <div class="kpi-change positive">◆ Güçlü Tampon</div>
+        </div>
+        <div class="kpi-card positive">
+            <div class="kpi-label">Cari Oran</div>
+            <div class="kpi-value">3.09x</div>
+            <div class="kpi-change positive">▲ Mükemmel</div>
+        </div>
+        <div class="kpi-card positive">
+            <div class="kpi-label">Hızlı Oran</div>
+            <div class="kpi-value">2.15x</div>
+            <div class="kpi-change positive">▲ Güvenli</div>
+        </div>
+        <div class="kpi-card positive">
+            <div class="kpi-label">Çalışma Kap. / Ciro</div>
+            <div class="kpi-value">5.8%</div>
+            <div class="kpi-change positive">◆ Optimal</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== 6. NAKİT AKIŞI ANALİZİ ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Nakit Akışı</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Nakit Akışı ve Temettü Kapasitesi</h2>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TUPRS'un nakit akış profili, güçlü işletme faaliyetleri ile temettü ödemelerini karşılayabilecek kapasiteyi göstermektedir. 2025 yılında 46.5 milyar TL işletme nakit akışı (OCF) gerçekleştirilmiş; 29.3 milyar TL temettü ödenmiştir.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th style="text-align:right">2021</th>
+                    <th style="text-align:right">2023</th>
+                    <th style="text-align:right">2024</th>
+                    <th style="text-align:right">2025</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>İşletme Nakit Akışı (B TL)</strong></td>
+                    <td style="text-align:right">8.2</td>
+                    <td style="text-align:right">70.3</td>
+                    <td style="text-align:right">27.4</td>
+                    <td style="text-align:right">46.5</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>CAPEX (B TL)</strong></td>
+                    <td style="text-align:right">8.4</td>
+                    <td style="text-align:right">19.8</td>
+                    <td style="text-align:right">18.7</td>
+                    <td style="text-align:right">21.8</td>
+                </tr>
+                <tr>
+                    <td><strong>Serbest Nakit Akışı (B TL)</strong></td>
+                    <td style="text-align:right">-0.2</td>
+                    <td style="text-align:right">50.5</td>
+                    <td style="text-align:right">8.7</td>
+                    <td style="text-align:right">24.7</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Temettü Ödemesi (B TL)</strong></td>
+                    <td style="text-align:right">—</td>
+                    <td style="text-align:right">26.0</td>
+                    <td style="text-align:right">29.3</td>
+                    <td style="text-align:right">29.3</td>
+                </tr>
+                <tr>
+                    <td><strong>FCF / Temettü Oran</strong></td>
+                    <td style="text-align:right">—</td>
+                    <td style="text-align:right">1.94x</td>
+                    <td style="text-align:right">0.30x</td>
+                    <td style="text-align:right">0.84x</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>OCF / FAVÖK Oran (%)</strong></td>
+                    <td style="text-align:right">—</td>
+                    <td style="text-align:right">73.1</td>
+                    <td style="text-align:right">86.2</td>
+                    <td style="text-align:right">87.0</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>İşletme Nakit Akışı (OCF) 46.5 milyar TL olup, FAVÖK'ün %87'sini oluşturmaktadır (sağlıklı sinyal). Serbest Nakit Akışı (FCF = OCF – CAPEX) 24.7 milyar TL; 2025 temettü ödeyişinin (29.3 B TL) %84'ü FCF'den karşılanmıştır. Açık, nakit tamponundan kapatılmıştır — bu, bilanço gücü sayesinde sürdürülebilirdir. 2026'da marj recovery (10.5 $/bbl senaryo) gerçekleşirse, FCF ~35 milyar TL'ye yükseleceğinden, temettü 2026 (33 B TL) tamamen FCF'den karşılanacaktır.</p>
+        </div>
+    </div>
+
+    <h3>Yatırım Harcamaları (CAPEX) Stratejisi</h3>
+
+    <p>TUPRS'un 2026 CAPEX rehberi ~700 milyon dolar (yaklaşık 22 milyar TL) olup, bu tutar iki kategoriye ayrılmaktadır: (1) Zorunlu bakım ve yönetim (~65%); (2) Büyüme yatırımları (~35%), öncelikle SAF (Sürdürülebilir Havacılık Yakıtı) üretimi pilot tesisi İzmir'de. SAF, 2026'da pilot üretim başlayacak; tam ölçekli üretim 2027'ye planlanmıştır. Bu, uzun vadeli stratejik yöneliş uygun olup, kısa vadede ciddi kârlılık katalizörü değildir.</p>
+
+</div>
+
+<!-- ===== 7. DEĞERLEME ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Değerleme</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Değerleme Analizi ve Hedef Fiyatlar</h2>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TUPRS'un değerlemesi üç yöntemle incelenmiştir: (1) İndirgenmiş Nakit Akışı (DCF), (2) Ticari Ağırlıklandırılmış Özsermaye Katları (P/E, EV/EBITDA) ve (3) Temettü Verimi. Her yöntem farklı hedef fiyatlar sunmaktadır; consensus fiyat 289.7 TL olup, mevcut fiyat 254.50 TL'dir.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Değerleme Yöntemi</th>
+                    <th style="text-align:right">Bear</th>
+                    <th style="text-align:right">Baz</th>
+                    <th style="text-align:right">Bull</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>DCF (WACC: 25%–22%–18%)</strong></td>
+                    <td style="text-align:right">88 TL</td>
+                    <td style="text-align:right">176 TL</td>
+                    <td style="text-align:right">280 TL</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>EV/EBITDA (Peer: 5.5x)</strong></td>
+                    <td style="text-align:right">165 TL</td>
+                    <td style="text-align:right">236 TL</td>
+                    <td style="text-align:right">310 TL</td>
+                </tr>
+                <tr>
+                    <td><strong>Temettü Verimi (%5–6%)</strong></td>
+                    <td style="text-align:right">207 TL</td>
+                    <td style="text-align:right">252 TL</td>
+                    <td style="text-align:right">291 TL</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Analist Consensus</strong></td>
+                    <td style="text-align:right">—</td>
+                    <td style="text-align:right">289.7 TL</td>
+                    <td style="text-align:right">—</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>DCF Baz Senaryo (WACC %22, marj 8.5 $/bbl) 176 TL sunarken, Temettü Verimi baz senaryo (%5.7) 252 TL'de yer almaktadır. Analist Konsensüsü (289.7 TL) daha yüksek olup, 10.5 $/bbl marj assumptions göstermektedir. Mevcut fiyat (254.50 TL), Temettü Verimi Baz'ı ile DCF Bull'u arasında konumlanmaktadır. Piyasa, kısmen Hurmuz risk priminin devamını fiyatlamaktadır; ancak yönetim rehberesi (6–7 $/bbl) içinde %14 risk yüksüklüğü mevcuttur.</p>
+        </div>
+    </div>
+
+    <h3>Senaryo Analizi — Rafineri Marjı Duyarlılığı</h3>
+
+    <div class="chart-container">
+        <h3>Hisse Fiyatı / Rafineri Marjı Duyarlılık Matrisi</h3>
+        <p>Her satır Brent fiyatı; her sütun rafineri marjını göstermektedir. Değerler hisse fiyatıdır (TL).</p>
+
+        <table class="data-table" style="margin-top: 12px;">
+            <thead>
+                <tr>
+                    <th style="text-align:left">Brent / Marj</th>
+                    <th style="text-align:right">5$/bbl</th>
+                    <th style="text-align:right">8$/bbl</th>
+                    <th style="text-align:right">10$/bbl</th>
+                    <th style="text-align:right">13$/bbl</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>$75/bbl</strong></td>
+                    <td style="text-align:right">98</td>
+                    <td style="text-align:right">158</td>
+                    <td style="text-align:right">198</td>
+                    <td style="text-align:right">268</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>$90/bbl</strong></td>
+                    <td style="text-align:right">119</td>
+                    <td style="text-align:right">187</td>
+                    <td style="text-align:right">235</td>
+                    <td style="text-align:right">315</td>
+                </tr>
+                <tr>
+                    <td><strong>$100/bbl</strong></td>
+                    <td style="text-align:right">142</td>
+                    <td style="text-align:right">221</td>
+                    <td style="text-align:right">276</td>
+                    <td style="text-align:right">368</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="font-size: 9pt; color: #64748B; margin-top: 12px; font-style: italic;">Duyarlılık matrisi: Her 1 $/bbl marj değişimi ≈ 15–20 TL fiyat etkisi. Mevcut (254.50 TL), Brent 95 $/bbl × Marj 8 $/bbl senaryosunun biraz altında.</p>
+    </div>
+
+</div>
+
+<!-- ===== 8. SEKTÖR KARŞILAŞTIRMASI ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Sektör Analizi</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Sektör Karşılaştırması</h2>
+
+    <h3>Akran Grubu</h3>
+
+    <p>TUPRS, Türkiye'nin tek entegre rafinerisi olması nedeniyle, BIST'de doğrudan akran bulunmamaktadır. Karşılaştırma grubu, uluslararası rafineri şirketlerinden oluşmaktadır: HelleniQ Energy (Yunanistan), Motor Oil Hellas, PKN Orlen (Polonya), ENI (İtalya) ve Repsol (İspanya). Bu gruptan TUPRS'un göreceli konumu aşağıda değerlendirilmektedir:</p>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TUPRS, operasyonel göstergeler (kapasite kullanımı, Nelson Complexity) bakımından lider konumdadır; ancak marj realizasyonu ortalamanın altında kalmaktadır. Bunun sebebi, yerleşim yerine özgü EPDK düzenlemeleri ve TRY volatilitesidir.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th style="text-align:right">TUPRS</th>
+                    <th style="text-align:right">Avrupa Medyan</th>
+                    <th style="text-align:right">TUPRS Sırası</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>EBITDA Marjı (%)</strong></td>
+                    <td style="text-align:right">7.47</td>
+                    <td style="text-align:right">9.6</td>
+                    <td style="text-align:right">4. (Son)</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Refinery Marjı ($/bbl)</strong></td>
+                    <td style="text-align:right">7.0</td>
+                    <td style="text-align:right">12.0</td>
+                    <td style="text-align:right">5. (Son)</td>
+                </tr>
+                <tr>
+                    <td><strong>Kapasite Kullanımı (%)</strong></td>
+                    <td style="text-align:right">98</td>
+                    <td style="text-align:right">91</td>
+                    <td style="text-align:right">1. (En İyi)</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Nelson Complexity</strong></td>
+                    <td style="text-align:right">14.5 (İzmit)</td>
+                    <td style="text-align:right">9.2</td>
+                    <td style="text-align:right">1. (En İyi)</td>
+                </tr>
+                <tr>
+                    <td><strong>Net Borç / EBITDA (x)</strong></td>
+                    <td style="text-align:right">-0.67 (Net Nakit)</td>
+                    <td style="text-align:right">1.5</td>
+                    <td style="text-align:right">1. (En İyi)</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>EV/EBITDA (x)</strong></td>
+                    <td style="text-align:right">6.5</td>
+                    <td style="text-align:right">6.0</td>
+                    <td style="text-align:right">Hafif Primli</td>
+                </tr>
+                <tr>
+                    <td><strong>Temettü Verimi (%)</strong></td>
+                    <td style="text-align:right">5.73</td>
+                    <td style="text-align:right">4.1</td>
+                    <td style="text-align:right">1. (En Yüksek)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>TUPRS, marj bakımından zaaf göstermektedir (akrana %42 iskonto); ancak bilanço gücü, operasyonel verimlilik ve temettü verimi sektörde öne çıkmaktadır. Marj düşüklüğü operasyonel başarısızlık değil, regülatif ve makroekonomik koşulların sonucudur. Coğrafi risk (Türkiye), ülke risk primini yükseltmektedir.</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== 9. MAKRO ORTAM ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Makro Ortam</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Makroekonomik ve Jeopolitik Ortam</h2>
+
+    <h3>Küresel Enerji Piyasası (Nisan 2026)</h3>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Brent Fiyatı</div>
+            <div class="kpi-value">95.20 $/bbl</div>
+            <div class="kpi-change negative">◆ Oynak (92–115 aralığı)</div>
+        </div>
+        <div class="kpi-card negative">
+            <div class="kpi-label">OPEC+ Üretimi</div>
+            <div class="kpi-value">~31.5 MMbpd</div>
+            <div class="kpi-change negative">▼ Kısıntı Devam</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Hurmuz Boğazı</div>
+            <div class="kpi-value">Risk Yüksek</div>
+            <div class="kpi-change warning">◆ Müzakereler Devam</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">IEA 2026 Tahmini</div>
+            <div class="kpi-value">~101 MMbpd</td>
+            <div class="kpi-change">◆ Talep Dengeleniyor</div>
+        </div>
+    </div>
+
+    <h3>Jeopolitik Risk — Hurmuz Boğazı Krizi</h3>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            28 Şubat 2026'da ABD-İsrail'in İran'a saldırısı neticesinde Hurmuz Boğazı geçici olarak kapatılmıştır. Ateşkes müzakereleri Nisan ortasında devam etmekte olup, sonuç belirsizdir. TUPRS'un marj beklentileri bu jeopolitik priminden doğrudan etkilenmektedir.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Senaryo</th>
+                    <th style="text-align:center">Olasılık</th>
+                    <th style="text-align:right">Brent Etkisi</th>
+                    <th style="text-align:right">Marj Etkisi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>I. Kapanma (3+ ay)</strong></td>
+                    <td style="text-align:center">%30</td>
+                    <td style="text-align:right">Brent: $130–150</td>
+                    <td style="text-align:right">Marj: 15+ $/bbl</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>II. Kısmi Kısıtlama</strong></td>
+                    <td style="text-align:center">%50</td>
+                    <td style="text-align:right">Brent: $100–110</td>
+                    <td style="text-align:right">Marj: 10–12 $/bbl</td>
+                </tr>
+                <tr>
+                    <td><strong>III. Normalleşme</strong></td>
+                    <td style="text-align:center">%20</td>
+                    <td style="text-align:right">Brent: $75–85</td>
+                    <td style="text-align:right">Marj: 5–7 $/bbl</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>Analist konsensüsü (10.5 $/bbl marj) Senaryo II (kısmi kısıtlama, %50 olasılık) üzerine kuruludur. Senaryo III (normalleşme) gerçekleşirse, baza kıyasla %40 hisse gerileyişi beklenmektedir. Müzakere gelişmelerine haftalık bazda dikkat edilmelidir.</p>
+        </div>
+    </div>
+
+    <h3>Türkiye Makroekonomisi</h3>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TCMB, Mart 2026'da baz oranı %37'den %46'ya (acil +900 bps) yükseltmiştir. Enflasyon (%30.87 TÜFE) yüksek kalırken, büyüme beklentileri revize edilmiştir. Reel faiz %15+ seviyesinde düşürücü bir ortam yaratmaktadır.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th style="text-align:right">Mevcut</th>
+                    <th style="text-align:right">Etki (TUPRS)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>TCMB Baz Oran</strong></td>
+                    <td style="text-align:right">%46</td>
+                    <td style="text-align:right">Yüksek finansman maliyeti; fakat net nakit risk yok</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>TÜFE (YoY)</strong></td>
+                    <td style="text-align:right">%30.87</td>
+                    <td style="text-align:right">TRY volatilitesi; emtia fiyat geçişi zor</td>
+                </tr>
+                <tr>
+                    <td><strong>İmalat PMI</strong></td>
+                    <td style="text-align:right">42.3</td>
+                    <td style="text-align:right">Daralma; yakıt talebinde zayıflık sinyali</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>USD/TRY</strong></td>
+                    <td style="text-align:right">~31.5</td>
+                    <td style="text-align:right">TRY depreciation; TUPRS dolar gelirleri artıyor (pozitif)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>Türkiye makroortamı zor; yüksek faiz ve enflasyon, ekonomik aktiviteyi kısıtlamaktadır. Ancak TUPRS, dolar kazançlı bir şirket olması nedeniyle, TRY depreciation'dan yararlanmaktadır. EPDK fiyat düzenlemesi, nominal enflasyonla akaryakıt fiyat geçişini sınırlandırdığından, reel marj kaybı riski mevcuttur.</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== 10. TEKNİK ANALİZ ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Teknik Analiz</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Teknik Analiz Özeti</h2>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TUPRS hissesi 254.50 TL'de işlem görmektedir. 52-haftalık zirve (277 TL) dan %8.2 aşağıda; destek seviyeleri 248 TL civarında test edilmektedir. Orta vadeli trend yükselişte olup, kısa vadede konsolidasyon devam etmektedir.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Teknik Gösterge</th>
+                    <th style="text-align:right">Değer</th>
+                    <th style="text-align:left">Yorum</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>RSI (14)</strong></td>
+                    <td style="text-align:right">53.89</td>
+                    <td style="text-align:left">Nötr; sağlıklı reset</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>MA-50 (50-günlük Ortalama)</strong></td>
+                    <td style="text-align:right">254.29 TL</td>
+                    <td style="text-align:left">Destek; fiyat hemen altında</td>
+                </tr>
+                <tr>
+                    <td><strong>MA-200 (200-günlük Ortalama)</strong></td>
+                    <td style="text-align:right">238 TL</td>
+                    <td style="text-align:left">Güçlü destek; uptrend devam</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Fibonacci %23.6 Retracement</strong></td>
+                    <td style="text-align:right">239.50 TL</td>
+                    <td style="text-align:left">Tutuş; bullish yapı korunuyor</td>
+                </tr>
+                <tr>
+                    <td><strong>Kritik Destek</strong></td>
+                    <td style="text-align:right">248–248.40 TL</td>
+                    <td style="text-align:left">TUTULMASI ZORUNLU (break = %15 drop)</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>Kritik Direnç</strong></td>
+                    <td style="text-align:right">257 → 277 TL (zirve)</td>
+                    <td style="text-align:left">Aşama aşama (1. 257, 2. 277)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>Teknik görünüm ılımca olumlu. Mevcut fiyat (254.50 TL), MA-50 (254.29 TL) ile çakışmakta; bu seviyenin üzerinde kalması kısa vadeli momentum için kritiktir. 248 TL desteği kırılırsa, Fibonacci %38.2 (232 TL) seviyesi test edilecektir. Yukarı yönde 257 TL direnci aşılırsa, 277 TL zirveye doğru hareket beklenmektedir. Genel trend yükseliş; fakat temettü ex-date sonrası satış baskısı devam etmektedir.</p>
+        </div>
+    </div>
+
+    <h3>Yoğunluk Metrikleri</h3>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Volatilite (30-gün)</div>
+            <div class="kpi-value">%18.5</div>
+            <div class="kpi-change">◆ Orta Seviye</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Günlük Ticaret Hacmi</div>
+            <div class="kpi-value">~2.5 M hisse</div>
+            <div class="kpi-change">◆ İyi Likidite</div>
+        </div>
+        <div class="kpi-card negative">
+            <div class="kpi-label">Koç Satışı (Mar 2026)</div>
+            <div class="kpi-value">2.1%</div>
+            <div class="kpi-change negative">▼ Nötr–Negatif</div>
+        </div>
+        <div class="kpi-card positive">
+            <div class="kpi-label">Yabancı Alıcı (1 Nisan)</div>
+            <div class="kpi-value">Net Alıcı</div>
+            <div class="kpi-change positive">▲ Pozitif</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== 11. KAP OLAYLARI ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">KAP Olayları</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>KAP Olayları ve Şirket İcraatları (Nisan 2026)</h2>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            Son 30 gün içerisinde TUPRS tarafından yapılan Kamuyu Aydınlatma Platformu (KAP) bildirimleri aşağıda sıralanmıştır. 7 material olay tespit edilmiştir.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Tarih</th>
+                    <th style="width: 35%;">Olay</th>
+                    <th style="width: 20%;">Tür</th>
+                    <th style="width: 30%;">Etki / Notlar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>11 Mar</strong></td>
+                    <td>2026 Kar Payı Dağıtım Kararı</td>
+                    <td>Temettü</td>
+                    <td>33 B TL (14.56 TL/hisse) — %12.6 artış</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>18 Mar</strong></td>
+                    <td>Mali İşlerden Sorumlu GM Değişimi</td>
+                    <td>Yönetim</td>
+                    <td>Dizemen atanması; Korkmaz → Koç CFO</td>
+                </tr>
+                <tr>
+                    <td><strong>16 Mar</strong></td>
+                    <td>Temettü 1. Taksit Ödeme</td>
+                    <td>Nakit</td>
+                    <td>~16.8 B TL ödendi (2025 karlarından)</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>28 Feb</strong></td>
+                    <td>Hurmuz Boğazı Kapanma (Jeopolitik)</td>
+                    <td>Makro</td>
+                    <td>ABD-İran saldırısı; Brent spike; marj prime</td>
+                </tr>
+                <tr>
+                    <td><strong>31 Jan</strong></td>
+                    <td>2025 Q3 Finansal Tabloları</td>
+                    <td>Finansal</td>
+                    <td>Net kar +11% beat; revenue +6% beat</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>06 Feb</strong></td>
+                    <td>2026 YK Kâr Dağıtım Önerisi</td>
+                    <td>Yönetim</td>
+                    <td>Genel Kurul onayına sunuş (11 Mar)</td>
+                </tr>
+                <tr>
+                    <td><strong>~17 Apr</strong></td>
+                    <td>2025 Tam Yıl KAP Tabloları (Beklenen)</td>
+                    <td>Finansal</td>
+                    <td>Balance sheet imbalance çözülecek</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>En material olay, Hurmuz Boğazı kapanmasıdır (28 Şubat); bu, rafineri marjı primini Nisan ortasında hâlâ taşımaktadır. Temettü artışı (14.56 TL) yönetim güveninin sinyalidir. Mali İşlerden Sorumlu GM'nin Koç Holding'e atanması, grup seviyesi sermayelendirme/finansman stratejisinde değişiklik riski taşımaktadır. 17 Nisan KAP tabloları, balance sheet tutarsızlığını çözeceğinden beklenilmektedir.</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== 12. RİSK DEĞERLENDİRMESİ ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Risk Analizi</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Risk Değerlendirmesi</h2>
+
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            TUPRS'un yatırım teşkil eden ana riskleri operasyonel, finansal ve makroekonomik başlıklar altında sınıflandırılmıştır. Her riskin 0–10 skoru ve yatırımcı etkisi belirtilmiştir.
+        </p>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Risk Kategorisi</th>
+                    <th style="text-align:center; width: 10%;">Skor</th>
+                    <th style="width: 40%;">Açıklama</th>
+                    <th style="width: 25%;">Zararlanma Senaryo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. Rafineri Marjı Sıkıştırması</strong></td>
+                    <td style="text-align:center; color: var(--danger-color);">8</td>
+                    <td>5 $/bbl'e düşme ihtimali %25; bu durumda FAVÖK -%30, hisse -%40</td>
+                    <td>Hurmuz normalleşme + arz artışı</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>2. Hurmuz Boğazı Kapanması</strong></td>
+                    <td style="text-align:center; color: var(--danger-color);">7</td>
+                    <td>Tedarik kesintisi; kısa vadede marj artıyor ancak uzun vadede Türkiye konumunu sorgulattır</td>
+                    <td>3+ ay kapanma; Kirkuk hattı yetersizliği</td>
+                </tr>
+                <tr>
+                    <td><strong>3. EPDK Düzenlemesi / Fiyat Tavanı</strong></td>
+                    <td style="text-align:center; color: var(--warning-color);">6</td>
+                    <td>Marj tavanı risikeri; reel marj haslılıktan daha düşük büyüyebilir</td>
+                    <td>EPDK stok yükümlülüğü; ÖTV mekanizması</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>4. TRY Volatilitesi / FX Riski</strong></td>
+                    <td style="text-align:center; color: var(--warning-color);">6</td>
+                    <td>USD cinsinden maliyetler vs TRY satışlar; net nakit doğal kuru hedge yapsa da açık kalıyor</td>
+                    <td>USD/TRY %20 depreciation</td>
+                </tr>
+                <tr>
+                    <td><strong>5. İlişkili Taraf Riski (Opet)</strong></td>
+                    <td style="text-align:center; color: var(--warning-color);">5</td>
+                    <td>Satışların %18'i ilişkili taraf; CUP yöntemi uygulansa da conflict potential</td>
+                    <td>Opet talep çöküşü veya fiyat çatışması</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>6. Türkiye Ülke Riski</strong></td>
+                    <td style="text-align:center; color: var(--warning-color);">5</td>
+                    <td>Siyasi istikrarsızlık, CBAM, yaptırım riski; jeopolitik premium değişkenliği</td>
+                    <td>AB CBAM uygulaması; yaptırım karşı-yaptırımlar</td>
+                </tr>
+                <tr>
+                    <td><strong>7. Yönetim Kurulu Bağımsızlığı</strong></td>
+                    <td style="text-align:center; color: var(--warning-color);">4</td>
+                    <td>YK bağımsızlığı %33; Koç kontrol riski; corporate governance best practice'den sapma</td>
+                    <td>Azınlık hakkı çatışması; değer erozyonu</td>
+                </tr>
+                <tr style="background: #F1F5F9;">
+                    <td><strong>8. Enerji Geçişi / Yeşil Dönüşüm</strong></td>
+                    <td style="text-align:center; color: var(--info-color);">3</td>
+                    <td>Uzun vadede (10+ yıl) rafineri kapasitesi talep riski; ancak SAF büyüme potensiyeli</td>
+                    <td>EV satışlarının %50+ olması; rafineri kapasitesi fazla kapasite durumu</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <p>En kritik riskler rafineri marjı (Skor 8) ve jeopolitik risk (Skor 7) başlıklarında yoğunlaşmaktadır. Her ikisi de TUPRS'un kontrol edemediği faktörlere bağlıdır. Finansal riskler (likidite, solvency) minimum seviyededir. Yönetim kurulu bağımsızlığı düşük (Skor 4) olup, azınlık hakkı potansiyel riski mevcuttur. ESG riskler uzun vadeli (10+ yıl) enerji geçişi (Skor 3) olarak değerlendirilmiştir.</p>
+        </div>
+    </div>
+
+    <h3>Risk Yatay Bar Grafiği</h3>
+
+    <svg viewBox="0 0 500 280" style="width: 100%; max-width: 500px; margin: 20px auto;">
+        <!-- Risk skorları (0–10 scale) -->
+        <text x="5" y="25" font-size="10" fill="#1E293B" font-weight="600">Marj Sıkıştırması</text>
+        <rect x="180" y="12" width="240" height="18" fill="#FEE2E2" rx="3"/>
+        <rect x="180" y="12" width="192" height="18" fill="#DC2626" rx="3"/>
+        <text x="380" y="26" font-size="10" fill="#DC2626" font-weight="700">8/10</text>
+
+        <text x="5" y="55" font-size="10" fill="#1E293B" font-weight="600">Hurmuz Riski</text>
+        <rect x="180" y="42" width="240" height="18" fill="#FEE2E2" rx="3"/>
+        <rect x="180" y="42" width="168" height="18" fill="#DC2626" rx="3"/>
+        <text x="380" y="56" font-size="10" fill="#DC2626" font-weight="700">7/10</text>
+
+        <text x="5" y="85" font-size="10" fill="#1E293B" font-weight="600">EPDK Düzenlemesi</text>
+        <rect x="180" y="72" width="240" height="18" fill="#FEF3C7" rx="3"/>
+        <rect x="180" y="72" width="144" height="18" fill="#D97706" rx="3"/>
+        <text x="380" y="86" font-size="10" fill="#D97706" font-weight="700">6/10</text>
+
+        <text x="5" y="115" font-size="10" fill="#1E293B" font-weight="600">FX Volatilite</text>
+        <rect x="180" y="102" width="240" height="18" fill="#FEF3C7" rx="3"/>
+        <rect x="180" y="102" width="144" height="18" fill="#D97706" rx="3"/>
+        <text x="380" y="116" font-size="10" fill="#D97706" font-weight="700">6/10</text>
+
+        <text x="5" y="145" font-size="10" fill="#1E293B" font-weight="600">İlişkili Taraf (Opet)</text>
+        <rect x="180" y="132" width="240" height="18" fill="#FEF3C7" rx="3"/>
+        <rect x="180" y="132" width="120" height="18" fill="#D97706" rx="3"/>
+        <text x="380" y="146" font-size="10" fill="#D97706" font-weight="700">5/10</text>
+
+        <text x="5" y="175" font-size="10" fill="#1E293B" font-weight="600">Ülke Riski</text>
+        <rect x="180" y="162" width="240" height="18" fill="#FEF3C7" rx="3"/>
+        <rect x="180" y="162" width="120" height="18" fill="#D97706" rx="3"/>
+        <text x="380" y="176" font-size="10" fill="#D97706" font-weight="700">5/10</text>
+
+        <text x="5" y="205" font-size="10" fill="#1E293B" font-weight="600">YK Bağımsızlığı</text>
+        <rect x="180" y="192" width="240" height="18" fill="#DBEAFE" rx="3"/>
+        <rect x="180" y="192" width="96" height="18" fill="#3B82F6" rx="3"/>
+        <text x="380" y="206" font-size="10" fill="#3B82F6" font-weight="700">4/10</text>
+
+        <text x="5" y="235" font-size="10" fill="#1E293B" font-weight="600">Enerji Geçişi</text>
+        <rect x="180" y="222" width="240" height="18" fill="#DCFCE7" rx="3"/>
+        <rect x="180" y="222" width="72" height="18" fill="#059669" rx="3"/>
+        <text x="380" y="236" font-size="10" fill="#059669" font-weight="700">3/10</text>
+
+        <!-- Legend -->
+        <text x="5" y="265" font-size="9" fill="#64748B" font-style="italic">Kırmızı (7–10): Yüksek Risk | Turuncu (4–6): Orta Risk | Yeşil (0–3): Düşük Risk</text>
+    </svg>
+
+</div>
+
+<!-- ===== 13. GENEL DEĞERLENDİRME ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Genel Değerlendirme</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Yatırım Tezi Özeti</h2>
+
+    <h3>Skor Kartı — 6 Boyuta Göre Değerlendirme</h3>
+
+    <div class="score-card">
+        <div class="score-card-row">
+            <div class="score-label">Karlılık & Marj</div>
+            <div class="score-bar">
+                <div class="score-bar-fill" style="width: 65%;"></div>
+            </div>
+            <div class="score-value">6.5/10</div>
+        </div>
+        <div class="score-card-row">
+            <div class="score-label">Likidite & Nakit</div>
+            <div class="score-bar">
+                <div class="score-bar-fill" style="width: 90%;"></div>
+            </div>
+            <div class="score-value">9.0/10</div>
+        </div>
+        <div class="score-card-row">
+            <div class="score-label">Kaldıraç & Solvency</div>
+            <div class="score-bar">
+                <div class="score-bar-fill" style="width: 95%;"></div>
+            </div>
+            <div class="score-value">9.5/10</div>
+        </div>
+        <div class="score-card-row">
+            <div class="score-label">İşletme Verimliliği</div>
+            <div class="score-bar">
+                <div class="score-bar-fill" style="width: 90%;"></div>
+            </div>
+            <div class="score-value">9.0/10</div>
+        </div>
+        <div class="score-card-row">
+            <div class="score-label">Değerleme (P/E, EV/EBITDA)</div>
+            <div class="score-bar">
+                <div class="score-bar-fill" style="width: 60%;"></div>
+            </div>
+            <div class="score-value">6.0/10</div>
+        </div>
+        <div class="score-card-row" style="border-bottom: 2px solid var(--brand-primary);">
+            <div class="score-label" style="font-weight: 700;">GENEL SKOR</div>
+            <div class="score-bar">
+                <div class="score-bar-fill" style="width: 75%;"></div>
+            </div>
+            <div class="score-value" style="color: var(--brand-primary); font-weight: 700;">7.8/10</div>
+        </div>
+    </div>
+
+    <h3>Yatırım Tavsiyesi</h3>
+
+    <div class="callout callout-positive">
+        <strong>GÖRÜŞ: HOLD (Cautious Buy)</strong><br>
+        <strong>Mevcut Fiyat:</strong> 254.50 TL<br>
+        <strong>Hedef Fiyat (Ağırlıklı):</strong> ~228 TL (-%10 downside)<br>
+        <strong>Analist Konsensüsü:</strong> 289.7 TL (+%13.8 upside)<br>
+        <strong>Risk-Ödül Dengesi:</strong> Dengeli; Downside: %30, Upside: %34
+    </div>
+
+    <h3>Nihai Özet</h3>
+
+    <p>TUPRS, kısa vadede rafineri marjı toparlanmasına bağlı bir turnaround şirketi konumundadır. Güçlü bilanço (net nakit -41.5 B TL, Piotroski 8/9), operasyonel verimlilik (CCC 10 gün, kapasite kullanımı %98) ve lider temettü verimi (%5.73) yatırımcıya cazip gelmektedir. Ancak, marjı kontrol edemez (EPDK düzenlemesi, Hurmuz jeopolitik risk) ve ülke risk primi yüksektir.</p>
+
+    <p><strong>Baz Senaryo (Olasılık %55):</strong> Rafineri marjı 8.5 $/bbl'ye toparlanır; Brent 90 $/bbl'de stabil kalır. Hedef: 220 TL. Bu senaryo, analist konsensüsünün (10.5 $/bbl) daha muhafazakardır ve yönetim rehberi (6–7 $/bbl) ile arası daha dar.</p>
+
+    <p><strong>Tavsiye Kamerası:</strong> Mevcut fiyat (254.50 TL) marjinal olarak aşırı değerlidir. Baz senaryo (220 TL) cazibenin az olduğunu göstermektedir. Analist konsensüsü (289.7 TL) jeopolitik risk priminin devamına (10.5 $/bbl) güvenmektedir; bu premium normalleşirse hisse %40 gerileyebilir. Temettü verimi (%5.73) uzun vadede cazip olmakla birlikte, kısa vadede değer belirsizdir.</p>
+
+    <p><strong>Önerilen Strateji:</strong> (1) Temettü yatırımcıları (5%+ yield ararlar): HOLD / Toparlanmaya katılmak için DCA (ortalama alma) yöntemi. (2) Döngüsel yatırımcılar (marj recovery oynayanlar): Marj +10 $/bbl'ye ulaşana kadar HOLD. (3) Değer yatırımcıları: 200 TL altında AL.  (4) Risk yöneticileri: 248 TL destek kırılırsa ÇIK (Hurmuz risk normalize olmuş demektir).</p>
+
+</div>
+
+<!-- ===== 14. ZORUNLU BİLDİRİMLER ===== -->
+<div class="section">
+    <div class="page-header">
+        <div class="page-header-left">
+            <span class="company-ticker">TUPRS</span>
+            <span class="report-section">Yasal Uyarılar</span>
+        </div>
+        <div class="page-header-right">
+            <div class="brand-mark">TUPRS</div>
+        </div>
+    </div>
+
+    <h2>Zorunlu Bildirimler ve Yasal Uyarılar</h2>
+
+    <h3>Rapor Hazırlama Çerçevesi</h3>
+
+    <p>Bu rapor, Finance X Kurumsal Araştırma Platformu tarafından 12 Nisan 2026 tarihinde hazırlanmıştır. Analiz, Türkiye Cumhuriyet Merkez Bankası (TCMB) kamuya açık verileri, Kamuyu Aydınlatma Platformu (KAP) bildirimleri, Türkiye Petrol Rafinerileri A.Ş. (TUPRS) yönetim kurulu faaliyet raporları ve uluslararası enerji piyasası verilerine dayanmaktadır.</p>
+
+    <h3>Veri Kaynakları ve Sınırlamalar</h3>
+
+    <p><strong>Birincil Kaynaklar:</strong></p>
+    <ul style="margin: 10px 0; padding-left: 20px;">
+        <li>Kamuyu Aydınlatma Platformu (KAP) — Resmi KAP bildirileri ve finansal tablolar</li>
+        <li>TUPRS Yönetim Kurulu Raporları — 2024–2025 konsolide faaliyet raporları</li>
+        <li>Bloomberg Terminal — Enerji fiyatlandırması ve piyasa verileri</li>
+        <li>Trading Economics — Makroekonomik göstergeler</li>
+        <li>Investing.com / MarketScreener — Analist konsensüsü ve peer comparables</li>
+    </ul>
+
+    <p><strong>Sınırlamalar:</strong></p>
+    <ul style="margin: 10px 0; padding-left: 20px;">
+        <li>2025 tam yıl konsolide finansal tablolar 17 Nisan 2026'da yayınlanacaktır; bu rapor 9-aylık veriler ve yönetim rehberesi kullanılarak hazırlanmıştır.</li>
+        <li>IAS 29 (Yüksek Enflasyon Muhasebesi) 2023–2024 yıllarında uygulanmış; 2025'te askıya alınmıştır. Yıllararası ROE karşılaştırması adjusted edilmelidir.</li>
+        <li>Rafineri marjı tahmini, analist konsensüsü ve yönetim rehberesi arasında ±3 $/bbl bandwidth'i mevcuttur.</li>
+        <li>Hurmuz Boğazı jeopolitik riski yakın vadede yüksek volatilitesi nedeniyle, marj projeksiyonları sensitivity analysis gerektirmektedir.</li>
+    </ul>
+
+    <h3>Çıkar Çatışması Bildirimi</h3>
+
+    <p>Finance X Kurumsal Araştırma Platformu, TUPRS veya Koç Holding ile doğrudan veya dolaylı finansal ilişkiye sahip değildir. Bu rapor eğitim ve analitik amaçlarla sunulmuş olup, yatırım tavsiyesi niteliğinde değildir. Okuyucular, yatırım kararlarını almadan önce bağımsız finansal danışman tavsiyesi almalıdır.</p>
+
+    <h3>Projeksyon ve Senaryolar</h3>
+
+    <p>Bu raporda yer alan Bear (110 TL), Baz (220 TL) ve Bull (325 TL) fiyat hedefleri, şu varsayımlara dayanmaktadır:</p>
+
+    <ul style="margin: 10px 0; padding-left: 20px;">
+        <li><strong>Bear:</strong> Brent 75 $/bbl, rafineri marjı 5 $/bbl, WACC %28.5. Olasılık: %25.</li>
+        <li><strong>Baz:</strong> Brent 90 $/bbl, rafineri marjı 8.5 $/bbl, WACC %25. Olasılık: %55.</li>
+        <li><strong>Bull:</strong> Brent 100+ $/bbl, rafineri marjı 12.5 $/bbl, WACC %21. Olasılık: %20.</li>
+    </ul>
+
+    <p>Gerçek sonuçlar, bu varsayımların önemli ölçüde farklılık gösterebilir. Yatırımcılar, bu projeksiyonların dayanmadığı özel çıkmazlara karşı dikkatli olmalıdır.</p>
+
+    <h3>Tarih Notları</h3>
+
+    <p><strong>Rapor Tarihi:</strong> 12 Nisan 2026</p>
+    <p><strong>Veri Kapanış Tarihi:</strong> 12 Nisan 2026 saat 17:00 (Türkiye Saati)</p>
+    <p><strong>Piyasa Koşulları:</strong> Brent Crude 95.20 $/bbl, TUPRS hissesi 254.50 TL, USD/TRY 31.50</p>
+
+    <h3>Güncellemeler ve Revizyonlar</h3>
+
+    <p>Bu rapor, 17 Nisan 2026'da TUPRS tarafından 2025 tam yıl konsolide finansal tabloları yayınlandığında revize edilecektir. Ayrıca, Hurmuz Boğazı jeopolitik müzakereleri sonuçlandığında ve Nisan sonu Q1 2026 marjı açıklandığında veriler güncellenecektir.</p>
+
+    <div class="callout callout-warning">
+        <strong>Önemli:</strong> Bu rapor eğitim amaçlı sunulmaktadır. Finansal karar alma için bağımsız danışman tavsiyesi alınması şiddetle önerilir. Geçmiş dönem performansı, gelecek sonuçları garanti etmez. Yatırımcı, tam kendi riskini taşır.
+    </div>
+
+</div>
+
+</body>
+</html>

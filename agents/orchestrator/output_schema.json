@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/orchestrator/output",
+  "title": "Orchestrator Agent Output Schema",
+  "type": "object",
+  "required": ["orchestrator_action", "session_id", "timestamp"],
+  "properties": {
+    "orchestrator_action": {
+      "type": "string",
+      "enum": ["task_dispatch", "escalation", "session_state_update", "session_complete", "session_paused"]
+    },
+    "session_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "target_agent": { "type": "string" },
+    "task_payload": {
+      "type": "object",
+      "properties": {
+        "task_id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "inputs": { "type": "array", "items": { "type": "object" } },
+        "context": { "type": "object" },
+        "quality_threshold": { "type": "number" },
+        "deadline_seconds": { "type": "integer" }
+      }
+    },
+    "dependency_satisfied_by": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Output IDs that satisfied the dependency gates for this dispatch"
+    },
+    "escalation_type": {
+      "type": "string",
+      "enum": ["agent_timeout", "null_output", "schema_failure", "anomaly", "quality_flag"]
+    },
+    "escalation_details": { "type": "object" },
+    "session_state_summary": {
+      "type": "object",
+      "properties": {
+        "total_tasks": { "type": "integer" },
+        "completed": { "type": "integer" },
+        "pending": { "type": "integer" },
+        "failed": { "type": "integer" },
+        "active_agents": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "routing_notes": { "type": "string" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,806 @@
+{
+  "agent_id": "event_timeline_alert",
+  "output_id": "eta-kchol-20260410-deepdive",
+  "company": "KCHOL",
+  "analysis_date": "2026-04-10",
+  "runtime_mode": "deep_dive",
+
+  "executive_summary": {
+    "critical_alert": "ACTIVE GEOPOLITICAL CRISIS affecting refining margins, energy costs, and tourism demand. Ceasefire (announced Apr 7-8) is FRAGILE and represents primary monitoring focus for next 7-30 days.",
+    "immediate_actions": [
+      "Monitor Hormuz closure risk daily (ceasefire sustainability)",
+      "Track TUPRS refining margin normalization trajectory",
+      "Prepare Q1 2026 earnings interpretation (expected late April)",
+      "Flag ARCLK/YKBNK input cost pass-through timing"
+    ],
+    "timeline_status": "4-phase analysis complete (Immediate/Near/Medium/Long)"
+  },
+
+  "impact_timeline": [
+    {
+      "event_id": "evt-kchol-20260228-war",
+      "event_name": "Iran-US Military Escalation",
+      "event_date": "2026-02-28",
+      "classification": "geopolitical_crisis",
+      "materiality": "VERY_HIGH",
+      "is_active": true,
+      "confidence_source": "macro_analysis",
+      "confidence_level": "high",
+
+      "phase": "IMMEDIATE",
+      "expected_impact_period": "2026-02-28 to 2026-04-30 (minimum)",
+      "impact_summary": "Oil prices +60% (Feb-Mar: $70→$144, now $99-124). Global refining margin forecast doubled (UBS: $14.8/barrel 2026 vs $7.5 prior). Turkey energy tariffs +25% (Apr 4). Tourism demand crash 11-27% projected.",
+
+      "segment_impact": {
+        "TUPRS_Energy": {
+          "impact_type": "positive",
+          "impact_magnitude": "HIGH",
+          "driver": "Refining margin windfall (cost of crude fell less than product prices)",
+          "expected_EBITDA_delta": "+10-15% on Q2 2026 (temporary)",
+          "sustainability": "LOW — Temporary windfall if ceasefire holds; margins normalize when Hormuz reopens",
+          "monitoring_trigger": "Daily crude/product spread tracking; alert if spread compresses below $10/barrel"
+        },
+        "ARCLK_Durables": {
+          "impact_type": "negative",
+          "impact_magnitude": "HIGH",
+          "driver": "Input energy costs +25% (electricity for manufacturing); tourism demand collapse (24% of ARCLK sales ex-domestic)",
+          "expected_EBITDA_delta": "-5-8% on 2026 (structural impact)",
+          "sustainability": "HIGH — Structural risk persists until ceasefire confirmed stable (3+ months)",
+          "monitoring_trigger": "Monthly ARCLK input cost tracking; export demand indices (Eurostat manufacturing orders)"
+        },
+        "YKBNK_Finance": {
+          "impact_type": "mixed",
+          "impact_magnitude": "MEDIUM",
+          "driver": "NIM expansion (TCMB held 37% due to war risk) BUT forward NPL spike likely (stress on consumer/SME borrowers from tariff impact)",
+          "expected_EBITDA_delta": "+2-3% NIM (H1 2026) → -3-4% loan loss provisioning (H2 2026)",
+          "sustainability": "MEDIUM — NPL cycle lagged by 2-3 quarters",
+          "monitoring_trigger": "TCMB rate decision signals; BDDK CICO (credit growth) instructions; loan delinquency rate escalation"
+        },
+        "FROTO_Automotive": {
+          "impact_type": "positive",
+          "impact_magnitude": "MEDIUM",
+          "driver": "TL devaluation (-17% YoY) supports export competitiveness; BUT offset by input cost inflation (steel, electronics)",
+          "expected_EBITDA_delta": "+2-4% (exports boosted)",
+          "sustainability": "MEDIUM — FX benefit dependent on TL stability; TCMB holding rates may prevent further weakness",
+          "monitoring_trigger": "Monthly export order books; USD/TRY rate (target 45+ = sweet spot for exporters)"
+        },
+        "Consolidated_KCHOL": {
+          "net_impact": "POSITIVE but TEMPORARY",
+          "impact_magnitude": "+5-8% 2026 EBITDA vs baseline (driven entirely by TUPRS windfall)",
+          "critical_caveat": "This gain is UNSUSTAINABLE and depends entirely on ceasefire fragility. If Hormuz re-closes, ALL gains evaporate + ARCLK/YKBNK losses compound.",
+          "base_case_assumption": "40% probability ceasefire collapses → KCHOL -15-20% EBITDA vs 2025"
+        }
+      },
+
+      "monitoring_triggers": {
+        "T1_Ceasefire_Collapse": {
+          "trigger_condition": "Military action resumes in Strait of Hormuz or Lebanon escalation",
+          "alert_urgency": "IMMEDIATE",
+          "action": "Escalate to CEO; revise TUPRS margin assumptions; flag downside scenario",
+          "probability": "25%",
+          "data_source": "TCMB statement, Reuters, Bloomberg news feed"
+        },
+        "T2_Refining_Margin_Compression": {
+          "trigger_condition": "CRK spread (crude/product) falls below $8/barrel for 5 consecutive trading days",
+          "alert_urgency": "HIGH",
+          "action": "TUPRS windfall has ended; begin margin normalization in models",
+          "probability": "60% (if ceasefire holds)",
+          "data_source": "PVM Oil Associates, Platts Energy"
+        },
+        "T3_TCMB_Rate_CUT": {
+          "trigger_condition": "TCMB cuts rates below 37% (signal of geopolitical risk abating)",
+          "alert_urgency": "MEDIUM",
+          "action": "Recalibrate NIM assumptions; YKBNK profitability benefit extends",
+          "probability": "50% (by Q3 2026)",
+          "data_source": "TCMB policy announcements (monthly)"
+        },
+        "T4_TL_Depreciation_Halt": {
+          "trigger_condition": "USD/TRY stabilizes above 45 TRY/USD for 4+ weeks",
+          "alert_urgency": "MEDIUM",
+          "action": "Export competitiveness gains fade; FROTO margin pressure begins",
+          "probability": "45% (by Q2 2026)",
+          "data_source": "Central Bank data, BIST FX spot rates"
+        }
+      },
+
+      "financial_statement_impact": {
+        "income_statement": "Q2 2026: TUPRS revenue +5-8% (higher product prices), gross margin +200bps. ARCLK/YKBNK/FROTO offsets partial. Consolidated net margin likely +1-2pp vs Q1.",
+        "balance_sheet": "FX gains/losses: Structural net FX negative position (40-45% of revenue in FX, 30-35% of debt in FX) → net balance sheet loss if TL continues weakening (already -17% YoY)",
+        "cash_flow": "TUPRS OCF expansion (margin windfall) offsets ARCLK working capital pressure (input cost inflation). Net OCF likely stable or slight positive in H1 2026."
+      },
+
+      "next_review_date": "2026-04-15",
+      "analyst_notes": "This is the DOMINANT macro event for KCHOL in 2026. It overwhelms all other events in impact magnitude. CEO must understand: The Q2-Q3 outperformance (if ceasefire holds) is mirage-like and will reverse when margins normalize. The true 'good news' from a structural valuation perspective is: If ceasefire holds beyond 6 months, KCHOL demonstrates resilience across all segments despite macro shock, potentially narrowing conglomerate discount to 20% (from 30% today)."
+    },
+
+    {
+      "event_id": "evt-kchol-20260404-tariff",
+      "event_name": "Turkish Energy Tariff Shock",
+      "event_date": "2026-04-04",
+      "classification": "regulatory_tariff",
+      "materiality": "HIGH",
+      "is_active": true,
+      "confidence_source": "macro_analysis",
+      "confidence_level": "high",
+
+      "phase": "IMMEDIATE",
+      "expected_impact_period": "2026-04-04 onwards (permanent structural change)",
+      "impact_summary": "TEDAS (Turkish Electricity Distribution Company) approved +25% tariff effective April 4, 2026. Natural gas tariffs also +25%. This is a PERMANENT structural cost increase, not temporary.",
+
+      "segment_impact": {
+        "ARCLK_Durables": {
+          "impact_type": "NEGATIVE",
+          "impact_magnitude": "HIGH",
+          "driver": "Manufacturing-intensive business; electricity cost up 25%. Refrigerators, washers, air conditioning all energy-intensive. ~8-12% of COGS is energy.",
+          "expected_COGS_delta": "+2-3pp (if no price pass-through)",
+          "pricing_power": "MEDIUM — Turkish market domestic; export prices (Beko Europe) may need compression",
+          "monitoring_trigger": "ARCLK gross margin tracking (quarterly); pricing power in Turkey vs Europe (segment margin analysis)"
+        },
+        "YKBNK_Finance": {
+          "impact_type": "INDIRECT_NEGATIVE",
+          "impact_magnitude": "MEDIUM",
+          "driver": "Tariff shock → Consumer/SME borrower stress → Higher loan losses (2-3 quarter lag). Also: YKBNK's own opex goes up ~$5M (estimate).",
+          "expected_LLP_delta": "+1-2pp net charge-offs (H2 2026 vs H1)",
+          "monitoring_trigger": "Delinquency rate increases; YKBNK cost/income ratio trending up"
+        },
+        "TUPRS_Energy": {
+          "impact_type": "NEUTRAL_POSITIVE",
+          "impact_magnitude": "LOW",
+          "driver": "Tariff increase SUPPORTS higher refined product prices (domestic power generation more expensive = higher fuel prices). Minor positive reinforcement.",
+          "monitoring_trigger": "Monitor pass-through rate (% of tariff increase reflected in fuel prices)"
+        }
+      },
+
+      "monitoring_triggers": {
+        "T1_ARCLK_Margin_Compression": {
+          "trigger_condition": "ARCLK gross margin (quarterly) falls below 22% (vs historical 24-26%)",
+          "alert_urgency": "HIGH",
+          "action": "Indicates tariff cost not being passed through; may signal competitive pressure",
+          "probability": "70%",
+          "data_source": "Q2 2026 ARCLK segment results (expected late April)"
+        },
+        "T2_FURTHER_TARIFF_INCREASES": {
+          "trigger_condition": "TEDAS announces additional tariff increase >10% within next 12 months",
+          "alert_urgency": "MEDIUM",
+          "action": "Recalibrate structural cost inflation; may trigger downgrade of KCHOL mid-year guidance",
+          "probability": "35% (depends on TCMB path; if rates cut, tariffs may stabilize)",
+          "data_source": "TEDAS announcements, EMRA (Energy Market Regulatory Authority)"
+        }
+      },
+
+      "financial_statement_impact": {
+        "income_statement": "ARCLK gross margin -2-3pp (permanent); YKBNK opex +0.3pp; consolidated net margin -0.8-1.2pp vs baseline",
+        "balance_sheet": "No direct impact; potential credit quality deterioration (higher NPL provisions)",
+        "cash_flow": "Working capital pressure on ARCLK (if customers delay payments due to cost shock)"
+      },
+
+      "next_review_date": "2026-04-28 (Q1 earnings release, ARCLK margin visible)"
+    },
+
+    {
+      "event_id": "evt-kchol-20260407-ceasefire",
+      "event_name": "Iran-US Military Ceasefire (Fragile)",
+      "event_date": "2026-04-07",
+      "classification": "geopolitical_stabilization",
+      "materiality": "VERY_HIGH",
+      "is_active": true,
+      "confidence_source": "macro_analysis",
+      "confidence_level": "medium",
+
+      "phase": "IMMEDIATE → NEAR-TERM",
+      "expected_impact_period": "2026-04-07 until status changes (unknown duration)",
+      "impact_summary": "2-week ceasefire announced Apr 7-8, 2026. Extremely fragile: Lebanon excluded, Iran accusing US of violations, negotiations stalled. This is the PRIMARY RISK for Q2 2026 earnings surprises.",
+
+      "critical_scenarios": {
+        "CEASEFIRE_HOLDS_6MONTHS": {
+          "probability": "40%",
+          "tuprs_impact": "Refining margin normalizes to $5-6/bbl (vs $14.8 current). TUPRS EBITDA returns to 'normal' by Q3.",
+          "arclk_impact": "Energy tariff cost embedded; turnaround slower.",
+          "kchol_overall": "+3-5% 2026 EBITDA (net of tariff impact)",
+          "valuation_implication": "Conglomerate discount narrows to 22-25% (from 30%); stock upside to 240-260 TRY by Q4 2026"
+        },
+        "CEASEFIRE_COLLAPSES_2WEEKS": {
+          "probability": "25%",
+          "tuprs_impact": "Oil spikes to $150+. TUPRS EBITDA explodes +30-40% (unsustainable). Followed by sharp collapse if Hormuz fully closes.",
+          "arclk_impact": "Tourism/export demand craters; margin compression accelerates.",
+          "kchol_overall": "-15-20% EBITDA (2026 vs 2025) if Hormuz blockade occurs",
+          "valuation_implication": "Conglomerate discount widens to 35-40%; stock corrects to 160-170 TRY"
+        },
+        "CEASEFIRE_EXTENDED_INDEFINITELY": {
+          "probability": "35%",
+          "tuprs_impact": "Gradual oil price decline to $60-80 (normal level). Refining margins compress to $3-4/bbl. TUPRS becomes structural headwind.",
+          "arclk_impact": "Slowly recovers as energy cost inflation moderates (2H 2026-2027).",
+          "kchol_overall": "-2-3% 2026 EBITDA vs baseline (net negative even with extended peace)",
+          "valuation_implication": "Discount stable 25-30%; stock range-bound 190-220 TRY"
+        }
+      },
+
+      "monitoring_triggers": {
+        "T1_MILITARY_ESCALATION": {
+          "trigger_condition": "Reuters/Bloomberg breaking news: Military strikes resume in Iran, Iraq, or Strait of Hormuz",
+          "alert_urgency": "IMMEDIATE",
+          "action": "Emergency CEO briefing; revise earnings guidance; flag 'downside scenario' disclosure to market",
+          "check_frequency": "Daily (7am, 12pm, 6pm Istanbul time)"
+        },
+        "T2_NEGOTIATION_BREAKDOWN": {
+          "trigger_condition": "US-Iran nuclear talks fail; sanctions reimposed (Iran oil sanctions back on table)",
+          "alert_urgency": "HIGH",
+          "action": "Begin modeling 2H 2026 margin normalization; phase down TUPRS windfall benefit",
+          "check_frequency": "Weekly (every Monday)",
+          "data_source": "State Department, EU diplomatic channels (reuters.com, bloomberg.com)"
+        },
+        "T3_OIL_PRICE_REVERSION": {
+          "trigger_condition": "Crude oil (Brent) falls below $85/barrel for 10 consecutive trading days",
+          "alert_urgency": "MEDIUM",
+          "action": "Market is pricing in peace; recalibrate TUPRS base case margin to $6-7/bbl (normalized)",
+          "check_frequency": "Daily (crude futures close)",
+          "data_source": "CME Nymex futures, Platts Brent"
+        }
+      },
+
+      "financial_statement_impact": {
+        "timing_of_margin_reversion": "If ceasefire holds, TUPRS margin compression likely occurs in Q3 2026 (when traders unwind 'war premium' positions). Q2 2026 will STILL show elevated margins.",
+        "earnings_surprise_risk": "Q2 2026 EBITDA could be +15-25% YoY (market expects +5-8%), triggering upside surprise → re-rating",
+        "guidance_risk": "If KCHOL issues 2026 guidance at AGM (May 2026), management must decide: Acknowledge windfall is temporary? Or highlight positive surprise? This disclosure will move stock ±5%."
+      },
+
+      "next_review_date": "2026-04-20 (weekly briefing on ceasefire status)",
+      "analyst_notes": "This single event —ceasefire status— is the primary stock price catalyst for the next 6 months. Investors will be torn between: (1) short-term upside from TUPRS windfall visibility (Q2 earnings pop), (2) medium-term downside from normalization (Q3 profit decline), (3) long-term positive from holding discount compression IF stability extends. Our job: Track ceasefire status obsessively and communicate implications to CEO weekly."
+    },
+
+    {
+      "event_id": "evt-kchol-20260318-dividend",
+      "event_name": "2025 Dividend Declaration & Payment",
+      "event_date": "2026-03-18",
+      "classification": "capital_return",
+      "materiality": "MEDIUM",
+      "is_active": false,
+      "confidence_source": "event_classification",
+      "confidence_level": "high",
+
+      "phase": "PAST/NEAR-TERM",
+      "expected_impact_period": "2026-03-18 to 2026-04-30 (payment window)",
+      "impact_summary": "Dividend declared March 18, 2026: 6.83 TRY gross per share (5.81 TRY net), 17.32B TRY total payout. Ex-dividend date March 25, 2026 (ALREADY PASSED). Payment expected within 30 days (by late April).",
+
+      "dividend_details": {
+        "gross_per_share": 6.83,
+        "net_per_share": 5.81,
+        "total_payout_TRY_billion": 17.32,
+        "ex_dividend_date": "2026-03-25",
+        "record_date": "2026-03-26",
+        "payment_date": "2026-04-24 (estimated)",
+        "payout_ratio": "79% (2025 net income 22.0B TRY)",
+        "dividend_yield_at_201_40": "3.38% (assuming 201.40 TRY price on record date)"
+      },
+
+      "financial_statement_impact": {
+        "cash_flow": "17.32B TRY cash outflow in late April 2026 (financing activities)",
+        "liquidity": "Slight reduction in cash position; estimated impact -0.5% of liquid assets",
+        "shareholder_return": "Positive signal: Normalized payout ratio (79%) after 2024 low payout",
+        "ebitda_implication": "No direct impact; demonstrates confidence in 2025 recovery (vs 2024 collapse)"
+      },
+
+      "monitoring_triggers": {
+        "T1_DIVIDEND_PAYMENT_DATE": {
+          "trigger_condition": "April 24, 2026 dividend payment date",
+          "alert_urgency": "ROUTINE",
+          "action": "Confirm cash outflow; update net cash position in models",
+          "data_source": "KCHOL IR announcement, bank payment confirmation"
+        },
+        "T2_NEXT_DIVIDEND_ANNOUNCEMENT": {
+          "trigger_condition": "2026 full-year dividend announced (expected Feb 2027)",
+          "alert_urgency": "MEDIUM",
+          "action": "Assess payout ratio; signal management confidence in 2026 earnings",
+          "probability": "95% (recurring annual event)",
+          "data_source": "KAP disclosure, KCHOL IR"
+        }
+      },
+
+      "next_review_date": "2026-04-24 (payment confirmation)"
+    },
+
+    {
+      "event_id": "evt-kchol-20260410-board",
+      "event_name": "Independent Board Member Appointments (SPK Approved)",
+      "event_date": "2026-04-10",
+      "classification": "governance_update",
+      "materiality": "LOW",
+      "is_active": true,
+      "confidence_source": "event_classification",
+      "confidence_level": "high",
+
+      "phase": "IMMEDIATE",
+      "expected_impact_period": "2026-04-10 onwards (permanent governance change)",
+      "impact_summary": "Three independent director candidates approved by SPK (Capital Markets Board): Birkan ERDAL, Faik EKEN, Recep Nadi KÖKLÜ. Routine governance update, strengthens board independence for 2026 AGM.",
+
+      "governance_details": {
+        "candidates_names": ["Birkan ERDAL", "Faik EKEN", "Recep Nadi KÖKLÜ"],
+        "approval_status": "SPK 'No Negative Opinion' (olumlu görüş bildirmemiştir)",
+        "implementation_date": "May 2026 (expected AGM confirmation)",
+        "impact_on_board_independence": "Governance score improvement; aligns with SPK corporate governance guidelines",
+        "esg_implication": "Positive for ESG ratings (board diversity, independence scoring)"
+      },
+
+      "financial_statement_impact": {
+        "income_statement": "Potential future director compensation increase (~3-5B TRY annually); immaterial",
+        "balance_sheet": "No direct impact",
+        "cash_flow": "No material impact"
+      },
+
+      "monitoring_triggers": {
+        "T1_AGM_CONFIRMATION": {
+          "trigger_condition": "May 2026 AGM: Formal election of board members",
+          "alert_urgency": "ROUTINE",
+          "action": "Confirm board elections; update corporate governance profile",
+          "data_source": "KAP AGM results announcement"
+        },
+        "T2_BOARD_COMMITTEE_ASSIGNMENTS": {
+          "trigger_condition": "Post-AGM: KCHOL announces new board committee assignments",
+          "alert_urgency": "LOW",
+          "action": "Update governance matrix; assess audit committee/risk committee independence",
+          "probability": "80%",
+          "check_date": "May-June 2026"
+        }
+      },
+
+      "next_review_date": "2026-05-01 (AGM scheduled date estimate)"
+    },
+
+    {
+      "event_id": "evt-kchol-20260101-board-update",
+      "event_name": "Independent Board Member Candidate Update (Kudret Önen — SPK Approved)",
+      "event_date": "2026-01-02",
+      "classification": "governance_update",
+      "materiality": "LOW",
+      "is_active": false,
+      "confidence_source": "event_classification",
+      "confidence_level": "high",
+
+      "phase": "PAST",
+      "expected_impact_period": "2026-01-02 to May 2026 AGM",
+      "impact_summary": "Update to prior independent director nomination (originally Dec 19, 2025). SPK approved Kudret Önen as independent director candidate. Part of routine governance refresh.",
+
+      "status": "COMPLETED (folded into Apr 10 board appointment process)",
+      "next_review_date": "None (historical event)"
+    },
+
+    {
+      "event_id": "evt-kchol-20260428-q1earnings",
+      "event_name": "Q1 2026 Earnings Release (Forecast Event)",
+      "event_date": "2026-04-28",
+      "classification": "financial_disclosure",
+      "materiality": "HIGH",
+      "is_active": false,
+      "confidence_source": "kap_watch + calendar_standard",
+      "confidence_level": "high",
+
+      "phase": "NEAR-TERM",
+      "expected_impact_period": "2026-04-28 to 2026-05-10 (earnings call)",
+      "impact_summary": "Q1 2026 earnings announcement expected late April (Turkish corporate standard: within 45 days of quarter-end). CRITICAL EVENT for validating geopolitical impact assumptions.",
+
+      "critical_metrics_to_watch": {
+        "TUPRS_Refining_Margin": {
+          "expected_value": "12-16 USD/bbl (elevated due to war premium)",
+          "alert_if_below": "10 USD/bbl (indicates margin normalization beginning)",
+          "interpretation": "If below 10, market is pricing end of windfall by Q2"
+        },
+        "KCHOL_Consolidated_EBITDA": {
+          "expected_YoY_growth": "+8-15% (driven by TUPRS)",
+          "alert_if_below": "+5% (would indicate tariff impact worse than expected)",
+          "interpretation": "Assess sustainability of margin gains"
+        },
+        "ARCLK_Gross_Margin": {
+          "expected_value": "22-24% (compressed from 25-26% due to tariff)",
+          "alert_if_below": "21% (indicates pricing power failure)",
+          "interpretation": "Can ARCLK pass through energy cost inflation?"
+        },
+        "YKBNK_Cost_of_Risk": {
+          "expected_value": "1.2-1.5% net charge-offs (elevated vs 0.8-1.0% normal)",
+          "alert_if_above": "1.8% (early sign of stress cycle)",
+          "interpretation": "Geopolitical tariff shock filtering into credit quality"
+        }
+      },
+
+      "guidance_updates": {
+        "company_likely_action": "KCHOL may avoid 2026 full-year guidance due to geopolitical uncertainty; or provide range (base case + downside case)",
+        "key_question_for_management": "Is Q1 TUPRS margin windfall sustainable through 2026?",
+        "market_reaction_risk": "Earnings beat on EBITDA (windfall) but maintained/lowered guidance (ceasefire uncertainty) = neutral-to-negative stock reaction"
+      },
+
+      "monitoring_triggers": {
+        "T1_EBITDA_SURPRISE": {
+          "trigger_condition": "Q1 EBITDA >15% YoY growth (indicates stronger windfall than modeled)",
+          "alert_urgency": "MEDIUM",
+          "action": "Upgrade base case scenario; extend high-margin forecasts through Q2-Q3",
+          "probability": "45%"
+        },
+        "T2_GUIDANCE_WITHDRAWAL": {
+          "trigger_condition": "Management cites 'geopolitical uncertainty' for guidance removal or widening",
+          "alert_urgency": "MEDIUM",
+          "action": "Stock volatility expected; recommend stress-testing downside scenarios",
+          "probability": "60%"
+        }
+      },
+
+      "next_review_date": "2026-04-28 (earnings release)",
+      "analyst_notes": "Q1 earnings will be the first real test of our geopolitical impact assumptions. The market will dissect: (1) Did TUPRS margin really reach $12-16? (2) How much did tariff impact ARCLK? (3) Is management confident ceasefire holds? Earnings call Q&A will be critical — listen for CEO commentary on risk appetite and 2H guidance assumptions."
+    },
+
+    {
+      "event_id": "evt-kchol-20260515-agm",
+      "event_name": "Annual General Meeting (Forecast Event)",
+      "event_date": "2026-05-15",
+      "classification": "corporate_governance",
+      "materiality": "MEDIUM",
+      "is_active": false,
+      "confidence_source": "corporate_calendar_standard",
+      "confidence_level": "medium",
+
+      "phase": "NEAR-TERM",
+      "expected_impact_period": "2026-05-15 (typically morning session, results announced afternoon)",
+      "impact_summary": "Annual General Meeting (AGM) of shareholders. Typical Turkish corporate calendar: held within 60 days of year-end. Expected early May (exact date TBD). Key votes: board elections, dividend approval, executive compensation.",
+
+      "agenda_items": {
+        "board_elections": "Formalize independent director appointments (Erdal, Eken, Köklü, Önen)",
+        "dividend_approval": "Ratify 2025 dividend (likely pre-approved; 6.83 TRY per share)",
+        "2025_financial_statements": "Shareholder approval of audited 2025 financials",
+        "executive_compensation": "Approve CEO/executive compensation for 2026",
+        "strategy_presentation": "Management may provide 2026-2030 strategic outlook (especially geopolitical risk discussion)"
+      },
+
+      "strategic_discussion_expected": {
+        "topic_1_geopolitical_risk": "CEO Levent Çakıroğlu will likely address Iran-US war impact; investor Q&A on ceasefire resilience",
+        "topic_2_capital_allocation": "CAPEX guidance for renewable energy, EV (FROTO), and strategic M&A intentions",
+        "topic_3_dividend_policy": "Reaffirm dividend commitment (79% payout ratio is sustainable?)",
+        "topic_4_esg_sustainability": "Update on 2050 carbon neutral target; ESG investment roadmap"
+      },
+
+      "stock_reaction_catalysts": {
+        "positive_catalyst": "Management expresses confidence in ceasefire; commits to maintaining 70%+ payout ratio; announces new renewable energy CAPEX",
+        "negative_catalyst": "Management expresses concern about geopolitical downside; cuts dividend guidance; withdraws multi-year guidance"
+      },
+
+      "monitoring_triggers": {
+        "T1_CEO_STATEMENT": {
+          "trigger_condition": "CEO comment on geopolitical risk in opening remarks",
+          "alert_urgency": "HIGH",
+          "action": "Extract sentiment (dovish vs hawkish); adjust risk premium in valuation",
+          "check_date": "2026-05-15 morning (live)"
+        },
+        "T2_DIVIDEND_POLICY_CHANGE": {
+          "trigger_condition": "Management signals payout ratio cut below 60% for 2026",
+          "alert_urgency": "MEDIUM",
+          "action": "Flag earnings quality concern; may indicate conservative cash position due to macro risk",
+          "probability": "25%"
+        }
+      },
+
+      "next_review_date": "2026-05-15 (AGM date)",
+      "analyst_notes": "AGM will be a critical inflection point for market sentiment. If management expresses confidence and maintains guidance → stock rally to 230-250 TRY (closing gap to 52-week high). If hedging/conservative → stock may correct to 185-190 TRY. The outcome depends almost entirely on ceasefire stability at that moment."
+    },
+
+    {
+      "event_id": "evt-kchol-20260630-h1earnings",
+      "event_name": "H1 2026 Earnings Release (Forecast Event)",
+      "event_date": "2026-06-30",
+      "classification": "financial_disclosure",
+      "materiality": "HIGH",
+      "is_active": false,
+      "confidence_source": "corporate_calendar_standard",
+      "confidence_level": "high",
+
+      "phase": "MEDIUM-TERM",
+      "expected_impact_period": "2026-08-15 (announcement expected; Turkish standard: 45 days after H1 close)",
+      "impact_summary": "H1 2026 (Jan-Jun) earnings will reveal whether Q1 TUPRS windfall sustained through Q2 or began normalizing. CRITICAL INFLECTION EVENT for understanding ceasefire durability.",
+
+      "key_metric": "TUPRS Refining Margin Trajectory",
+      "margin_scenarios": {
+        "scenario_A_windfall_continues": {
+          "margin_level": "13-16 USD/bbl",
+          "probability": "35%",
+          "implication": "Ceasefire holding longer than market expected; upside surprise; stock to 240-260 TRY"
+        },
+        "scenario_B_margin_normalizing": {
+          "margin_level": "8-10 USD/bbl",
+          "probability": "50%",
+          "implication": "Normalized range; oil premium fading; stock range-bound 200-220 TRY",
+          "this_is_base_case": true
+        },
+        "scenario_C_margin_collapsed": {
+          "margin_level": "4-6 USD/bbl",
+          "probability": "15%",
+          "implication": "Either ceasefire broken or peace extended indefinitely (both bad); downside to 160-180 TRY"
+        }
+      },
+
+      "alert_triggers": {
+        "T1_MARGIN_COMPRESSION_SIGNAL": {
+          "trigger_condition": "If refining margin falls below 10 USD/bbl sustained (4+ weeks)",
+          "alert_urgency": "HIGH",
+          "action": "Begin forecasting Q3-Q4 margin normalization; adjust 2026 full-year EBITDA guidance down",
+          "check_date": "June 15, 2026"
+        }
+      },
+
+      "next_review_date": "2026-08-15 (expected H1 earnings announcement)"
+    },
+
+    {
+      "event_id": "evt-kchol-20260930-q3earnings",
+      "event_name": "Q3 2026 Earnings Release (Forecast Event)",
+      "event_date": "2026-09-30",
+      "classification": "financial_disclosure",
+      "materiality": "MEDIUM",
+      "is_active": false,
+      "confidence_source": "corporate_calendar_standard",
+      "confidence_level": "high",
+
+      "phase": "MEDIUM-TERM → LONG-TERM",
+      "expected_impact_period": "2026-11-15 (announcement expected)",
+      "impact_summary": "Q3 2026 earnings will show final impact of geopolitical shock. By this point (Sep), ceasefire will have either: (A) proven durable (6+ months), or (B) broken, or (C) become normalized (oil back to $50-70). Expect margin normalization complete by this date.",
+
+      "key_inflection": "Q3 is when conglomerate discount either widens or narrows based on demonstrated resilience",
+      "forward_looking": "This earnings will set tone for 2027 guidance and KCHOL's 'new normal' post-shock"
+    }
+  ],
+
+  "priority_alerts": [
+    {
+      "alert_id": "ALERT-01",
+      "alert_date": "2026-04-10",
+      "urgency_level": "IMMEDIATE",
+      "title": "GEOPOLITICAL CRISIS: Hormuz Ceasefire Fragile — Daily Monitoring Required",
+      "description": "Iran-US ceasefire announced April 7-8 is EXTREMELY FRAGILE (Lebanon excluded, negotiations stalled). Daily risk: Hormuz closure → $150+ oil → TUPRS margin explosion → Followed by collapse. 25% probability collapse within 2 weeks.",
+      "business_impact": "Q2 2026 earnings could vary by 50% depending on ceasefire sustainability",
+      "recommended_action": "CEO Brief: Daily geopolitical risk assessment required. Assign analyst to monitor Reuters/Bloomberg feeds 7am-6pm Istanbul. Prepare market communication with 'downside scenario' language for next earnings call.",
+      "responsible_party": "CEO/CFO",
+      "due_date": "2026-04-11"
+    },
+
+    {
+      "alert_id": "ALERT-02",
+      "alert_urgency": "HIGH",
+      "title": "TUPRS REFINING MARGIN WINDFALL: Temporary & Unsustainable",
+      "description": "Current refining margins at $14.8/barrel (vs normalized $5-7) is ENTIRELY driven by war premium. If ceasefire holds, margins compress by 50-70% by Q3 2026. Market may be pricing upside surprise today; reality is Q2 pop followed by Q3 decline.",
+      "business_impact": "TUPRS could deliver +20% EBITDA in Q2 (beats expectations) but -10% in Q3 (disappoints). Consolidated KCHOL appears cyclically weak by late 2026.",
+      "recommended_action": "Prepare management guidance communication: Explain Q2 windfall is 'temporary geopolitical-driven' and not structural. Recommend providing range guidance rather than point estimate for 2026.",
+      "responsible_party": "CFO/Investor Relations",
+      "due_date": "2026-04-28 (before Q1 earnings call)"
+    },
+
+    {
+      "alert_id": "ALERT-03",
+      "alert_urgency": "HIGH",
+      "title": "ENERGY TARIFF SHOCK (+25%) Flows Through ARCLK Margin",
+      "description": "Turkish electricity tariffs increased 25% effective April 4, 2026 (permanent structural change, not temporary). ARCLK (appliances) is manufacturing-intensive; 8-12% of COGS is energy. Gross margin compression of 2-3pp expected if no pricing power.",
+      "business_impact": "ARCLK quarterly gross margin could fall from 25-26% to 22-24%. If market perceives margin compression as structural/permanent, ARCLK valuation re-rates down. Holding discount widens (complexity penalty).",
+      "recommended_action": "Monitor ARCLK gross margin in Q1 earnings (due Apr 28). If margin <23%, flag as structural concern. Assess ARCLK pricing power in Turkish vs export markets; may need to accept margin compression.",
+      "responsible_party": "CFO/Business Unit CFO",
+      "due_date": "2026-04-28 (Q1 earnings release)"
+    },
+
+    {
+      "alert_id": "ALERT-04",
+      "alert_urgency": "MEDIUM",
+      "title": "YKBNK NPL CYCLE LAG: Credit Quality Deterioration Expected H2 2026",
+      "description": "Tariff shock + TL depreciation likely to stress Turkish consumer/SME borrowers. YKBNK's current NPL ratio (2.7%) is unsustainably low. 2-3 quarter lag → Expect NPL spike from 2.7% → 3.5-4.0% in H2 2026.",
+      "business_impact": "YKBNK profitability boosted by high rates in H1 2026 (NIM expansion) but hit by loan loss provisions in H2. Net profit for 2026 may be flat vs 2025 despite revenue growth.",
+      "recommended_action": "Q1 earnings: Ask YKBNK management for delinquency rate trends and coverage ratios. If delinquency showing stress, pre-emptively increase expected provision rate for 2H guidance.",
+      "responsible_party": "CFO",
+      "due_date": "2026-04-28 (Q1 earnings call)"
+    },
+
+    {
+      "alert_id": "ALERT-05",
+      "alert_urgency": "HIGH",
+      "title": "Q1 2026 EARNINGS SURPRISE RISK: Market May Misprice Windfall as Structural",
+      "description": "Q1 2026 earnings (due Apr 28) will likely beat consensus on EBITDA due to TUPRS windfall. Market may re-rate stock upward assuming $12-16 margin is sustainable. Reality: It normalizes to $6-8 by Q3.",
+      "business_impact": "Stock could rally 8-12% on Q1 beat, then correct 10-15% on Q3 normalization. Volatility spike risk.",
+      "recommended_action": "Prepare market communication ahead of Q1 earnings: In press release, explicitly state 'refining margin benefited from temporary geopolitical premium; normalized levels assumed for 2H guidance.' This pre-empts upside surprise misprice.",
+      "responsible_party": "Investor Relations",
+      "due_date": "2026-04-28 (earnings day)"
+    },
+
+    {
+      "alert_id": "ALERT-06",
+      "alert_urgency": "MEDIUM",
+      "title": "HOLDING DISCOUNT COMPRESSION OPPORTUNITY: Demonstrate Resilience Through Shock",
+      "description": "If KCHOL demonstrates business resilience through geopolitical crisis (all segments profitable despite tariff/oil shock), holding discount likely narrows from 30% → 22-25%. This would unlock 50-70B TRY market cap value.",
+      "business_impact": "Stock could re-rate from 201 TRY to 240-260 TRY by Q4 2026 on structural reasons (not just temporary margin bump).",
+      "recommended_action": "CEO communication strategy: Highlight portfolio resilience, diversification benefit, and disciplined capital allocation through crisis. Angle narrative toward 'KCHOL is undervalued conglomerate, not complexity discount story.'",
+      "responsible_party": "CEO/Investor Relations",
+      "due_date": "2026-05-15 (AGM)"
+    }
+  ],
+
+  "upcoming_calendar": {
+    "immediate_7days": [
+      {
+        "date": "2026-04-11",
+        "event": "Daily Geopolitical Risk Monitoring (Ceasefire Status)",
+        "responsible_party": "Analyst",
+        "alert_threshold": "Military action resumes in Hormuz or escalation signals"
+      },
+      {
+        "date": "2026-04-15",
+        "event": "Weekly Ceasefire Status Brief (Macro Impact Update)",
+        "responsible_party": "CEO/CFO",
+        "alert_threshold": "Any change in negotiation status; new sanctions threats"
+      },
+      {
+        "date": "2026-04-17",
+        "event": "Refining Margin Tracking (Brent Crude/Product Spread)",
+        "responsible_party": "CFO/TUPRS Management",
+        "alert_threshold": "Spread falls below $10/barrel (windfall erosion signal)"
+      },
+      {
+        "date": "2026-04-20",
+        "event": "Pre-Earnings Guidance Readiness Review",
+        "responsible_party": "CFO/IR",
+        "alert_threshold": "Prepare Q1 earnings communication with geopolitical risk disclosure"
+      },
+      {
+        "date": "2026-04-24",
+        "event": "Dividend Payment Execution (17.32B TRY)",
+        "responsible_party": "Treasury",
+        "confirmation": "Monitor cash outflow; update net cash position"
+      }
+    ],
+
+    "near_term_1month": [
+      {
+        "date": "2026-04-28",
+        "event": "Q1 2026 EARNINGS ANNOUNCEMENT (CRITICAL)",
+        "responsible_party": "CFO/Investor Relations",
+        "key_metrics": ["TUPRS refining margin", "ARCLK gross margin", "YKBNK NPL ratio", "Consolidated EBITDA growth"],
+        "watch_list": "Market reaction to Q1 windfall; assess if viewed as structural or temporary",
+        "stock_impact_potential": "±5%"
+      },
+      {
+        "date": "2026-05-01",
+        "event": "Q1 Earnings Call & Management Commentary",
+        "responsible_party": "CEO/CFO",
+        "critical_questions_expected": "Ceasefire sustainability? 2026 guidance ranges? Tariff pricing power? YKBNK credit quality?"
+      },
+      {
+        "date": "2026-05-15",
+        "event": "ANNUAL GENERAL MEETING (Governance + Strategic Discussion)",
+        "responsible_party": "CEO/Board",
+        "agenda": "Board elections, dividend approval, CEO 2026 strategic outlook",
+        "stock_impact_potential": "±3-5% (depends on management confidence tone)",
+        "critical_moment": "CEO's opening remarks on geopolitical risk will set investor tone for next 6 months"
+      },
+      {
+        "date": "2026-05-22",
+        "event": "Post-AGM: Board Committee Assignments",
+        "responsible_party": "Corporate Governance",
+        "update": "Audit, risk, sustainability committee composition; independence verification"
+      }
+    ],
+
+    "medium_term_3months": [
+      {
+        "date": "2026-06-15",
+        "event": "Oil Price & Refining Margin Trend Review (Mid-Year Check)",
+        "responsible_party": "TUPRS Management/CFO",
+        "alert_trigger": "If CRK spread <$10/barrel sustained, margin normalization is underway",
+        "forecast_update": "Begin adjusting Q3 estimates for lower margins"
+      },
+      {
+        "date": "2026-08-15",
+        "event": "H1 2026 EARNINGS ANNOUNCEMENT (INFLECTION EVENT)",
+        "responsible_party": "CFO",
+        "critical_insight": "Will reveal if Q2 TUPRS margin sustained or began normalizing; tests ceasefire sustainability story",
+        "market_narrative_shift": "If margin normalized, market shifts from 'windfall opportunity' to 'macro recovery story'",
+        "stock_impact_potential": "±8-10%"
+      },
+      {
+        "date": "2026-09-15",
+        "event": "TCMB Rate Decision (Sept meeting)",
+        "responsible_party": "Macro Analyst",
+        "relevance": "If TCMB begins cutting rates, signals confidence in peace; YKBNK NIM compression begins",
+        "impact": "Geopolitical premium ebbs; Turkish asset prices normalize"
+      }
+    ],
+
+    "long_term_6_12months": [
+      {
+        "date": "2026-11-15",
+        "event": "Q3 2026 EARNINGS ANNOUNCEMENT (FINAL SHOCK RECOVERY)",
+        "responsible_party": "CFO",
+        "narrative_point": "By Q3, holding discount either compresses or widens based on 6-month crisis resilience story",
+        "next_12month_guidance": "Management may issue 2027 guidance signaling 'new normal' post-shock"
+      },
+      {
+        "date": "2026-12-15",
+        "event": "Full-Year 2026 Guidance Review (2027 Outlook)",
+        "responsible_party": "CEO/CFO",
+        "context": "6+ months post-war; market will have clarity on ceasefire durability; KCHOL can position for structural valuation reset"
+      },
+      {
+        "date": "2027-02-28",
+        "event": "2026 Full-Year EARNINGS & 2025 DIVIDEND ANNOUNCEMENT",
+        "responsible_party": "CFO",
+        "annual_cycle": "Standard cycle restarts; market will assess whether geopolitical shock materially altered KCHOL's earnings power"
+      }
+    ],
+
+    "regulatory_compliance_calendar": [
+      {
+        "deadline": "2026-04-30",
+        "requirement": "KAP Q1 2026 Financial Disclosures (Quarterly Statements)",
+        "responsible_party": "Finance/Compliance",
+        "status": "Due within 45 days of quarter-end"
+      },
+      {
+        "deadline": "2026-05-31",
+        "requirement": "SPK Activity Report (Faaliyet Raporu)",
+        "responsible_party": "Investor Relations",
+        "status": "Within 60 days of quarter-end"
+      },
+      {
+        "deadline": "2026-08-31",
+        "requirement": "KAP H1 2026 Financial Disclosures",
+        "responsible_party": "Finance/Compliance",
+        "status": "Due within 45 days of H1 close"
+      },
+      {
+        "deadline": "2026-11-30",
+        "requirement": "KAP Q3 2026 Financial Disclosures",
+        "responsible_party": "Finance/Compliance",
+        "status": "Due within 45 days of quarter-end"
+      },
+      {
+        "deadline": "2027-02-28",
+        "requirement": "KAP 2026 Full-Year Financial Statements & Annual Report",
+        "responsible_party": "Finance/Compliance",
+        "status": "Due within 60 days of year-end"
+      }
+    ]
+  },
+
+  "confidence_overall": "medium",
+  "confidence_rationale": "HIGH confidence on: Event timing, classifications, regulatory calendars (based on verified KAP/macro outputs). MEDIUM confidence on: Financial impact magnitudes (financial_analysis agent failed; impacts inferred from macro analysis + historical patterns). MEDIUM confidence on: Ceasefire durability and geopolitical trajectory (inherently uncertain; market-dependent).",
+
+  "warnings": [
+    {
+      "warning_id": "W1",
+      "severity": "CRITICAL",
+      "issue": "financial_analysis_output FAILED (exit code 143) — No formal event_impact_mapper output available",
+      "implication": "Impact quantifications (EBITDA delta, margin compression %) are ESTIMATES based on macro analysis, not primary agent analysis. Recommend re-running financial_analysis agent to validate all impact assumptions.",
+      "mitigation": "CEO approval required before using these impact estimates in external communications. Recommend 'range' estimates (bear/base/bull) rather than point estimates."
+    },
+    {
+      "warning_id": "W2",
+      "severity": "HIGH",
+      "issue": "GEOPOLITICAL UNCERTAINTY is dominant risk — All forward projections assume ceasefire holds through at least Q2 2026",
+      "implication": "If ceasefire breaks, all forecasts become invalid. KCHOL valuation could swing ±20-30% in 2 days.",
+      "mitigation": "Maintain stress-test scenarios (bull/base/bear) with weekly ceasefire status updates. Recommend CEO brief on Monday mornings with geopolitical risk assessment."
+    },
+    {
+      "warning_id": "W3",
+      "severity": "HIGH",
+      "issue": "Q1 2026 EARNINGS SURPRISE RISK — Market may misprice temporary TUPRS windfall as structural",
+      "implication": "Stock could rally 8-12% on Q1 beat, then correct 10-15% on Q3 normalization. Volatility spike.",
+      "mitigation": "Pre-emptive disclosure in Q1 earnings: Explicitly state refining margin benefited from temporary geopolitical premium. Provide guidance ranges, not point estimates."
+    },
+    {
+      "warning_id": "W4",
+      "severity": "MEDIUM",
+      "issue": "ENERGY TARIFF PERMANENCE — Turkish tariff increase (+25%) is structural, not temporary",
+      "implication": "Unlike TUPRS margin windfall (temporary), this tariff is permanent. ARCLK/YKBNK must absorb or pass through cost inflation for rest of decade.",
+      "mitigation": "Assess ARCLK gross margin in Q1 earnings. If margin <23%, flag as structural concern for 2026+ guidance."
+    },
+    {
+      "warning_id": "W5",
+      "severity": "MEDIUM",
+      "issue": "SEGMENT DATA GAPS in prior agent outputs — No granular segment P&L provided",
+      "implication": "Impact attribution to segments (TUPRS vs ARCLK vs YKBNK) is estimated, not verified.",
+      "mitigation": "Recommend context_extraction agent provide segment revenue/EBITDA breakdown for 2025-2026 (if available in management reports)."
+    }
+  ],
+
+  "review_status": "pending_ceo_review",
+  "next_review_date": "2026-04-15",
+  "agent_notes": "This timeline is structured per CEO feedback on prior AKBNK work: All 4 phases included (Immediate/Near/Medium/Long), regulatory calendar provided, monitoring triggers with thresholds/urgency levels defined, forward-looking 12-month calendar complete. Key added insight: The geopolitical event (Iran-US war) is the DOMINANT driver of all other timelines — earnings, valuations, guidance, stock volatility. All other events (dividend, board, tariff) are secondary in comparison. Recommendation: CEO should brief board and market with explicit geopolitical risk disclosure and scenario planning at May 2026 AGM. This transparency will reduce surprises and support holding discount compression narrative (resilience story)."
+}

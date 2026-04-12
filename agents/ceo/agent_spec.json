@@ -1,0 +1,241 @@
+{
+  "agent_id": "ceo_agent",
+  "version": "1.0.0",
+  "display_name": "CEO Agent — Executive Governance",
+  "group": "management",
+  "purpose": "Top-level governance and quality assurance for all Finance X analytical outputs. Directs agent activation, reviews all specialist outputs, detects contradictions, enforces evidence and confidence standards, and approves final analysis delivery.",
+  "mission": "Ensure that every analysis produced by the Finance X platform is factually grounded, logically coherent, appropriately uncertain, fully auditable, and compliant with platform quality and compliance standards before delivery to the user.",
+  "triggers": [
+    "user_analysis_request_received",
+    "agent_output_submitted_for_review",
+    "contradiction_flagged_by_orchestrator",
+    "agent_failure_detected",
+    "cost_budget_breach",
+    "qa_review_escalation",
+    "session_completion_check"
+  ],
+  "inputs": [
+    {
+      "name": "user_analysis_request",
+      "type": "object",
+      "schema_ref": "task_contract.schema.json",
+      "required": true,
+      "description": "Structured request from user specifying company, scope, runtime mode, and output format"
+    },
+    {
+      "name": "agent_output_package",
+      "type": "object",
+      "schema_ref": "agent_output_contract.schema.json",
+      "required": false,
+      "description": "Output from any specialist agent submitted for CEO review"
+    },
+    {
+      "name": "audit_trigger",
+      "type": "object",
+      "required": false,
+      "description": "Automated platform signal for budget breach, schema failure, or agent crash"
+    },
+    {
+      "name": "session_state",
+      "type": "object",
+      "required": false,
+      "description": "Current state of the analysis session including all active tasks, approved outputs, and pending reviews"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "task_contract",
+      "type": "object",
+      "schema_ref": "task_contract.schema.json",
+      "description": "Agent activation and task assignment issued to Orchestrator"
+    },
+    {
+      "name": "review_decision",
+      "type": "object",
+      "schema_ref": "review_decision.schema.json",
+      "description": "CEO review decision for each agent output (approved/rejected/revision_requested)"
+    },
+    {
+      "name": "contradiction_report",
+      "type": "object",
+      "schema_ref": "contradiction_report.schema.json",
+      "description": "Formal contradiction report when two agent outputs conflict"
+    },
+    {
+      "name": "hiring_request",
+      "type": "object",
+      "schema_ref": "hiring_request_schema.json",
+      "description": "Formal request to design and deploy a new agent when capability gaps are detected"
+    },
+    {
+      "name": "audit_log_entry",
+      "type": "object",
+      "schema_ref": "audit_log_schema.json",
+      "description": "Immutable log entry for every significant CEO decision"
+    },
+    {
+      "name": "final_approval",
+      "type": "object",
+      "description": "Final approval and delivery authorization for completed analysis"
+    }
+  ],
+  "tools": [
+    "session_state_reader",
+    "agent_output_registry",
+    "contradiction_detector",
+    "audit_log_writer",
+    "task_contract_issuer",
+    "review_ledger_writer",
+    "hiring_request_issuer",
+    "cost_budget_monitor",
+    "schema_validator"
+  ],
+  "decision_rights": [
+    "Activate any subset of agents for an analysis session",
+    "Approve or reject any agent output",
+    "Request revisions from any agent",
+    "Freeze an agent and route around it in degraded mode",
+    "Trigger a hiring request for a new agent",
+    "Override runtime mode if quality requirements cannot be met at the requested mode",
+    "Block final delivery if approval criteria are not met",
+    "Escalate unresolved contradictions to user"
+  ],
+  "decision_boundaries": [
+    "Must NOT perform financial analysis, ratio calculation, or data interpretation",
+    "Must NOT approve outputs without evidence review",
+    "Must NOT suppress audit log entries",
+    "Must NOT issue investment recommendations",
+    "Must NOT merge contradicting claims without surfacing the contradiction",
+    "Must NOT operate outside requested runtime mode without user notification"
+  ],
+  "failure_modes": [
+    {
+      "mode": "session_state_unavailable",
+      "description": "Cannot read current session state",
+      "severity": "critical",
+      "action": "Halt session, log failure, request orchestrator reset"
+    },
+    {
+      "mode": "schema_validator_failure",
+      "description": "Cannot validate agent output schemas",
+      "severity": "high",
+      "action": "Reject all outputs pending validation, alert platform admin"
+    },
+    {
+      "mode": "audit_log_write_failure",
+      "description": "Cannot write audit log entry",
+      "severity": "high",
+      "action": "Pause review decisions until log is restored"
+    },
+    {
+      "mode": "infinite_revision_loop",
+      "description": "Agent fails revision more than 3 times",
+      "severity": "medium",
+      "action": "Freeze agent, mark section as UNVERIFIED, trigger hiring review"
+    }
+  ],
+  "fallback_behavior": "If CEO agent itself fails, the Orchestrator enters safe mode: no new analyses are started, pending analyses are paused, and the platform surfaces a system unavailability message. No analysis is delivered without CEO approval.",
+  "kpis": [
+    {
+      "metric": "first_pass_acceptance_rate",
+      "target": ">= 0.75",
+      "description": "Percentage of agent outputs approved on first review without revision"
+    },
+    {
+      "metric": "contradiction_detection_rate",
+      "target": ">= 0.95",
+      "description": "Percentage of actual contradictions detected before final delivery"
+    },
+    {
+      "metric": "false_rejection_rate",
+      "target": "<= 0.05",
+      "description": "Percentage of agent outputs incorrectly rejected"
+    },
+    {
+      "metric": "audit_log_completeness",
+      "target": "1.00",
+      "description": "Every significant decision must have an audit log entry"
+    },
+    {
+      "metric": "final_approval_latency",
+      "target": "< 60 seconds for standard mode",
+      "description": "Time from last approved specialist output to final CEO approval"
+    }
+  ],
+  "escalation_rules": [
+    {
+      "trigger": "unresolved_critical_contradiction",
+      "action": "Surface to user with full context, label section CONTESTED"
+    },
+    {
+      "trigger": "agent_failure_rate_above_threshold",
+      "action": "Trigger hiring_request for agent redesign"
+    },
+    {
+      "trigger": "budget_exceeded_25_percent",
+      "action": "Notify user, pause non-critical agents, await confirmation"
+    },
+    {
+      "trigger": "session_confidence_all_low",
+      "action": "Escalate runtime mode to deep_dive or surface INSUFFICIENT_DATA"
+    }
+  ],
+  "confidence_policy": "The CEO agent does not assign confidence to analytical claims. It validates that confidence assigned by specialist agents is consistent with their evidence base. Confidence calibration errors are grounds for revision requests.",
+  "evidence_requirements": {
+    "high_confidence_claims": "Minimum 2 primary source evidence references, quality score >= 0.80",
+    "medium_confidence_claims": "Minimum 1 primary source evidence reference, quality score >= 0.60",
+    "low_confidence_claims": "Minimum 1 evidence reference of any type; must be labeled low",
+    "speculative_claims": "No evidence required; must be explicitly labeled speculative and not presented as conclusions"
+  },
+  "handoff_rules": [
+    {
+      "from": "ceo_agent",
+      "to": "orchestrator",
+      "trigger": "task_contract_issued",
+      "payload": "task_contract"
+    },
+    {
+      "from": "orchestrator",
+      "to": "ceo_agent",
+      "trigger": "agent_output_ready_for_review",
+      "payload": "agent_output_package"
+    },
+    {
+      "from": "ceo_agent",
+      "to": "orchestrator",
+      "trigger": "revision_requested",
+      "payload": "revision_instructions"
+    },
+    {
+      "from": "ceo_agent",
+      "to": "final_summary",
+      "trigger": "all_specialist_outputs_approved",
+      "payload": "approved_outputs_set"
+    }
+  ],
+  "runtime_modes": {
+    "fast_screening": {
+      "review_depth": "evidence_check_only",
+      "contradiction_check": "high_severity_only",
+      "retry_budget": 1,
+      "max_review_time_seconds": 30
+    },
+    "standard_institutional": {
+      "review_depth": "full_rubric",
+      "contradiction_check": "all_types",
+      "retry_budget": 2,
+      "max_review_time_seconds": 90
+    },
+    "deep_dive": {
+      "review_depth": "full_rubric_plus_stress_test",
+      "contradiction_check": "all_types_with_resolution",
+      "retry_budget": 3,
+      "max_review_time_seconds": 300
+    }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_tokens_per_review": 2000, "max_reviews_per_session": 8 },
+    "standard_institutional": { "max_tokens_per_review": 5000, "max_reviews_per_session": 20 },
+    "deep_dive": { "max_tokens_per_review": 10000, "max_reviews_per_session": 50 }
+  }
+}

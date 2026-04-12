@@ -1,0 +1,792 @@
+{
+  "agent_id": "context_extraction",
+  "output_id": "ce-out-kchol-20260410-001",
+  "company_ticker": "KCHOL",
+  "company_name": "Koç Holding A.Ş.",
+  "analysis_date": "2026-04-10",
+  "holding_classification": "HOLDING",
+
+  "company_profile": {
+    "legal_name": "Koç Holding A.Ş.",
+    "headquarters": "Istanbul, Turkey",
+    "founded": "1963",
+    "bist_listing": "1992",
+    "ultimate_controlling_shareholder": "Koç Family",
+    "business_type": "Multi-sector holding company",
+    "geographic_scope": "Turkey (domestic core) + 60+ countries internationally",
+    "primary_business_description": "Turkey's largest industrial conglomerate with diversified operations across five core sectors: Energy (oil refining, LPG, fuel distribution), Automotive (manufacturing, retail, rental), Consumer Durables (household appliances), Finance (banking), and Other (IT, defense, tourism). Operates through publicly listed and private subsidiaries.",
+    "gdp_contribution": "Approximately 7% of Turkey's GDP",
+    "employee_count": "Not disclosed in search results",
+    "market_position": "Turkey's largest and most diversified holding company; blue-chip status on BIST",
+    "source": "https://www.koc.com.tr/investor-relations/about-koc-holding, https://en.wikipedia.org/wiki/Ko%C3%A7_Holding"
+  },
+
+  "ownership_structure": {
+    "major_shareholders": [
+      {
+        "name": "Koç Family (Total)",
+        "ownership_percentage": 63.4,
+        "details": "Combined family control through multiple entities",
+        "breakdown": [
+          {
+            "entity": "Family Danışmanlık Gayrimenkul ve Ticaret A.Ş.",
+            "percentage": 43.7
+          },
+          {
+            "entity": "Individual Koç family members (direct holdings)",
+            "percentage": 18.3
+          },
+          {
+            "entity": "Vehbi Koç Foundation",
+            "percentage": 7.3
+          },
+          {
+            "entity": "Koç Holding Pension Fund",
+            "percentage": 2.3
+          }
+        ]
+      },
+      {
+        "name": "Public Free Float",
+        "ownership_percentage": 26.9,
+        "details": "Publicly traded shares on BIST"
+      },
+      {
+        "name": "Foreign Investors (within free float)",
+        "ownership_percentage": "~16.1",
+        "details": "60% of free float is foreign-owned (60% × 26.9% = 16.1% of total); higher than BIST average of 38%",
+        "notable_investors": [
+          "Vanguard: 1.21%",
+          "BlackRock: 0.98%"
+        ]
+      }
+    ],
+    "control_assessment": "Family-controlled (63.4% majority stake ensures strategic control)",
+    "free_float_percentage": 26.9,
+    "foreign_ownership_ratio_in_float": 60.0,
+    "recent_ownership_changes": [
+      {
+        "date": "2026-03-27",
+        "event": "TUPRS stake reduction",
+        "details": "Koç Holding sold 2.1% direct stake in TUPRS (40M shares at 233 TRY/share) for 9.32B TRY (~$210M USD). Direct TUPRS ownership fell from 6.4% → 4.3%, but indirect ownership through Enerji Yatırımları A.Ş. (46.4%) maintains total control at 50.7%.",
+        "rationale": "Portfolio rebalancing, not distress sale",
+        "source": "https://bigpara.hurriyet.com.tr/haberler/genel-haberler/koc-holdingden-tuprasta-pay-satisi-aciklamasi_ID1626477/"
+      }
+    ],
+    "source": "https://www.koc.com.tr/investor-relations/stock-information-investor-tools, https://simplywall.st/stocks/us/capital-goods/otc-khol.y/koc-holding/ownership"
+  },
+
+  "management_team": {
+    "board_chairman": {
+      "name": "M. Ömer Koç",
+      "tenure_start": "2016",
+      "notes": "Third-generation Koç family member; strategic oversight role"
+    },
+    "vice_chairman": {
+      "name": "Ali Y. Koç",
+      "tenure_start": "2016",
+      "notes": "Koç family member"
+    },
+    "chief_executive_officer": {
+      "name": "Levent Çakıroğlu",
+      "tenure_start": "2016",
+      "tenure_duration_years": 10,
+      "notes": "Long-tenured CEO overseeing multi-sector portfolio"
+    },
+    "chief_financial_officer": {
+      "name": "Polat Şen",
+      "tenure_start": "2022",
+      "notes": "Appointed 2022"
+    },
+    "chief_legal_and_compliance_officer": {
+      "name": "Kenan Yılmaz",
+      "tenure_start": "2021"
+    },
+    "president_durable_goods": {
+      "name": "Fatih Ebiclioglu",
+      "role": "President of Durable Goods Companies"
+    },
+    "president_energy_group": {
+      "name": "Yağız Eyüboğlu",
+      "role": "President of Energy Group"
+    },
+    "recent_management_changes": [
+      {
+        "date": "2026-04-10",
+        "event": "Board member appointments",
+        "details": "SPK (CMB) approved independent board member candidates: Birkan ERDAL, Faik EKEN, Recep Nadi KÖKLÜ",
+        "source": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1005-koc-holding-a-s"
+      },
+      {
+        "date": "2026-01-02",
+        "event": "Board member update",
+        "details": "Independent board member candidate Kudret Önen received CMB approval (originally announced 2025-12-19)",
+        "source": "Web search results - KAP disclosure"
+      }
+    ],
+    "source": "https://www.koc.com.tr/hakkinda/yonetim-kurulu, https://craft.co/koc-holding/executives"
+  },
+
+  "board_governance": {
+    "board_independence_ratio": "Not precisely disclosed in 2025/2026 data",
+    "independent_members_status": "One of first Turkish companies to have independent board members",
+    "corporate_governance_rating": "Not disclosed in search results",
+    "governance_highlights": [
+      "Voluntary adoption of higher governance standards beyond regulatory minimums",
+      "Executive compensation linked to share price performance and economic profit",
+      "Strong transparency in decision-making processes",
+      "Compliance with SPK (Capital Markets Board) regulations"
+    ],
+    "investor_relations_activity": {
+      "roadshows_conferences_2025": 15,
+      "total_investor_participants": "400+",
+      "notes": "Active investor engagement program"
+    },
+    "committee_structure": "Not disclosed in search results",
+    "related_party_transactions_policy": "Not disclosed in search results",
+    "source": "https://www.koc.com.tr/investor-relations/corporate-overview-and-governance"
+  },
+
+  "subsidiaries_portfolio": {
+    "classification": "HOLDING COMPANY — Sum-of-the-Parts (SOTP) valuation required",
+    "major_listed_subsidiaries": [
+      {
+        "name": "Tüpraş (Türkiye Petrol Rafinerileri A.Ş.)",
+        "ticker": "TUPRS",
+        "sector": "Energy - Oil Refining",
+        "ownership_percentage_total": 50.7,
+        "ownership_breakdown": {
+          "direct_kchol": 4.3,
+          "indirect_via_enerji_yatırımları": 46.4,
+          "notes": "After March 2026 sale of 2.1% direct stake"
+        },
+        "business": "Operates vast majority of Turkey's oil refining capacity; single largest revenue contributor to KCHOL (~half of consolidated revenue)",
+        "revenue_contribution_estimated": "~50% of KCHOL consolidated revenue",
+        "strategic_importance": "Critical energy infrastructure asset; market-dominant position in Turkey",
+        "source": "https://en.wikipedia.org/wiki/T%C3%BCpra%C5%9F, https://bigpara.hurriyet.com.tr/haberler/genel-haberler/koc-holdingden-tuprasta-pay-satisi-aciklamasi_ID1626477/"
+      },
+      {
+        "name": "Arçelik A.Ş.",
+        "ticker": "ARCLK",
+        "sector": "Consumer Durables - Household Appliances",
+        "ownership_percentage_total": 53.48,
+        "ownership_breakdown": {
+          "kchol_direct": 41.43,
+          "teknosan_indirect": 12.05,
+          "notes": "Koç Holding maintains majority control via direct + Teknosan stake"
+        },
+        "business": "Global household appliances manufacturer; brands include Beko, Grundig, Arctic, Defy",
+        "revenue_contribution_estimated": "~6% of NAV",
+        "free_float": "14.96% (excluding treasury shares, as of Dec 2025)",
+        "source": "https://en.wikipedia.org/wiki/Ar%C3%A7elik, https://matrixbcg.com/blogs/owners/arcelikas"
+      },
+      {
+        "name": "Ford Otosan A.Ş.",
+        "ticker": "TOASO",
+        "sector": "Automotive - Manufacturing",
+        "ownership_percentage": 41.0,
+        "ownership_structure": "Joint venture: 41% Koç Holding, 41% Ford Motor Company, 18% public float",
+        "business": "Light commercial vehicles, passenger cars, trucks; equal partnership with Ford",
+        "strategic_importance": "50-50 strategic partnership with global OEM; export-oriented",
+        "source": "https://www.fordotosan.com.tr/en/corporate/about-ford-otosan/shareholder-structure, https://en.wikipedia.org/wiki/Ford_Otosan"
+      },
+      {
+        "name": "Yapı Kredi Bankası A.Ş.",
+        "ticker": "YKBNK",
+        "sector": "Finance - Banking",
+        "ownership_percentage": 67.99,
+        "ownership_evolution": "Increased from 50% to 67.99% following acquisition of UniCredit's remaining 18% stake in Nov 2021",
+        "business": "Turkey's fourth-largest private bank by assets; retail, corporate, SME banking",
+        "revenue_contribution_estimated": "~19% of NAV",
+        "strategic_importance": "Major financial services platform; critical to Koç ecosystem financing",
+        "source": "https://en.wikipedia.org/wiki/Yap%C4%B1_Kredi, https://www.investing.com/equities/yapi-ve-kredi-bank.-ownership"
+      },
+      {
+        "name": "Aygaz A.Ş.",
+        "ticker": "AYGAZ",
+        "sector": "Energy - LPG, Natural Gas, Electricity",
+        "ownership_percentage": "Not disclosed in search results (majority control presumed)",
+        "business": "Leading LPG distributor; also electricity and natural gas operations",
+        "strategic_importance": "Complements Tüpraş in energy value chain; retail energy distribution",
+        "notes": "Also holds 20% stake in TUPRS independently",
+        "source": "https://www.koc.com.tr/activity-fields/companies"
+      },
+      {
+        "name": "Türk Hava Yolları A.O. (Turkish Airlines)",
+        "ticker": "THYAO",
+        "sector": "Aviation",
+        "ownership_percentage": 0.0,
+        "notes": "NO OWNERSHIP FOUND — THYAO is majority-owned by Turkey Wealth Fund (49.12%) + 50.88% public float. Koç Holding has no disclosed direct stake.",
+        "status": "NOT A SUBSIDIARY",
+        "source": "https://matrixbcg.com/blogs/owners/turkishairlines"
+      },
+      {
+        "name": "Ereğli Demir ve Çelik Fabrikaları T.A.Ş. (Erdemir)",
+        "ticker": "EREGL",
+        "sector": "Steel Manufacturing",
+        "ownership_percentage": 0.0,
+        "notes": "NO OWNERSHIP FOUND — EREGL is majority-owned by OYAK (Turkish Armed Forces Pension Fund, 49.29% since 2005). Koç Holding has no disclosed stake.",
+        "status": "NOT A SUBSIDIARY",
+        "source": "https://en.wikipedia.org/wiki/Erdemir"
+      }
+    ],
+    "other_major_unlisted_subsidiaries": [
+      {
+        "name": "Opet Petrolcülük A.Ş.",
+        "sector": "Energy - Fuel Retail",
+        "ownership": "Majority (exact % not disclosed)",
+        "business": "Fuel station network across Turkey; retail fuel distribution"
+      },
+      {
+        "name": "Otokoç Otomotiv",
+        "sector": "Automotive - Retail & Services",
+        "ownership": "Majority (exact % not disclosed)",
+        "business": "Automotive retailing, insurance, car rental (Avis, Budget brands)"
+      },
+      {
+        "name": "Otokar A.Ş.",
+        "sector": "Automotive - Defense & Buses",
+        "ownership": "Majority (exact % not disclosed)",
+        "business": "Military vehicles, buses, trucks"
+      },
+      {
+        "name": "TürkTraktör",
+        "sector": "Automotive - Agricultural Machinery",
+        "ownership": "Majority (exact % not disclosed)",
+        "business": "Tractors and agricultural equipment; Case IH brand"
+      },
+      {
+        "name": "Koç Information Group",
+        "sector": "Technology & IT Services",
+        "ownership": "Majority (exact % not disclosed)",
+        "business": "IT services and digital transformation"
+      }
+    ],
+    "portfolio_notes": [
+      "CRITICAL CORRECTION: THYAO and EREGL are NOT Koç subsidiaries despite being frequently associated with large Turkish conglomerates",
+      "Core value lies in TUPRS (energy), ARCLK (durables), TOASO (automotive), YKBNK (finance)",
+      "Diversified portfolio provides Turkey-economy exposure with sector hedging"
+    ],
+    "source": "https://www.koc.com.tr/activity-fields/companies, https://en.wikipedia.org/wiki/Ko%C3%A7_Holding"
+  },
+
+  "operational_context": {
+    "business_model": {
+      "holding_structure": "Operating holding company — subsidiaries are operationally independent with centralized strategic oversight, capital allocation, and governance from KCHOL",
+      "revenue_generation": "Consolidated revenue from all subsidiaries; holding-level income primarily from dividends and capital gains from subsidiary stakes",
+      "value_creation": "Portfolio management, capital allocation across sectors, operational synergies (e.g., Opet fuel stations + Tüpraş refining), access to financing via YKBNK"
+    },
+    "segment_breakdown": {
+      "energy": {
+        "revenue_contribution_percent": 23,
+        "nav_contribution_percent": 23,
+        "key_companies": "Tüpraş (refining), Aygaz (LPG), Opet (retail fuel)",
+        "notes": "Tüpraş alone contributes ~50% of consolidated revenue; vertically integrated energy value chain"
+      },
+      "automotive": {
+        "revenue_contribution_percent": "Not precisely disclosed",
+        "nav_contribution_percent": 43,
+        "key_companies": "Ford Otosan (manufacturing), Otokoç (retail), TürkTraktör (agriculture), Otokar (defense)",
+        "notes": "Largest NAV contributor; diversified across manufacturing, retail, defense"
+      },
+      "consumer_durables": {
+        "revenue_contribution_percent": "Not precisely disclosed",
+        "nav_contribution_percent": 6,
+        "key_companies": "Arçelik (global appliances)",
+        "notes": "International exposure via Beko, Grundig brands"
+      },
+      "finance": {
+        "revenue_contribution_percent": "Not precisely disclosed",
+        "nav_contribution_percent": 19,
+        "key_companies": "Yapı Kredi Bankası",
+        "notes": "Turkey's 4th largest private bank"
+      },
+      "other": {
+        "revenue_contribution_percent": "Not precisely disclosed",
+        "nav_contribution_percent": "~9% (residual)",
+        "key_companies": "IT services, tourism, other ventures",
+        "notes": "Diversification plays"
+      }
+    },
+    "revenue_sources": {
+      "consolidated_revenue_2025": "64.3 billion USD",
+      "consolidated_revenue_2025_try": "2,757 billion TRY (from prior data)",
+      "revenue_growth_2024_2025": "-9.0% USD terms (86.15B → 64.3B USD); impacted by TRY weakness",
+      "revenue_breakdown": "Energy ~50% (Tüpraş-heavy), Automotive significant, Finance via net interest income + fees, Durables export + domestic",
+      "geographic_revenue": "Primarily Turkey (~93%+); international exposure via Arçelik exports, Ford Otosan exports"
+    },
+    "customer_structure": {
+      "b2b_vs_b2c": "Mixed — B2B in energy (wholesale fuel), automotive (OEM); B2C in retail fuel (Opet), banking (YKBNK), appliances (Arçelik)",
+      "customer_concentration": "Not disclosed; diversified across consumer and industrial segments",
+      "end_markets": "Turkish economy (consumption, manufacturing, infrastructure), export markets (Europe for Arçelik, automotive)"
+    },
+    "operational_cycle": {
+      "holding_operations": "Strategic oversight, capital allocation, M&A, portfolio optimization, group financing",
+      "subsidiary_operations": "Each operates independently with sector-specific cycles (e.g., TUPRS: refining margin arbitrage; YKBNK: NII + loan growth; ARCLK: product development + sales)",
+      "seasonality": "Varies by segment — banking (limited), durables (Q4 peak), fuel (winter heating demand), automotive (model year cycles)",
+      "working_capital_intensity": "Segment-dependent; automotive/durables high DSO/DIO, banking low, energy moderate"
+    },
+    "capacity_utilization": "Not disclosed at holding level; segment-specific data required",
+    "production_capacity": "Not applicable at holding level; varies by subsidiary (TUPRS refining capacity ~28M tons/year crude oil)",
+    "key_cost_drivers": [
+      {
+        "driver": "Energy costs (for manufacturing segments)",
+        "materiality": "High for Arçelik, TürkTraktör, Otokar",
+        "exposure": "Natural gas, electricity prices"
+      },
+      {
+        "driver": "Raw material costs",
+        "materiality": "High for automotive (steel, aluminum), durables (steel, plastics)",
+        "exposure": "Global commodity prices; USD-denominated imports"
+      },
+      {
+        "driver": "Labor costs",
+        "materiality": "Moderate across all segments",
+        "exposure": "Turkish wage inflation, social security contributions"
+      },
+      {
+        "driver": "Crude oil prices (for Tüpraş)",
+        "materiality": "Very high — refining margin = output prices - crude cost",
+        "exposure": "Brent crude oil; refining crack spreads"
+      },
+      {
+        "driver": "Financing costs",
+        "materiality": "High — significant debt at holding + subsidiary level",
+        "exposure": "TCMB policy rate, TRY interest rates, USD/EUR funding costs"
+      }
+    ],
+    "fx_exposure_profile": {
+      "revenue_currency_mix": "Majority TRY-denominated (~55-60%); ~40-45% FX (export revenue from automotive, Arçelik)",
+      "cost_currency_mix": "Mixed — domestic COGS in TRY, imported raw materials in USD/EUR",
+      "debt_currency_mix": "Significant FX debt (USD/EUR bonds issued by holding + subsidiaries)",
+      "net_fx_position": "Likely NEGATIVE net FX position (FX debt > FX assets) → TRY depreciation = balance sheet loss + margin pressure",
+      "fx_hedging_policy": "Not disclosed in search results",
+      "sensitivity_assessment": "HIGH FX SENSITIVITY — TRY depreciation: (1) Positive: FX export revenue translates higher in TRY; (2) Negative: FX debt burden increases, imported COGS rise. Net impact depends on hedge ratio and operational leverage.",
+      "source": "https://www.ainvest.com/news/ko-holding-2025-results-assessing-capital-allocation-sector-rotation-portfolio-construction-2602/"
+    },
+    "seasonality_patterns": {
+      "q1": "Typically weaker for durables, moderate for energy/banking",
+      "q2": "Stable across segments",
+      "q3": "Summer slowdown in some segments",
+      "q4": "Peak for consumer durables (holiday season), strong for banking",
+      "notes": "2025 Q1 showed 1.4B TRY loss — unusual; requires investigation (may reflect one-time charges or write-downs)"
+    },
+    "source": "https://www.marketscreener.com/quote/stock/KOC-HOLDING-6491726/finances-segments/, https://www.koc.com.tr/investor-relations/why-koc-holding"
+  },
+
+  "accounting_policy_context": {
+    "financial_reporting_standard": "IFRS (International Financial Reporting Standards) as adopted in Turkey; SPK (Capital Markets Board) regulations",
+    "consolidation_scope": "Full consolidation of controlled subsidiaries (>50% ownership); equity method for associates",
+    "revenue_recognition": "IFRS 15 — varies by segment (point-in-time for retail fuel/appliances, over-time for banking services)",
+    "inflation_accounting_status": {
+      "ias_29_applied": "YES — Turkey classified as hyperinflationary economy (IMF)",
+      "impact": "Net monetary position gains/losses recorded in P&L; non-operational accounting adjustment can distort reported net income",
+      "2024_distortion_risk": "HIGH — IAS 29 gains may mask operational losses; financial_analysis agent MUST adjust for this",
+      "source": "Context extraction agent memory — prior SISE analysis"
+    },
+    "key_estimates_and_judgments": [
+      "Fair value of publicly traded subsidiaries (mark-to-market)",
+      "Impairment testing for goodwill and investments",
+      "Deferred tax asset recognition",
+      "Pension and employee benefit obligations",
+      "Provision for loan losses (YKBNK banking segment)"
+    ],
+    "consolidation_scope_changes": [
+      {
+        "period": "2026 Q1",
+        "change": "TUPRS direct ownership reduced from 6.4% → 4.3% (2.1% stake sold); total control via Enerji Yatırımları maintained at 50.7%",
+        "impact": "No deconsolidation; consolidation continues"
+      }
+    ],
+    "auditor": "Güney Bağımsız Denetim (Güney Independent Audit and Certified Public Accountants LLC)",
+    "audit_opinion": "Not disclosed in search results for 2024/2025",
+    "emphasis_of_matter": "Not disclosed in search results",
+    "source": "https://mbigpara.hurriyet.com.tr/kap-haberleri/"
+  },
+
+  "strategic_initiatives": [
+    {
+      "initiative": "Energy Transition & Renewables Investment",
+      "status": "Active",
+      "timeline": "2025-2030",
+      "disclosed_amount": "Part of USD 3.7B total 2025 CAPEX",
+      "details": "Focus on renewable energy capacity expansion; aligns with 2050 carbon-neutral target",
+      "expected_impact": "Shift energy portfolio toward sustainable sources; regulatory compliance; ESG rating improvement",
+      "source": "https://www.koc.com.tr/sustainability/act-for-the-planet-together/change-climate"
+    },
+    {
+      "initiative": "Digital Transformation Across Group",
+      "status": "Active",
+      "timeline": "Ongoing",
+      "disclosed_amount": "Not disclosed",
+      "details": "Six Koç facilities part of WEF Global Lighthouse Network (advanced digitalization, automation, data-driven manufacturing)",
+      "expected_impact": "Operational efficiency gains, cost-to-serve reduction, competitive advantage in Industry 4.0",
+      "source": "https://www.koc.com.tr/sustainability/sustainability-reports-and-policies"
+    },
+    {
+      "initiative": "Automotive Electrification & R&D",
+      "status": "Active",
+      "timeline": "2024-2030",
+      "disclosed_amount": "Part of USD 15.7B invested over last 5 years",
+      "details": "Ford Otosan EV development, export competitiveness enhancement, R&D investment",
+      "expected_impact": "Position in EV transition, export revenue growth, technology leadership",
+      "source": "https://quartr.com/companies/ko-holding-a-s_21902"
+    },
+    {
+      "initiative": "Portfolio Rebalancing — Tüpraş Stake Reduction",
+      "status": "Completed March 2026",
+      "timeline": "March 2026",
+      "disclosed_amount": "9.32B TRY (~210M USD) from 2.1% TUPRS stake sale",
+      "details": "Sold 40M TUPRS shares at 233 TRY/share; reduced direct stake from 6.4% → 4.3%; total control via Enerji Yatırımları maintained at 50.7%",
+      "rationale": "Portfolio optimization, liquidity management, capital reallocation",
+      "expected_impact": "Modest holding discount reduction, capital deployment to other sectors",
+      "source": "https://t24.com.tr/ekonomi/koc-holdingden-tuprasta-93-milyar-tllik-satis,1309915"
+    },
+    {
+      "initiative": "Healthcare Sector Entry/Expansion",
+      "status": "Active",
+      "timeline": "Last 5 years",
+      "disclosed_amount": "Part of USD 15.7B invested over last 5 years",
+      "details": "Capital allocation to healthcare; diversification beyond traditional core sectors",
+      "expected_impact": "New growth vertical, demographic tailwinds in Turkey",
+      "source": "https://quartr.com/companies/ko-holding-a-s_21902"
+    },
+    {
+      "initiative": "Climate Technology Acceleration Program",
+      "status": "Active",
+      "timeline": "Ongoing",
+      "disclosed_amount": "Not disclosed",
+      "details": "Investment and implementation support for innovative startups in climate tech (especially water technologies)",
+      "expected_impact": "Access to emerging technologies, ESG leadership, innovation ecosystem",
+      "source": "https://www.koc.com.tr/sustainability/act-for-the-planet-together/change-climate"
+    }
+  ],
+
+  "esg_policies": {
+    "environmental": {
+      "carbon_footprint_baseline": "7.8 million tonnes CO2e (2017 Scope 1+2)",
+      "emission_reduction_targets": [
+        {
+          "target": "27% reduction in Scope 1+2 emissions by 2030",
+          "baseline_year": 2017,
+          "status": "In progress"
+        },
+        {
+          "target": "49% reduction in Scope 1+2 emissions by 2040",
+          "baseline_year": 2017,
+          "status": "Long-term commitment"
+        },
+        {
+          "target": "90% reduction across all scopes by 2050",
+          "baseline_year": 2022,
+          "status": "Long-term commitment"
+        },
+        {
+          "target": "Carbon neutrality by 2050",
+          "baseline_year": "N/A",
+          "status": "Long-term commitment"
+        }
+      ],
+      "energy_efficiency_programs": "Active — part of carbon reduction strategy",
+      "renewable_energy_investments": "Active — wind, solar capacity expansion",
+      "circular_economy_initiatives": "Digital transformation + operational efficiency focus",
+      "water_management": "Climate tech acceleration program focused on water technologies",
+      "source": "https://www.koc.com.tr/sustainability/act-for-the-planet-together/change-climate"
+    },
+    "social": {
+      "employee_safety_record": "Not disclosed in search results",
+      "diversity_policies": "Not disclosed in search results",
+      "employee_training_programs": "Skilled workforce development mentioned as strategic advantage",
+      "community_investment": "Vehbi Koç Foundation involvement (7.3% shareholder) suggests active philanthropy",
+      "labor_relations": "Not disclosed in search results"
+    },
+    "governance": {
+      "board_independence_ratio": "Not disclosed; early adopter of independent board members in Turkey",
+      "committee_structure": "Not disclosed in search results",
+      "executive_compensation_policy": "Linked to share price performance and economic profit — atypical for Turkey",
+      "related_party_transaction_controls": "Not disclosed in search results",
+      "whistleblower_mechanisms": "Not disclosed in search results",
+      "anti_corruption_policies": "Not disclosed in search results"
+    },
+    "esg_ratings_and_recognition": [
+      {
+        "date": "2026",
+        "recognition": "Included in S&P Global 2026 Sustainability Yearbook",
+        "source": "https://bazaartimes.com/koc-holding-included-in-sp-global-2026-sustainability-yearbook/"
+      },
+      {
+        "date": "2024-2026",
+        "recognition": "Six Koç facilities in WEF Global Lighthouse Network (digital/automation leaders)",
+        "source": "https://www.koc.com.tr/sustainability/sustainability-reports-and-policies"
+      }
+    ],
+    "sustainability_reporting": "Published annually; latest: 2024-2025 Sustainability Report and Sustainability Compliance Report (filed with KAP Feb 2026)",
+    "source": "https://www.koc.com.tr/sustainability/sustainability-reports-and-policies"
+  },
+
+  "management_guidance": [
+    {
+      "guidance_date": "2025-09 (9M25 results)",
+      "metric": "Profitability outlook",
+      "guidance": "Expect return to profitability in 2025 as inflation trends down and headwinds abate; improvements likely in H2 2025",
+      "status": "Preliminary — 2025 full-year results show 22.0B TRY net income vs 1.7B in 2024 (1,200% increase), validating guidance",
+      "source": "https://www.ainvest.com/news/ko-holding-2025-results-assessing-capital-allocation-sector-rotation-portfolio-construction-2602/"
+    },
+    {
+      "guidance_date": "2025-09 (9M25 results)",
+      "metric": "Liquidity position",
+      "guidance": "USD 874M net cash position as of Sept 2025; prudent leverage at 1.4x Net Debt/EBITDA",
+      "status": "Confirmed",
+      "source": "https://quartr.com/companies/ko-holding-a-s_21902"
+    },
+    {
+      "guidance_date": "Last 5 years",
+      "metric": "Capital allocation",
+      "guidance": "USD 15.7B invested over last 5 years, focused on energy (renewables), automotive (R&D, exports), durables, healthcare",
+      "status": "Historical track record; directionally indicative of future priorities",
+      "source": "https://quartr.com/companies/ko-holding-a-s_21902"
+    },
+    {
+      "guidance_date": "2025",
+      "metric": "2025 CAPEX",
+      "guidance": "Combined investments of USD 3.7B in 2025",
+      "status": "Disclosed",
+      "source": "https://tr.investing.com/news/economy-news/koc-holding-2025te-konsolide-bazda-643-milyar-dolar-gelir-elde-etti-3758614"
+    },
+    {
+      "guidance_date": "Not disclosed",
+      "metric": "2026 revenue/EBITDA targets",
+      "guidance": "No specific 2026 forward guidance found in search results",
+      "status": "Not available",
+      "source": "N/A"
+    }
+  ],
+
+  "prior_guidance_vs_actual": {
+    "2024_performance": {
+      "guidance": "Analysts expected challenges due to slower consumption and TRY strength pressuring exports",
+      "actual_results": {
+        "revenue": "USD 81.1B (down from 86.2B in 2023) — in line with cautious outlook",
+        "net_income": "1.7B TRY (down 98.4% from 108.2B TRY in 2023) — severe underperformance",
+        "operating_cash_flow": "-102B TRY (vs +152B in 2023) — major deterioration",
+        "ebit_margin": "1.15% (vs 13.0% in 2023) — collapsed"
+      },
+      "assessment": "2024 was catastrophic year — margin collapse, OCF reversal, likely due to one-time charges (impairments, IAS 29 distortions, restructuring). NOT representative of normalized earnings power.",
+      "source": "Prior agent data (parse_standardization, reconciliation outputs)"
+    },
+    "2025_performance": {
+      "guidance": "Return to profitability expected in 2025 with inflation cooling",
+      "actual_results": {
+        "revenue": "USD 64.3B, TRY 2,757B",
+        "net_income": "22.0B TRY (vs 1.7B in 2024) — 1,200% increase",
+        "9m25_net_income": "14.4B TRY, up 54% YoY"
+      },
+      "assessment": "GUIDANCE DELIVERED — profitability restored in 2025, validating management's H2 improvement thesis. However, Q1 2025 showed 1.4B loss, suggesting volatility.",
+      "source": "https://www.ainvest.com/news/ko-holding-2025-results-assessing-capital-allocation-sector-rotation-portfolio-construction-2602/"
+    }
+  },
+
+  "key_risks": [
+    {
+      "risk": "Holding Discount (Conglomerate Discount)",
+      "severity": "High",
+      "description": "KCHOL trades at ~30% discount to Sum-of-the-Parts NAV (historical range: 10-40%). Market applies discount due to: (1) complexity (5 diverse sectors), (2) lack of transparency in capital allocation, (3) Turkey macro uncertainty, (4) liquidity (free float only 26.9%).",
+      "mitigation": "Portfolio simplification, transparent capital allocation, share buybacks, increased dividend payout could narrow discount.",
+      "current_status": "Discount widened to ~30% recently (mid-2024: mid-teens); stretched relative to Turkey CDS levels",
+      "source": "https://www.paturkey.com/news/2025/koc-holding-nav-discount-back-at-attractive-levels-18388/"
+    },
+    {
+      "risk": "Turkey Macro Risk (FX, Inflation, Growth)",
+      "severity": "Very High",
+      "description": "KCHOL is ~7% of Turkey's GDP — highly correlated with domestic macro conditions. Risks: (1) TRY depreciation → FX debt burden + imported COGS rise, (2) TCMB rate hikes → interest expense, (3) recession → consumption collapse (durables, banking), (4) inflation → working capital squeeze.",
+      "mitigation": "Diversification across sectors provides partial hedge; export exposure (automotive, Arçelik) benefits from TRY weakness; strong balance sheet (USD 874M net cash as of Sept 2025).",
+      "current_status": "Turkey inflation cooling in 2025; TCMB rate cuts expected → tailwind for KCHOL",
+      "source": "https://www.ainvest.com/news/ko-holding-2025-results-assessing-capital-allocation-sector-rotation-portfolio-construction-2602/"
+    },
+    {
+      "risk": "FX Exposure & Net Open Position",
+      "severity": "High",
+      "description": "Significant FX-denominated debt (USD/EUR bonds) vs mixed FX revenue (export-heavy automotive/durables, but domestic-heavy banking/energy retail). Net FX position likely NEGATIVE → TRY depreciation = double hit (balance sheet loss + margin compression from imported inputs).",
+      "mitigation": "Natural hedge via export revenue; FX hedging (policy not disclosed); strong operational cash flow generation in segments.",
+      "current_status": "2024 OCF was negative (-102B TRY) — red flag; 2025 recovery needed",
+      "source": "Reconciliation agent output, macro exposure assessment"
+    },
+    {
+      "risk": "Tüpraş Refining Margin Volatility",
+      "severity": "High",
+      "description": "Tüpraş contributes ~50% of KCHOL revenue. Refining margins (crack spreads) are volatile — depend on crude oil prices, product demand, regional supply/demand. Margin compression = major revenue/earnings hit to KCHOL.",
+      "mitigation": "Diversification into other segments; Tüpraş operational efficiency; vertical integration (Opet retail distribution).",
+      "current_status": "Global refining margins under pressure; energy transition risk long-term",
+      "source": "Segment analysis"
+    },
+    {
+      "risk": "2024 Profitability Collapse — Structural or Temporary?",
+      "severity": "High",
+      "description": "2024 net income fell 98% (108B → 1.7B TRY), EBIT margin collapsed 91% (13% → 1.15%), OCF reversed to -102B. CRITICAL QUESTION: Is this one-time (impairments, IAS 29 distortions, restructuring charges) or structural deterioration?",
+      "mitigation": "2025 recovery (+1,200% net income to 22B TRY) suggests temporary. Must verify via detailed 2024 annual report audit notes.",
+      "current_status": "2025 recovery validates 'temporary' thesis, but Q1 2025 loss (1.4B) shows volatility persists",
+      "source": "Reconciliation agent output"
+    },
+    {
+      "risk": "Automotive Sector Cyclicality & EV Transition",
+      "severity": "Medium-High",
+      "description": "Ford Otosan & automotive group face: (1) cyclical demand (recession risk), (2) EV transition (R&D investment, margin pressure), (3) competition from Chinese OEMs.",
+      "mitigation": "R&D investment in EVs, export diversification, partnership with Ford (technology access).",
+      "current_status": "Active R&D investment; automotive NAV contribution 43% (largest segment)",
+      "source": "Strategic initiatives"
+    },
+    {
+      "risk": "Banking Sector (YKBNK) Credit Risk",
+      "severity": "Medium",
+      "description": "Yapı Kredi (67.99% ownership) faces: (1) Turkey recession → NPL spike, (2) TCMB rate volatility → NIM pressure, (3) TRY depreciation → FX-indexed loan losses.",
+      "mitigation": "YKBNK's scale (#4 private bank), diversified loan book, regulatory capital buffers.",
+      "current_status": "Turkey banking sector healthy as of 2025; inflation cooling = tailwind",
+      "source": "Finance segment assessment"
+    },
+    {
+      "risk": "Geopolitical Risk (Turkey-EU, Turkey-Russia, Regional Instability)",
+      "severity": "Medium",
+      "description": "Turkey's geopolitical position affects: (1) export access (EU tariffs), (2) energy security (Russian gas), (3) investor sentiment (NATO tensions, sanctions risk).",
+      "mitigation": "Diversified export markets, operational flexibility, strong government relations (Koç family influence).",
+      "current_status": "Ongoing monitoring required",
+      "source": "Macro risk assessment"
+    },
+    {
+      "risk": "Concentration in Koç Family Control (63.4%)",
+      "severity": "Low-Medium",
+      "description": "Controlling shareholder risk: (1) minority shareholder dilution, (2) related-party transactions, (3) strategic decisions favoring family vs public shareholders.",
+      "mitigation": "Strong governance (independent directors, SPK oversight), family's long-term value creation track record (founded 1963), reputational incentives.",
+      "current_status": "Low immediate risk; family aligned with long-term value creation",
+      "source": "Ownership structure analysis"
+    }
+  ],
+
+  "data_gaps": [
+    "Exact ownership percentages for Aygaz, Opet, Otokoç, Otokar, TürkTraktör (unlisted subsidiaries)",
+    "Detailed segment revenue breakdown (2025 data incomplete)",
+    "FX hedging policy and hedge ratios",
+    "Quarterly seasonality patterns (require KAP quarterly data)",
+    "Board independence ratio (specific %)",
+    "Corporate governance rating score",
+    "Employee headcount and diversity metrics",
+    "Detailed cost structure breakdown (energy % of COGS, labor % of opex)",
+    "Capacity utilization rates by segment",
+    "Customer concentration data",
+    "Related-party transaction details",
+    "Specific 2026 revenue/EBITDA guidance"
+  ],
+
+  "evidence_refs": [
+    {
+      "claim": "Koç Holding is Turkey's largest conglomerate, contributing ~7% of GDP",
+      "source": "https://www.koc.com.tr/investor-relations/why-koc-holding"
+    },
+    {
+      "claim": "Koç family controls 63.4% via Family Danışmanlık (43.7%), direct (18.3%), Vehbi Koç Foundation (7.3%), Pension Fund (2.3%)",
+      "source": "https://simplywall.st/stocks/us/capital-goods/otc-khol.y/koc-holding/ownership"
+    },
+    {
+      "claim": "TUPRS ownership: 50.7% total (4.3% direct KCHOL + 46.4% via Enerji Yatırımları) after March 2026 2.1% stake sale",
+      "source": "https://bigpara.hurriyet.com.tr/haberler/genel-haberler/koc-holdingden-tuprasta-pay-satisi-aciklamasi_ID1626477/"
+    },
+    {
+      "claim": "ARCLK ownership: 41.43% KCHOL + 12.05% Teknosan = 53.48% total control",
+      "source": "https://matrixbcg.com/blogs/owners/arcelikas"
+    },
+    {
+      "claim": "TOASO ownership: 41% Koç Holding, 41% Ford Motor Company, 18% public",
+      "source": "https://www.fordotosan.com.tr/en/corporate/about-ford-otosan/shareholder-structure"
+    },
+    {
+      "claim": "YKBNK ownership: 67.99% (increased from 50% after Nov 2021 UniCredit exit)",
+      "source": "https://en.wikipedia.org/wiki/Yap%C4%B1_Kredi"
+    },
+    {
+      "claim": "THYAO: NO Koç ownership — majority Turkey Wealth Fund (49.12%) + 50.88% float",
+      "source": "https://matrixbcg.com/blogs/owners/turkishairlines"
+    },
+    {
+      "claim": "EREGL: NO Koç ownership — majority OYAK (49.29%)",
+      "source": "https://en.wikipedia.org/wiki/Erdemir"
+    },
+    {
+      "claim": "2025 consolidated revenue: USD 64.3B",
+      "source": "https://tr.investing.com/news/economy-news/koc-holding-2025te-konsolide-bazda-643-milyar-dolar-gelir-elde-etti-3758614"
+    },
+    {
+      "claim": "NAV discount currently ~30% (historical 10-40%; mid-2024: mid-teens)",
+      "source": "https://www.paturkey.com/news/2025/koc-holding-nav-discount-back-at-attractive-levels-18388/"
+    },
+    {
+      "claim": "ESG: Carbon neutral 2050 target, 27% Scope 1+2 reduction by 2030, 49% by 2040",
+      "source": "https://www.koc.com.tr/sustainability/act-for-the-planet-together/change-climate"
+    },
+    {
+      "claim": "S&P Global 2026 Sustainability Yearbook inclusion",
+      "source": "https://bazaartimes.com/koc-holding-included-in-sp-global-2026-sustainability-yearbook/"
+    },
+    {
+      "claim": "CEO Levent Çakıroğlu, Chairman M. Ömer Koç (both since 2016)",
+      "source": "https://craft.co/koc-holding/executives"
+    },
+    {
+      "claim": "Free float 26.9%, foreign investors 60% of float",
+      "source": "https://www.koc.com.tr/investor-relations/stock-information-investor-tools"
+    },
+    {
+      "claim": "2025 9M net income 14.4B TRY (+54% YoY)",
+      "source": "https://www.ainvest.com/news/ko-holding-2025-results-assessing-capital-allocation-sector-rotation-portfolio-construction-2602/"
+    }
+  ],
+
+  "warnings": [
+    "CRITICAL: THYAO and EREGL are NOT Koç Holding subsidiaries. Common misconception. Do not include in SOTP valuation.",
+    "2024 profitability collapse (net income -98%, OCF -166%) appears to be temporary distortion (one-time charges, IAS 29 accounting, restructuring). 2025 recovery validates this. However, Q1 2025 loss (1.4B TRY) shows earnings volatility persists. Financial_analysis agent MUST investigate 2024 annual report notes.",
+    "IAS 29 hyperinflation accounting ACTIVE in Turkey — net monetary position gains/losses distort reported P&L. Downstream agents must adjust for this non-operational item.",
+    "Holding discount (~30%) is MATERIAL valuation factor. SOTP NAV analysis REQUIRED. Do not use consolidated P&L multiples (PE, EV/EBITDA) without adjusting for discount.",
+    "FX exposure is HIGH and COMPLEX — net FX position likely negative (FX debt > FX assets). TRY depreciation = double hit (balance sheet + margin). Detailed FX sensitivity analysis required.",
+    "Segment data incomplete in public sources — energy 23% NAV, automotive 43% NAV, finance 19% NAV, durables 6% NAV (totals <100%, residual in 'other'). Revenue breakdown by segment not precisely disclosed for 2025. Financial_analysis agent should request detailed segment financials from KAP.",
+    "Management guidance for 2026 NOT AVAILABLE in search results. Use 2025 actuals and analyst consensus as proxy.",
+    "Customer concentration, seasonality patterns, hedge ratios NOT DISCLOSED — flag as data gaps.",
+    "Board independence ratio, corporate governance rating NOT FOUND — ESG_screening agent should investigate further."
+  ],
+
+  "confidence_overall": "medium-high",
+  "confidence_breakdown": {
+    "ownership_structure": "high",
+    "subsidiary_portfolio": "high (major listed subs), medium (unlisted subs)",
+    "financial_performance": "high (2023-2025 data verified)",
+    "business_model": "high",
+    "fx_exposure": "medium (directional assessment confirmed, detailed hedge policy missing)",
+    "esg_commitments": "high",
+    "management_team": "high",
+    "guidance": "medium-low (limited 2026 forward guidance)",
+    "accounting_policies": "medium-high",
+    "operational_details": "medium (segment-level granularity limited)"
+  },
+
+  "review_status": "ready_for_ceo_review",
+  "next_steps": [
+    "CEO review: Verify THYAO/EREGL exclusion is correct",
+    "Financial_analysis agent: Obtain detailed segment financials from KAP 2024/2025 annual reports",
+    "Financial_analysis agent: Investigate 2024 profitability collapse via audit notes (impairments, IAS 29, restructuring charges)",
+    "Financial_analysis agent: Calculate SOTP NAV using latest subsidiary market caps (TUPRS, ARCLK, TOASO, YKBNK)",
+    "Value_assessment agent: Model holding discount scenarios (Bear 35%, Base 25%, Bull 15%)",
+    "Macro_analysis agent: Assess Turkey macro sensitivity (TCMB rate, TRY/USD, inflation, GDP) across all 5 segments",
+    "Sector_competition agent: Multi-sector benchmark (energy, automotive, finance, durables separately)",
+    "ESG_screening agent: Deep-dive on board independence ratio, governance rating, diversity metrics"
+  ],
+
+  "analyst_notes": [
+    "KCHOL is a CLASSIC HOLDING COMPANY CASE — valuation MUST use Sum-of-the-Parts (SOTP) NAV methodology, NOT traditional P/E or EV/EBITDA on consolidated financials.",
+    "The 30% holding discount is the KEY INVESTMENT THESIS. If discount narrows to historical average (15-20%), significant upside. Catalysts: (1) portfolio simplification, (2) Turkey macro stabilization, (3) transparent capital allocation, (4) share buybacks.",
+    "2024 was an ANOMALY year — do not extrapolate. 2025 recovery (+1,200% net income) validates temporary nature of 2024 distress. Focus on normalized earnings power (2023, 2025) for valuation.",
+    "Multi-sector diversification is DOUBLE-EDGED: (1) Risk mitigation (not all eggs in one basket), (2) Complexity discount (market penalizes conglomerate opacity). Net effect: holding discount.",
+    "FX sensitivity is CRITICAL — this is a net FX debtor in a volatile TRY environment. Every 10% TRY depreciation = balance sheet loss + margin compression (unless hedged). Hedge ratio is UNKNOWN — major data gap.",
+    "Tüpraş (50% of revenue) is a REFINING PLAY — margins are volatile, energy transition is a long-term threat. Automotive (43% of NAV) is CYCLICAL + EV transition risk. Finance (YKBNK 19% NAV) is TURKEY MACRO PLAY. Durables (Arçelik 6% NAV) is EXPORT-DRIVEN. Each segment requires separate analysis.",
+    "ESG is STRONG — S&P Sustainability Yearbook 2026, 6 WEF Lighthouse facilities, ambitious carbon targets. Positive for long-term institutional investor appetite.",
+    "Management tenure is LONG (Çakıroğlu 10 years, Koç family control since 1963) — stability, but also succession planning question for next decade.",
+    "FREE FLOAT is LOW (26.9%) — liquidity constraint, especially for large institutional investors. BUT foreign ownership in float is HIGH (60%) — international validation.",
+    "CRITICAL NEXT STEP: Update memory.md with KCHOL-specific learnings (holding discount analysis, SOTP methodology, multi-sector complexity, FX exposure assessment)."
+  ]
+}

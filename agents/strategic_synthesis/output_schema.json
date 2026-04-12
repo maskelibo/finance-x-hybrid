@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/strategic_synthesis/output",
+  "title": "Strategic Synthesis Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "signal_convergence_map", "signal_divergence_map", "key_risk_factors", "analytical_open_questions", "overall_confidence", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "strategic_synthesis" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "company": { "type": "object" },
+    "signal_convergence_map": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["theme", "converging_signals", "source_output_ids", "confidence"],
+        "properties": {
+          "theme": { "type": "string" },
+          "converging_signals": { "type": "array", "items": { "type": "string" } },
+          "source_output_ids": { "type": "array", "items": { "type": "string" } },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low", "speculative"] }
+        }
+      }
+    },
+    "signal_divergence_map": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["theme", "diverging_signals", "source_output_ids", "resolution_approach"],
+        "properties": {
+          "theme": { "type": "string" },
+          "diverging_signals": { "type": "array", "items": { "type": "string" } },
+          "source_output_ids": { "type": "array", "items": { "type": "string" } },
+          "resolution_approach": { "type": "string", "enum": ["presented_both", "reconciled", "contested", "open_question"] },
+          "resolution_note": { "type": "string" }
+        }
+      }
+    },
+    "key_risk_factors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["risk_name", "source_agent", "source_output_id", "severity", "confidence"],
+        "properties": {
+          "risk_name": { "type": "string" },
+          "description": { "type": "string" },
+          "source_agent": { "type": "string" },
+          "source_output_id": { "type": "string" },
+          "severity": { "type": "string", "enum": ["high", "medium", "low"] },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low", "speculative"] }
+        }
+      }
+    },
+    "key_opportunity_factors": { "type": "array", "items": { "type": "object" } },
+    "analytical_open_questions": { "type": "array", "items": { "type": "string" } },
+    "contradiction_resolutions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["contradiction_id", "resolution_approach", "resolution_text"],
+        "properties": {
+          "contradiction_id": { "type": "string" },
+          "resolution_approach": { "type": "string" },
+          "resolution_text": { "type": "string" }
+        }
+      }
+    },
+    "specialist_inputs_used": { "type": "array", "items": { "type": "string" } },
+    "overall_confidence": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+    "evidence_refs": { "type": "array", "items": { "type": "object" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "missing_inputs": { "type": "array", "items": { "type": "string" } },
+    "review_status": { "type": "string", "enum": ["pending_ceo_review", "approved", "rejected", "revision_requested"] }
+  },
+  "additionalProperties": false
+}

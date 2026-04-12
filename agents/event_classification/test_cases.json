@@ -1,0 +1,29 @@
+{
+  "agent_id": "event_classification",
+  "test_cases": [
+    {
+      "test_id": "ec-tc-001",
+      "name": "Clear new_contract disclosure",
+      "input": { "disclosure_text": "EREGL, ABC Otomotiv ile 3 yıl süreli, toplam 12 milyar TL tutarında çelik tedarik sözleşmesi imzaladığını açıklamıştır." },
+      "expected_behavior": { "primary_type": "new_contract", "classification_confidence": "high" },
+      "pass_criteria": ["primary_type = new_contract", "confidence = high", "key_terms include: sözleşme, milyar TL"],
+      "fail_criteria": ["Wrong primary type", "No key terms extracted", "Financial impact assessed in this output"]
+    },
+    {
+      "test_id": "ec-tc-002",
+      "name": "Ambiguous disclosure — management and strategic change",
+      "input": { "disclosure_text": "Şirket CEO'su istifasını sunmuş, aynı zamanda şirketin yeniden yapılanmaya gideceği duyurulmuştur." },
+      "expected_behavior": { "primary_type": "management_change", "secondary_types_includes": "regulatory_event_or_restructuring", "confidence": "medium" },
+      "pass_criteria": ["management_change as primary", "At least 1 secondary type noted", "confidence = medium (ambiguous)"],
+      "fail_criteria": ["confidence = high on ambiguous disclosure", "No secondary type despite multi-event disclosure"]
+    },
+    {
+      "test_id": "ec-tc-003",
+      "name": "Unclassifiable novel disclosure",
+      "input": { "disclosure_text": "Şirket, mevzuat değişikliğine ilişkin beklentilerini paylaşmıştır ve hissedar güncellemesi yapılacaktır." },
+      "expected_behavior": { "classified": false, "unclassified_disclosures_populated": true, "ceo_escalated": true },
+      "pass_criteria": ["Disclosure appears in unclassified_disclosures[]", "Reason stated", "CEO escalation triggered"],
+      "fail_criteria": ["Forced classification into incorrect type", "Unclassified disclosure silently dropped"]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "agent_id": "qa_review",
+  "test_cases": [
+    {
+      "test_id": "qa-tc-001",
+      "name": "Pass: High-quality financial_analysis output",
+      "input": {
+        "reviewed_output": {
+          "agent_id": "financial_analysis",
+          "claims": [{ "claim": "Gross margin 25.4%", "confidence": "high", "evidence_refs": ["doc-001", "doc-002"] }],
+          "warnings": [],
+          "missing_inputs": []
+        }
+      },
+      "expected_behavior": { "qa_decision": "pass", "overall_score_above": 0.80 },
+      "pass_criteria": ["qa_decision = pass", "No critical quality flags", "overall_score >= 0.80"],
+      "fail_criteria": ["qa_decision = fail on valid high-quality output"]
+    },
+    {
+      "test_id": "qa-tc-002",
+      "name": "Fail: strategic_synthesis forward projection labeled high confidence",
+      "input": {
+        "reviewed_output": {
+          "agent_id": "strategic_synthesis",
+          "claims": [{ "claim": "Company will achieve 30% revenue growth next year", "confidence": "high", "evidence_refs": [] }]
+        }
+      },
+      "expected_behavior": { "qa_decision": "fail", "quality_flags_include": "FALSE_CERTAINTY", "escalation_recommendation": "escalate_to_ceo" },
+      "pass_criteria": ["qa_decision = fail", "Flag: FALSE_CERTAINTY with severity critical", "escalation to CEO recommended"],
+      "fail_criteria": ["qa_decision = pass or conditional_pass"]
+    },
+    {
+      "test_id": "qa-tc-003",
+      "name": "Cross-reference conflict detection",
+      "input": {
+        "reviewed_output": {
+          "agent_id": "macro_analysis",
+          "claims": [{ "claim": "TRY/USD rate is 28.5 as of analysis date", "confidence": "high" }]
+        },
+        "session_context": {
+          "other_approved_outputs": [{
+            "agent_id": "technical_analysis",
+            "claims": [{ "claim": "TRY/USD rate is 32.1 as of analysis date" }]
+          }]
+        }
+      },
+      "expected_behavior": { "qa_decision": "fail", "cross_reference_findings_populated": true, "escalation_recommendation": "escalate_to_ceo" },
+      "pass_criteria": ["Cross-reference conflict detected and reported", "qa_decision = fail or conditional_pass", "conflicting_output_id references technical_analysis output"],
+      "fail_criteria": ["Cross-reference conflict not detected"]
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Performance Review Output Schema",
+  "type": "object",
+  "required": [
+    "agent_id",
+    "output_id",
+    "session_id",
+    "timestamp",
+    "report_evaluated",
+    "agent_evaluations",
+    "overall_report_quality",
+    "review_status"
+  ],
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "const": "agent_performance_review"
+    },
+    "output_id": {
+      "type": "string",
+      "pattern": "^apr-out-[a-zA-Z0-9-]+$"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "report_evaluated": {
+      "type": "object",
+      "required": ["company", "ticker", "date"],
+      "properties": {
+        "company": { "type": "string" },
+        "ticker": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "report_type": {
+          "type": "string",
+          "enum": ["fundamental", "technical", "combined"]
+        }
+      }
+    },
+    "agent_evaluations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "agent_id",
+          "scores",
+          "status",
+          "critical_gaps",
+          "strengths",
+          "priority"
+        ],
+        "properties": {
+          "agent_id": { "type": "string" },
+          "scores": {
+            "type": "object",
+            "required": ["completeness", "quality", "accuracy", "actionability", "overall"],
+            "properties": {
+              "completeness": { "type": "number", "minimum": 0, "maximum": 100 },
+              "quality": { "type": "number", "minimum": 0, "maximum": 100 },
+              "accuracy": { "type": "number", "minimum": 0, "maximum": 100 },
+              "actionability": { "type": "number", "minimum": 0, "maximum": 100 },
+              "overall": { "type": "number", "minimum": 0, "maximum": 100 }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "EXCELLENT",
+              "GOOD",
+              "ACCEPTABLE",
+              "NEEDS_IMPROVEMENT",
+              "CRITICAL_GAPS",
+              "UNACCEPTABLE"
+            ]
+          },
+          "critical_gaps": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "strengths": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "feedback_file_written": {
+            "type": "string",
+            "description": "Path to generated feedback file"
+          },
+          "memory_updated": {
+            "type": "boolean"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+          },
+          "improvement_trend": {
+            "type": "string",
+            "enum": ["improving", "stable", "declining"],
+            "description": "Performance trend compared to previous reports"
+          },
+          "persistent_issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "issue": { "type": "string" },
+                "occurrences": { "type": "number" },
+                "first_seen": { "type": "string", "format": "date" },
+                "last_seen": { "type": "string", "format": "date" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "overall_report_quality": {
+      "type": "object",
+      "required": [
+        "score",
+        "status",
+        "institutional_investor_ready",
+        "blocking_issues"
+      ],
+      "properties": {
+        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+        "status": {
+          "type": "string",
+          "enum": [
+            "EXCELLENT",
+            "GOOD",
+            "ACCEPTABLE_WITH_GAPS",
+            "NEEDS_REVISION",
+            "UNACCEPTABLE"
+          ]
+        },
+        "institutional_investor_ready": { "type": "boolean" },
+        "blocking_issues": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "summary": { "type": "string" }
+      }
+    },
+    "escalations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["agent_id", "issue", "recommendation"],
+        "properties": {
+          "agent_id": { "type": "string" },
+          "issue": { "type": "string" },
+          "occurrences": { "type": "number" },
+          "recommendation": {
+            "type": "string",
+            "enum": [
+              "review_system_prompt",
+              "agent_redesign",
+              "agent_replacement",
+              "additional_training",
+              "data_collection_improvement"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["CRITICAL", "HIGH", "MEDIUM"]
+          }
+        }
+      }
+    },
+    "performance_trends": {
+      "type": "object",
+      "description": "Historical performance tracking",
+      "properties": {
+        "average_report_score_last_10": { "type": "number" },
+        "institutional_ready_rate": { "type": "number" },
+        "improvement_rate": { "type": "number" },
+        "top_performing_agents": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "agents_needing_attention": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "next_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string" },
+          "responsible": { "type": "string" },
+          "deadline": { "type": "string", "format": "date" },
+          "priority": {
+            "type": "string",
+            "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+          }
+        }
+      }
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["completed", "in_progress", "pending"]
+    }
+  }
+}

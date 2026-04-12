@@ -1,0 +1,733 @@
+{
+  "agent_id": "context_extraction",
+  "output_id": "ce-out-TUPRS-20260412-001",
+  "session_id": "ceo-session-TUPRS-20260412",
+  "ticker": "TUPRS",
+  "company_name": "Tüpraş-Türkiye Petrol Rafinerileri A.Ş.",
+  "period": "2025 (FY, 9M actual + Q4 estimated) / 2026 guidance",
+  "analysis_date": "2026-04-12",
+
+  "brand_identity": {
+    "primary_color": "#D41F29",
+    "secondary_color": "#1A1A1A",
+    "accent_color": "#F5A623",
+    "background_color": "#FFFFFF",
+    "light_background": "#F8F8F8",
+    "header_font": "Inter",
+    "body_font": "Inter",
+    "logo_position": "top-right",
+    "report_style_notes": "Kurumsal, güçlü — kırmızı (#D41F29) ve siyah (#1A1A1A) dominant. Kapak sayfası koyu degrade (siyahtan kırmızıya 155° açısıyla). TUPRS rozeti sağ üst köşede kırmızı arka plan üzerine beyaz bold yazı. Bölüm numaraları büyük ve soluk (#D41F29 %10 opaklık). Skor ve öneri kutuları altın sarısı/turuncu vurgu ile ayrılıyor.",
+    "signature_visual_elements": "4px kırmızı left-border ile h2 başlıkları; tablo headerları #1A1A1A koyu arka plan beyaz yazı; sütun geçişleri noktalı çizgi ile; cover gradient 155deg #1A1A1A → #2d0608 → #D41F29. Pillar kartlarında sağ üst köşede büyük soluk numara (#D41F29 %8 opaklık).",
+    "report_layout_structure": "A4 dikey format, 56px sol/sağ kenar boşluğu, 48px üst, 56px alt. Max-width 960px ortalanmış içerik. Her bölüm yeni sayfada (page-break-before: always). Sağ üst köşede TUPRS rozeti (position: absolute, top: 32px, right: 48px). H2 başlıklar: 22px, font-weight 700, kırmızı (#D41F29), 4px solid left-border + 14px padding-left. H3: 16px, koyu (#1A1A1A). Tablolar tek sütun, tam genişlik, dark header (#1A1A1A beyaz). Tek sütun metin düzeni; pillar kartları 2x2 grid. Sayfa footer'ı solda 'Finance X Platform — TUPRS Raporu | 12 Nisan 2026 | Sayfa X' formatında 10px açık gri."
+  },
+
+  "company_profile": {
+    "legal_name": "Tüpraş-Türkiye Petrol Rafinerileri A.Ş.",
+    "ticker": "TUPRS",
+    "bist_listing": {
+      "indices": ["BIST 30", "BIST 100"],
+      "shares_outstanding": "936.6 milyon hisse (yönetim kurulu raporu) / 1.92 milyar hisse (data_collection)",
+      "note": "CONTESTED: Shares outstanding tutarsızlığı var — yönetim kurulu raporu 936.6M, data_collection 1.92B diyor. Aşağı yönlü 936.6M'ın daha doğru olduğu değerlendiriliyor (piyasa değeri 254 TL × 936.6M = ~238B TL rapordaki değerle uyuşuyor)"
+    },
+    "market_cap_trl": "~238 milyar TL (11 Nisan 2026, 254 TL kapanış)",
+    "controlling_shareholder": {
+      "name": "Koç Holding A.Ş. (doğrudan + Enerji Yatırımları A.Ş. aracılığıyla)",
+      "structure": {
+        "koç_holding_direct": "%4.3",
+        "enerji_yatirimlari_as": "%46.4",
+        "koç_group_total": "%50.7",
+        "public_float": "%48.9 (Mart 2026 KCHOL hisse satışı sonrası)"
+      },
+      "enerji_yatirimlari_ownership": "Koç Holding (%75) + Aygaz A.Ş. (%20) + OPET Petrolcülük (%3) + Shell kalıntı (~%1.9-0.1)",
+      "source": "TUPRS IR sayfası (tupras.com.tr/tr/ortaklik-yapisi), KAP KCHOL özel durum açıklaması Mart 2026"
+    },
+    "ultimate_controlling_family": "Koç ailesi (Ömer M. Koç, Rahmi M. Koç, Ali Y. Koç) — Koç Holding'in %63.4'üne sahip",
+    "company_type": "OPERATING_COMPANY — Holding değil. Türkiye'nin tek entegre rafinerisi.",
+    "holding_flag": false,
+    "primary_business": "Ham petrol rafinajı ve rafine edilmiş petrol ürünleri üretim ve satışı. Tüpraş, Türkiye'nin toplam rafine petrol ihtiyacının yaklaşık %60'ını karşılamaktadır.",
+    "operating_segments": [
+      {
+        "segment": "Rafinaj (Refining)",
+        "description": "Dört rafineri tesisinde ham petrol işleme ve rafine ürün üretimi",
+        "2025_pretax_profit_trl_bn": 43.2,
+        "revenue_share": "~99%",
+        "source": "Teknik Piyasa analiz raporu / 2025 finansal özeti"
+      },
+      {
+        "segment": "Elektrik Üretimi (Entek A.Ş.)",
+        "description": "Rafineri sahalarında entegre elektrik üretimi (kojenerasyon + doğal gaz)",
+        "2025_pretax_profit_trl_mn": 517.8,
+        "note": "2024'te 1.57B TRY'ydi — enerji fiyatı normalizasyonu nedeniyle düşüş",
+        "source": "Teknik Piyasa 2025 finansal özeti"
+      }
+    ],
+    "major_subsidiaries": [
+      {
+        "name": "Körfez Taşımacılık A.Ş.",
+        "business": "Türkiye'nin ilk özel demiryolu operatörü; petrol ürünleri ve fuel oil taşımacılığı",
+        "2025_volume": "2.4 milyon ton taşınan ürün",
+        "ownership_pct": "çoğunluk pay",
+        "source": "TUPRS 2025 Entegre Faaliyet Raporu özeti"
+      },
+      {
+        "name": "DİTAŞ Deniz İşletmeciliği ve Tankerciliği A.Ş.",
+        "business": "Deniz taşımacılığı (ham petrol + rafine ürün)",
+        "ownership_pct": "79.98%",
+        "source": "Wikipedia / şirket bilgileri"
+      },
+      {
+        "name": "OPET Petrolcülük A.Ş.",
+        "business": "Akaryakıt perakende satışı (benzin istasyonları ağı)",
+        "ownership_pct": "40%",
+        "note": "Hem müşteri hem iştirak — önemli ilişkili taraf işlemi",
+        "source": "Wikipedia / TUPRS IR"
+      },
+      {
+        "name": "Entek Elektrik Üretimi A.Ş.",
+        "business": "Kojenerasyon bazlı elektrik üretimi",
+        "ownership_pct": "çoğunluk pay",
+        "source": "Segment raporlama"
+      },
+      {
+        "name": "Tupras Trading Ltd.",
+        "business": "Uluslararası ticaret şirketi (Londra merkezli) — ham petrol alımı, ürün satışı",
+        "ownership_pct": "100%",
+        "2025_transaction_volume_trl_bn": 107,
+        "source": "Teknik Piyasa 2025 analizi / ilişkili taraf dipnotu"
+      }
+    ],
+    "geographic_exposure": {
+      "primary": "Türkiye (iç pazar — toplam gelirin ~%75-80'i)",
+      "international": "İhracat (~%20-25) ve Tupras Trading Ltd. üzerinden uluslararası ticaret",
+      "note": "İhracat çoğunlukla Avrupa ve Akdeniz havzasına. AB CBAM (Karbon Sınır Düzeltme Mekanizması) orta vadede ihracat marjlarını etkileyebilir.",
+      "source": "Teknik Piyasa, CEO mandatı"
+    },
+    "customer_concentration": {
+      "largest_customer": "OPET Petrolcülük A.Ş. (ilişkili taraf)",
+      "opet_revenue_trl_bn": 150.6,
+      "opet_pct_of_revenue": "~18%",
+      "pricing_methodology": "Comparable uncontrolled price + sabit ton başına marj — bağımsız üçüncü taraf doğrulaması",
+      "other_customers": "Shell, BP, bağımsız dağıtım şirketleri",
+      "source": "Teknik Piyasa analizi / ilişkili taraf dipnotu"
+    },
+    "privatization_history": "1983'te devlet rafinerilerinin birleştirilmesiyle kuruldu (İPRAŞ + 3 rafineri). 2005'te Koç Holding-Shell konsorsiyumu (Enerji Yatırımları A.Ş.) %51 payı 4 milyar dolardan fazlasına satın aldı.",
+    "source_refs": [
+      "tupras.com.tr/tr/ortaklik-yapisi",
+      "tupras.com.tr/en/management",
+      "en.wikipedia.org/wiki/Tüpraş",
+      "KAP KCHOL özel durum açıklaması Mart 2026"
+    ]
+  },
+
+  "operational_context": {
+    "refinery_network": {
+      "total_capacity_mmtpa": 30.0,
+      "total_capacity_kbpd": "~560 kbbl/gün eşdeğeri",
+      "facilities": [
+        {
+          "name": "İzmit Rafinerisi",
+          "location": "Körfez, İzmit, Kuzey-Batı Türkiye",
+          "capacity_mmtpa": 11.0,
+          "crude_access": "Marine tanker — Karadeniz ve Akdeniz rotaları",
+          "notes": "Türkiye'nin en büyük rafinerisi; Fuel Oil Conversion Project (FOCUP) yatırımı burada tamamlandı"
+        },
+        {
+          "name": "İzmir (Aliağa) Rafinerisi",
+          "location": "Aliağa, Ege kıyısı",
+          "capacity_mmtpa": 11.0,
+          "crude_access": "Marine tanker — Ege ve Akdeniz rotaları",
+          "notes": "SAF üretimi 2026'da bu rafineride başlayacak (Honeywell Ecofining teknolojisi)"
+        },
+        {
+          "name": "Kırıkkale Rafinerisi",
+          "location": "Kırıkkale, Orta Anadolu",
+          "capacity_mmtpa": 5.4,
+          "crude_access": "Ceyhan Akdeniz terminali → şirkete özgü boru hattı ile kara içi",
+          "notes": "Kapasite 2019'da kayıt altına alındı"
+        },
+        {
+          "name": "Batman Rafinerisi",
+          "location": "Batman, Güneydoğu Türkiye",
+          "capacity_mmtpa": 1.1,
+          "crude_access": "Güneydoğu Türkiye'nin yerli ham petrol sahaları (ithal değil)",
+          "notes": "2019 yükseltme çalışması; yerli ham petrol işler"
+        }
+      ]
+    },
+    "capacity_utilization": {
+      "2025_actual_pct": 94,
+      "2026_guidance_pct": "95-100",
+      "2026_production_target_mmt": 29,
+      "source": "Teknik Piyasa 2025 kapsamlı analizi"
+    },
+    "refinery_margin": {
+      "2022_peak_usd_per_bbl": 19,
+      "2023_usd_per_bbl": "~13-15",
+      "2025_annual_usd_per_bbl": 7.0,
+      "2025_quarterly": {
+        "Q1_2025": 4.1,
+        "Q3_2025": 9.7,
+        "note": "Yıl içi volatilite yüksek — jeopolitik ve arz/talep dalgalanmaları etkili"
+      },
+      "2026_management_guidance_usd_per_bbl": "6-7",
+      "2026_analyst_consensus_usd_per_bbl": "10.5 (İş Yatırım nisan 2026 revizesi — jeopolitik prim dahil)",
+      "sensitivity": "1 $/bbl hareket ≈ 5-6 milyar TRY FAVÖK etkisi",
+      "source": "TeknikPiyasa analizi, İş Yatırım Nisan 2026 raporu"
+    },
+    "white_product_yield": {
+      "pct": 82,
+      "definition": "Yüksek marjlı ürünler: benzin + motorin + jet yakıtı toplamı / toplam üretim",
+      "note": "Yüksek NCI (Nelson Complexity Index) kompleks rafineri yapısı, çeşitli ham petrol çeşitlerinden yüksek yield elde edilmesini mümkün kılıyor",
+      "source": "Teknik Piyasa 2025 analizi"
+    },
+    "product_portfolio": [
+      "Benzin (Gasoline)",
+      "Motorin (Diesel)",
+      "Jet Yakıtı / Havacılık Yakıtı (Jet Fuel / Kerosene)",
+      "Fuel Oil (Marine + endüstriyel)",
+      "Nafta (Petrokimya hammaddesi)",
+      "LPG",
+      "Bitüm (Asfalt)",
+      "Baz Yağlar ve Mumlar",
+      "Petrol Kok (Pet Coke)",
+      "SAF - Sürdürülebilir Havacılık Yakıtı (2026'dan itibaren — pilot)"
+    ],
+    "crude_oil_sourcing": {
+      "primary_benchmark": "Brent-linked ve Akdeniz/Ural-grade ham petroller",
+      "current_sources": [
+        {
+          "country": "Rusya (Ural crude)",
+          "status": "Azaltılıyor — Batı yaptırımları riski ve Avrupa ihracat kısıtlamaları",
+          "note": "Türkiye hâlâ Rusya'dan yüksek hacimde ham petrol alıyor (~410 kbbl/gün Eylül veri); ancak TUPRS bazı rafineri hatlarında Rus petrolünü azaltıyor"
+        },
+        {
+          "country": "Irak",
+          "status": "Artırılıyor — Ural-benzeri grade alımı",
+          "note": "Ceyhan terminali üzerinden Kırıkkale rafinerisine ulaşım"
+        },
+        {
+          "country": "Azerbaycan (BTC hattı)",
+          "status": "Sürekli — alternatif tampon kaynak",
+          "note": "Bakü-Tiflis-Ceyhan boru hattı; Kırıkkale beslemesi için ideal"
+        },
+        {
+          "country": "Brezilya",
+          "status": "Artan çeşitlendirme",
+          "note": "Diversifikasyon amacıyla spot alımlar"
+        },
+        {
+          "country": "Angola",
+          "status": "Spot alım",
+          "note": "Spot bazlı diversifikasyon"
+        }
+      ],
+      "batman_exception": "Batman rafinerisi Güneydoğu Türkiye yerli ham petrolü işler — ithal bağımlılığı yok",
+      "commodity_hedging": "72.8 milyon varil ham petrol vadeli işlemlerle (forwards) korunmuş",
+      "source": "CEE Energy News, Reuters, AA Enerji, OilPrice.com"
+    },
+    "key_cost_drivers": [
+      {
+        "driver": "Ham Petrol (Crude Oil)",
+        "share_of_cogs_pct": "~85-90",
+        "currency": "USD (ithal ham petrol)",
+        "note": "Dominant maliyet kalemi; COGS'un %85-90'ı"
+      },
+      {
+        "driver": "Enerji (Doğal gaz + elektrik)",
+        "share_of_cogs_pct": "~5-8",
+        "currency": "TRY + USD karma",
+        "note": "Rafineri prosesleri enerji yoğun; Entek A.Ş. dahili üretim maliyeti düşürüyor"
+      },
+      {
+        "driver": "İşçilik ve Bakım",
+        "share_of_cogs_pct": "~3-5",
+        "currency": "TRY"
+      }
+    ],
+    "fx_exposure": {
+      "revenue_currency_mix": {
+        "try_domestic": "~75-80% — yurt içi akaryakıt satışları TRY faturalı; ancak fiyatlar Akdeniz dolar benchmark'ına endeksli (doğal kur koruması)",
+        "usd_exports_and_trade": "~20-25% — ihracat ve Tupras Trading işlemleri",
+        "natural_hedge_note": "İç pazar fiyatları Akdeniz USD referans fiyatlarına endeksli olduğundan ham petrol USD maliyeti ile iç satış fiyatı arasında doğal bir kur koruması (natural hedge) mevcuttur"
+      },
+      "debt_currency": {
+        "tlref_bonds": "TRY cinsinden (değişken faiz)",
+        "syndicated_loan": "500 milyon USD — Mayıs 2025 sürdürülebilirlik bağlantılı sendikasyon"
+      },
+      "net_fx_exposure_assessment": "Doğal hedge mekanizması sayesinde SISE veya saf ithalatçı şirketlere kıyasla net kur etkisi sınırlı. Ancak TRY hızlı değer kaybı senaryosunda USD borç yükü (TRY cinsinden) artabilir. Şirket, ham petrol vadeli işlem koruması (72.8M bbl) ile emtia fiyat riskini kısmen yönetiyor.",
+      "risk_level": "ORTA (doğal hedge nedeniyle tam FX riski değil; ancak nominal TRY büyüme yanıltıcı olabilir)",
+      "source": "Teknik Piyasa 2025 analizi, CEO mandatı"
+    },
+    "seasonality": {
+      "pattern": "Hafif mevsimsellik mevcut",
+      "q4_q1_peak": "Motorin talebi kış aylarında yüksek (ısınma + taşımacılık)",
+      "summer_dynamics": "Jet yakıtı talebi yaz aylarında zirve (havacılık sezonu); motorin ile rekabet",
+      "q2_q3_maintenance": "Büyük planlı bakımlar (turnaround) genellikle bahar veya sonbahar dönemlerinde yapılır — kapasite kullanım oranını geçici düşürür"
+    },
+    "digital_transformation": {
+      "unified_pims": "2025'te Unified PIMS (Plant Information Management System) entegrasyonu — ~$15.8M tasarruf",
+      "digislate": "DigiSlate platformu tedarik zinciri operasyonlarında verimlilik artışı",
+      "source": "TUPRS 2025 Entegre Faaliyet Raporu özeti"
+    }
+  },
+
+  "accounting_policy_context": {
+    "financial_reporting_standard": "TFRS (Türkiye Finansal Raporlama Standartları) = IFRS ile uyumlu; CMB (SPK) kurallarına tabi",
+    "ias29_hyperinflation": {
+      "status": "UYGULANMIŞ — 2023-2024 dönemleri için zorunlu uygulama (IAS 29 / TMS 29)",
+      "2025_2027_status": "ASKIYA ALINMIŞ — 2025-2027 için enflasyon düzeltmesi geçici olarak askıya alındı",
+      "impact": "Varlık yeniden değerlemesi özkaynak tabanını şişirdi → ROE karşılaştırılabilirliğini bozdu. IAS 29 net parasal pozisyon kazancı/kaybı P&L'ye kaydedildi — non-operational düzeltme.",
+      "warning_for_downstream": "ROE rakamları enflasyon muhasebesi nedeniyle yanıltıcı. Financial Analysis agentı adjusted ROE hesaplamalıdır. 2023 ROE %82 gibi gözüküyor ancak gerçek operasyonel getiri çok daha düşük.",
+      "comparability_note": "2025-2027 döneminde enflasyon düzeltmesinin askıya alınması dönemler arası karşılaştırılabilirliği zorlaştırmaktadır",
+      "source": "HTML rapor (satır 1369-1370), Teknik Piyasa analizi"
+    },
+    "revenue_recognition": {
+      "standard": "TFRS 15 (IFRS 15)",
+      "method": "Petrol ürünlerinde teslimat gerçekleştiğinde gelir tanınır (point-in-time recognition)",
+      "related_party_pricing": "Opet ile işlemler: karşılaştırılabilir kontrolsüz fiyat (CUP) yöntemi + sabit ton başı marj; bağımsız üçüncü taraf doğrulaması",
+      "source": "Teknik Piyasa analizi"
+    },
+    "auditor": {
+      "firm": "PricewaterhouseCoopers (PwC) Bağımsız Denetim ve SMMM A.Ş.",
+      "lead_auditor": "Cihan Harman, SMMM",
+      "opinion": "Olumlu (Clean / Unqualified)",
+      "audit_type": "Sürekli (Statutory audit)",
+      "key_audit_matters": [
+        {
+          "matter": "Ertelenmiş Vergi Varlığı Geri Kazanılabilirliği",
+          "detail": "11.9 milyar TRY yatırım teşvik ertelenmiş vergi varlığı (Fuel Oil Dönüşüm Projesi, Körfez Taşımacılık) — geri kazanılabilirlik varsayımları, yönetimin 5 yıllık kar tahminlerine dayanıyor",
+          "auditor_flag": "EY ertelenmiş vergi varlığının geri kazanılabilirliği varsayımlarını kritik denetim konusu olarak işaretledi",
+          "source": "Teknik Piyasa 2025 analizi"
+        }
+      ],
+      "source": "KAP Bildirim 1257261 (2024 faaliyet raporu), Teknik Piyasa analizi"
+    },
+    "inventory_valuation": {
+      "policy": "Enflasyonist ortamda LIFO/FIFO stok değerleme etkisi önemli. Brent volatilitesi dönemlerinde stok değerleme farkları COGS ve marjları etkiler.",
+      "warning": "Stok değerleme etkisi analiz edilirken ham petrol birim maliyeti ile satış fiyatı arasındaki zamanlama farkları dikkate alınmalı",
+      "source": "Reconciliation output, CEO mandate"
+    },
+    "consolidation_scope": {
+      "consolidated_subsidiaries": ["Entek A.Ş.", "DİTAŞ", "Körfez Taşımacılık", "Tupras Trading Ltd.", "diğer bağlı ortaklıklar"],
+      "equity_method": ["OPET Petrolcülük (%40) — equity method"],
+      "scope_changes_2025": "Bilinen önemli kapsam değişikliği yok; KAP onayı bekleniyor",
+      "source": "Wikipedia, Teknik Piyasa"
+    },
+    "debt_structure_2025": {
+      "total_financial_debt_trl_bn": 50.2,
+      "short_term_trl_bn": 8.96,
+      "long_term_trl_bn": 28.4,
+      "instruments": [
+        "TLREF-endeksli bonolar (TRY, değişken faiz)",
+        "$500 milyon sürdürülebilirlik bağlantılı sendikasyon kredisi (Mayıs 2025)"
+      ],
+      "note": "Borç, 2024'te 24.8B TRY'den 50.2B TRY'ye çıktı — SAF + CAPEX yatırımları için borçlanma",
+      "source": "Teknik Piyasa 2025 analizi"
+    }
+  },
+
+  "strategic_initiatives": [
+    {
+      "initiative": "SAF (Sürdürülebilir Havacılık Yakıtı) Üretimi",
+      "status": "AKTİF — yatırım onayı sürecinde",
+      "location": "İzmir (Aliağa) Rafinerisi",
+      "technology": "Honeywell UOP Ecofining™ — atık bitkisel yağlar, hayvansal yağlar, diğer atık hammaddeler",
+      "timeline": {
+        "production_start": "2026 (pilot)",
+        "capacity_300kt_fid": "2025 yıl sonuna kadar FID",
+        "bio_feedstock_400kt_target": "2030",
+        "production_triple_target": "2035"
+      },
+      "partner": "Türk Hava Yolları — Türkiye'nin ilk yerli SAF tedarik anlaşması",
+      "supply_chain": "Tupras Trading Ltd., Ocak 2025'ten itibaren atık hammadde ticareti başlattı; 2029'dan itibaren yıllık 450.000+ ton atık bitkisel ve hayvansal hammadde",
+      "strategic_rationale": "AB SAF zorunlulukları (2030-2050); döngüsel rafinaj marjı baskısına karşı yüksek-marjlı büyüme platformu; mevcut rafineri varlıklarının kullanımı",
+      "amount_disclosed": "2026 CAPEX bütçesinin parçası ($700M toplam)",
+      "source": "Balkan Green Energy News, Advanced BioFuels USA, SAF Investor, TUPRS IR"
+    },
+    {
+      "initiative": "Fuel Oil Dönüşüm Projesi (FOCUP)",
+      "status": "TAMAMLANDI (İzmit Rafinerisi)",
+      "description": "Düşük değerli fuel oil üretimini azaltıp yüksek değerli beyaz ürünlere (motorin, benzin) çevirme",
+      "impact": "White product yield artışı; döngüsel marj koşullarında daha fazla operasyonel esneklik",
+      "deferred_tax": "11.9 milyar TRY ertelenmiş vergi varlığı bu projeden kaynaklanıyor",
+      "source": "Teknik Piyasa, CEO mandate"
+    },
+    {
+      "initiative": "2026 CAPEX Programı",
+      "status": "AKTİF",
+      "total_capex_usd_mn": 700,
+      "breakdown": [
+        "Düşük karbonlu enerji ve yenilenebilir kapasite",
+        "SAF altyapısı (İzmir)",
+        "Enerji verimliliği modernizasyonu"
+      ],
+      "source": "Teknik Piyasa, yönetim rehberi"
+    },
+    {
+      "initiative": "Körfez Taşımacılık Filoya Genişleme",
+      "status": "AKTİF",
+      "description": "Türkiye'nin ilk özel demiryolu operatörü; 2025'te 30 yeni tank vagonu eklendi",
+      "2025_volume_mmt": 2.4,
+      "strategic_value": "Akaryakıt dağıtım tedarik zinciri entegrasyonu; rakip dağıtım kanallarına karşı lojistik avantaj",
+      "source": "TUPRS 2025 Entegre Faaliyet Raporu özeti"
+    },
+    {
+      "initiative": "Dijital Dönüşüm — Unified PIMS & DigiSlate",
+      "status": "TAMAMLANDI (2025)",
+      "savings_usd_mn": 15.8,
+      "description": "Unified PIMS (tesis bilgi yönetimi) ve DigiSlate tedarik zinciri platformu entegrasyonu",
+      "source": "TUPRS 2025 Entegre Faaliyet Raporu"
+    },
+    {
+      "initiative": "Sürdürülebilirlik Bağlantılı Sendikasyon Kredisi",
+      "status": "TAMAMLANDI (Mayıs 2025)",
+      "amount_usd_mn": 500,
+      "type": "Sustainability-linked syndicated credit",
+      "note": "ESG performans hedeflerine bağlı faiz koşulları",
+      "source": "Teknik Piyasa 2025 analizi"
+    },
+    {
+      "initiative": "Yeşil Hidrojen Geliştirme",
+      "status": "ARAŞTIRMA / UZUN VADELİ",
+      "description": "Karbon nötr 2050 hedefi kapsamında hidrojen sıfır karbon elektrik üretimine tamamlayıcı çözüm olarak konumlandırılıyor",
+      "source": "TUPRS 2025 Entegre Faaliyet Raporu, Tüpraş web sitesi"
+    }
+  ],
+
+  "management_team": {
+    "board_of_directors": [
+      {"name": "Ömer M. Koç", "title": "Yönetim Kurulu Başkanı", "since": "2008", "independent": false, "affiliation": "Koç ailesi / Koç Holding CEO"},
+      {"name": "Ali Y. Koç", "title": "Başkan Vekili", "since": "Nisan 2016", "independent": false, "affiliation": "Koç ailesi / Koç Holding Yönetim Kurulu Başkanı"},
+      {"name": "Rahmi M. Koç", "title": "Yönetim Kurulu Üyesi", "since": "2008", "independent": false, "affiliation": "Koç ailesi Patriarkı"},
+      {"name": "Semahat Arsel", "title": "Yönetim Kurulu Üyesi", "since": "2009", "independent": false, "affiliation": "Koç ailesi"},
+      {"name": "Levent Çakıroğlu", "title": "Yönetim Kurulu Üyesi", "since": "Mart 2015", "independent": false, "affiliation": "Koç Holding CEO"},
+      {"name": "Erol Memioğlu", "title": "Yönetim Kurulu Üyesi", "since": "2006", "independent": false},
+      {"name": "Yağız Eyüboğlu", "title": "Yönetim Kurulu Üyesi", "since": "Nisan 2016", "independent": false, "affiliation": "Koç Holding"},
+      {"name": "A. Ümit Taftalı", "title": "Yönetim Kurulu Üyesi", "since": "27 Mart 2025", "independent": false, "note": "2025 yeni atama"},
+      {"name": "Zekeriya Kaya", "title": "Bağımsız Yönetim Kurulu Üyesi (C Grubu — PA Temsilcisi)", "independent": true},
+      {"name": "Dr. Şadan Kaptanoğlu Dikici", "title": "Bağımsız Yönetim Kurulu Üyesi", "independent": true},
+      {"name": "Yıldız Günay", "title": "Bağımsız Yönetim Kurulu Üyesi", "independent": true},
+      {"name": "Dr. Mehmet Cem Kozlu", "title": "Bağımsız Yönetim Kurulu Üyesi", "independent": true}
+    ],
+    "board_independence_ratio": "4/12 = %33 bağımsız üye",
+    "executive_management": [
+      {"name": "İbrahim Yelmenoğlu", "title": "Genel Müdür (CEO)", "since": "1 Ocak 2016", "tenure_years": 10, "note": "10+ yıl uzun görev süresi — kurumsal istikrar"},
+      {"name": "Gökhan Dizemen", "title": "Genel Müdür Yardımcısı — Mali İşler (CFO muadili)", "since": "Mart 2026", "note": "Aygaz A.Ş. Genel Müdür Yardımcısı (Finans) pozisyonundan atandı; önceki CFO Doğan Korkmaz Koç Holding CFO'su oldu"},
+      {"name": "Levent Zağra", "title": "Genel Müdür Yardımcısı — Yatırımlar ve Planlama", "since": "Nisan 2016"},
+      {"name": "Atilla Ulusu", "title": "Genel Müdür Yardımcısı — Satış ve Pazarlama", "since": "Ocak 2023"},
+      {"name": "Murat Şimşek", "title": "Genel Müdür Yardımcısı — Teknik İşler", "since": "12 Ocak 2024"},
+      {"name": "Sarp Yeletayşi", "title": "Genel Müdür Yardımcısı — Ham Petrol Temini ve Dış Ticaret", "since": "1 Ocak 2023"},
+      {"name": "Önder Korkmaz", "title": "Genel Müdür Yardımcısı — İnsan Kaynakları", "since": "24 Nisan 2023"}
+    ],
+    "refinery_managers": [
+      {"name": "Arda Yıldırım", "facility": "İzmit", "since": "22 Ocak 2024"},
+      {"name": "Volkan Demirtaş", "facility": "İzmir", "since": "22 Ocak 2024"},
+      {"name": "Tolga Temur", "facility": "Kırıkkale", "since": "22 Ocak 2024"},
+      {"name": "Ahmet Cemil Karaoğuz", "facility": "Batman", "since": "22 Ocak 2024"}
+    ],
+    "recent_changes": [
+      {"date": "2025-03-27", "change": "A. Ümit Taftalı yönetim kuruluna atandı"},
+      {"date": "2026-02-27", "change": "Doğan Korkmaz Mali İşler GMY pozisyonundan ayrıldı; Koç Holding CFO'su oldu"},
+      {"date": "2026-03-18", "change": "Gökhan Dizemen (Aygaz'dan) Mali İşler GMY olarak göreve başladı"}
+    ],
+    "source": "tupras.com.tr/en/management, KAP yönetim değişikliği bildirimi Şubat 2026"
+  },
+
+  "ownership_structure": {
+    "koç_group_total": "%50.7",
+    "koç_holding_direct": "%4.3",
+    "enerji_yatirimlari_as": "%46.4",
+    "public_float": "%48.9 (Mart 2026 sonrası)",
+    "foreign_investor_ratio": "Ayrıca açıklanmamış",
+    "recent_changes": [
+      {
+        "date": "2026-03",
+        "event": "Koç Holding, ~%2.1 TUPRS payını kurumsal yatırımcılara 9.32 milyar TRY'ye sattı",
+        "rationale": "Portföy optimizasyonu + holding düzeyinde proje finansmanı + likidite artışı",
+        "result": "Koç payı %52.8'den %50.7'ye düştü; halka açıklık %47'den %48.9'a çıktı",
+        "control_unchanged": true,
+        "source": "KAP KCHOL özel durum açıklaması, data_collection_output"
+      }
+    ]
+  },
+
+  "annual_report_deep_analysis": {
+    "ceo_letter_themes": [
+      {
+        "year": 2025,
+        "theme": "'Enerjide Dönüşüm ve Liderlik' — sürdürülebilirlik ve teknoloji odaklı büyüme stratejisi",
+        "tone": "İyimser-vizyoner; SAF ve karbon nötrlüğü ön plana çıkarılıyor",
+        "key_claims": [
+          "Operasyonel beklentiler aşıldı (yıllık)",
+          "Küresel petrol talebi 104 milyon bbl/güne ulaştı",
+          "107.2 milyar TL nakit güvencesi",
+          "SAF üretimine başlanacağı taahhüdü",
+          "Dijital dönüşümde $15.8M tasarruf"
+        ],
+        "source": "TUPRS 2025 Entegre Faaliyet Raporu özeti"
+      },
+      {
+        "year": 2024,
+        "theme": "Bilanço güçlendirme ve marj normalleşmesine adaptasyon (2023 zirve sonrası döngüsel düzeltme)",
+        "tone": "Temkinli-dengeli; 2023 rekor karların ardından normalize dönüşü yönetiyor",
+        "source": "2024 faaliyet raporu bağlamı"
+      },
+      {
+        "year": 2023,
+        "theme": "Rekor finansal performans; enerji güvenliği vurgusu (post-Ukrayna çatışması)",
+        "tone": "Güçlü ve iyimser; 96.2B TRY FAVÖK zirve",
+        "source": "KAP Bildirim 1257261 bağlamı"
+      }
+    ],
+    "strategic_priority_evolution": [
+      {
+        "period": "2020-2022",
+        "priorities": "Bilanço onarımı post-COVID; verimlilik artışı; ham petrol diversifikasyonu",
+        "outcome": "2022'de 19 $/bbl rekor rafinaj marjı; net borç sıfırlandı"
+      },
+      {
+        "period": "2023-2024",
+        "priorities": "Rekor kazanç yönetimi; temettü artırımı; Fuel Oil Dönüşüm Projesi tamamlama",
+        "outcome": "2023'te 53.6B TRY net kar; ancak 2024'te marj sıkıştı (50.7B TRY FAVÖK)"
+      },
+      {
+        "period": "2025-2026",
+        "priorities": "SAF üretimine geçiş; enerji geçişi liderliği; dijital dönüşüm; sürdürülebilirlik bağlantılı finanse",
+        "outcome": "2026 CAPEX $700M; SAF pilot üretim başlıyor; 500M$ sustainability linked kredi alındı"
+      }
+    ],
+    "risk_factor_evolution": [
+      {
+        "risk": "Jeopolitik/Tedarik Zinciri Riski",
+        "status": "YÜKSEK — Hurmuz Boğazı ve Rusya crude sanksiyonları",
+        "trend": "Artıyor (2025 itibarıyla — İran-ABD gerilimi + Rusya crude azaltma baskısı)",
+        "note": "Azerbaycan ve Irak alternatifleri kısmi tampon; ancak tam Ural crude ikamesi zor"
+      },
+      {
+        "risk": "AB CBAM (Karbon Sınır Düzeltme Mekanizması)",
+        "status": "YENİ EKLENDİ — 2024-2025 raporlarında ön plana çıktı",
+        "trend": "Artıyor (2026+ ihracat marjı baskısı)",
+        "note": "TUPRS'ın Avrupa ihracatı CBAM'e tabi olabilir"
+      },
+      {
+        "risk": "Küresel Rafineri Kapasitesi Artışı (Çin, Orta Doğu)",
+        "status": "DEVAM EDİYOR",
+        "trend": "Stabil yüksek risk — yapısal marj baskısı",
+        "note": "Uzun vadeli refinery crack spread'ini baskılıyor"
+      },
+      {
+        "risk": "Enflasyon Muhasebesi Karmaşıklığı (IAS 29/TMS 29)",
+        "status": "ÇÖZÜLÜYOR (2025-2027 askıya alındı)",
+        "trend": "Azalıyor kısa vadede; uzun vadede belirsiz"
+      },
+      {
+        "risk": "Enerji Geçişi / Talep Daralması",
+        "status": "UZUN VADELİ",
+        "trend": "Yavaş artış; 2030 sonrası motorin talebi -%1 ile -%2/yıl",
+        "note": "Türkiye için dönüşüm küresel ortalamanın gerisinde kalacak"
+      }
+    ],
+    "unfulfilled_commitments": [
+      {
+        "commitment": "SAF yatırım kararı (FID) 2025 sonuna kadar",
+        "status": "BEKLEMEDE — 2026-04 itibarıyla kesin onay henüz KAP'a yansımadı",
+        "assessment": "Yüksek olasılıklı ilerleyecek (partnership + teknoloji seçimi yapıldı)",
+        "source": "Balkan Green Energy News, Advanced BioFuels USA"
+      },
+      {
+        "commitment": "Rafineri marjı 2026 yönetim rehberi: 6-7 $/bbl",
+        "status": "SÜREGELEN — gerçekleşme yıl sonunda ölçülecek; analistler 10.5 $/bbl öngörüyor",
+        "assessment": "Yönetim tutucusuna karşı analist iyimserliği yüksek (jeopolitik prim)"
+      }
+    ]
+  },
+
+  "esg_profile": {
+    "environmental": {
+      "carbon_target_2030": "-27% emisyon azaltımı (2017 bazına göre)",
+      "carbon_target_2050": "Karbon nötr şirket",
+      "saf_carbon_benefit": "SAF, geleneksel jet yakıtına kıyasla %87'ye kadar daha düşük karbon emisyonu",
+      "hydrogen": "Sıfır karbon elektriğine tamamlayıcı çözüm olarak yeşil hidrojen araştırması",
+      "sustainability_linked_finance": "500M$ sürdürülebilirlik bağlantılı sendikasyon (Mayıs 2025)",
+      "source": "Hydrocarbon Processing, H2TECH, tupras.com.tr/en"
+    },
+    "social": {
+      "employee_safety": "Teknik piyasa analizinde açıklanmamış — faaliyet raporunda ILO standartları atıflar var",
+      "diversity": "YK'da 4 kadın üye / aday (Semahat Arsel + 3 bağımsız ü'de kadın temsili)"
+    },
+    "governance": {
+      "board_independence": "%33 (4/12)",
+      "koç_holding_oversight": "Kurumsal yönetim, yönetim kalitesi ve sermaye tahsisi disiplini açısından olumlu",
+      "related_party_governance": "Opet işlemleri bağımsız doğrulamalı CUP yöntemiyle fiyatlandırılıyor",
+      "credit_ratings": {
+        "fitch": "BB- (Pozitif görünüm, Şubat 2026)",
+        "sp": "BB (Durağan görünüm, Mart 2026)"
+      }
+    }
+  },
+
+  "management_guidance": [
+    {
+      "metric": "Net Rafineri Marjı",
+      "guidance": "6-7 $/bbl",
+      "period": "2026E",
+      "label": "management_guidance",
+      "source": "Teknik Piyasa 2025 analizi / yönetim sunumları"
+    },
+    {
+      "metric": "Kapasite Kullanım Oranı",
+      "guidance": "%95-100",
+      "period": "2026E",
+      "label": "management_guidance",
+      "source": "Teknik Piyasa 2025 analizi"
+    },
+    {
+      "metric": "Üretim Hacmi",
+      "guidance": "~29 milyon ton",
+      "period": "2026E",
+      "label": "management_guidance",
+      "source": "Teknik Piyasa 2025 analizi"
+    },
+    {
+      "metric": "CAPEX",
+      "guidance": "700 milyon USD",
+      "period": "2026E",
+      "breakdown": "Düşük karbonlu enerji + SAF + enerji verimliliği",
+      "label": "management_guidance",
+      "source": "Teknik Piyasa 2025 analizi"
+    },
+    {
+      "metric": "Temettü",
+      "guidance": "14.56 TRY/hisse (net)",
+      "period": "2025 karı üzerinden",
+      "label": "management_guidance (kesinleşti — KAP Bildirim 1413026)",
+      "payment_schedule": "16 Mart 2026 (%51.19) + 30 Eylül 2026 (%48.81)",
+      "source": "KAP Bildirim 1413026"
+    },
+    {
+      "metric": "SAF Üretim Kapasitesi FID",
+      "guidance": "2025 yıl sonu",
+      "target_capacity": "300.000 ton/yıl",
+      "label": "management_guidance",
+      "source": "Advanced BioFuels USA"
+    }
+  ],
+
+  "guidance_vs_actual_2025": {
+    "2025_refinery_margin": {
+      "prior_guidance": "~8-9 $/bbl (2025 başı beklentisi)",
+      "actual": "7.0 $/bbl (yıllık ortalama)",
+      "assessment": "Miss — marj beklentinin altında kaldı; Q1 dip (4.1) beklentiyi bozdu, Q3 toparlaması (9.7) kısmen telafi etti"
+    },
+    "2025_net_income": {
+      "consensus_q3": "10,931M TRY",
+      "actual_q3": "12,162M TRY",
+      "assessment": "Beat — %11 üzerinde; toplam 2025 net kar 29.9B TRY"
+    },
+    "dividend_2025_vs_2024": {
+      "2024_dividend": "29.3B TRY (12.92 TRY/hisse)",
+      "2025_dividend": "33B TRY (14.56 TRY/hisse)",
+      "assessment": "Artış — nakit üretim kapasitesi güçlü, temettü artırıldı"
+    }
+  },
+
+  "competitive_advantages_moat": [
+    "Yapısal tekel: Türkiye'nin tek entegre rafinerisi — kopyalanamaz altyapı (lisans + çevresel + sermaye engelleri)",
+    "Coğrafi dağılım: 4 rafineri, 4 farklı bölge — Türkiye'nin tamamına lojistik erişim",
+    "Kompleks rafineri yapısı (NCI): Farklı ham petrol türlerinden yüksek yield kapasitesi",
+    "Dikey entegrasyon: DİTAŞ (deniz) + Körfez (demir yolu) + OPET (perakende) ile değer zinciri kontrolü",
+    "Nakit kalkanı: 107.2B TRY nakit — döngüsel stres döneminde rekabet avantajı",
+    "Koç Holding çatısı: Sermaye erişimi, kurumsal yönetim kalitesi, siyasi ilişki avantajı",
+    "Piyasa konumu: Türkiye'nin rafine petrol ihtiyacının ~%60'ını karşılama",
+    "Enerji geçiş opsiyonu: Mevcut tesislerle SAF üretim kapasitesi — rakip rafinerilerde yok"
+  ],
+
+  "evidence_refs": [
+    {"ref": "html_report", "source": "TUPRS_Yonetim_Kurulu_Raporu_2026.html", "type": "Finance X platform raporu — daha önce üretilmiş analiz"},
+    {"ref": "teknik_piyasa_2025", "source": "teknikpiyasa.com.tr TUPRS 2025 Kapsamlı Finansal Analizi", "type": "Üçüncü taraf analist raporu"},
+    {"ref": "borsagundem_2025_ar", "source": "borsagundem.com.tr/tupras-2025-entegre-faaliyet-raporunu-yayimladi", "type": "Entegre faaliyet raporu özet haberi"},
+    {"ref": "kap_1257261", "source": "kap.org.tr/tr/Bildirim/1257261", "type": "KAP 2024 faaliyet raporu bildirimi"},
+    {"ref": "kap_1413026", "source": "kap.org.tr/tr/Bildirim/1413026", "type": "KAP 2026 temettü kararı"},
+    {"ref": "tupras_management", "source": "tupras.com.tr/en/management", "type": "Resmi şirket yönetim sayfası"},
+    {"ref": "wikipedia_tupras", "source": "en.wikipedia.org/wiki/Tüpraş", "type": "Şirket geçmişi ve operasyonel özet"},
+    {"ref": "saf_honeywell", "source": "advancedbiofuelsusa.info/tupras-selects-honeywell-ecofining", "type": "SAF teknoloji seçimi duyurusu"},
+    {"ref": "saf_investor_thy", "source": "safinvestor.com/news/147841/turkish-airlines-tupras", "type": "THY-TUPRS SAF ortaklığı"},
+    {"ref": "crude_russia_shift", "source": "ceenergynews.com/oil-gas/turkiyes-refineries-russian-imports", "type": "Rusya crude azaltma haberi"},
+    {"ref": "oilprice_ural", "source": "oilprice.com No-Exit-from-Urals-Turkeys-Refineries", "type": "Ham petrol tedarik analizi"},
+    {"ref": "tupras_ir_reports", "source": "tupras.com.tr/tr/raporlar", "type": "Resmi rapor arşivi"},
+    {"ref": "data_collection_manifest", "source": "TUPRS_data_collection_manifest_20260412.json", "type": "Finance X veri toplama çıktısı"},
+    {"ref": "parse_standardization_output", "source": "parse_standardization_tuprs_markdown.md", "type": "Finance X parse standardizasyon çıktısı"}
+  ],
+
+  "warnings": [
+    {
+      "warning_id": "W-001",
+      "severity": "HIGH",
+      "topic": "IAS 29 ROE Distortion",
+      "message": "2023-2024 ROE rakamları (%82 ve %30 görünenleri dahil) IAS 29 enflasyon muhasebesi nedeniyle yanıltıcıdır. Özkaynak tabanı şişirilmiş; gerçek operasyonel ROE çok daha düşük. Financial Analysis agentı adjusted ROE hesaplamalıdır.",
+      "downstream_agents": ["financial_analysis", "valuation_agent"]
+    },
+    {
+      "warning_id": "W-002",
+      "severity": "HIGH",
+      "topic": "Marj Volatilitesi — Ana Değer Sürücüsü",
+      "message": "Net rafineri marjı, TUPRS değerlemesinin tek en kritik değişkenidir. 1 $/bbl hareket ≈ 5-6B TRY FAVÖK. Q1 2025: 4.1 $/bbl vs Q3 2025: 9.7 $/bbl — yıl içi volatilite yüksek. Valuation modelinde Bear/Baz/Bull senaryoları mutlaka farklı Brent + marj varsayımıyla yapılmalı.",
+      "downstream_agents": ["financial_analysis", "valuation_agent", "macro_analysis"]
+    },
+    {
+      "warning_id": "W-003",
+      "severity": "MEDIUM",
+      "topic": "Rus Crude Tedarik Geçişi Riski",
+      "message": "TUPRS Rusya'dan ham petrol alımını azaltmaktadır ancak alternatiflerin (Irak, Azerbaycan, Brezilya, Angola) tam ikamesi maliyet ve lojistik açıdan daha zorludur. Batı yaptırımlarının sıkılaşması halinde tedarik zinciri maliyeti artabilir.",
+      "downstream_agents": ["macro_analysis", "sector_competition"]
+    },
+    {
+      "warning_id": "W-004",
+      "severity": "MEDIUM",
+      "topic": "Opet İlişkili Taraf Yoğunluğu",
+      "message": "Opet (TUPRS'ın %40 iştirak + ilişkili taraf) toplam gelirin %18'ini oluşturuyor (150.6B TRY). Bu bağımlılık hem müşteri konsantrasyonu hem de çıkar çatışması riski barındırır. CUP yöntemi bağımsız doğrulanmış ancak bağımsız izleme önemli.",
+      "downstream_agents": ["financial_analysis", "strategic_synthesis"]
+    },
+    {
+      "warning_id": "W-005",
+      "severity": "MEDIUM",
+      "topic": "Ertelenmiş Vergi Varlığı Geri Kazanılabilirliği",
+      "message": "11.9B TRY ertelenmiş vergi varlığı (FOCUP + Körfez Transportation yatırım teşviki) EY tarafından kritik denetim konusu olarak işaretlendi. Yönetimin 5 yıllık kar tahminlerine bağlı; marj sıkışması senaryosunda değer düşüklüğü riski var.",
+      "downstream_agents": ["financial_analysis"]
+    },
+    {
+      "warning_id": "W-006",
+      "severity": "LOW",
+      "topic": "Hisse Sayısı Tutarsızlığı — CONTESTED",
+      "message": "Yönetim kurulu raporu: 936.6 milyon hisse. Data_collection: 1.92 milyar hisse. Piyasa değeri tutarlılığı 936.6M ile daha uyumlu (254 TL × 936.6M ≈ 238B TRY). Valuation agent doğru hisse adedini KAP'tan teyit etmeli.",
+      "downstream_agents": ["valuation_agent", "financial_analysis"]
+    },
+    {
+      "warning_id": "W-007",
+      "severity": "LOW",
+      "topic": "2025 Tam Yıl Finansal Tabloları Henüz Yayınlanmadı",
+      "message": "17 Nisan 2026 deadline bekleniyor. Mevcut analiz 9A2025 + tahmin bazlı. Tam yıl yayınlandıktan sonra reconciliation agentı revision yapmalı.",
+      "downstream_agents": ["reconciliation", "financial_analysis"]
+    }
+  ],
+
+  "confidence_overall": "high",
+  "confidence_breakdown": {
+    "company_profile": "high — çoklu kaynak doğrulamalı",
+    "operational_context": "high — kapasite, marj, ürün mix doğrulandı",
+    "accounting_policies": "medium-high — IAS 29 etkisi iyi anlaşıldı; tam dipnotlar için KAP yıllık raporu gerekli",
+    "strategic_initiatives": "high — SAF, CAPEX, digital dönüşüm kaynaklı",
+    "management_team": "high — resmi şirket web sitesinden çekildi",
+    "crude_sourcing": "medium — trend biliniyor; tam ülke/grade breakdown gizli",
+    "brand_identity": "high — HTML rapordan doğrudan çıkarıldı"
+  },
+  "review_status": "pending_ceo_review",
+  "data_gaps": [
+    "Nelson Complexity Index (NCI) değeri kamuoyuna açık kaynaklarda tam olarak bulunamadı — faaliyet raporunun tam metninde mevcut olabilir",
+    "Tam ülke bazlı ham petrol alım kırılımı (%Rusya, %Irak, %Azerbaycan vb.) açıklanmamıştır",
+    "Yabancı yatırımcı oranı (yabancı payı %) TUPRS için ayrıca açıklanmamış",
+    "2025 tam yıl finansal tabloları henüz yayınlanmadı (17 Nisan 2026 deadline)",
+    "Tam COGS kırılımı (enerji vs işçilik vs ham petrol ayrıntısı) tam dipnot gerektirir",
+    "CEO'nun önceki yıllarda verilen taahhütlere uyum retrospektifi için 2020-2022 raporlarının tam metin analizi yapılmadı"
+  ]
+}

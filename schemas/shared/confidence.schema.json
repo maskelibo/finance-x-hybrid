@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.internal/schemas/shared/confidence.schema.json",
+  "title": "ConfidenceObject",
+  "description": "Standardized confidence assessment attached to any claim, output, or analysis produced within the Finance X platform.",
+  "type": "object",
+  "required": ["level", "basis"],
+  "additionalProperties": false,
+  "properties": {
+    "level": {
+      "type": "string",
+      "enum": ["high", "medium", "low", "speculative"],
+      "description": "Categorical confidence level. high=strong evidence, direct source data. medium=reasonable evidence, minor gaps. low=limited evidence, significant gaps or inferences. speculative=no direct evidence, scenario-only."
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Optional numeric confidence score 0.0-1.0 mapped from level: high>=0.75, medium=0.50-0.74, low=0.25-0.49, speculative<0.25."
+    },
+    "basis": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Human-readable explanation of what grounds this confidence level. Must name the specific data sources or reasoning that support this rating."
+    },
+    "limiting_factors": {
+      "type": "array",
+      "description": "Explicit list of factors that prevent a higher confidence level.",
+      "items": {
+        "type": "object",
+        "required": ["factor", "impact"],
+        "properties": {
+          "factor": { "type": "string", "description": "Description of the limiting factor." },
+          "impact": {
+            "type": "string",
+            "enum": ["minor", "moderate", "major"],
+            "description": "How much this factor degrades confidence."
+          }
+        }
+      }
+    },
+    "propagation_notes": {
+      "type": "string",
+      "description": "Notes on how this confidence should propagate to downstream consumers. E.g. 'downstream synthesis must not upgrade this confidence without additional evidence'."
+    },
+    "data_vintage": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the most recent data underlying this confidence assessment (YYYY-MM-DD)."
+    },
+    "review_required": {
+      "type": "boolean",
+      "description": "If true, a human or QA agent must review before this output is used in final reporting.",
+      "default": false
+    }
+  }
+}

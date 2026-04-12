@@ -1,0 +1,76 @@
+{
+  "agent_id": "orchestrator",
+  "test_cases": [
+    {
+      "test_id": "orch-tc-001",
+      "name": "Correct dependency-ordered dispatch for standard_institutional mode",
+      "input": {
+        "task_contract": {
+          "runtime_mode": "standard_institutional",
+          "assigned_agents": [
+            {"agent_id": "data_collection", "priority": 1, "dependencies": []},
+            {"agent_id": "kap_watch", "priority": 1, "dependencies": []},
+            {"agent_id": "parse_standardization", "priority": 2, "dependencies": ["data_collection"]},
+            {"agent_id": "reconciliation", "priority": 3, "dependencies": ["parse_standardization"]},
+            {"agent_id": "financial_analysis", "priority": 4, "dependencies": ["reconciliation"]},
+            {"agent_id": "sector_competition", "priority": 5, "dependencies": ["financial_analysis"]},
+            {"agent_id": "strategic_synthesis", "priority": 7, "dependencies": ["sector_competition", "macro_analysis", "technical_analysis"]},
+            {"agent_id": "final_summary", "priority": 9, "dependencies": ["strategic_synthesis"]}
+          ]
+        }
+      },
+      "expected_behavior": {
+        "first_dispatch_wave": ["data_collection", "kap_watch"],
+        "second_dispatch_wave": ["parse_standardization"],
+        "no_premature_dispatch": true
+      },
+      "pass_criteria": [
+        "data_collection and kap_watch dispatched simultaneously on session start",
+        "parse_standardization NOT dispatched until data_collection output is approved",
+        "strategic_synthesis NOT dispatched until all three: sector_competition, macro_analysis, technical_analysis are approved"
+      ],
+      "fail_criteria": ["Any agent dispatched before its declared dependencies are met"]
+    },
+    {
+      "test_id": "orch-tc-002",
+      "name": "Agent timeout escalation to CEO",
+      "input": {
+        "agent_id": "financial_analysis",
+        "timeout_exceeded": true,
+        "timeout_threshold_seconds": 60
+      },
+      "expected_behavior": {
+        "escalation_sent_to_ceo": true,
+        "escalation_type": "agent_timeout",
+        "downstream_dispatch_paused": true
+      },
+      "pass_criteria": [
+        "Escalation signal sent to CEO within 2 seconds of timeout detection",
+        "Agents depending on financial_analysis NOT dispatched during hold"
+      ],
+      "fail_criteria": ["Escalation not sent", "Downstream agents dispatched despite timeout"]
+    },
+    {
+      "test_id": "orch-tc-003",
+      "name": "Rejected output is not routed downstream",
+      "input": {
+        "ceo_review_decision": {
+          "decision": "rejected",
+          "reviewed_output_id": "fa-out-001",
+          "agent_id": "financial_analysis"
+        }
+      },
+      "expected_behavior": {
+        "downstream_routing_blocked": true,
+        "retry_triggered": true,
+        "sector_competition_dispatch_held": true
+      },
+      "pass_criteria": [
+        "sector_competition and other dependents NOT dispatched with rejected output",
+        "Retry task dispatched to financial_analysis",
+        "Session state updated to reflect hold"
+      ],
+      "fail_criteria": ["Rejected output routed to any downstream agent"]
+    }
+  ]
+}

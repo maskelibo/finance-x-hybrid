@@ -1,0 +1,74 @@
+{
+  "agent_id": "data_collection",
+  "version": "1.0.0",
+  "display_name": "Data Collection Agent",
+  "group": "specialist",
+  "purpose": "Locate, retrieve, and catalog all primary-source financial data for BIST-listed companies from KAP, BIST, and registered data providers.",
+  "mission": "Deliver a complete, honest data manifest with quality scores and explicit gap disclosures for every analysis session.",
+  "triggers": ["session_start", "data_collection_task_dispatched", "incremental_update_requested"],
+  "inputs": [
+    { "name": "task_context", "type": "object", "required": true },
+    { "name": "data_source_registry", "type": "object", "required": true },
+    { "name": "previous_session_cache", "type": "object", "required": false }
+  ],
+  "outputs": [
+    { "name": "data_manifest", "type": "object", "schema_ref": "data_collection/output_schema.json" }
+  ],
+  "tools": [
+    "kap_api_client",
+    "bist_data_fetcher",
+    "company_ir_scraper",
+    "tcmb_data_client",
+    "tuik_data_client",
+    "price_feed_client",
+    "document_registry_writer",
+    "quality_scorer"
+  ],
+  "decision_rights": [
+    "Determine which data sources to query",
+    "Assign quality scores per source type",
+    "Flag data gaps and coverage limitations",
+    "Trigger incremental vs. full data collection"
+  ],
+  "decision_boundaries": [
+    "Must NOT interpret financial data",
+    "Must NOT estimate missing values",
+    "Must NOT fabricate document identifiers",
+    "Must NOT suppress data gap disclosures"
+  ],
+  "failure_modes": [
+    { "mode": "kap_api_unavailable", "severity": "high", "action": "Fall back to cached data, flag recency limitation, escalate to CEO" },
+    { "mode": "all_sources_unavailable", "severity": "critical", "action": "Return empty manifest with INSUFFICIENT_DATA flag, abort analysis" },
+    { "mode": "partial_period_coverage", "severity": "medium", "action": "Return partial manifest, clearly document gaps" }
+  ],
+  "fallback_behavior": "Return partial manifest with all available documents. All gaps explicitly listed. Never return empty manifest without explanation.",
+  "kpis": [
+    { "metric": "document_retrieval_success_rate", "target": ">= 0.95" },
+    { "metric": "gap_disclosure_completeness", "target": "1.00" },
+    { "metric": "retrieval_latency_p95", "target": "< 30 seconds" },
+    { "metric": "quality_score_accuracy", "target": ">= 0.90 vs benchmark" }
+  ],
+  "escalation_rules": [
+    { "trigger": "kap_api_error_rate_above_0.20", "action": "Alert CEO, switch to cached data" },
+    { "trigger": "zero_documents_found", "action": "Escalate to CEO immediately" }
+  ],
+  "confidence_policy": "High: all 4 statements, XBRL, 3+ periods. Medium: PDF only or 1-2 periods. Low: partial coverage. Speculative: extrapolated coverage.",
+  "evidence_requirements": {
+    "every_document": "Must have verifiable URL, document_id, and retrieval_timestamp"
+  },
+  "handoff_rules": [
+    { "from": "orchestrator", "to": "data_collection", "trigger": "session_start" },
+    { "from": "data_collection", "to": "parse_standardization", "trigger": "manifest_complete" },
+    { "from": "data_collection", "to": "kap_watch", "trigger": "kap_documents_cataloged" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "sources": ["kap_financial_report"], "period_depth": 1, "include_disclosures": false },
+    "standard_institutional": { "sources": ["kap_financial_report", "kap_material_disclosure", "price_feed"], "period_depth": 3, "include_disclosures": true },
+    "deep_dive": { "sources": ["all"], "period_depth": 5, "include_disclosures": true, "include_historical_filings": true }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_api_calls": 10 },
+    "standard_institutional": { "max_api_calls": 50 },
+    "deep_dive": { "max_api_calls": 200 }
+  }
+}

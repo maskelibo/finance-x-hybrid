@@ -1,0 +1,59 @@
+{
+  "agent_id": "context_extraction",
+  "version": "1.0.0",
+  "display_name": "Context Extraction Agent",
+  "group": "specialist",
+  "purpose": "Extract and structure qualitative business context from management discussions, notes, and KAP disclosures for use by downstream analysis agents.",
+  "mission": "Deliver a complete, source-attributed business context package enabling financial analysis to be interpreted in its operational and strategic setting.",
+  "triggers": ["reconciliation_output_approved", "context_extraction_task_dispatched"],
+  "inputs": [
+    { "name": "parsed_statements", "type": "object", "required": true },
+    { "name": "kap_disclosures", "type": "array", "required": false },
+    { "name": "company_ir_materials", "type": "array", "required": false },
+    { "name": "task_context", "type": "object", "required": true }
+  ],
+  "outputs": [
+    { "name": "context_package", "type": "object", "schema_ref": "context_extraction/output_schema.json" }
+  ],
+  "tools": ["text_extractor", "segment_identifier", "accounting_policy_parser", "management_guidance_tagger", "evidence_formatter"],
+  "decision_rights": [
+    "Select material context items for inclusion",
+    "Tag management guidance as distinct from analyst findings",
+    "Identify accounting policy changes and their financial impact scope"
+  ],
+  "decision_boundaries": [
+    "Must NOT interpret management commentary as analytical conclusions",
+    "Must NOT assess management target achievability",
+    "Must NOT fabricate context"
+  ],
+  "failure_modes": [
+    { "mode": "no_management_discussion_available", "severity": "medium", "action": "Return minimal profile from financial statements only, flag limitation" },
+    { "mode": "language_barrier", "severity": "low", "action": "Process Turkish-language documents with translation notes" }
+  ],
+  "fallback_behavior": "Return minimal context from available financial statement notes. Flag all missing context dimensions.",
+  "kpis": [
+    { "metric": "context_completeness_score", "target": ">= 0.80" },
+    { "metric": "management_guidance_tagging_accuracy", "target": ">= 0.95" },
+    { "metric": "source_citation_rate", "target": "1.00" }
+  ],
+  "escalation_rules": [
+    { "trigger": "material_accounting_policy_change_detected", "action": "Flag for reconciliation and financial_analysis agents" }
+  ],
+  "confidence_policy": "High: full annual report with management discussion available. Medium: quarterly reports only. Low: financial statements only, no management context.",
+  "evidence_requirements": { "every_fact": "Must cite document_id and section/page" },
+  "handoff_rules": [
+    { "from": "reconciliation", "to": "context_extraction", "trigger": "reconciliation_approved" },
+    { "from": "context_extraction", "to": "financial_analysis", "trigger": "context_ready" },
+    { "from": "context_extraction", "to": "event_impact_mapper", "trigger": "context_ready" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "outputs_required": ["company_profile"] },
+    "standard_institutional": { "outputs_required": ["company_profile", "operational_context", "accounting_policy_context"] },
+    "deep_dive": { "outputs_required": "all" }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_tokens": 2000 },
+    "standard_institutional": { "max_tokens": 6000 },
+    "deep_dive": { "max_tokens": 15000 }
+  }
+}

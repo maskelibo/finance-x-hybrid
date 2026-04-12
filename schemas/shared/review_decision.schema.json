@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.internal/schemas/shared/review_decision.schema.json",
+  "title": "ReviewDecision",
+  "description": "Formal review decision record produced by the CEO or QA Review Agent after evaluating any agent output.",
+  "type": "object",
+  "required": ["review_id", "reviewer_agent", "reviewed_output_id", "decision", "rubric_scores", "reviewed_at"],
+  "additionalProperties": false,
+  "properties": {
+    "review_id": { "type": "string", "description": "Unique review decision ID (UUID v4)." },
+    "reviewer_agent": { "type": "string", "description": "agent_id of the reviewing agent (ceo or qa_review)." },
+    "reviewed_output_id": { "type": "string", "description": "output_id of the agent output being reviewed." },
+    "reviewed_agent": { "type": "string", "description": "agent_id that produced the reviewed output." },
+    "task_id": { "type": "string" },
+    "analysis_session_id": { "type": "string" },
+    "decision": {
+      "type": "string",
+      "enum": ["approved", "rejected", "revision_requested"],
+      "description": "Final review outcome."
+    },
+    "rubric_scores": {
+      "type": "object",
+      "description": "Scores per rubric dimension (0.0 to 1.0 per dimension).",
+      "properties": {
+        "evidence_sufficiency": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidence_calibration": { "type": "number", "minimum": 0, "maximum": 1 },
+        "claim_support": { "type": "number", "minimum": 0, "maximum": 1 },
+        "completeness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "contradiction_handling": { "type": "number", "minimum": 0, "maximum": 1 },
+        "output_format_compliance": { "type": "number", "minimum": 0, "maximum": 1 },
+        "no_false_certainty": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "overall_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Weighted average of rubric scores."
+    },
+    "approval_threshold_met": {
+      "type": "boolean",
+      "description": "Whether the overall score meets the session's quality threshold."
+    },
+    "rejection_reasons": {
+      "type": "array",
+      "description": "Required if decision is 'rejected'. Explicit reasons.",
+      "items": {
+        "type": "object",
+        "required": ["reason_code", "description"],
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "insufficient_evidence",
+              "false_certainty",
+              "unsupported_claim",
+              "missing_critical_input",
+              "contradiction_unresolved",
+              "output_format_invalid",
+              "confidence_mismatch",
+              "scope_incomplete",
+              "data_quality_below_threshold"
+            ]
+          },
+          "description": { "type": "string" },
+          "affected_claim_ids": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "revision_instructions": {
+      "type": "array",
+      "description": "Required if decision is 'revision_requested'. Specific actionable instructions.",
+      "items": {
+        "type": "object",
+        "required": ["instruction_id", "priority", "instruction"],
+        "properties": {
+          "instruction_id": { "type": "string" },
+          "priority": { "type": "string", "enum": ["must_fix", "should_fix", "optional"] },
+          "instruction": { "type": "string", "minLength": 10 }
+        }
+      }
+    },
+    "revision_deadline": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "reviewer_notes": {
+      "type": "string",
+      "description": "Free-text notes from the reviewer for audit purposes."
+    },
+    "reviewed_at": { "type": "string", "format": "date-time" },
+    "approved_at": { "type": ["string", "null"], "format": "date-time" },
+    "revision_number": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "0 = first review, 1+ = review of revised output.",
+      "default": 0
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "agent_id": "kap_watch",
+  "version": "1.0.0",
+  "display_name": "KAP Watch Agent",
+  "group": "event",
+  "purpose": "Monitor KAP for new material disclosures from BIST-listed companies and deliver structured disclosure notifications to the event classification pipeline.",
+  "mission": "Ensure zero-miss detection of new KAP disclosures for watched companies within the monitoring window.",
+  "triggers": ["session_start", "incremental_watch_trigger", "scheduled_monitoring_tick"],
+  "inputs": [
+    { "name": "watch_list", "type": "array", "required": true },
+    { "name": "monitoring_window", "type": "object", "required": true },
+    { "name": "last_seen_disclosure_id", "type": "string", "required": false }
+  ],
+  "outputs": [{ "name": "disclosure_inventory", "type": "object" }],
+  "tools": ["kap_api_client", "disclosure_deduplicator", "kap_rate_limiter", "document_registry_writer"],
+  "decision_rights": [
+    "Determine monitoring window",
+    "Apply deduplication logic",
+    "Flag material vs. routine disclosures by type"
+  ],
+  "decision_boundaries": [
+    "Must NOT interpret disclosure content",
+    "Must NOT fabricate KAP IDs or URLs",
+    "Must NOT classify events (that is event_classification agent)"
+  ],
+  "failure_modes": [
+    { "mode": "kap_api_down", "severity": "high", "action": "Queue disclosures, retry with exponential backoff, alert CEO" },
+    { "mode": "rate_limit_exceeded", "severity": "medium", "action": "Pause, wait for rate limit window, resume" }
+  ],
+  "fallback_behavior": "If KAP API unavailable, use cached disclosures from last successful retrieval. Flag staleness.",
+  "kpis": [
+    { "metric": "disclosure_detection_rate", "target": "1.00" },
+    { "metric": "retrieval_latency_p95", "target": "< 15 seconds" },
+    { "metric": "duplicate_disclosure_rate", "target": "0.00" }
+  ],
+  "escalation_rules": [{ "trigger": "kap_api_failure_duration_above_30min", "action": "Alert CEO, switch to cache-only mode" }],
+  "confidence_policy": "Retrieval success: high. Stale cache: medium. Failed retrieval: low.",
+  "evidence_requirements": { "every_disclosure": "Must have verifiable KAP URL and system ID" },
+  "handoff_rules": [
+    { "from": "orchestrator", "to": "kap_watch", "trigger": "session_start" },
+    { "from": "kap_watch", "to": "event_classification", "trigger": "new_disclosures_found" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "window_days": 7, "types": ["material_event"] },
+    "standard_institutional": { "window_days": 30, "types": ["material_event", "financial_report"] },
+    "deep_dive": { "window_days": 90, "types": "all" }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_api_calls": 20 },
+    "standard_institutional": { "max_api_calls": 100 },
+    "deep_dive": { "max_api_calls": 500 }
+  }
+}

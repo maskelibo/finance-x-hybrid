@@ -1,0 +1,222 @@
+{
+  "agent_id": "sector_competition",
+  "output_id": "sc-out-TUPRS-20260412-001",
+  "session_id": "ceo-session-TUPRS-20260412",
+  "ticker": "TUPRS",
+  "analysis_date": "2026-04-12",
+  "peer_group": {
+    "domestic_bist_peers": "MEVCUT DEĞİL — TUPRS Türkiye'nin tek entegre rafinerisidir",
+    "international_peers": [
+      {"ticker": "ELPE.AT", "name": "HelleniQ Energy", "exchange": "Athens SE", "region": "Akdeniz", "rationale": "Med bölgesi refiner, benzer ham petrol tüneli, karma ürün portföyü"},
+      {"ticker": "MOH.AT", "name": "Motor Oil Hellas", "exchange": "Athens SE", "region": "Akdeniz", "rationale": "Akdeniz refinery benchmark; yüksek kompleksite; benzer ölçek (~15 MMT)"},
+      {"ticker": "PKN.WA", "name": "PKN Orlen", "exchange": "Warsaw SE", "region": "CE Avrupa", "rationale": "Doğu Avrupa büyük rafinery holding; benzer gelişen piyasa bağlamı"},
+      {"ticker": "ENI.MI", "name": "ENI S.p.A.", "exchange": "Milan SE", "region": "Avrupa", "rationale": "Entegre İtalyan enerji; refinery marj benchmark olarak Eni SERM kullanılır"},
+      {"ticker": "REP.MC", "name": "Repsol S.A.", "exchange": "Madrid SE", "region": "Avrupa", "rationale": "Batı Akdeniz kompleks rafinery; karşılaştırılabilir ürün mix"}
+    ],
+    "bist_sector_code": "XKAGT",
+    "comparability_notes": "Non-BIST peers — karşılaştırma sınırlı. IAS 29 TRY enflasyon muhasebesi peer'lardan farklı. TUPRS ölçeği (30 MMT) peer median'ının 2x'i."
+  },
+  "benchmarking_scorecard": {
+    "ebitda_margin": {
+      "tuprs_2025": "7.47%",
+      "sector_bottom_quartile": "~7.5%",
+      "sector_median": "~9.6%",
+      "sector_top_quartile": "~12.0%",
+      "tuprs_rank": "5 of 5 (Q4)",
+      "confidence": "medium",
+      "note": "EPDK düzenlemesi ve USD/TRY FX yapısal kısıtı — operasyonel zayıflık değil"
+    },
+    "gross_margin": {
+      "tuprs_2025": "9.78%",
+      "sector_median": "~12.0%",
+      "tuprs_rank": "5 of 5 (Q4)",
+      "confidence": "medium"
+    },
+    "net_margin": {
+      "tuprs_2025": "3.60%",
+      "sector_median": "~5.0%",
+      "tuprs_rank": "5 of 5 (Q4)",
+      "confidence": "medium"
+    },
+    "refinery_margin_per_bbl": {
+      "tuprs_2025": "$6.0-6.5",
+      "motor_oil_hellas_2025": "~$11.9",
+      "helleniq_2025": "$16.4",
+      "eni_q4_2025": "$11.7",
+      "sector_median": "~$12.0",
+      "tuprs_rank": "5 of 5 (Q4)",
+      "confidence": "high",
+      "note": "EPDK fiyat düzenlemesi + FX asimetri yapısal kısıt"
+    },
+    "capacity_utilization": {
+      "tuprs_2025": "98-100%",
+      "sector_median": "~91%",
+      "tuprs_rank": "1 of 5 (Q1 — EN İYİ)",
+      "confidence": "medium"
+    },
+    "nelson_complexity": {
+      "tuprs_izmit": 14.5,
+      "tuprs_overall": 9.5,
+      "sector_median_estimated": "~9.2",
+      "tuprs_rank": "1 of 5 (Q1 — EN İYİ)",
+      "confidence": "medium"
+    },
+    "net_debt_ebitda": {
+      "tuprs_2025": "-0.67x (NET NAKİT)",
+      "sector_median": "~1.5x",
+      "sector_top_quartile": "~0.8x",
+      "tuprs_rank": "1 of 5 (Q1 — EN İYİ)",
+      "confidence": "medium"
+    },
+    "current_ratio": {
+      "tuprs_2025_est": "~1.63x",
+      "sector_median_est": "~1.3x",
+      "tuprs_rank": "1-2 of 5",
+      "confidence": "low"
+    },
+    "dividend_yield": {
+      "tuprs_2026_guidance": "5.7% (14.55 TL / 254.50 TL)",
+      "sector_median_est": "~4.5%",
+      "tuprs_rank": "1 of 5 (EN YÜKSEK)",
+      "confidence": "high"
+    },
+    "ev_ebitda": {
+      "tuprs": "~3.2x",
+      "sector_median": "~5.5x",
+      "discount_vs_peers": "-42%",
+      "confidence": "medium",
+      "note": "Ülke risk primi + TRY volatilitesi + döngüsel marj düşüklüğü yansıtıyor"
+    }
+  },
+  "competitive_position": {
+    "market_position": "Türkiye'nin tek entegre rafinerisi — yapısal monopol; ithalat rekabeti mevcut ama lojistik dezavantajı ile sınırlı",
+    "cost_competitiveness": "İşgücü maliyeti TRY bazında rekabetçi. Ham petrol fiyatında pazarlık gücü yok. Kapasite kullanımı %98-100 ile ölçek ekonomisi avantajı. EPDK marj sıkıştırıcı etki yapıyor.",
+    "margin_vs_sector_trend": "TUPRS sektör mediyanının 2-3 pp altında kalıcı gap. 2026 konsensüs $10.5/bbl gap'ı daraltabilir ama kapatmaz.",
+    "balance_sheet_strength": "Bölgenin tek net nakit pozisyonlu büyük rafinerisi — 107.2B TRY nakit, -41.5B TRY net nakit — AÇIK ÜSTÜNLÜK",
+    "operational_efficiency": "Kapasite kullanımı %98-100 + Nelson Complexity İzmit:14.5 = operasyonel üstünlük"
+  },
+  "sector_dynamics_summary": {
+    "brent_april_2026": "$95.20/bbl (10 Nisan 2026 kapanış; aralık: $92-$128)",
+    "hormuz_crisis": {
+      "status": "AKTİF — 28 Şubat 2026'dan beri kapanma",
+      "production_shutdown": "7.5-9.1 mb/g aksaması",
+      "tuprs_impact": "Çift etkili: Crack spread genişlemesi (marj fırsatı) + ham petrol tedarik riski",
+      "confidence": "high"
+    },
+    "opec_plus_april_2026": "206k b/d üretim artışı kabul edildi — Nisan 2026",
+    "crack_spread_trend_2026": "Mart 2026'da 3-2-1 spread sert genişledi (Brent $112/bbl spike)",
+    "tuprs_2026_margin_consensus": "$10.5/bbl (vs 2025: $6.0-6.5/bbl — %62 artış beklentisi)",
+    "turkey_domestic_demand": "Büyüyen — EV penetrasyonu minimumdur, TUPRS iç pazar güvencede",
+    "epdk_risk": "EPDK fiyat düzenlemesi marj geçirişini kısıtlıyor — yapısal risk devam ediyor",
+    "ural_crude_discount": "Sanksiyonlar nedeniyle Ural crude ~$10-15 iskontolu — TUPRS için geçici maliyet avantajı"
+  },
+  "porter_five_forces": {
+    "mevcut_rekabet": {
+      "score": 2,
+      "yorum": "Türkiye'de yok yerli rakip — monopol koruması. Ancak ithalat rekabeti fiili fiyat tavanı oluşturuyor."
+    },
+    "yeni_giris_tehdidi": {
+      "score": 1,
+      "yorum": "$5-15 milyar yatırım, 10+ yıl izin süreci, EPDK lisans engeli, teknik know-how bariyeri"
+    },
+    "ikame_tehdidi": {
+      "score": 3,
+      "yorum": "Kısa vade (0-5 yıl): düşük. Orta vade: EV artışı. Uzun vade: enerji geçişi. Zaman ufkuna göre puan değişir."
+    },
+    "tedarikci_gucu": {
+      "score": 4,
+      "yorum": "Ham petrol global commodity — fiyat kontrolsüz. Hormuz riski. COGS'un %90'ı ham petrol. Kritik kırılganlık."
+    },
+    "musteri_gucu": {
+      "score": 2,
+      "yorum": "Captive Koç/Opet kanalı. İthalat alternatifleri lojistik dezavantajlı. EPDK dolaylı tavan etkisi yaratıyor."
+    }
+  },
+  "sector_lifecycle": {
+    "global_refining": "Olgunluk → Geçiş (enerji dönüşümü uzun vadeli baskı)",
+    "turkey_market": "Geç büyüme / Erken olgunluk (EV penetrasyonu düşük, nüfus büyümesi, motorlaşma devam ediyor)",
+    "tuprs_strategic_alignment": "Kısa-orta vadede yapısal avantaj; RUP ve petrokimya entegrasyonu uzun vadeli geçiş adaptasyonu"
+  },
+  "swot": {
+    "strengths": [
+      "Yapısal monopol — Türkiye'nin tek entegre rafinerisi",
+      "Nelson Complexity İzmit: 14.5 — bölge lideri",
+      "Net nakit bilançosu (-41.5B TRY) — sektörde anomali",
+      "%98-100 kapasite kullanımı — operasyonel üstünlük",
+      "Koç Holding + Opet entegrasyonu — captive dağıtım kanalı",
+      "Çok lokasyonlu yapı: İzmit, İzmir, Kırıkkale, Batman",
+      "BTC + TürkAkım + Marmara deniz yolu çoklu ham petrol erişimi"
+    ],
+    "weaknesses": [
+      "En düşük rafinery marjı realizasyonu ($6.0-6.5/bbl vs peer medyan ~$12)",
+      "EPDK fiyat düzenlemesi — fiyat geçirim kısıtlı",
+      "USD/TRY çift FX riski — USD alış, TRY satış",
+      "%100 ham petrol ithal bağımlılığı",
+      "Batman rafinerisi — düşük kompleksite, düşük verimlilik",
+      "IAS 29 enflasyon muhasebesi raporlama karmaşıklığı"
+    ],
+    "opportunities": [
+      "Hürmüz krizi → 2026 marj konsensüsü $10.5/bbl (+%62)",
+      "RUP tamamlanması — white product yield artışı",
+      "Türkiye havacılık sektörü büyümesi — jet yakıtı talebi",
+      "Avrupa rafineri kapanmaları — ihracat pazarı açılımı",
+      "Ural crude iskontosu — maliyet avantajı",
+      "Artan iç talep — büyüyen nüfus + motorlaşma",
+      "Temettü kapasitesi — 33B TRY 2026 için onaylandı"
+    ],
+    "threats": [
+      "Hürmüz kapanması → ham petrol tedarik kesintisi",
+      "ABD-İran ateşkesi → Brent normalizasyonu → marj sıkışması",
+      "TL değer kaybı — USD ham petrol maliyeti patlaması",
+      "Uzun vadeli enerji geçişi — dizel/benzin talebi gerileme",
+      "Rus ham petrolü yaptırımları genişlerse — Ural iskontosu silinir",
+      "EPDK fiyat düzenleme riski — siyasi baskı"
+    ]
+  },
+  "downstream_signals": {
+    "for_financial_analysis": {
+      "margin_gap": "TUPRS $6.0-6.5/bbl vs peer medyan $12 — yapısal EPDK+FX kaynaklı, operasyonel zayıflık DEĞİL",
+      "2026_margin_uplift": "$10.5/bbl konsensüs → 1 $/bbl = 5-6B TRY EBITDA etkisi",
+      "complexity_confirmed": "İzmit Nelson 14.5 teyit edildi — yüksek ürün çeşitliliği kapasitesi var",
+      "balance_sheet_strength": "Net nakit pozisyonu — leveraged buyout/yatırım/temettü kapasitesi mevcut"
+    },
+    "for_valuation_agent": {
+      "bear_scenario": "Hormuz çözümlenir, Brent $70-75, TUPRS marjı $5/bbl → EBITDA ~40B TRY → ~180-200 TL",
+      "base_scenario": "Brent $90-95, TUPRS marjı $9-10/bbl → EBITDA ~75-85B TRY → ~300-340 TL",
+      "bull_scenario": "Hormuz gerilimi sürer, Brent $100+, marj $12/bbl → EBITDA ~100B TRY → ~380-420 TL",
+      "confidence": "low — valuation_agent DCF/EV metodolojisi ile rafine etmeli"
+    }
+  },
+  "evidence_refs": [
+    {"source": "parse_standardization_tuprs_output.json", "type": "local_file"},
+    {"source": "reconciliation_agent_output.json", "type": "local_file"},
+    {"source": "TUPRS_data_collection_manifest_20260412.json", "type": "local_file"},
+    {"source": "HelleniQ Energy FY2025 Results", "url": "https://www.helleniqenergy.gr/en/media/regulatory-announcements/4qfy-2025-financial-results"},
+    {"source": "HelleniQ Energy $1.13B EBITDA 2025", "url": "https://www.investing.com/news/company-news/helleniq-energy-reports-113bn-adjusted-ebitda-for-2025-93CH-4528884"},
+    {"source": "Motor Oil Hellas Q4 2025 Transcript", "url": "https://za.investing.com/news/transcripts/earnings-call-transcript-motor-oil-hellas-q4-2025-shows-robust-growth-93CH-4179890"},
+    {"source": "PKN Orlen Statistics", "url": "https://stockanalysis.com/quote/wse/PKN/statistics/"},
+    {"source": "ENI Q4 2025 Full Year Results", "url": "https://www.eni.com/en-IT/media/press-release/2026/02/2025-fourth-quarter-results.html"},
+    {"source": "OPEC+ April 2026 Iran Conflict", "url": "https://www.bloomberg.com/news/articles/2026-03-01/opec-agrees-in-principle-to-206k-b-d-hike-for-april-delegates"},
+    {"source": "Brent April 8 2026 $95.20", "url": "https://fortune.com/article/price-of-oil-04-08-2026/"},
+    {"source": "EIA STEO April 2026 Hormuz", "url": "https://www.eia.gov/outlooks/steo/pdf/steo_full.pdf"},
+    {"source": "3-2-1 Crack Spread March 2026", "url": "https://themiddleeastinsider.com/2026/03/29/3-2-1-crack-spread-march-2026-refining-margins/"},
+    {"source": "TUPRS Refineries Nelson Complexity", "url": "https://www.tupras.com.tr/en/rafineries"},
+    {"source": "TUPRS Q3 2025 Margin Guidance Raise", "url": "https://www.investing.com/news/earnings/tupras-raises-refining-margin-guidance-after-strong-q3-results-93CH-4326412"},
+    {"source": "S&P Global European Refiners CBAM 2026", "url": "https://www.spglobal.com/energy/en/news-research/latest-news/crude-oil/122225-commodities-2026-european-refiners-plead-for-cbam-protections"},
+    {"source": "Turkey TUPRS Monopoly", "url": "https://www.aa.com.tr/en/energy/oil/turkeys-tupras-competes-with-world-oil-refinery-giants/11895"},
+    {"source": "Refinery Margin 14-Month High Jan 2026", "url": "https://www.globaloms.com/refiners-gain-short-term-boost-as-margins-hit-forteen-month-high/"}
+  ],
+  "warnings": [
+    "BIST peer grubu MEVCUT DEĞİL — tüm karşılaştırmalar non-BIST şirketleri üzerinden",
+    "Peer EBITDA marjlarının bir kısmı tahmine dayalıdır (confidence: low/medium)",
+    "HelleniQ $16.4/bbl benchmark methodology TUPRS realizasyonu ile birebir karşılaştırılabilir olmayabilir",
+    "Hormuz Boğazı durumu aktif ve hızla değişen — jeopolitik iddialar anlık durumu yansıtıyor",
+    "IAS 29 enflasyon muhasebesi TRY cinsinden marjları distort edebilir",
+    "Market share tahmini (%60-70 iç piyasa) KAP birincil kaynağına dayanmıyor — LOW confidence",
+    "Bear/Baz/Bull senaryo hedef fiyatları düşük güven taşır — valuation_agent rafine etmeli"
+  ],
+  "confidence_overall": "medium",
+  "review_status": "pending_ceo_review",
+  "agent_version": "sector_competition_v2.0",
+  "learning_sessions_completed": 5
+}

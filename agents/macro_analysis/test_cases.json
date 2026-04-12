@@ -1,0 +1,29 @@
+{
+  "agent_id": "macro_analysis",
+  "test_cases": [
+    {
+      "test_id": "ma-tc-001",
+      "name": "Standard macro context for FX-exposed manufacturer",
+      "input": { "ticker": "EREGL", "fx_debt_usd_millions": 800, "fx_revenue_pct": 0.30, "analysis_date": "2024-01-15" },
+      "expected_behavior": { "all_macro_variables_covered": true, "fx_linkage_present": true, "confidence": "medium" },
+      "pass_criteria": ["TCMB rate cited from official source", "CPI from TUIK with date", "FX impact on USD-denominated debt explicitly computed", "evidence_refs populated"],
+      "fail_criteria": ["Fed policy used as primary instead of TCMB", "Fabricated FX exposure not in context_extraction", "No source dates"]
+    },
+    {
+      "test_id": "ma-tc-002",
+      "name": "Macro-only analysis without company FX data",
+      "input": { "ticker": "UNKNOWN_COMPANY", "context_extraction_available": false },
+      "expected_behavior": { "macro_environment_populated": true, "company_macro_linkages_empty": false, "missing_inputs_populated": true },
+      "pass_criteria": ["Macro data provided", "missing_inputs: context_extraction not available", "Linkages marked as low confidence without exposure data"],
+      "fail_criteria": ["Fabricated FX exposure data", "Linkages asserted as high confidence without exposure data"]
+    },
+    {
+      "test_id": "ma-tc-003",
+      "name": "High inflation environment — IAS 29 threshold check",
+      "input": { "cumulative_3yr_cpi": 115, "ticker": "TCELL" },
+      "expected_behavior": { "ias29_threshold_warning": true, "warning_message_present": true },
+      "pass_criteria": ["Warning: cumulative inflation >100% over 3 years, IAS 29 hyperinflationary classification may apply", "Financial_analysis agent flagged"],
+      "fail_criteria": ["No IAS 29 threshold warning despite >100% cumulative inflation"]
+    }
+  ]
+}

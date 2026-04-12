@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.internal/schemas/shared/task_contract.schema.json",
+  "title": "TaskContract",
+  "description": "Standard task assignment contract issued by the Orchestrator to any agent in the Finance X platform.",
+  "type": "object",
+  "required": ["task_id", "assigned_agent", "requesting_agent", "task_type", "priority", "inputs", "runtime_mode", "quality_threshold", "issued_at"],
+  "additionalProperties": false,
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Globally unique task identifier (UUID v4)."
+    },
+    "parent_task_id": {
+      "type": ["string", "null"],
+      "description": "Parent task ID if this is a subtask. Null for top-level tasks."
+    },
+    "analysis_session_id": {
+      "type": "string",
+      "description": "Groups all tasks belonging to a single end-to-end analysis run."
+    },
+    "assigned_agent": {
+      "type": "string",
+      "description": "agent_id of the agent this task is assigned to."
+    },
+    "requesting_agent": {
+      "type": "string",
+      "description": "agent_id of the agent issuing this task (usually 'orchestrator' or 'ceo')."
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "data_collection",
+        "document_parsing",
+        "reconciliation",
+        "context_extraction",
+        "financial_analysis",
+        "sector_competition_analysis",
+        "macro_analysis",
+        "technical_analysis",
+        "kap_watch",
+        "event_classification",
+        "event_impact_mapping",
+        "event_timeline_alert",
+        "strategic_synthesis",
+        "final_summary",
+        "qa_review",
+        "cost_optimization_report",
+        "agent_factory_request"
+      ]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["critical", "high", "normal", "low"],
+      "default": "normal"
+    },
+    "company_ticker": {
+      "type": "string",
+      "description": "Primary BIST ticker symbol for this task. E.g. 'ASELS'."
+    },
+    "company_name": {
+      "type": "string",
+      "description": "Full company name. E.g. 'ASELSAN Elektronik Sanayi ve Ticaret A.Ş.'."
+    },
+    "inputs": {
+      "type": "object",
+      "description": "Task-type-specific inputs. Schema varies by task_type.",
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "description": "Contextual data passed to aid the assigned agent.",
+      "properties": {
+        "prior_outputs": {
+          "type": "array",
+          "description": "Output IDs of previously completed tasks in this session.",
+          "items": { "type": "string" }
+        },
+        "runtime_context": {
+          "type": "object",
+          "description": "Any runtime flags or session-level settings."
+        }
+      }
+    },
+    "runtime_mode": {
+      "type": "string",
+      "enum": ["fast_screening", "standard_institutional", "deep_dive"],
+      "description": "Controls evidence depth, review cycles, and acceptable degradation."
+    },
+    "quality_threshold": {
+      "type": "object",
+      "required": ["min_confidence_level", "evidence_required"],
+      "properties": {
+        "min_confidence_level": {
+          "type": "string",
+          "enum": ["high", "medium", "low", "speculative"],
+          "description": "Minimum acceptable overall confidence. Outputs below this must be flagged."
+        },
+        "evidence_required": {
+          "type": "boolean",
+          "description": "Whether at least one evidence reference is mandatory for every claim."
+        },
+        "review_required": {
+          "type": "boolean",
+          "description": "Whether QA review is required before this output is used downstream."
+        }
+      }
+    },
+    "deadline": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Hard deadline for task completion. Null = no deadline."
+    },
+    "retry_policy": {
+      "type": "object",
+      "properties": {
+        "max_retries": { "type": "integer", "minimum": 0, "maximum": 5, "default": 2 },
+        "retry_on_failure": { "type": "boolean", "default": true },
+        "retry_on_low_confidence": { "type": "boolean", "default": false },
+        "escalate_after_retries": { "type": "boolean", "default": true }
+      }
+    },
+    "cost_budget": {
+      "type": "object",
+      "properties": {
+        "max_tokens": { "type": "integer", "description": "Maximum LLM tokens for this task." },
+        "max_usd": { "type": "number", "description": "Maximum cost in USD." }
+      }
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this task contract was issued."
+    },
+    "expires_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    }
+  }
+}

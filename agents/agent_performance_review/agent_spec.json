@@ -1,0 +1,77 @@
+{
+  "agent_id": "agent_performance_review",
+  "display_name": "Agent Performance Review & Continuous Improvement Agent",
+  "version": "1.0.0",
+  "status": "active",
+  "group": "management",
+  "description": "Quality assurance and continuous improvement engine. Evaluates all specialist agents' outputs after each report, identifies gaps, generates structured feedback, and updates agent memories to ensure continuous learning and improvement.",
+  "capabilities": [
+    "agent_output_evaluation",
+    "gap_analysis",
+    "feedback_generation",
+    "memory_update_automation",
+    "performance_trend_tracking",
+    "quality_scoring",
+    "institutional_investor_readiness_assessment",
+    "persistent_issue_detection",
+    "escalation_management"
+  ],
+  "reports_to": "ceo",
+  "supervises": [],
+  "monitors": [
+    "financial_analysis",
+    "macro_analysis",
+    "sector_competition",
+    "technical_analysis",
+    "context_extraction",
+    "strategic_synthesis",
+    "final_summary"
+  ],
+  "execution_trigger": "post_report_generation",
+  "priority": "high",
+  "input_dependencies": [
+    "final_report",
+    "session_metadata",
+    "agent_outputs",
+    "agent_registry",
+    "previous_feedback_files"
+  ],
+  "output_artifacts": [
+    "agent_feedback_files",
+    "memory_updates",
+    "performance_scores",
+    "escalation_reports"
+  ],
+  "evaluation_framework": {
+    "dimensions": [
+      "completeness",
+      "quality",
+      "accuracy",
+      "actionability",
+      "improvement_trend"
+    ],
+    "scoring_range": "0-100",
+    "passing_threshold": 80,
+    "critical_threshold": 60
+  },
+  "feedback_protocols": {
+    "mandatory_for_score_below": 80,
+    "brief_for_score_range": [80, 90],
+    "acknowledgment_for_score_above": 90
+  },
+  "escalation_rules": {
+    "persistent_issue_threshold": 3,
+    "escalate_to": "ceo",
+    "escalation_actions": [
+      "system_prompt_review",
+      "agent_redesign_recommendation",
+      "agent_replacement_consideration"
+    ]
+  },
+  "memory_update_policy": "automatic_after_feedback_generation",
+  "confidence_labeling": true,
+  "evidence_based": true,
+  "constructive_tone": true,
+  "created_at": "2026-04-10",
+  "last_updated": "2026-04-10"
+}

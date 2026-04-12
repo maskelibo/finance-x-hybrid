@@ -1,0 +1,223 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/financial_analysis/output",
+  "title": "Financial Analysis Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "analysis_period", "confidence_overall", "evidence_refs", "warnings", "missing_inputs", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "financial_analysis" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "company": {
+      "type": "object",
+      "required": ["name", "ticker", "bist_sector"],
+      "properties": {
+        "name": { "type": "string" },
+        "ticker": { "type": "string" },
+        "bist_sector": { "type": "string" }
+      }
+    },
+    "analysis_period": {
+      "type": "object",
+      "required": ["primary"],
+      "properties": {
+        "primary": { "type": "string" },
+        "comparative": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "confidence_overall": {
+      "type": "string",
+      "enum": ["high", "medium", "low", "speculative"]
+    },
+    "profitability": {
+      "type": "object",
+      "required": ["net_sales", "gross_profit", "gross_margin", "gross_profit_ias29", "gross_margin_ias29", "monetary_gain_loss", "ebitda", "ebitda_margin", "ebit_margin", "net_profit_margin", "pre_tax_profit", "net_income", "opex_to_revenue", "roe", "roce", "roa", "roic"],
+      "properties": {
+        "net_sales": { "$ref": "#/definitions/RatioMetric" },
+        "gross_profit": { "$ref": "#/definitions/RatioMetric" },
+        "gross_margin": { "$ref": "#/definitions/RatioMetric" },
+        "gross_profit_ias29": { "$ref": "#/definitions/RatioMetric" },
+        "gross_margin_ias29": { "$ref": "#/definitions/RatioMetric" },
+        "monetary_gain_loss": { "$ref": "#/definitions/RatioMetric" },
+        "ebitda": { "$ref": "#/definitions/RatioMetric" },
+        "ebitda_margin": { "$ref": "#/definitions/RatioMetric" },
+        "ebit_margin": { "$ref": "#/definitions/RatioMetric" },
+        "net_profit_margin": { "$ref": "#/definitions/RatioMetric" },
+        "pre_tax_profit": { "$ref": "#/definitions/RatioMetric" },
+        "net_income": { "$ref": "#/definitions/RatioMetric" },
+        "opex_to_revenue": { "$ref": "#/definitions/RatioMetric" },
+        "roe": { "$ref": "#/definitions/RatioMetric" },
+        "roce": { "$ref": "#/definitions/RatioMetric" },
+        "roa": { "$ref": "#/definitions/RatioMetric" },
+        "roic": { "$ref": "#/definitions/RatioMetric" }
+      }
+    },
+    "liquidity": {
+      "type": "object",
+      "required": ["current_ratio", "quick_ratio", "dso_days", "dio_days", "dpo_days", "cash_conversion_cycle", "nwc_to_revenue"],
+      "properties": {
+        "current_ratio": { "$ref": "#/definitions/RatioMetric" },
+        "quick_ratio": { "$ref": "#/definitions/RatioMetric" },
+        "cash_ratio": { "$ref": "#/definitions/RatioMetric" },
+        "dso_days": { "$ref": "#/definitions/RatioMetric" },
+        "dio_days": { "$ref": "#/definitions/RatioMetric" },
+        "dpo_days": { "$ref": "#/definitions/RatioMetric" },
+        "cash_conversion_cycle": { "$ref": "#/definitions/RatioMetric" },
+        "nwc_to_revenue": { "$ref": "#/definitions/RatioMetric" }
+      }
+    },
+    "leverage": {
+      "type": "object",
+      "required": ["net_debt", "net_debt_to_ebitda", "interest_coverage", "interest_expense_to_ebitda"],
+      "properties": {
+        "net_debt": { "$ref": "#/definitions/RatioMetric" },
+        "debt_to_equity": { "$ref": "#/definitions/RatioMetric" },
+        "net_debt_to_ebitda": { "$ref": "#/definitions/RatioMetric" },
+        "interest_coverage": { "$ref": "#/definitions/RatioMetric" },
+        "interest_expense_to_ebitda": { "$ref": "#/definitions/RatioMetric" },
+        "debt_service_coverage": { "$ref": "#/definitions/RatioMetric" }
+      }
+    },
+    "efficiency": {
+      "type": "object",
+      "properties": {
+        "asset_turnover": { "$ref": "#/definitions/RatioMetric" },
+        "inventory_turnover": { "$ref": "#/definitions/RatioMetric" },
+        "receivables_turnover": { "$ref": "#/definitions/RatioMetric" }
+      }
+    },
+    "cash_flow_quality": {
+      "type": "object",
+      "required": ["free_cash_flow_try_millions", "ocf_to_ebitda", "fcf_to_interest_payment", "capex_to_ebitda"],
+      "properties": {
+        "operating_cf_try_millions": { "$ref": "#/definitions/RatioMetric" },
+        "operating_cf_to_net_income": { "$ref": "#/definitions/RatioMetric" },
+        "ocf_to_ebitda": { "$ref": "#/definitions/RatioMetric" },
+        "free_cash_flow_try_millions": { "$ref": "#/definitions/RatioMetric" },
+        "fcf_margin": { "$ref": "#/definitions/RatioMetric" },
+        "fcf_to_interest_payment": { "$ref": "#/definitions/RatioMetric" },
+        "cash_ebitda": { "$ref": "#/definitions/RatioMetric" },
+        "cash_ebitda_to_reported_ebitda": { "$ref": "#/definitions/RatioMetric" },
+        "capex_intensity": { "$ref": "#/definitions/RatioMetric" },
+        "capex_to_ebitda": { "$ref": "#/definitions/RatioMetric" },
+        "working_capital_changes": {
+          "type": "object",
+          "properties": {
+            "receivables_change_try_millions": { "type": "number" },
+            "inventory_change_try_millions": { "type": "number" },
+            "payables_change_try_millions": { "type": "number" },
+            "net_wc_impact_try_millions": { "type": "number" },
+            "interpretation": { "type": "string" }
+          }
+        },
+        "cash_flow_summary_table": {
+          "type": "object",
+          "description": "5-year cash flow summary: OCF, ICF, Financing CF, Net Change, Ending Cash",
+          "properties": {
+            "periods": { "type": "array", "items": { "type": "string" } },
+            "ocf": { "type": "array", "items": { "type": ["number", "null"] } },
+            "icf": { "type": "array", "items": { "type": ["number", "null"] } },
+            "financing_cf": { "type": "array", "items": { "type": ["number", "null"] } },
+            "net_change": { "type": "array", "items": { "type": ["number", "null"] } },
+            "ending_cash": { "type": "array", "items": { "type": ["number", "null"] } }
+          }
+        },
+        "red_flags": {
+          "type": "object",
+          "properties": {
+            "ocf_below_ebitda": { "type": "boolean" },
+            "negative_fcf": { "type": "boolean" },
+            "fcf_below_interest": { "type": "boolean" },
+            "wc_consuming_cash_3yr": { "type": "boolean" },
+            "low_ocf_ni_ratio": { "type": "boolean" },
+            "capex_exceeds_ocf": { "type": "boolean" },
+            "declining_cash_position": { "type": "boolean" }
+          }
+        },
+        "overall_cash_flow_assessment": {
+          "type": "string",
+          "enum": ["STRONG", "MODERATE", "WEAK", "CRITICAL"]
+        },
+        "working_capital_changes_notes": { "type": "string" }
+      }
+    },
+    "trend_summary": {
+      "type": "object",
+      "properties": {
+        "profitability_trend": { "$ref": "#/definitions/TrendAssessment" },
+        "liquidity_trend": { "$ref": "#/definitions/TrendAssessment" },
+        "leverage_trend": { "$ref": "#/definitions/TrendAssessment" },
+        "cash_flow_trend": { "$ref": "#/definitions/TrendAssessment" }
+      }
+    },
+    "non_recurring_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item_description", "amount_try_millions", "period", "impact_direction", "evidence_ref"],
+        "properties": {
+          "item_description": { "type": "string" },
+          "amount_try_millions": { "type": "number" },
+          "period": { "type": "string" },
+          "impact_direction": { "type": "string", "enum": ["positive", "negative"] },
+          "affected_metric": { "type": "string" },
+          "evidence_ref": { "type": "string" }
+        }
+      }
+    },
+    "restatement_flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["period", "description", "impact"],
+        "properties": {
+          "period": { "type": "string" },
+          "description": { "type": "string" },
+          "impact": { "type": "string" }
+        }
+      }
+    },
+    "inflation_accounting_applied": { "type": "boolean" },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "$ref": "https://financex.io/schemas/shared/evidence" }
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "missing_inputs": { "type": "array", "items": { "type": "string" } },
+    "contradictions_detected": { "type": "array", "items": { "type": "object" } },
+    "review_status": { "type": "string", "enum": ["pending_ceo_review", "approved", "rejected", "revision_requested"] }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "RatioMetric": {
+      "type": "object",
+      "required": ["value", "period", "confidence", "evidence_ref", "formula"],
+      "properties": {
+        "value": { "type": ["number", "null"] },
+        "unit": { "type": "string" },
+        "period": { "type": "string" },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+        "evidence_ref": { "type": "string" },
+        "formula": { "type": "string" },
+        "numerator_value": { "type": "number" },
+        "denominator_value": { "type": "number" },
+        "yoy_change": { "type": ["number", "null"] },
+        "trend_direction": { "type": "string", "enum": ["improving", "deteriorating", "stable", "volatile", "unavailable"] },
+        "notes": { "type": "string" }
+      }
+    },
+    "TrendAssessment": {
+      "type": "object",
+      "required": ["direction", "consistency", "periods_covered", "confidence", "summary"],
+      "properties": {
+        "direction": { "type": "string", "enum": ["improving", "deteriorating", "stable", "volatile", "mixed"] },
+        "consistency": { "type": "string", "enum": ["consistent", "inconsistent", "insufficient_data"] },
+        "periods_covered": { "type": "array", "items": { "type": "string" } },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+        "summary": { "type": "string" }
+      }
+    }
+  }
+}

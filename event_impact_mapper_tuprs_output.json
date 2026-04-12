@@ -1,0 +1,248 @@
+{
+  "agent_id": "event_impact_mapper",
+  "output_id": "eim-out-TUPRS-20260412-001",
+  "session_id": "ceo-session-TUPRS-20260412",
+  "task_id": "event_impact_mapping_TUPRS",
+  "timestamp": "2026-04-12T00:00:00Z",
+  "company": { "name": "Türkiye Petrol Rafinerileri A.Ş.", "ticker": "TUPRS" },
+  "events_processed": 7,
+  "events_requiring_full_mapping": 4,
+  "routine_filings_noted": 3,
+
+  "event_impacts": [
+    {
+      "event_id": "eim-ev001-TUPRS-routine-2024ar",
+      "event_type": "routine_filing",
+      "event_summary": "2024 Konsolide Faaliyet Raporu — PwC olumlu görüş. 2024 net rafineri marjı ~11.2 $/bbl. 2025 temettüsünün baz aldığı kazanç yılı.",
+      "disclosure_reference": "kap-1257261",
+      "affected_statements": [],
+      "impact_direction": "neutral",
+      "timing_horizon": "immediate",
+      "confidence": "high",
+      "effect_type": "confirmed",
+      "quantification_possible": false,
+      "quantification_notes": "Rutin zorunlu bildiri. Doğrudan finansal tablo etkisi yok.",
+      "secondary_effects": [],
+      "risks": [],
+      "evidence_refs": ["KAP Bildirim 1257261"],
+      "warnings": []
+    },
+    {
+      "event_id": "eim-ev002-TUPRS-routine-h1-2025",
+      "event_type": "routine_filing",
+      "event_summary": "H1 2025 Ara Dönem Finansal Tabloları. Rafineri marjı recovery başlangıcını gösteriyor (Q1 4.1 $/bbl → Q3 9.7 $/bbl).",
+      "disclosure_reference": "kap-implicit-h1-2025",
+      "affected_statements": [],
+      "impact_direction": "neutral",
+      "timing_horizon": "immediate",
+      "confidence": "high",
+      "effect_type": "confirmed",
+      "quantification_possible": false,
+      "quantification_notes": "Rutin ara dönem bildirisi. Doğrudan finansal tablo etkisi yok.",
+      "secondary_effects": [],
+      "risks": [],
+      "evidence_refs": ["TUPRS H1 2025 Finansal Tabloları"],
+      "warnings": []
+    },
+    {
+      "event_id": "eim-ev003-TUPRS-dividend-2025",
+      "event_type": "dividend_buyback",
+      "event_summary": "2024 tam yıl sonuçlarına dayalı 29.3 milyar TRY temettü dağıtımı. Hisse başı 12.9256 TRY net. İki taksit: 28 Mart 2025 + 30 Eylül 2025. Her ikisi de ödenmiş (tarihe geçmiş olay).",
+      "disclosure_reference": "kap-1254628",
+      "affected_statements": ["balance_sheet", "cash_flow_statement", "statement_of_changes_in_equity"],
+      "affected_line_items": {
+        "cash_and_equivalents_change_trym": -29300,
+        "retained_earnings_change_trym": -29300,
+        "total_equity_change_trym": -29300,
+        "financing_cashflow_trym": -29300
+      },
+      "impact_direction": "negative",
+      "timing_horizon": "immediate",
+      "confidence": "high",
+      "effect_type": "confirmed",
+      "quantification_possible": true,
+      "quantification_estimate": {
+        "total_dividend_trym": 29300,
+        "per_share_net_tl": 12.9256,
+        "per_share_gross_tl": 15.2074,
+        "pct_of_2025_cash": "27.3%",
+        "pct_of_total_equity": "3.9%",
+        "pct_of_2025_ocf": "63.0%",
+        "pct_of_net_income": "97.9%",
+        "ocf_coverage_ratio": "1.59x — SUSTAINABLE",
+        "fcf_coverage_ratio": "0.84x — below 1.0x, cash reserve buffer used",
+        "net_cash_post_dividend_trym": 12200,
+        "installment_1": { "date": "2025-03-28", "amount_trym": 15002, "pct": 51.19 },
+        "installment_2": { "date": "2025-09-30", "amount_trym": 14298, "pct": 48.81 }
+      },
+      "secondary_effects": [
+        { "effect": "Net nakit 41.5B → 12.2B TRY (geçici; OCF yeniden doldurdu)", "direction": "negative", "confidence": "high" },
+        { "effect": "Temettü sinyali — YoY artış ile güçlü nakit üretim güveni", "direction": "positive", "confidence": "medium" }
+      ],
+      "risks": ["Marj 5$/bbl altında kalırsa benzer boyut temettü 2027'de borçlanma ile finanse edilmek zorunda kalabilir"],
+      "evidence_refs": ["KAP 1254628", "IAS 1.107", "IAS 7.31", "parse_standardization_output", "financial_analysis_output"],
+      "warnings": ["FCF < Temettü (24.7B vs 29.3B). Tarihe geçmiş — 2025 bilançosuna yansımış."]
+    },
+    {
+      "event_id": "eim-ev004-TUPRS-routine-q3-2025",
+      "event_type": "routine_filing",
+      "event_summary": "Q3 2025 9-Aylık Ara Dönem Finansal Tabloları. Güçlü earnings beat: NI +11.2% konsensüs üstü. Q3 marjı 9.7 $/bbl — recovery sinyali.",
+      "disclosure_reference": "kap-1510258",
+      "affected_statements": [],
+      "impact_direction": "neutral",
+      "timing_horizon": "immediate",
+      "confidence": "high",
+      "effect_type": "confirmed",
+      "quantification_possible": false,
+      "quantification_notes": "Rutin ara dönem bildirisi. Doğrudan finansal tablo etkisi yok. Ancak embedded Q3 earnings beat (NI 12,162M vs konsensüs 10,931M) 2026 temettü artışının temelini oluşturuyor.",
+      "secondary_effects": [],
+      "risks": [],
+      "evidence_refs": ["KAP Bildirim 1510258"],
+      "warnings": []
+    },
+    {
+      "event_id": "eim-ev005-TUPRS-dividend-2026",
+      "event_type": "dividend_buyback",
+      "event_summary": "2025 tam yıl sonuçlarına dayalı 33 milyar TRY temettü dağıtım kararı. Hisse başı 14.5578 TRY net. YoY +%12.6. İki taksit: 16 Mart 2026 (1. taksit ÖDENDİ — 16,893M TRY) + 30 Eylül 2026 (2. taksit BEKLIYOR — 16,107M TRY).",
+      "disclosure_reference": "kap-1413026",
+      "affected_statements": ["balance_sheet", "cash_flow_statement", "statement_of_changes_in_equity"],
+      "affected_line_items": {
+        "cash_and_equivalents_change_total_trym": -33000,
+        "cash_change_installment1_trym": -16893,
+        "cash_change_installment2_trym": -16107,
+        "retained_earnings_change_trym": -33000,
+        "total_equity_change_trym": -33000,
+        "financing_cashflow_q1_2026_trym": -16893,
+        "financing_cashflow_q3_2026_trym": -16107
+      },
+      "impact_direction": "negative",
+      "timing_horizon": "immediate",
+      "confidence": "high",
+      "effect_type": "confirmed",
+      "quantification_possible": true,
+      "quantification_estimate": {
+        "total_dividend_trym": 33000,
+        "per_share_net_tl": 14.5578,
+        "per_share_gross_tl": 17.1269,
+        "yoy_increase_pct": 12.6,
+        "pct_of_2025_net_income": "110.4% — ABOVE 100%",
+        "pct_of_2025_ocf": "71.0% — OCF covers",
+        "pct_of_2025_fcf": "133.6% — FCF insufficient; 8.3B TRY gap",
+        "pct_of_2025_year_end_cash": "30.8%",
+        "net_cash_pre_dividend_trym": 41500,
+        "net_cash_post_full_dividend_trym": 8500,
+        "net_debt_ebitda_pre": "-0.77x",
+        "net_debt_ebitda_post": "-0.14x",
+        "ocf_coverage": "1.41x — SUSTAINABLE (reduced from 1.59x prior year)",
+        "fcf_coverage": "0.75x — gap 8.3B TRY covered by cash reserve",
+        "scenario_fcf_coverage_base_10_5_bbl": "~1.06x (FCF ~35B TRY) — covered",
+        "scenario_fcf_coverage_bear_5_bbl": "~0.45x (FCF ~15B TRY) — large gap",
+        "dividend_yield_at_254_50_tl": "5.72%"
+      },
+      "secondary_effects": [
+        { "effect": "Net nakit erozyon: 41.5B → 8.5B TRY (%79)", "direction": "negative", "confidence": "high" },
+        { "effect": "Net Borç/EBITDA: -0.77x → -0.14x (hâlâ net nakit)", "direction": "negative", "confidence": "high" },
+        { "effect": "YoY artış +%12.6 — güçlü nakit güveni sinyali", "direction": "positive", "confidence": "medium" },
+        { "effect": "1. Taksit ödenmiş (16 Mart 2026 — 16,893M TRY)", "direction": "confirmed", "confidence": "high" },
+        { "effect": "2. Taksit beklemede (Eylül 2026 — 16,107M TRY)", "direction": "negative_pending", "confidence": "high" }
+      ],
+      "risks": [
+        "Bear marj (5 $/bbl): FCF açığı 18B TRY; nakit tampon hızla erir",
+        "Payout >110% net karın; gerçek operasyonel FCF marj recovery'e bağlı"
+      ],
+      "evidence_refs": ["KAP 1413026", "KAP 1398873", "IAS 1.107", "IAS 7.31", "parse_standardization_output", "financial_analysis_output", "analyst_consensus_output"],
+      "warnings": [
+        "FCF (24.7B) < Temettü (33.0B) — 8.3B TRY açık nakit tampondan karşılanıyor. Marj recovery kritik.",
+        "Net nakit erozyon %79 — fortress balance sheet zayıflıyor.",
+        "Birinci taksit zaten ödendi (16 Mart 2026); ikinci taksit 30 Eylül 2026'da ödenecek."
+      ]
+    },
+    {
+      "event_id": "eim-ev006-TUPRS-management-change-2026",
+      "event_type": "management_change",
+      "event_summary": "Mali İşler GMY Doğan Korkmaz → Koç Holding CFO. Gökhan Dizemen (Aygaz'dan) TUPRS'a atandı. Yürürlük: 18 Mart 2026.",
+      "disclosure_reference": "kap-oda-management-change-feb-2026",
+      "affected_statements": [],
+      "affected_line_items": {},
+      "impact_direction": "neutral",
+      "timing_horizon": "medium_term",
+      "confidence": "speculative",
+      "effect_type": "speculative",
+      "quantification_possible": false,
+      "quantification_notes": "Yönetim değişikliğinden doğrudan finansal tablo etkisi çıkarılamaz. Strateji değişikliği açıklanmadı.",
+      "qualitative_framework": {
+        "strategic_continuity_risk": "LOW — iç Koç ekosistemi rotasyonu",
+        "capital_allocation_signal": "WATCH — Korkmaz Koç CFO'ya geçti; holding-level nakit koordinasyonu güçlenebilir",
+        "aygaz_conflict_risk": "MONITOR — Dizemen Aygaz'dan; Aygaz %40 hissedar + %18 gelir. IAS 24 ilişkili taraf riski",
+        "ir_continuity": "SECURE — yeni IR müdürü atandı"
+      },
+      "monitoring_framework": [
+        "2026 Q1/Q2 temettü/CAPEX politika değişiklik sinyali",
+        "Aygaz-TUPRS ilişkili taraf işlem şartları değişimi (transfer fiyatı)",
+        "Koç Holding seviyesinde refinancing veya yeni borçlanma aktivitesi"
+      ],
+      "secondary_effects": [
+        { "effect": "Koç-TUPRS nakit koordinasyonu güçlenebilir; holding capital pooling", "direction": "uncertain", "confidence": "speculative" }
+      ],
+      "risks": ["Aygaz çakışması: çıkar çatışması riski IAS 24 kapsamında izlenmeli"],
+      "evidence_refs": ["KAP ÖDA 27 Şubat 2026", "Rota Borsa haberi", "context_extraction_output (Aygaz %40, %18 gelir)"],
+      "warnings": ["Finansal etki quantify edilemez. Aygaz-TUPRS ilişkili taraf işlemlerini izle."]
+    },
+    {
+      "event_id": "eim-ev007-TUPRS-general-assembly-2026",
+      "event_type": "corporate_governance",
+      "event_summary": "2025 Olağan Genel Kurul (11 Mart 2026): 2025 finansal tabloları onaylandı, 33B TRY temettü kararı alındı, YK seçimleri ve kurumsal yönetim politikaları onaylandı.",
+      "disclosure_reference": "kap-1398873",
+      "affected_statements": ["statement_of_changes_in_equity", "cash_flow_statement"],
+      "affected_line_items": {
+        "primary_note": "GK'nın ana finansal etkisi onaylanan temettü (Event #5'te tam haritalandı). Çift sayım yapılmamalı."
+      },
+      "impact_direction": "mixed",
+      "timing_horizon": "immediate",
+      "confidence": "high",
+      "effect_type": "confirmed",
+      "quantification_possible": true,
+      "quantification_notes": "Ana finansal etki temettü onayıdır — Event #5'te haritalandı (33,000M TRY). YK seçimleri için ayrı nicel etki yok.",
+      "governance_impact": {
+        "dividend_approval": "33,000M TRY — Event #5 ile örtüşüyor; çift sayım yapma",
+        "financial_statements_approval": "2025 tabloları onaylandı — geriye dönük değişiklik yok",
+        "board_elections": "Değişiklik açıklanmadı — mevcut yapı devam varsayımı",
+        "board_independence_ratio": "4/12 = %33 — SPK minimumunda; best practice altı"
+      },
+      "secondary_effects": [
+        { "effect": "YK bağımsızlık oranı %33 devam ederse kurumsal yönetim skoru riskte", "direction": "neutral", "confidence": "medium" }
+      ],
+      "risks": ["Tam gündem detayları mevcut değil — olağan dışı kararlar doğrulanamadı"],
+      "evidence_refs": ["KAP 1398873", "KAP 1413026", "esg_agent_output (YK %33)", "context_extraction_output"],
+      "warnings": ["Event #5 ile çakışan temettü etkisini portföy analizinde tek kez say."]
+    }
+  ],
+
+  "portfolio_impact_summary": {
+    "total_cash_outflow_2025_2026_trym": -62300,
+    "net_cash_erosion": "41,500M (net cash) → ~8,500M TRY (post-full dividend 2026)",
+    "net_debt_ebitda_trajectory": "-0.77x → -0.14x (still net cash but significantly eroded)",
+    "income_statement_impact": "ZERO — dividends do not affect P&L",
+    "fcf_sustainability": {
+      "2025": "FCF 24.7B < Dividend 29.3B — gap 4.6B from cash",
+      "2026_base_case": "FCF ~35B (margin recovery 10.5$/bbl) vs Dividend 33B — near-covered",
+      "2026_bear_case": "FCF ~15B (5$/bbl margin) vs Dividend 33B — 18B gap, reserve erosion"
+    },
+    "key_risk": "Refinery margin normalization (if Iran-US ceasefire holds). Consensus 10.5$/bbl includes geopolitical premium. Without premium: 6-7$/bbl (mgmt guidance) → FCF insufficient → 2027 dividend sustainability risk.",
+    "key_opportunity": "Margin recovery confirmed in Q3 2025 (9.7$/bbl realized). Net cash still positive post-dividend. Fortress balance sheet with 107.2B TRY cash provides multi-year buffer."
+  },
+
+  "confidence_overall": "high (0.88)",
+  "warnings": [
+    "FCF < Temettü 2025 ve 2026 her ikisinde — marj recovery kritik",
+    "Net nakit erozyon %79 (bear case daha kötü)",
+    "Balance sheet IAS 29 eksikliği — 17 Nisan 2026 tam tablolarla doğrula",
+    "Event #5 ve #7 temettü etkisini portföy analizinde yalnızca bir kez say"
+  ],
+  "missing_inputs": [
+    "2025 full-year audited KAP financial statements (expected 17 Apr 2026)",
+    "Q1 2026 interim results (expected end of April 2026)",
+    "Board election results from 11 March 2026 General Assembly detail"
+  ],
+  "review_status": "pending_ceo_review"
+}

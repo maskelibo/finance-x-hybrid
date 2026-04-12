@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/event_timeline_alert/output",
+  "title": "Event Timeline Alert Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "impact_timeline", "priority_alerts", "confidence_overall", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "event_timeline_alert" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "impact_timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "event_type", "timing_horizon", "urgency_level", "impact_direction", "confidence"],
+        "properties": {
+          "event_id": { "type": "string" },
+          "event_type": { "type": "string" },
+          "event_summary": { "type": "string" },
+          "timing_horizon": { "type": "string", "enum": ["immediate", "near_term", "medium_term", "long_term"] },
+          "expected_impact_period": { "type": "string" },
+          "urgency_level": { "type": "string", "enum": ["immediate", "high", "medium", "low"] },
+          "impact_direction": { "type": "string", "enum": ["positive", "negative", "mixed", "uncertain"] },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+          "monitoring_trigger": { "type": "string" },
+          "source_event_impact_id": { "type": "string" }
+        }
+      }
+    },
+    "priority_alerts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["alert_id", "event_id", "alert_text", "urgency_level"],
+        "properties": {
+          "alert_id": { "type": "string" },
+          "event_id": { "type": "string" },
+          "alert_text": { "type": "string" },
+          "urgency_level": { "type": "string", "enum": ["immediate", "high"] },
+          "required_monitoring_actions": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "upcoming_calendar": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date_description": { "type": "string" },
+          "expected_date": { "type": "string" },
+          "relevance": { "type": "string" }
+        }
+      }
+    },
+    "confidence_overall": { "type": "string", "enum": ["high", "medium", "low", "speculative"] },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "review_status": { "type": "string", "enum": ["pending_ceo_review", "approved", "rejected", "revision_requested"] }
+  },
+  "additionalProperties": false
+}

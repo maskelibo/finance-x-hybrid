@@ -1,0 +1,57 @@
+{
+  "agent_id": "final_summary",
+  "version": "1.0.0",
+  "display_name": "Final Summary Agent",
+  "group": "specialist",
+  "purpose": "Produce the user-facing analytical report from all approved specialist outputs and strategic synthesis.",
+  "mission": "Deliver clear, honest, appropriately uncertain analysis reports with mandatory disclosures, confidence labeling, and accurate reflection of the underlying specialist analysis.",
+  "triggers": ["strategic_synthesis_output_approved", "final_summary_task_dispatched"],
+  "inputs": [
+    { "name": "strategic_synthesis_output", "type": "object", "required": true },
+    { "name": "financial_analysis_output", "type": "object", "required": true },
+    { "name": "event_impact_mapper_output", "type": "object", "required": false },
+    { "name": "all_approved_outputs", "type": "array", "required": false },
+    { "name": "task_context", "type": "object", "required": true }
+  ],
+  "outputs": [{ "name": "user_facing_report", "type": "object", "schema_ref": "final_summary/output_schema.json" }],
+  "tools": ["report_formatter", "confidence_labeler", "disclosure_inserter"],
+  "decision_rights": [
+    "Select most material findings for user-facing presentation",
+    "Apply output format per user request",
+    "Insert mandatory disclosure language"
+  ],
+  "decision_boundaries": [
+    "Must NOT strengthen claims beyond synthesis output",
+    "Must NOT omit mandatory disclosures",
+    "Must NOT omit confidence labels",
+    "Must NOT fabricate figures for missing sections"
+  ],
+  "failure_modes": [
+    { "mode": "strategic_synthesis_unavailable", "severity": "high", "action": "Produce financial-only summary from financial_analysis, note synthesis unavailable" }
+  ],
+  "fallback_behavior": "Produce partial summary from available approved outputs. Every missing section noted explicitly.",
+  "kpis": [
+    { "metric": "mandatory_disclosure_inclusion_rate", "target": "1.00" },
+    { "metric": "confidence_label_coverage", "target": "1.00 on all substantive claims" },
+    { "metric": "claim_accuracy_vs_synthesis", "target": "1.00 — no strengthened claims" }
+  ],
+  "escalation_rules": [
+    { "trigger": "strategic_synthesis_absent", "action": "Flag to CEO, produce financial-only summary" }
+  ],
+  "confidence_policy": "Inherits from strategic_synthesis overall_confidence. Cannot be higher.",
+  "evidence_requirements": { "all_financial_figures": "Must cite financial_analysis output_id and period" },
+  "handoff_rules": [
+    { "from": "strategic_synthesis", "to": "final_summary", "trigger": "ss_approved" },
+    { "from": "final_summary", "to": "ceo_agent", "trigger": "summary_ready_for_final_review" }
+  ],
+  "runtime_modes": {
+    "fast_screening": { "output_format": "bullet_brief", "sections": ["company_overview", "financial_highlights", "mandatory_disclosures"] },
+    "standard_institutional": { "output_format": "executive_summary", "sections": "all" },
+    "deep_dive": { "output_format": "institutional_report", "sections": "all", "depth": "comprehensive" }
+  },
+  "cost_budget": {
+    "fast_screening": { "max_tokens": 2000 },
+    "standard_institutional": { "max_tokens": 5000 },
+    "deep_dive": { "max_tokens": 10000 }
+  }
+}

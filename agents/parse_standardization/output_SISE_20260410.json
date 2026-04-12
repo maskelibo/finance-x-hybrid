@@ -1,0 +1,179 @@
+{
+  "agent_id": "parse_standardization",
+  "output_id": "ps-sise-20260410",
+  "company_ticker": "SISE",
+  "timestamp": "2026-04-10T00:00:00Z",
+  "periods_covered": ["2020", "2021", "2022", "2023", "2024", "Q1-2025"],
+
+  "parsed_statements": {
+    "income_statement": {
+      "2024": {
+        "revenue": {"value": 185.6, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2024", "ifrs_label": "Revenue"},
+        "ebitda": {"value": 10.8, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2024", "ifrs_label": "EBITDA"},
+        "net_profit": {"value": 5.0, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2024", "ifrs_label": "Profit for the Period"}
+      },
+      "2023": {
+        "revenue": {"value": 219.5, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2023", "ifrs_label": "Revenue"},
+        "ebitda": {"value": 29.7, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2023", "ifrs_label": "EBITDA"},
+        "net_profit": {"value": 24.8, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2023", "ifrs_label": "Profit for the Period"}
+      },
+      "2022": {
+        "revenue": {"value": 95.3, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2022", "ifrs_label": "Revenue"},
+        "ebitda": {"value": 20.5, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2022", "ifrs_label": "EBITDA"},
+        "net_profit": {"value": 19.3, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2022", "ifrs_label": "Profit for the Period"}
+      },
+      "2021": {
+        "revenue": {"value": 32.1, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2021", "ifrs_label": "Revenue"},
+        "ebitda": {"value": 7.6, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2021", "ifrs_label": "EBITDA"},
+        "net_profit": {"value": 9.1, "unit": "B TRY", "confidence": 0.85, "source": "Fintables_2021", "ifrs_label": "Profit for the Period"}
+      },
+      "2020": {
+        "revenue": {"value": 21.3, "unit": "B TRY", "confidence": 0.75, "source": "Secondary_Sources", "ifrs_label": "Revenue"},
+        "ebitda": null,
+        "net_profit": null
+      }
+    },
+
+    "balance_sheet": {
+      "2024": {
+        "total_assets": {"value": 399.0, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2024", "ifrs_label": "Total Assets"},
+        "total_equity": {"value": 208.1, "unit": "B TRY", "confidence": 0.75, "source": "Fintables_2024", "ifrs_label": "Total Equity", "warning": "Discrepancy: Alternative source shows 186.06B"}
+      },
+      "2023": {
+        "total_assets": {"value": 420.6, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2023", "ifrs_label": "Total Assets"},
+        "total_equity": {"value": 205.0, "unit": "B TRY", "confidence": 0.90, "source": "Fintables_2023", "ifrs_label": "Total Equity"}
+      },
+      "2022": {
+        "total_assets": null,
+        "total_equity": null
+      },
+      "2021": {
+        "total_assets": null,
+        "total_equity": null
+      },
+      "2020": {
+        "total_assets": {"value": 44.2, "unit": "B TRY", "confidence": 0.75, "source": "Secondary_Sources", "ifrs_label": "Total Assets"},
+        "total_equity": {"value": 22.5, "unit": "B TRY", "confidence": 0.75, "source": "Secondary_Sources", "ifrs_label": "Total Equity"}
+      }
+    },
+
+    "cash_flow_statement": {
+      "status": "NOT_EXTRACTED",
+      "reason": "PDF parsing required",
+      "verification": "Statement confirmed present via regulatory requirements (KAP) and analyst citations",
+      "action_required": "Parse 2024 Annual Report and Q1 2025 Report PDFs"
+    },
+
+    "key_metrics": {
+      "2024": {
+        "revenue_growth_pct": -15.4,
+        "ebitda_margin_pct": 5.8,
+        "net_margin_pct": 2.7,
+        "roe_pct": 2.4,
+        "roa_pct": 1.3
+      },
+      "2023": {
+        "revenue_growth_pct": 130.3,
+        "ebitda_margin_pct": 13.5,
+        "net_margin_pct": 11.3,
+        "roe_pct": 12.1,
+        "roa_pct": 5.9
+      },
+      "2022": {
+        "revenue_growth_pct": 196.9,
+        "ebitda_margin_pct": 21.5,
+        "net_margin_pct": 20.3
+      },
+      "2021": {
+        "revenue_growth_pct": 50.7,
+        "ebitda_margin_pct": 23.7,
+        "net_margin_pct": 28.3
+      }
+    }
+  },
+
+  "parsing_metadata": {
+    "extraction_method": "html_aggregator",
+    "source_type": "secondary_financial_databases",
+    "primary_sources": ["Fintables", "KAP summaries", "Analyst reports"],
+    "pdf_parsing_status": "NOT_PERFORMED",
+    "xbrl_parsing_status": "NOT_PERFORMED"
+  },
+
+  "normalization_notes": [
+    "All figures in billion TRY (10^9)",
+    "Fiscal year = calendar year (Dec 31 year-end)",
+    "TFRS (Turkish IFRS) used - direct IFRS equivalents applied",
+    "No inflation adjustment applied (nominal figures)",
+    "FAVÖK mapped to EBITDA (standard Turkish convention)",
+    "Date format: ISO 8601 (YYYY-MM-DD)"
+  ],
+
+  "data_quality_issues": [
+    {
+      "id": "DQ-001",
+      "severity": "CRITICAL",
+      "description": "Cash Flow Statement not extracted",
+      "impact": "Cannot analyze cash generation quality, OCF/EBITDA conversion, CAPEX levels",
+      "resolution": "Parse 2024 Annual + Q1 2025 PDFs"
+    },
+    {
+      "id": "DQ-002",
+      "severity": "CRITICAL",
+      "description": "2024 Total Equity discrepancy (186B vs 208B TRY)",
+      "impact": "Balance sheet integrity uncertain, ROE calculation questionable",
+      "resolution": "Verify from audited financial statements"
+    },
+    {
+      "id": "DQ-003",
+      "severity": "HIGH",
+      "description": "2022-2021 Balance Sheet data missing (Total Assets/Equity)",
+      "impact": "Cannot calculate multi-year ROA/ROE trends",
+      "resolution": "Collect full balance sheet data for 2022, 2021"
+    },
+    {
+      "id": "DQ-004",
+      "severity": "HIGH",
+      "description": "Full P&L line items missing (COGS, Operating Expenses, Finance Costs, Tax)",
+      "impact": "Cannot analyze cost structure, gross margin, operating leverage",
+      "resolution": "Parse detailed income statements from PDFs"
+    },
+    {
+      "id": "DQ-005",
+      "severity": "MEDIUM",
+      "description": "2020 EBITDA and Net Profit missing",
+      "impact": "Historical trend incomplete",
+      "resolution": "Low priority - 2021-2024 provides sufficient lookback"
+    }
+  ],
+
+  "warnings": [
+    "2024 Total Equity: Source discrepancy requires reconciliation",
+    "Cash Flow Statement: Confirmed present but not yet extracted",
+    "Balance Sheet equation cannot be verified (Total Liabilities missing)",
+    "Restatement check not performed (requires prior-year filing comparison)",
+    "Segment breakdown not extracted (available in annual reports)"
+  ],
+
+  "confidence_overall": "MEDIUM",
+  "confidence_rationale": "High confidence in top-line figures (Revenue, EBITDA, Net Profit) from multiple sources. Low confidence due to missing Cash Flow Statement, incomplete Balance Sheet, and unresolved equity discrepancy.",
+
+  "completeness_score": 0.45,
+  "completeness_breakdown": {
+    "income_statement": 0.35,
+    "balance_sheet": 0.25,
+    "cash_flow_statement": 0.00,
+    "notes_disclosures": 0.00
+  },
+
+  "recommendations_to_reconciliation_agent": [
+    "Priority 1: Extract and reconcile Cash Flow Statement from 2024 Annual Report",
+    "Priority 2: Resolve 2024 Total Equity discrepancy using audited statements",
+    "Priority 3: Validate Balance Sheet equation once Total Liabilities available",
+    "Priority 4: Extract detailed P&L line items for margin analysis",
+    "Priority 5: Perform restatement check on 2023 comparative figures"
+  ],
+
+  "review_status": "PENDING_CEO_REVIEW",
+  "next_agent": "reconciliation"
+}
