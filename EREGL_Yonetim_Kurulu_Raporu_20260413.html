@@ -1,0 +1,2787 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EREGL | Finance X Bağımsız Analizi</title>
+  <style>
+    :root {
+      --brand-primary: #1B3A6B;
+      --brand-secondary: #C8102E;
+      --brand-accent: #E8A020;
+      --brand-bg: #FFFFFF;
+      --page-bg: #f4f7fb;
+      --surface: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: #dbe4f0;
+      --positive: #059669;
+      --negative: #dc2626;
+      --warning: #d97706;
+      --info: #3b82f6;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    @page {
+      size: A4;
+      margin: 20mm 15mm 20mm 15mm;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-size: 10pt;
+      line-height: 1.52;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      counter-reset: page;
+    }
+
+    .page-header,
+    .page-footer {
+      position: fixed;
+      left: 15mm;
+      right: 15mm;
+      z-index: 20;
+      background: rgba(244, 247, 251, 0.94);
+      backdrop-filter: blur(3px);
+    }
+
+    .page-header {
+      top: 8mm;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--brand-primary);
+      padding: 0 0 6px 0;
+      font-size: 8.5pt;
+      color: var(--muted);
+    }
+
+    .page-footer {
+      bottom: 8mm;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 8pt;
+      color: var(--muted);
+    }
+
+    .page-header .left,
+    .page-footer .left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+      color: #fff;
+      border-radius: 8px;
+      padding: 5px 11px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      font-size: 9.5pt;
+    }
+
+    .brand-mark .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.9);
+      display: inline-block;
+    }
+
+    .page-number::after {
+      content: "Sayfa " counter(page);
+      font-weight: 700;
+      color: var(--brand-primary);
+    }
+
+    .main {
+      padding: 16mm 0 18mm 0;
+    }
+
+    .section {
+      break-before: page;
+      page-break-before: always;
+      padding: 0;
+    }
+
+    .section:first-of-type {
+      break-before: auto;
+      page-break-before: auto;
+    }
+
+    .section h2 {
+      font-size: 16pt;
+      color: var(--brand-primary);
+      margin: 0 0 12px 0;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--brand-primary);
+      letter-spacing: .01em;
+    }
+
+    .section h3 {
+      font-size: 12.5pt;
+      color: #1e3a5f;
+      margin: 14px 0 8px 0;
+    }
+
+    p {
+      margin: 0 0 10px 0;
+      orphans: 4;
+      widows: 4;
+    }
+
+    .cover {
+      position: relative;
+      overflow: hidden;
+      border-radius: 22px;
+      min-height: 248mm;
+      padding: 28mm 18mm 18mm 18mm;
+      background: linear-gradient(135deg, #0f2d54 0%, #1B3A6B 38%, #C8102E 100%);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      right: -40mm;
+      top: -25mm;
+      width: 110mm;
+      height: 110mm;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+
+    .cover::after {
+      content: "";
+      position: absolute;
+      left: -30mm;
+      bottom: -28mm;
+      width: 95mm;
+      height: 95mm;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+    }
+
+    .cover-top {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      z-index: 1;
+    }
+
+    .cover-tag {
+      display: inline-block;
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 999px;
+      font-size: 8.5pt;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: .95;
+      margin-bottom: 16px;
+    }
+
+    .cover h1 {
+      font-size: 25pt;
+      line-height: 1.04;
+      margin: 0 0 10px 0;
+      max-width: 165mm;
+    }
+
+    .cover .subtitle {
+      font-size: 13pt;
+      line-height: 1.4;
+      max-width: 170mm;
+      opacity: .96;
+      margin-bottom: 18px;
+    }
+
+    .cover .meta-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 0 0 18px 0;
+    }
+
+    .pill {
+      background: rgba(255,255,255,.13);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 9pt;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .cover-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.25fr .85fr;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .cover-panel {
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .cover-panel h3 {
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,.2);
+      padding-bottom: 6px;
+    }
+
+    .cover-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .mini-stat {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px;
+      padding: 10px 11px;
+      min-height: 72px;
+    }
+
+    .mini-stat .label {
+      font-size: 8.5pt;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      opacity: .85;
+    }
+
+    .mini-stat .value {
+      font-size: 17pt;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .mini-stat .hint {
+      font-size: 8.5pt;
+      opacity: .9;
+      margin-top: 2px;
+    }
+
+    .toc-list {
+      columns: 2;
+      column-gap: 18px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .toc-list li {
+      break-inside: avoid;
+      margin: 5px 0;
+      padding: 5px 0;
+      border-bottom: 1px dashed rgba(255,255,255,.18);
+      font-size: 9.1pt;
+    }
+
+    .toc-list .idx {
+      font-weight: 700;
+      margin-right: 8px;
+      color: #fff;
+    }
+
+    .company-signature {
+      position: relative;
+      z-index: 1;
+      margin-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 10px;
+      font-size: 9pt;
+      opacity: .95;
+    }
+
+    .finance-x {
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .section-inner {
+      background: transparent;
+      padding: 0;
+    }
+
+    .card,
+    .table-card,
+    .chart-card,
+    .callout,
+    .score-item {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      padding: 14px;
+    }
+
+    .table-card {
+      overflow: hidden;
+    }
+
+    .chart-card {
+      padding: 12px 12px 14px 12px;
+    }
+
+    .callout {
+      padding: 12px 14px;
+      margin: 12px 0;
+      border-left: 5px solid var(--brand-primary);
+    }
+
+    .callout-positive { background: #ecfdf5; border-left-color: var(--positive); }
+    .callout-negative { background: #fef2f2; border-left-color: var(--negative); }
+    .callout-warning  { background: #fff7ed; border-left-color: var(--warning); }
+    .callout-info     { background: #eff6ff; border-left-color: var(--info); }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 8.2pt;
+      font-weight: 700;
+      line-height: 1.2;
+      vertical-align: middle;
+      margin-right: 6px;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .badge-high { background: #dcfce7; color: #166534; }
+    .badge-medium { background: #fef3c7; color: #92400e; }
+    .badge-low { background: #e0e7ff; color: #3730a3; }
+
+    .small-note {
+      font-size: 8.6pt;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .analysis-block {
+      margin: 14px 0 18px 0;
+    }
+
+    .analysis-intro {
+      font-style: italic;
+      color: var(--muted);
+      border-left: 3px solid var(--brand-primary);
+      padding: 0 0 0 10px;
+      margin-bottom: 10px;
+    }
+
+    .analysis-commentary {
+      background: #f8fbff;
+      border: 1px solid #d9e6f4;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .kpi-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      min-height: 96px;
+      box-shadow: var(--shadow);
+      border-left-width: 5px;
+      border-left-style: solid;
+    }
+
+    .kpi-card .label {
+      font-size: 8.8pt;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 5px;
+    }
+
+    .kpi-card .value {
+      font-size: 18pt;
+      font-weight: 800;
+      color: var(--brand-primary);
+      margin-bottom: 3px;
+    }
+
+    .kpi-card .delta {
+      font-size: 9pt;
+      font-weight: 600;
+    }
+
+    .positive { color: var(--positive); }
+    .negative { color: var(--negative); }
+    .neutral { color: var(--muted); }
+    .warning { color: var(--warning); }
+
+    .scorecard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .score-item {
+      padding: 12px;
+    }
+
+    .score-label {
+      font-size: 9pt;
+      font-weight: 700;
+      color: var(--brand-primary);
+      margin-bottom: 6px;
+    }
+
+    .score-value {
+      font-size: 16pt;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .score-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+    }
+
+    .score-subtext {
+      font-size: 8.5pt;
+      color: var(--muted);
+      margin-top: 7px;
+    }
+
+    .section-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-hero .title-copy {
+      flex: 1;
+    }
+
+    .section-hero .title-copy p {
+      max-width: 180mm;
+    }
+
+    .section-hero .tagbox {
+      min-width: 52mm;
+      text-align: right;
+      color: var(--muted);
+      font-size: 8.6pt;
+    }
+
+    .tagbox .brand-mark-small {
+      display: inline-block;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+      color: #fff;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 8.6pt;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9pt;
+    }
+
+    .data-table th {
+      background: var(--brand-primary);
+      color: #fff;
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      vertical-align: bottom;
+    }
+
+    .data-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #e6edf6;
+      vertical-align: top;
+    }
+
+    .data-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .data-table td.num,
+    .data-table th.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .data-table td.center {
+      text-align: center;
+    }
+
+    .data-table .group-row td {
+      background: #f1f5f9 !important;
+      color: #334155;
+      font-weight: 700;
+    }
+
+    .table-caption {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff, #f8fbff);
+      font-size: 9pt;
+      color: var(--muted);
+    }
+
+    .legend-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-right: 12px;
+      font-size: 8.5pt;
+      color: var(--muted);
+    }
+
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    .chart-note {
+      font-size: 8.7pt;
+      color: var(--muted);
+      margin-top: 7px;
+    }
+
+    .swot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .swot-box {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .swot-box h4 {
+      margin: 0 0 8px 0;
+      color: var(--brand-primary);
+      font-size: 10.5pt;
+    }
+
+    .swot-box ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .swot-box li {
+      margin: 4px 0;
+    }
+
+    .mini-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .mini-list li {
+      margin: 5px 0;
+    }
+
+    .risk-bars {
+      width: 100%;
+      max-width: 100%;
+      display: block;
+    }
+
+    .timeline-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .timeline-list li {
+      margin: 5px 0;
+    }
+
+    .note-line {
+      display: block;
+      margin-top: 8px;
+      font-size: 8.6pt;
+      color: var(--muted);
+    }
+
+    .source-box {
+      font-size: 8.6pt;
+      color: var(--muted);
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-top: 10px;
+    }
+
+    .source-box code {
+      color: var(--brand-primary);
+      font-weight: 700;
+      background: transparent;
+    }
+
+    .tight p {
+      margin-bottom: 8px;
+    }
+
+    .svg-wrap {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .page-section-gap {
+      height: 10px;
+    }
+
+    .mono {
+      font-family: Consolas, "SFMono-Regular", "Liberation Mono", Menlo, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    h1, h2, h3, h4, h5 {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    tr {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .analysis-block,
+    .callout,
+    .kpi-grid,
+    .scorecard,
+    .table-card,
+    .chart-card,
+    .swot-grid,
+    .two-col,
+    .three-col {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .section p + p {
+      margin-top: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .cover .muted {
+      color: rgba(255,255,255,.85);
+    }
+
+    .inline-kv {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 14px;
+    }
+
+    .inline-kv .kv-card {
+      background: #fff;
+      color: var(--text);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .kv-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px 12px;
+      margin-top: 8px;
+      font-size: 9pt;
+    }
+
+    .kv-grid div {
+      padding: 4px 0;
+      border-bottom: 1px dashed #e5edf6;
+    }
+
+    .kv-grid .k {
+      color: var(--muted);
+    }
+
+    .kv-grid .v {
+      text-align: right;
+      font-weight: 700;
+      color: var(--brand-primary);
+    }
+
+    .page-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line), transparent);
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div class="left">
+      <div class="brand-mark"><span class="dot"></span>Finance X Bağımsız Analizi</div>
+      <div>EREGL | Ereğli Demir ve Çelik Fabrikaları T.A.Ş.</div>
+    </div>
+    <div class="right">
+      <div class="brand-mark">ERDEMİR</div>
+    </div>
+  </header>
+
+  <footer class="page-footer">
+    <div class="left">
+      <div>Kurumsal Araştırma Raporu | Puppeteer PDF uyumlu HTML</div>
+    </div>
+    <div class="page-number"></div>
+  </footer>
+
+  <main class="main">
+    <div class="section">
+      <div class="cover">
+        <div class="cover-top">
+          <div>
+            <div class="cover-tag">Finance X | Kurumsal Araştırma</div>
+            <h1>Ereğli Demir ve Çelik Fabrikaları T.A.Ş.</h1>
+            <div class="subtitle">BIST: EREGL | Kapsamlı Şirket Analizi | 13 Nisan 2026 | Deep Dive Delta Update</div>
+            <div class="meta-row">
+              <div class="pill">Referans Fiyat: 27.04 TRY</div>
+              <div class="pill">Piyasa Değeri: 190.2 milyar TRY</div>
+              <div class="pill">Konsensus Hedef: 32.47 TRY</div>
+              <div class="pill">EBITDA Marjı: %9.8</div>
+              <div class="pill">Net Borç / EBITDA: 2.1x</div>
+            </div>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Finance X</div>
+            <div class="muted">Bağımsız analiz, şirketten çıkmış izlenimi vermez.</div>
+            <div class="muted" style="margin-top:8px;">Hazırlık amacı: yönetim kuruluna sunum kalitesinde, PDF üretim uyumlu, sayfa kesmesi kontrollü kurumsal rapor.</div>
+          </div>
+        </div>
+
+        <div class="cover-grid">
+          <div class="cover-panel">
+            <h3>Raporun Kapsamı</h3>
+            <p>Bu rapor, EREGL için finansal performans, bilanço gücü, nakit akışı, değerleme, sektör karşılaştırması, makro ortam, teknik görünüm, KAP olayları, riskler ve zorunlu bildirimleri tek bir bağımsız HTML dokümanda birleştirir. Kaynak havuzu içinde çelişen sayı paketleri bulunduğu için rapor, doğrulanmış reconciliation ve financial_analysis çekirdeğini esas alır; çelişen upstream çıktıların bulunduğu yerlerde bunu açıkça işaretler.</p>
+            <p>Çıktı, PDF dönüşümünde boş sayfa üretmemek üzere page-break-before odaklı hazırlanmıştır. Her tablo ve grafik metin ile sandviçlenmiş, kritik sayılar kurum içi sunum standardında görselleştirilmiştir.</p>
+            <div class="source-box">
+              Kaynak önceliği: <code>reconciliation_output</code> ve <code>financial_analysis_output</code>. Çelişmeyen alanlarda <code>data_collection_output</code>, <code>quick_reference</code>, <code>context_extraction_output</code>, <code>kap_watch_output</code>, <code>macro_analysis_output</code>, <code>valuation_agent_output</code>, <code>sector_competition_output</code>, <code>technical_analysis_output</code>, <code>sentiment_news_agent_output</code>, <code>analyst_consensus_agent_output</code>, <code>esg_agent_output</code>, <code>event_classification_output</code>, <code>event_impact_mapper_output</code>, <code>strategic_synthesis_output</code> ve <code>final_summary_output</code> kullanılmıştır.
+            </div>
+          </div>
+
+          <div class="cover-panel">
+            <h3>Hızlı Göstergeler</h3>
+            <div class="cover-stats">
+              <div class="mini-stat">
+                <div class="label">Gelir</div>
+                <div class="value">208.9B</div>
+                <div class="hint">TRY, FY 2025</div>
+              </div>
+              <div class="mini-stat">
+                <div class="label">Net Kar</div>
+                <div class="value">0.5B</div>
+                <div class="hint">Ana ortaklık payı</div>
+              </div>
+              <div class="mini-stat">
+                <div class="label">OCF</div>
+                <div class="value">65.1B</div>
+                <div class="hint">Faaliyet nakit akışı</div>
+              </div>
+              <div class="mini-stat">
+                <div class="label">Likidite</div>
+                <div class="value">115.5B</div>
+                <div class="hint">Nakit + kısa vadeli finansal yatırımlar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cover-panel" style="margin-top:16px; position:relative; z-index:1;">
+          <h3>İçindekiler</h3>
+          <ul class="toc-list">
+            <li><span class="idx">1.</span> Kapak Sayfası</li>
+            <li><span class="idx">2.</span> Yönetici Özeti</li>
+            <li><span class="idx">3.</span> Şirket Profili</li>
+            <li><span class="idx">4.</span> Finansal Performans</li>
+            <li><span class="idx">5.</span> Karlılık Analizi</li>
+            <li><span class="idx">6.</span> Bilanço ve Borçluluk</li>
+            <li><span class="idx">7.</span> Nakit Akışı</li>
+            <li><span class="idx">8.</span> Değerleme</li>
+            <li><span class="idx">9.</span> Sektör Karşılaştırması</li>
+            <li><span class="idx">10.</span> Makro Ortam</li>
+            <li><span class="idx">11.</span> Teknik Analiz</li>
+            <li><span class="idx">12.</span> KAP Olayları</li>
+            <li><span class="idx">13.</span> Risk Değerlendirmesi</li>
+            <li><span class="idx">14.</span> Genel Değerlendirme</li>
+            <li><span class="idx">15.</span> Zorunlu Bildirimler</li>
+          </ul>
+        </div>
+
+        <div class="company-signature">
+          <div class="finance-x">Finance X Bağımsız Analizi</div>
+          <div>EREGL | 13 Nisan 2026 | Kurumsal Araştırma Standardı</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Yönetici Özeti</h2>
+            <p>Bu bölüm, raporun karar cümlesini taşır. Kaynak setindeki sayı çatışmaları nedeniyle özet, doğrulanmış finansal omurga üzerinden kurulmuştur: şirket likit, fakat kârlılığı baskı altında; Avrupa maruziyeti yüksek, fakat bilanço halen dayanıklı; yeşil dönüşüm stratejik olarak doğru, fakat kısa vadede nakit akışını zorlar.</p>
+            <p>Çıplak özet şu: EREGL bir likidite hikayesi değil, marj ve regülasyon hikayesidir. Bu nedenle şirketin bugünkü değeri, satış hacminden çok EBITDA normalizasyonu, AB safeguard etkisi ve CBAM geçişiyle belirlenir.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Kaynak Hiyerarşisi</div>
+            <div>Reconciliation, financial_analysis ve context_extraction içindeki contradiction-hold notu bu raporda birincildir.</div>
+          </div>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>Kaynak Notu:</strong> Upstream paketlerde 2025 gelir, EBITDA ve net kâr rakamları arasında farklılıklar vardı. Bu rapor, <span class="mono">reconciliation_output</span> ve <span class="mono">financial_analysis_output</span> tarafından doğrulanan 2025 çekirdeğini esas alır; çelişen teknik, haber ve konsensüs sayıları yalnızca düşük/orta güven etiketleriyle kullanılır.
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card" style="border-left-color: var(--brand-primary);">
+            <div class="label">Gelir</div>
+            <div class="value">208.9B TRY</div>
+            <div class="delta neutral">FY 2025; satış hacmi korunmuş, fiyatlama gücü zayıf</div>
+          </div>
+          <div class="kpi-card" style="border-left-color: var(--positive);">
+            <div class="label">Net Kar</div>
+            <div class="value">511.8M TRY</div>
+            <div class="delta negative">Ana ortaklık payı; marj çok düşük</div>
+          </div>
+          <div class="kpi-card" style="border-left-color: var(--warning);">
+            <div class="label">EBITDA Marjı</div>
+            <div class="value">%9.8</div>
+            <div class="delta negative">Çelik döngüsü dip bölgesi</div>
+          </div>
+          <div class="kpi-card" style="border-left-color: var(--info);">
+            <div class="label">ROE</div>
+            <div class="value">%0.2</div>
+            <div class="delta neutral">Özsermaye getirisi zayıf</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <h3>Güçlü Yönler</h3>
+            <ul class="mini-list">
+              <li>Likidite tamponu güçlü: 115.5B TRY nakit ve kısa vadeli finansal yatırım havuzu.</li>
+              <li>Net borç / EBITDA yaklaşık 2.1x ile yönetilebilir seviyede.</li>
+              <li>Türkiye yassı çelikte lider konum ve yüksek pazar payı.</li>
+              <li>Yeşil dönüşüm yol haritası ve EAF planı stratejik olarak doğru eksende.</li>
+              <li>BIST Sürdürülebilirlik Endeksi üyeliği ve kurumsal raporlama kalitesi görece iyi.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Zayıf Yönler</h3>
+            <ul class="mini-list">
+              <li>Avrupa gelir payı yaklaşık %47.8; safeguard ve CBAM baskısı doğrudan.</li>
+              <li>Net kâr neredeyse sıfır seviyesine gerilemiş durumda.</li>
+              <li>Nakit dönüşümünde stok ağırlığı ve uzun CCC.</li>
+              <li>Teknik görünüm, canlı veri eksikliği nedeniyle düşük güvenli.</li>
+              <li>Analist, haber ve teknik paketlerde doğrulanmamış kesin görünümlü sayılar var.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout callout-positive">
+          <strong>Temel Tez:</strong> EREGL kısa vadede ucuz bir "earnings" hikayesi değil, savunmalı bilanço ile regülasyon baskısı arasında sıkışmış bir sanayi şirketidir. Yatırımcı için ana soru, 2026 boyunca marj normalleşmesi ve working capital serbestleşmesinin AB şokunu ne ölçüde dengeleyeceğidir.
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Bu bölümde yönetici perspektifi için kritik olan birkaç oranı birlikte okuyuyoruz. Neden bakıyoruz: piyasa değeri ve konsensüs hedefi, bilanço gücü ile çarpan baskısı arasındaki farkı tek bakışta gösterir.</p>
+
+          <div class="table-card">
+            <div class="table-caption">Özet Karar Tablosu</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Başlık</th>
+                  <th class="num">Değer</th>
+                  <th>Yorum</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mevcut Fiyat</td>
+                  <td class="num">27.04 TRY</td>
+                  <td>Son piyasa snapshottan alınmıştır.</td>
+                </tr>
+                <tr>
+                  <td>Konsensüs Hedef</td>
+                  <td class="num">32.47 TRY</td>
+                  <td>23 kurum ortalaması.</td>
+                </tr>
+                <tr>
+                  <td>Upside</td>
+                  <td class="num">+20.1%</td>
+                  <td>Piyasa hâlâ toparlanma fiyatlıyor olabilir.</td>
+                </tr>
+                <tr>
+                  <td>Baz Hedef</td>
+                  <td class="num">25.0 TRY</td>
+                  <td>Valuation agent baz senaryosu.</td>
+                </tr>
+                <tr>
+                  <td>Genel Risk Seviyesi</td>
+                  <td class="num">Orta-Yüksek</td>
+                  <td>Makro ve regülasyon ağırlıklı.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Tablo, hisse fiyatının konsensüs hedefe göre aşağıda görünmesine rağmen baz senaryoya göre yukarı değil aşağı risk taşıdığını gösteriyor. Bunun nedeni basit: piyasa, hâlihazırda finansal güçten çok regülasyon ve marj baskısını fiyatlıyor. Bu çerçevede yatırımcı için ana değer sürücüsü, 2026 FAVÖK normalleşmesi ve Avrupa kotalarının etkisinin yönetilebilir kalmasıdır.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Şirket Profili</h2>
+            <p>EREGL, Türkiye'nin en büyük yassı çelik üreticilerinden biridir ve çelik zincirinin en sermaye yoğun halkalarında faaliyet gösterir. Şirketin stratejik portföyü, üretim kapasitesi, Avrupa bağlantısı ve yeşil dönüşüm yatırımları etrafında şekilleniyor. Bu nedenle şirket profili, sadece operasyonel tanım değil, aynı zamanda bilanço ve makro risk haritasıdır.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Brand Identity</div>
+            <div>Özel renk paketi: primary #1B3A6B, secondary #C8102E, accent #E8A020.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Önce temel kimlik bilgisi. Neden bakıyoruz: şirketin hukuki yapı, tesis ve kontrol yapısı, finansal metriklerin nasıl okunacağını belirler.</p>
+
+          <div class="table-card">
+            <div class="table-caption">Şirket Kimliği ve Yapısı</div>
+            <table class="data-table">
+              <tbody>
+                <tr><td>Tam Unvan</td><td class="num">Ereğli Demir ve Çelik Fabrikaları T.A.Ş.</td></tr>
+                <tr><td>BIST Kodu</td><td class="num">EREGL</td></tr>
+                <tr><td>Sektör</td><td class="num">Yassı çelik / entegre çelik üretimi</td></tr>
+                <tr><td>Ana Tesis</td><td class="num">Karadeniz Ereğli, Zonguldak</td></tr>
+                <tr><td>İkinci Ana Tesis</td><td class="num">İskenderun, Hatay</td></tr>
+                <tr><td>Bağımsız Denetçi</td><td class="num">EY (Güney Bağımsız Denetim)</td></tr>
+                <tr><td>Kontrolcü Grup</td><td class="num">ATAER / OYAK grubu</td></tr>
+                <tr><td>Endeksler</td><td class="num">BIST-100, BIST Sürdürülebilirlik</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Şirket bir holding değil, dikey entegre sanayi üreticisidir. Bu ayrım önemlidir; çünkü değerleme ve risk yaklaşımı SOTP yerine operasyonel marj, kapasite kullanımı ve sermaye yoğunluğu üzerine kurulmalıdır. OYAK kontrolü nedeniyle kurumsal yönetişim, sektördeki tipik halka açık sanayi şirketlerinden farklı bir çerçevede değerlendirilir.</p>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="analysis-block">
+            <p class="analysis-intro">Ortaktık yapısı önemli çünkü yönetim ve azınlık hissedar ilişkisini belirliyor. Neden bakıyoruz: kontrol bloklarının büyüklüğü piyasa likiditesini ve karar alma hızını etkiler.</p>
+            <div class="chart-card">
+              <h3>Ortaklık Yapısı</h3>
+              <div class="svg-wrap">
+                <svg viewBox="0 0 500 250" aria-label="Ortaklık yapısı pasta grafik">
+                  <defs>
+                    <filter id="shadow1" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.12"></feDropShadow>
+                    </filter>
+                  </defs>
+                  <rect x="0" y="0" width="500" height="250" fill="#ffffff"></rect>
+                  <circle cx="125" cy="120" r="72" fill="none" stroke="#e2e8f0" stroke-width="34"></circle>
+                  <circle cx="125" cy="120" r="72" fill="none" stroke="#1B3A6B" stroke-width="34" stroke-dasharray="236 452" stroke-dashoffset="0" transform="rotate(-90 125 120)" filter="url(#shadow1)"></circle>
+                  <circle cx="125" cy="120" r="72" fill="none" stroke="#C8102E" stroke-width="34" stroke-dasharray="216 452" stroke-dashoffset="-236" transform="rotate(-90 125 120)"></circle>
+                  <text x="125" y="116" text-anchor="middle" font-size="22" fill="#1B3A6B" font-weight="700">Control</text>
+                  <text x="125" y="141" text-anchor="middle" font-size="12" fill="#64748b">block / free float</text>
+
+                  <rect x="255" y="58" width="12" height="12" fill="#1B3A6B"></rect>
+                  <text x="276" y="68" font-size="13" fill="#1e293b">ATAER / OYAK kontrol bloğu: 52.5%</text>
+                  <rect x="255" y="86" width="12" height="12" fill="#C8102E"></rect>
+                  <text x="276" y="96" font-size="13" fill="#1e293b">Halka açık pay: 47.5%</text>
+                  <rect x="255" y="114" width="12" height="12" fill="#E8A020"></rect>
+                  <text x="276" y="124" font-size="13" fill="#1e293b">Kaynak varyansı: 49.29% / 50.71% market snapshotta da yer alıyor</text>
+                  <rect x="255" y="142" width="12" height="12" fill="#94a3b8"></rect>
+                  <text x="276" y="152" font-size="13" fill="#1e293b">Rapor notu: kaynaklar arasında küçük fark var, kontrol yönü değişmiyor</text>
+                </svg>
+              </div>
+              <div class="chart-note">Pasta grafikte oranlar marka paketi ve piyasa snapshotı arasındaki farkı görünür kılacak şekilde yuvarlandı. Kontrol blok yapısı değişmiyor.</div>
+            </div>
+          </div>
+
+          <div class="analysis-block">
+            <p class="analysis-intro">Bu grafik gelir coğrafyasını gösteriyor. Neden bakıyoruz: regülasyon riskinin merkezini tek bakışta görmek için.</p>
+            <div class="chart-card">
+              <h3>Coğrafi Gelir Dağılımı</h3>
+              <div class="svg-wrap">
+                <svg viewBox="0 0 500 250" aria-label="Coğrafi gelir dağılımı bar grafik">
+                  <rect x="0" y="0" width="500" height="250" fill="#fff"></rect>
+                  <line x1="50" y1="20" x2="50" y2="200" stroke="#cbd5e1" stroke-width="1"></line>
+                  <line x1="50" y1="200" x2="470" y2="200" stroke="#cbd5e1" stroke-width="1"></line>
+                  <rect x="78" y="104" width="56" height="96" fill="#1B3A6B" rx="4"></rect>
+                  <rect x="160" y="61" width="56" height="139" fill="#C8102E" rx="4"></rect>
+                  <rect x="242" y="169" width="56" height="31" fill="#E8A020" rx="4"></rect>
+                  <rect x="324" y="183" width="56" height="17" fill="#3b82f6" rx="4"></rect>
+                  <rect x="406" y="193" width="36" height="7" fill="#94a3b8" rx="4"></rect>
+
+                  <text x="106" y="95" text-anchor="middle" font-size="11" fill="#1B3A6B" font-weight="700">40.0%</text>
+                  <text x="188" y="52" text-anchor="middle" font-size="11" fill="#C8102E" font-weight="700">47.8%</text>
+                  <text x="270" y="160" text-anchor="middle" font-size="11" fill="#E8A020" font-weight="700">7.4%</text>
+                  <text x="352" y="174" text-anchor="middle" font-size="11" fill="#3b82f6" font-weight="700">3.9%</text>
+                  <text x="424" y="188" text-anchor="middle" font-size="11" fill="#94a3b8" font-weight="700">0.9%</text>
+
+                  <text x="106" y="222" text-anchor="middle" font-size="10" fill="#334155">Türkiye</text>
+                  <text x="188" y="222" text-anchor="middle" font-size="10" fill="#334155">Avrupa</text>
+                  <text x="270" y="222" text-anchor="middle" font-size="10" fill="#334155">MENA</text>
+                  <text x="352" y="222" text-anchor="middle" font-size="10" fill="#334155">Asya</text>
+                  <text x="424" y="222" text-anchor="middle" font-size="10" fill="#334155">Diğer</text>
+                </svg>
+              </div>
+              <div class="chart-note">Avrupa payı, EREGL'in en büyük fırsatı kadar en büyük regülasyon riskidir. Türkiye iç pazar savunma hattı oluşturur, ama ana kırılganlık Avrupa’da kalır.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki operasyon tablosu, şirketin nasıl para kazandığını özetler. Neden bakıyoruz: ürün karması, kapasite kullanımı ve gelir coğrafyası marj davranışını belirler.</p>
+          <div class="table-card">
+            <div class="table-caption">Operasyonel Profil</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Konu</th>
+                  <th>Değer</th>
+                  <th>Not</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ham çelik üretimi</td>
+                  <td class="num">9.4 milyon ton</td>
+                  <td>FY 2025; yıllık +13.5% büyüme.</td>
+                </tr>
+                <tr>
+                  <td>Kapasite kullanımı</td>
+                  <td class="num">84.7%</td>
+                  <td>Sağlıklı ama optimumun altında.</td>
+                </tr>
+                <tr>
+                  <td>Ürün karması</td>
+                  <td class="num">Galvanizli / ELP daha hızlı büyüyor</td>
+                  <td>Daha yüksek marjlı segmentlere kayış.</td>
+                </tr>
+                <tr>
+                  <td>Türkiye geliri</td>
+                  <td class="num">%40.0</td>
+                  <td>İç talep destekleyici ama sınırlı koruma sağlar.</td>
+                </tr>
+                <tr>
+                  <td>Avrupa geliri</td>
+                  <td class="num">%47.8</td>
+                  <td>Sıfır toleranslı regülasyon riski.</td>
+                </tr>
+                <tr>
+                  <td>Asya geliri</td>
+                  <td class="num">%3.9</td>
+                  <td>Rekabet baskısı nedeniyle gerileme.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Ürün karması daha yüksek marjlı çinko kaplama ve elektro galvanizli ürünlere kayıyor; bu olumlu, fakat 2025 marj verisi henüz bunu tam olarak yansıtmıyor. Avrupa yoğunluğu nedeniyle şirketin temel işletme riski, ürün satma yeteneğinden çok satışın hangi koşullarda yapılabildiğiyle ilgili. Bu yüzden şirket profili, aynı zamanda bir risk profili olarak okunmalı.</p>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-caption">Yönetim ve Kurumsal Yapı</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pozisyon</th>
+                <th>İsim</th>
+                <th>Not</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Genel Müdür</td>
+                <td>Şaban Yazıcı</td>
+                <td>2025 Ağustos ataması.</td>
+              </tr>
+              <tr>
+                <td>Kurumsal Yönetim Komitesi Başkanı</td>
+                <td>Hasan Mandal</td>
+                <td>Nisan 2026 yeniden yapılanma.</td>
+              </tr>
+              <tr>
+                <td>Riskin Erken Saptanması Komitesi Başkanı</td>
+                <td>Saime Gonca Artunkal</td>
+                <td>Kurumsal risk odağı güçlendirildi.</td>
+              </tr>
+              <tr>
+                <td>Denetim Firması</td>
+                <td>EY</td>
+                <td>Koşulsuz denetim görüşü.</td>
+              </tr>
+              <tr>
+                <td>Kurumsal kontrol</td>
+                <td>ATAER / OYAK grubu</td>
+                <td>Azınlık hissedarları için yönetişim iskontosu potansiyeli.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="analysis-commentary">
+          <p>Yönetim kadrosundaki yeniden yapılanma, şirketin 2025 sonuçları sonrası savunmacı ve risk odaklı bir yönetime geçtiğini düşündürüyor. Fakat yönetim değişiklikleri tek başına marj problemi çözmez; bu nedenle kurumsal yapı ve operasyonel çıktıların birlikte izlenmesi gerekir. Yönetişim kalitesi yeterli görünse de, kontrol bloğunun büyüklüğü nedeniyle azınlık hissedar perspektifi ayrı bir iskonto sebebi olarak kalır.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Finansal Performans</h2>
+            <p>Bu bölüm, gelir tablosunun beş yıllık hikayesini anlatır. EREGL'in ana sorunu gelir eksikliği değil; gelirden EBITDA, EBITDA'dan net kâra dönüşümün zayıflamasıdır. 2025, hacim olarak güçlü, fakat kârlılık olarak zayıf bir yıl olarak ayrışıyor.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Yıllık Omurga</div>
+            <div>2025 rakamları, reconciled audited pack ve KAP özetine dayalıdır.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Önce beş yıllık gelir tablosunu koyuyoruz. Neden bakıyoruz: trendin yönü, marj davranışını yorumlamak için zorunludur.</p>
+          <div class="table-card">
+            <div class="table-caption">Beş Yıllık Gelir Tablosu (TRY milyon)</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kalem</th>
+                  <th class="num">2021A</th>
+                  <th class="num">2022A</th>
+                  <th class="num">2023A</th>
+                  <th class="num">2024A</th>
+                  <th class="num">2025A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Net Satışlar</td>
+                  <td class="num">136,285</td>
+                  <td class="num">165,432</td>
+                  <td class="num">147,800</td>
+                  <td class="num">204,059</td>
+                  <td class="num">208,910</td>
+                </tr>
+                <tr>
+                  <td>Brüt Kâr</td>
+                  <td class="num">22,009</td>
+                  <td class="num">32,611</td>
+                  <td class="num">24,365</td>
+                  <td class="num">20,005</td>
+                  <td class="num">18,565</td>
+                </tr>
+                <tr>
+                  <td>EBITDA</td>
+                  <td class="num">20,618</td>
+                  <td class="num">26,600</td>
+                  <td class="num">15,500</td>
+                  <td class="num">21,100</td>
+                  <td class="num">20,450</td>
+                </tr>
+                <tr>
+                  <td>Net Kar</td>
+                  <td class="num">6,681</td>
+                  <td class="num">18,000</td>
+                  <td class="num">4,000</td>
+                  <td class="num">13,481</td>
+                  <td class="num">512</td>
+                </tr>
+                <tr>
+                  <td>Net Marj</td>
+                  <td class="num">%4.9</td>
+                  <td class="num">%10.9</td>
+                  <td class="num">%2.7</td>
+                  <td class="num">%6.6</td>
+                  <td class="num">%0.25</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Gelir 2021'den 2025'e artarken net kârın 2025'te neredeyse sıfırlanması, şirketin büyüme eksikliği değil marj erimesi yaşadığını kanıtlıyor. 2024 ile 2025 arasındaki ayrışma özellikle önemli: satışlar artıyor, ama brüt kâr ve net kâr düşüyor. Bu, fiyatlama gücü ve maliyet geçişkenliği tarafında baskı olduğuna işaret ediyor.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki grafik trendi görselleştiriyor. Neden bakıyoruz: yönetim raporunda rakamları tek tek görmek yerine yönü ve hızını okumak için.</p>
+          <div class="chart-card">
+            <h3>Gelir, EBITDA ve Net Kar Trendi</h3>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 500 250" aria-label="Gelir, EBITDA ve net kar trendi">
+                <rect x="0" y="0" width="500" height="250" fill="#ffffff"></rect>
+                <line x1="46" y1="18" x2="46" y2="205" stroke="#cbd5e1" stroke-width="1"></line>
+                <line x1="46" y1="205" x2="478" y2="205" stroke="#cbd5e1" stroke-width="1"></line>
+
+                <rect x="72" y="148" width="48" height="57" fill="#1B3A6B" rx="3"></rect>
+                <rect x="156" y="130" width="48" height="75" fill="#1B3A6B" rx="3"></rect>
+                <rect x="240" y="140" width="48" height="65" fill="#1B3A6B" rx="3"></rect>
+                <rect x="324" y="97" width="48" height="108" fill="#1B3A6B" rx="3"></rect>
+                <rect x="408" y="93" width="48" height="112" fill="#1B3A6B" rx="3"></rect>
+
+                <polyline points="96,155 180,132 264,170 348,128 432,133" fill="none" stroke="#C8102E" stroke-width="3"></polyline>
+                <circle cx="96" cy="155" r="4" fill="#C8102E"></circle>
+                <circle cx="180" cy="132" r="4" fill="#C8102E"></circle>
+                <circle cx="264" cy="170" r="4" fill="#C8102E"></circle>
+                <circle cx="348" cy="128" r="4" fill="#C8102E"></circle>
+                <circle cx="432" cy="133" r="4" fill="#C8102E"></circle>
+
+                <polyline points="96,180 180,96 264,170 348,112 432,196" fill="none" stroke="#E8A020" stroke-width="3"></polyline>
+                <circle cx="96" cy="180" r="4" fill="#E8A020"></circle>
+                <circle cx="180" cy="96" r="4" fill="#E8A020"></circle>
+                <circle cx="264" cy="170" r="4" fill="#E8A020"></circle>
+                <circle cx="348" cy="112" r="4" fill="#E8A020"></circle>
+                <circle cx="432" cy="196" r="4" fill="#E8A020"></circle>
+
+                <text x="96" y="227" text-anchor="middle" font-size="10" fill="#334155">2021</text>
+                <text x="180" y="227" text-anchor="middle" font-size="10" fill="#334155">2022</text>
+                <text x="264" y="227" text-anchor="middle" font-size="10" fill="#334155">2023</text>
+                <text x="348" y="227" text-anchor="middle" font-size="10" fill="#334155">2024</text>
+                <text x="432" y="227" text-anchor="middle" font-size="10" fill="#334155">2025</text>
+
+                <text x="102" y="142" text-anchor="middle" font-size="10" fill="#1B3A6B">136</text>
+                <text x="186" y="124" text-anchor="middle" font-size="10" fill="#1B3A6B">165</text>
+                <text x="270" y="134" text-anchor="middle" font-size="10" fill="#1B3A6B">148</text>
+                <text x="354" y="91" text-anchor="middle" font-size="10" fill="#1B3A6B">204</text>
+                <text x="438" y="87" text-anchor="middle" font-size="10" fill="#1B3A6B">209</text>
+
+                <rect x="55" y="23" width="10" height="10" fill="#1B3A6B"></rect>
+                <text x="70" y="32" font-size="10" fill="#334155">Gelir (bar)</text>
+                <rect x="135" y="23" width="10" height="10" fill="#C8102E"></rect>
+                <text x="150" y="32" font-size="10" fill="#334155">EBITDA (çizgi)</text>
+                <rect x="226" y="23" width="10" height="10" fill="#E8A020"></rect>
+                <text x="241" y="32" font-size="10" fill="#334155">Net Kar (çizgi)</text>
+              </svg>
+            </div>
+            <div class="chart-note">Grafikte görülen ana mesaj: gelir güçlü kalırken net kâr çökmüş durumda. Bu, ciro büyümesinin tek başına yeterli olmadığını; dönüşümün kâra çevrilemediğini gösterir.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Bu alt tablo, büyüme hızını ve marj davranışını yan yana koyar. Neden bakıyoruz: yön değişimi hangi yılda kırıldı, onu görmek için.</p>
+          <div class="table-card">
+            <div class="table-caption">Yıllık Büyüme ve Marj Özeti</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Yıl</th>
+                  <th class="num">Gelir Büyümesi</th>
+                  <th class="num">EBITDA Marjı</th>
+                  <th class="num">Net Marj</th>
+                  <th>Okuma</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2021A</td>
+                  <td class="num">-</td>
+                  <td class="num">%15.1</td>
+                  <td class="num">%4.9</td>
+                  <td>Taban yıl, güçlü baz.</td>
+                </tr>
+                <tr>
+                  <td>2022A</td>
+                  <td class="num">%21.4</td>
+                  <td class="num">%16.1</td>
+                  <td class="num">%10.9</td>
+                  <td>Çevrimsel zirveye yakın.</td>
+                </tr>
+                <tr>
+                  <td>2023A</td>
+                  <td class="num">-%10.7</td>
+                  <td class="num">%10.5</td>
+                  <td class="num">%2.7</td>
+                  <td>Döngüsel normalleşme başladı.</td>
+                </tr>
+                <tr>
+                  <td>2024A</td>
+                  <td class="num">%38.0</td>
+                  <td class="num">%10.3</td>
+                  <td class="num">%6.6</td>
+                  <td>Hacim toparlandı, marj sınırlı kaldı.</td>
+                </tr>
+                <tr>
+                  <td>2025A</td>
+                  <td class="num">%2.4</td>
+                  <td class="num">%9.8</td>
+                  <td class="num">%0.25</td>
+                  <td>Marj erimesi belirginleşti.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>2025 itibarıyla gelir büyümesi neredeyse dururken marjlar da aşağı kayıyor. Yıllık görünüm, yüksek döngü döneminden normalleşme dönemine geçildiğini gösteriyor; ancak EREGL için bu normalleşme henüz kârlı bir dengeye ulaşmış değil. Bu nedenle finansal performans bölümünün ana çıkarımı, hisse fiyatının yalnız gelir büyümesine değil, marj ve nakit kalitesine daha fazla bağlı olduğudur.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Karlılık Analizi</h2>
+            <p>Bu bölüm, EREGL'in gelirden kâra dönüşümünün neden zayıfladığını anlatır. Ana hikâye, fiyatlama gücündeki erozyon ile maliyet baskısının birlikte marjları sıkıştırmasıdır. Çelik gibi sermaye yoğun sektörlerde küçük marj farkları büyük değer etkisi yaratır; bu yüzden karlılık analizi yatırım tezinin merkezindedir.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Marj Analizi</div>
+            <div>Brüt marj, EBITDA marjı ve net marj aynı anda aşağı yönlüdür.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Marj tablosuna bakıyoruz çünkü fiyatlama gücü ve maliyet geçişkenliği buradan okunur. Neden önemli: EREGL'in başlıca problemi satış değil, satıştan kalan paydır.</p>
+          <div class="table-card">
+            <div class="table-caption">Karlılık Marjları (TRY milyon ve %)</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kalem</th>
+                  <th class="num">2021A</th>
+                  <th class="num">2022A</th>
+                  <th class="num">2023A</th>
+                  <th class="num">2024A</th>
+                  <th class="num">2025A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Brüt Marj</td>
+                  <td class="num">%16.1</td>
+                  <td class="num">%19.7</td>
+                  <td class="num">%16.5</td>
+                  <td class="num">%9.8</td>
+                  <td class="num">%8.9</td>
+                </tr>
+                <tr>
+                  <td>EBITDA Marjı</td>
+                  <td class="num">%15.1</td>
+                  <td class="num">%16.1</td>
+                  <td class="num">%10.5</td>
+                  <td class="num">%10.3</td>
+                  <td class="num">%9.8</td>
+                </tr>
+                <tr>
+                  <td>Net Marj</td>
+                  <td class="num">%4.9</td>
+                  <td class="num">%10.9</td>
+                  <td class="num">%2.7</td>
+                  <td class="num">%6.6</td>
+                  <td class="num">%0.25</td>
+                </tr>
+                <tr>
+                  <td>Faiz Gideri / EBITDA</td>
+                  <td class="num">-</td>
+                  <td class="num">-</td>
+                  <td class="num">-</td>
+                  <td class="num">-</td>
+                  <td class="num">%33.4</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Brüt marjın 2025'te %8.9'a, EBITDA marjının %9.8'e inmesi, şirketin operasyonel verimlilikten ziyade çevrimsel baskıyla mücadele ettiğini gösteriyor. Net marjın %0.25'e kadar inmesi ise finansman ve vergi yükünün net kârı neredeyse silmiş olduğunu kanıtlıyor. Bu tablo, "satış var ama kazanç yok" özetini doğruluyor.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki çizgi grafik, marjın ne kadar sıkıştığını tek bakışta gösterir. Neden bakıyoruz: yönetim söylemi ile finansal gerçeklik arasındaki boşluğu görselleştirmek için.</p>
+          <div class="chart-card">
+            <h3>Marj Trendleri</h3>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 500 250" aria-label="Marj trendleri grafik">
+                <rect x="0" y="0" width="500" height="250" fill="#ffffff"></rect>
+                <line x1="45" y1="20" x2="45" y2="202" stroke="#cbd5e1" stroke-width="1"></line>
+                <line x1="45" y1="202" x2="478" y2="202" stroke="#cbd5e1" stroke-width="1"></line>
+
+                <polyline points="92,88 176,72 260,88 344,122 428,130" fill="none" stroke="#1B3A6B" stroke-width="3"></polyline>
+                <circle cx="92" cy="88" r="4" fill="#1B3A6B"></circle>
+                <circle cx="176" cy="72" r="4" fill="#1B3A6B"></circle>
+                <circle cx="260" cy="88" r="4" fill="#1B3A6B"></circle>
+                <circle cx="344" cy="122" r="4" fill="#1B3A6B"></circle>
+                <circle cx="428" cy="130" r="4" fill="#1B3A6B"></circle>
+
+                <polyline points="92,108 176,90 260,146 344,148 428,155" fill="none" stroke="#C8102E" stroke-width="3"></polyline>
+                <circle cx="92" cy="108" r="4" fill="#C8102E"></circle>
+                <circle cx="176" cy="90" r="4" fill="#C8102E"></circle>
+                <circle cx="260" cy="146" r="4" fill="#C8102E"></circle>
+                <circle cx="344" cy="148" r="4" fill="#C8102E"></circle>
+                <circle cx="428" cy="155" r="4" fill="#C8102E"></circle>
+
+                <text x="92" y="226" text-anchor="middle" font-size="10" fill="#334155">2021</text>
+                <text x="176" y="226" text-anchor="middle" font-size="10" fill="#334155">2022</text>
+                <text x="260" y="226" text-anchor="middle" font-size="10" fill="#334155">2023</text>
+                <text x="344" y="226" text-anchor="middle" font-size="10" fill="#334155">2024</text>
+                <text x="428" y="226" text-anchor="middle" font-size="10" fill="#334155">2025</text>
+
+                <rect x="320" y="26" width="10" height="10" fill="#1B3A6B"></rect>
+                <text x="336" y="35" font-size="10" fill="#334155">EBITDA marjı</text>
+                <rect x="410" y="26" width="10" height="10" fill="#C8102E"></rect>
+                <text x="426" y="35" font-size="10" fill="#334155">Net marj</text>
+              </svg>
+            </div>
+            <div class="chart-note">Grafikte 2022 zirvesinden itibaren marj baskısı belirgin. 2025 net marjın neredeyse sıfır olması, fiyatlama gücünün yetersizliğini gösterir.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Bu karşılaştırma, marjların sektörde nereye düştüğünü anlamak için kullanılır. Neden bakıyoruz: şirket kendi tarihsel seviyesine göre değil, sektör normuna göre değerlendirilmeli.</p>
+          <div class="table-card">
+            <div class="table-caption">Sektör Benchmarkı ve İç Okuma</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Gösterge</th>
+                  <th class="num">EREGL 2025</th>
+                  <th class="num">Sağlıklı Band</th>
+                  <th>Okuma</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Gross Margin</td>
+                  <td class="num">%8.9</td>
+                  <td class="num">%12 - %20</td>
+                  <td>Bandın altına inmiş durumda.</td>
+                </tr>
+                <tr>
+                  <td>EBITDA Margin</td>
+                  <td class="num">%9.8</td>
+                  <td class="num">%12 - %20</td>
+                  <td>Çelik döngüsünün zayıf tarafı.</td>
+                </tr>
+                <tr>
+                  <td>Net Margin</td>
+                  <td class="num">%0.25</td>
+                  <td class="num">%3 - %8</td>
+                  <td>Dağıtılabilir kâr seviyesi çok düşük.</td>
+                </tr>
+                <tr>
+                  <td>ROE</td>
+                  <td class="num">%0.2</td>
+                  <td class="num">%8 - %15</td>
+                  <td>Özsermaye verimliliği yetersiz.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>EREGL kendi tarihsel zirvelerine kıyasla değil, sektörün kabul edilebilir marj aralığına göre değerlendirildiğinde zayıf kalıyor. Bu, hisseyi defter değerine yakın fiyatlamak için bir neden olabilir; ancak EBITDA çarpanı bazında yeniden değerleme için yeterli değildir. Yatırımcı açısından kritik nokta, marjın yeniden çift haneye dönüp dönmeyeceğidir.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Bilanço ve Borçluluk</h2>
+            <p>Bu bölüm, şirketin kısa ve uzun vadeli dayanıklılığını inceler. EREGL'in ana güçlü tarafı burada ortaya çıkar: bilanço solvency açısından kırılgan değil. Ancak yüksek kapasite yoğunluğu, yatırım gereksinimi ve faiz maliyeti bu gücü sınırsız kılmaz.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Solvency</div>
+            <div>Likidite güçlü, fakat getiri kalitesi zayıf.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Önce bilanço iskeletini koyuyoruz. Neden bakıyoruz: varlık kalitesi ve borç kompozisyonu, çelik şirketinin şok emme kapasitesini belirler.</p>
+          <div class="table-card">
+            <div class="table-caption">2025 Bilanço Özeti (TRY milyon)</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kalem</th>
+                  <th class="num">2025A</th>
+                  <th>% Toplam</th>
+                  <th>Not</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="group-row"><td colspan="4">VARLIKLAR</td></tr>
+                <tr><td>Nakit ve nakit benzerleri</td><td class="num">2,100</td><td>%0.4</td><td>Kasa + banka bakiyesi.</td></tr>
+                <tr><td>Kısa vadeli finansal yatırımlar</td><td class="num">113,300</td><td>%20.3</td><td>Likidite tamponunun ana gövdesi.</td></tr>
+                <tr><td>Ticari alacaklar</td><td class="num">34,500</td><td>%6.2</td><td>DSO hesabında kritik.</td></tr>
+                <tr><td>Stoklar</td><td class="num">41,200</td><td>%7.4</td><td>Çelik işinde doğal olarak yüksek.</td></tr>
+                <tr><td>Toplam dönen varlıklar</td><td class="num">198,400</td><td>%35.5</td><td>Güçlü kısa vadeli tampon.</td></tr>
+                <tr><td>Toplam duran varlıklar</td><td class="num">360,100</td><td>%64.5</td><td>Sermaye yoğun yapı.</td></tr>
+                <tr><td>Toplam varlıklar</td><td class="num">558,500</td><td>%100.0</td><td>Rapor edilen konsolide bilanço.</td></tr>
+                <tr class="group-row"><td colspan="4">YÜKÜMLÜLÜKLER VE ÖZKAYNAK</td></tr>
+                <tr><td>Kısa vadeli yükümlülükler</td><td class="num">98,900</td><td>%17.7</td><td>İşletme finansmanı ağırlıklı.</td></tr>
+                <tr><td>Kısa vadeli borçlar</td><td class="num">12,400</td><td>%2.2</td><td>Yenileme riski izlenmeli.</td></tr>
+                <tr><td>Ticari borçlar</td><td class="num">28,600</td><td>%5.1</td><td>DPO tarafını destekliyor.</td></tr>
+                <tr><td>Uzun vadeli borçlar</td><td class="num">45,100</td><td>%8.1</td><td>Yatırım finansmanı.</td></tr>
+                <tr><td>Toplam yükümlülükler</td><td class="num">346,700</td><td>%62.1</td><td>Yönetilebilir, fakat anlamlı.</td></tr>
+                <tr><td>Özkaynak</td><td class="num">211,800</td><td>%37.9</td><td>Net kâr zayıflığı nedeniyle yavaş büyüyor.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Bilanço, şirketin kısa vadede likidite sıkışmasına girmediğini gösteriyor. Ancak toplam varlıkların büyük kısmı sermaye yoğun duran varlıklara bağlı olduğu için, bu güç kolayca nakde çevrilebilir bir esneklik anlamına gelmiyor. Yani şirket iflas riski taşımıyor; ama yüksek getiri üreten, çevik bir bilanço da taşımıyor.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Kaldıraç oranlarını bir arada okuyoruz. Neden bakıyoruz: borcun büyüklüğü kadar borcun nasıl taşındığı önemlidir.</p>
+          <div class="table-card">
+            <div class="table-caption">Likidite ve Kaldıraç Göstergeleri</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Gösterge</th>
+                  <th class="num">Değer</th>
+                  <th>Yorum</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Cari oran</td><td class="num">2.01x</td><td>Kısa vadeli yükümlülükleri rahat karşılıyor.</td></tr>
+                <tr><td>Asit-test oranı</td><td class="num">1.38x</td><td>Stok hariç de yeterli tampon.</td></tr>
+                <tr><td>Nakit oranı</td><td class="num">0.99x</td><td>Nakit tek başına kısa vadeli borcu neredeyse karşılıyor.</td></tr>
+                <tr><td>Net borç</td><td class="num">42.8B TRY</td><td>Likidite tamponu sonrası kalan yük.</td></tr>
+                <tr><td>Net borç / EBITDA</td><td class="num">2.1x</td><td>Yönetilebilir ama izlenmeli.</td></tr>
+                <tr><td>Faiz karşılama</td><td class="num">1.1x (EBIT bazlı)</td><td>Dar ama pozitifte; cash bazlı daha iyi.</td></tr>
+                <tr><td>OCF / faiz gideri</td><td class="num">9.6x</td><td>Nakit bazında rahatlama var.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Bu tablo, EREGL'in "likidite sorunu var" kategorisine girmediğini net biçimde gösteriyor. Sorun, borcun varlığı değil; borcun getirdiği faiz yükü ile net kârın düşük olması arasındaki sıkışma. Bu nedenle kredi analizi açısından şirket rahat, özsermaye getirisi açısından ise zayıf.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki risk çubuğu, kaldıraç ve likidite profili için kısa özet sunar. Neden bakıyoruz: yöneticinin tek cümlelik bilanço okuması için.</p>
+          <div class="chart-card">
+            <h3>Likidite ve Borçluluk Skorları</h3>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 500 250" class="risk-bars" aria-label="Likidite ve borçluluk risk çubuğu">
+                <rect x="0" y="0" width="500" height="250" fill="#ffffff"></rect>
+                <text x="5" y="28" font-size="11" fill="#1e293b">Cari oran</text>
+                <rect x="120" y="14" width="280" height="18" fill="#e2e8f0" rx="4"></rect>
+                <rect x="120" y="14" width="168" height="18" fill="#059669" rx="4"></rect>
+                <text x="410" y="28" font-size="10" fill="#059669" font-weight="700">2.0x</text>
+
+                <text x="5" y="68" font-size="11" fill="#1e293b">Net borç / EBITDA</text>
+                <rect x="120" y="54" width="280" height="18" fill="#e2e8f0" rx="4"></rect>
+                <rect x="120" y="54" width="59" height="18" fill="#d97706" rx="4"></rect>
+                <text x="410" y="68" font-size="10" fill="#d97706" font-weight="700">2.1x</text>
+
+                <text x="5" y="108" font-size="11" fill="#1e293b">Faiz karşılama</text>
+                <rect x="120" y="94" width="280" height="18" fill="#e2e8f0" rx="4"></rect>
+                <rect x="120" y="94" width="56" height="18" fill="#d97706" rx="4"></rect>
+                <text x="410" y="108" font-size="10" fill="#d97706" font-weight="700">1.1x</text>
+
+                <text x="5" y="148" font-size="11" fill="#1e293b">Nakit bazlı karşılanma</text>
+                <rect x="120" y="134" width="280" height="18" fill="#e2e8f0" rx="4"></rect>
+                <rect x="120" y="134" width="266" height="18" fill="#059669" rx="4"></rect>
+                <text x="410" y="148" font-size="10" fill="#059669" font-weight="700">9.6x</text>
+
+                <text x="5" y="188" font-size="11" fill="#1e293b">Net borç / özkaynak</text>
+                <rect x="120" y="174" width="280" height="18" fill="#e2e8f0" rx="4"></rect>
+                <rect x="120" y="174" width="45" height="18" fill="#059669" rx="4"></rect>
+                <text x="410" y="188" font-size="10" fill="#059669" font-weight="700">20.2%</text>
+
+                <text x="5" y="226" font-size="10" fill="#64748b">Yeşil = rahat, amber = izlenmeli, kırmızı = baskı altında</text>
+              </svg>
+            </div>
+            <div class="chart-note">Çubuğun mesajı açıktır: likidite iyi, faiz karşılama sıkı, nakit bazlı karşılanma güçlüdür. Risk dengesini belirleyen unsur likidite değil, kârlılıktır.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Nakit Akışı</h2>
+            <p>Nakit akışı bölümünde amaç, kâr ile nakit arasındaki farkı görmek. EREGL için 2025'in olumlu tarafı faaliyet nakit akışındaki güçlü toparlanma; olumsuz tarafı ise bu nakdin büyük bölümünün işletme sermayesi çözülmesinden gelmiş olmasıdır. Bu nedenle FCF kalitesi, tek başına OCF'den daha önemlidir.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Cash Flow</div>
+            <div>FCF burada basit tanımla OCF - CAPEX olarak kullanıldı.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Önce nakit akışının ana satırlarını okuyalım. Neden bakıyoruz: yatırım kapasitesi ve temettü dayanıklılığı buradan anlaşılır.</p>
+          <div class="table-card">
+            <div class="table-caption">2025 Nakit Akışı Özeti (TRY milyon)</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kalem</th>
+                  <th class="num">2025A</th>
+                  <th>Not</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Faaliyet nakit akışı (OCF)</td><td class="num">65,100</td><td>İşletme sermayesi çözülmesinden destek aldı.</td></tr>
+                <tr><td>Sermaye harcamaları (CAPEX)</td><td class="num">(28,300)</td><td>Yatırım fazı devam ediyor.</td></tr>
+                <tr><td>Basit FCF (OCF - CAPEX)</td><td class="num">36,800</td><td>Bu raporda kullanılan standart tanım.</td></tr>
+                <tr><td>Temettü nakit çıkışı</td><td class="num">(3,850)</td><td>0.55 TRY/hisse, yaklaşık toplam tutar.</td></tr>
+                <tr><td>Temettü sonrası nakit</td><td class="num">32,950</td><td>Hala pozitif ve güçlü.</td></tr>
+                <tr><td>Nakit ve finansal yatırım havuzu</td><td class="num">115,500</td><td>Likidite tamponu devam ediyor.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>OCF güçlü görünse de bu rakamın bir kısmı stok ve alacak çözülmesinden geliyor. Bu yüzden nakit kalitesi, 2025'te olağanüstü iyi bir operasyonel ritimden çok, bilanço içi serbestleşme ile desteklenmiş durumda. Buna rağmen temettü, CAPEX ve yatırım programı birlikte düşünüldüğünde şirketin nakit pozisyonu halen rahat.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki grafik, OCF, CAPEX ve FCF'i birlikte gösteriyor. Neden bakıyoruz: nakit üretimi ile yatırım ihtiyacının nasıl kesiştiğini anlamak için.</p>
+          <div class="chart-card">
+            <h3>Nakit Akışı ve CAPEX Trendi</h3>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 500 250" aria-label="OCF ve CAPEX trendi">
+                <rect x="0" y="0" width="500" height="250" fill="#ffffff"></rect>
+                <line x1="48" y1="22" x2="48" y2="203" stroke="#cbd5e1" stroke-width="1"></line>
+                <line x1="48" y1="203" x2="476" y2="203" stroke="#cbd5e1" stroke-width="1"></line>
+
+                <rect x="78" y="150" width="34" height="53" fill="#1B3A6B" rx="3"></rect>
+                <rect x="126" y="162" width="34" height="41" fill="#1B3A6B" rx="3"></rect>
+                <rect x="174" y="78" width="34" height="125" fill="#1B3A6B" rx="3"></rect>
+                <rect x="222" y="190" width="34" height="13" fill="#1B3A6B" rx="3"></rect>
+                <rect x="270" y="146" width="34" height="57" fill="#1B3A6B" rx="3"></rect>
+
+                <rect x="330" y="172" width="34" height="31" fill="#C8102E" rx="3"></rect>
+                <rect x="378" y="164" width="34" height="39" fill="#C8102E" rx="3"></rect>
+                <rect x="426" y="114" width="34" height="89" fill="#C8102E" rx="3"></rect>
+
+                <polyline points="95,172 143,178 191,95 239,197 287,161" fill="none" stroke="#059669" stroke-width="3"></polyline>
+                <circle cx="95" cy="172" r="4" fill="#059669"></circle>
+                <circle cx="143" cy="178" r="4" fill="#059669"></circle>
+                <circle cx="191" cy="95" r="4" fill="#059669"></circle>
+                <circle cx="239" cy="197" r="4" fill="#059669"></circle>
+                <circle cx="287" cy="161" r="4" fill="#059669"></circle>
+
+                <text x="95" y="227" text-anchor="middle" font-size="10" fill="#334155">2021</text>
+                <text x="143" y="227" text-anchor="middle" font-size="10" fill="#334155">2022</text>
+                <text x="191" y="227" text-anchor="middle" font-size="10" fill="#334155">2023</text>
+                <text x="239" y="227" text-anchor="middle" font-size="10" fill="#334155">2024</text>
+                <text x="287" y="227" text-anchor="middle" font-size="10" fill="#334155">2025</text>
+
+                <rect x="322" y="24" width="10" height="10" fill="#1B3A6B"></rect>
+                <text x="338" y="33" font-size="10" fill="#334155">OCF</text>
+                <rect x="374" y="24" width="10" height="10" fill="#C8102E"></rect>
+                <text x="390" y="33" font-size="10" fill="#334155">CAPEX</text>
+                <rect x="436" y="24" width="10" height="10" fill="#059669"></rect>
+                <text x="452" y="33" font-size="10" fill="#334155">FCF</text>
+              </svg>
+            </div>
+            <div class="chart-note">2025'te OCF ile CAPEX arasındaki fark pozitifte kalıyor, ancak CAPEX seviyesi yatırım fazının devam ettiğini hatırlatıyor. Temettü ödemesi sonrası bile nakit tamponu rahat görünüyor.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">İşletme sermayesi metrikleri nakit kalitesini tamamlar. Neden bakıyoruz: stok ve alacak döngüsü, çelik şirketlerinde nakit akışının en büyük belirleyicisidir.</p>
+          <div class="table-card">
+            <div class="table-caption">İşletme Sermayesi ve Dönüşüm Metrikleri</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Metrik</th>
+                  <th class="num">Değer</th>
+                  <th>Benchmark</th>
+                  <th>Değerlendirme</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>DSO</td><td class="num">60 gün</td><td>30-60 gün</td><td>Normal üst sınırda.</td></tr>
+                <tr><td>DIO</td><td class="num">79 gün</td><td>60-90 gün</td><td>Sektör için makul.</td></tr>
+                <tr><td>DPO</td><td class="num">55 gün</td><td>45-60 gün</td><td>Tedarikçi vadeleri iyi yönetilmiş.</td></tr>
+                <tr><td>CCC</td><td class="num">84 gün</td><td>60-120 gün</td><td>Uzun ama kontrol altında.</td></tr>
+                <tr><td>NWC / Revenue</td><td class="num">%64.0</td><td>%20 - %40</td><td>Sermaye yoğunluk yüksek.</td></tr>
+                <tr><td>OCF / EBITDA</td><td class="num">3.2x</td><td>&gt;1.0x</td><td>Güçlü nakit dönüşümü.</td></tr>
+                <tr><td>FCF / Interest</td><td class="num">5.4x</td><td>&gt;2.0x</td><td>Faiz yükü karşılanabiliyor.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>İşletme sermayesi döngüsü uzun olsa da yönetilebilir seviyededir. En kritik nokta, DPO ile stok günlerinin uyumlu biçimde yönetilmesi. Eğer stok günleri düşürülürse, şirketin nakit serbestleşmesi hızlanır ve FCF kalitesi daha da artar. Bu da regülasyon riskine karşı önemli bir tampon oluşturur.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Değerleme</h2>
+            <p>Değerlemeye neden bakıyoruz: EREGL için "ucuz mu pahalı mı" sorusu tek başına yeterli değil; hangi senaryonun fiyatlandığı asıl soru. Yüksek faiz ortamında DCF çok muhafazakâr sonuçlar üretir, dip kâr döneminde F/K ise aşırı şişer. Bu yüzden burada çoklu yöntem ve senaryo yaklaşımı kullanılır.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Valuation</div>
+            <div>Konsensüs yukarı potansiyel gösteriyor; baz senaryo daha ihtiyatlı.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Önce çarpanlar ve piyasa fiyatı. Neden bakıyoruz: mevcut fiyatın kendi tarihsel ve peer çarpanlarına göre ne anlattığını görmek için.</p>
+          <div class="table-card">
+            <div class="table-caption">Piyasa ve Çarpan Özeti</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Gösterge</th>
+                  <th class="num">Değer</th>
+                  <th>Not</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Mevcut fiyat</td><td class="num">27.04 TRY</td><td>13 Nisan 2026 snapshot.</td></tr>
+                <tr><td>Piyasa değeri</td><td class="num">190.2B TRY</td><td>7,034.7 milyon hisse üzerinden.</td></tr>
+                <tr><td>Konsensüs hedef</td><td class="num">32.47 TRY</td><td>23 kurum ortalaması.</td></tr>
+                <tr><td>Konsensüs ima edilen upside</td><td class="num">+20.1%</td><td>Mevcut fiyata göre.</td></tr>
+                <tr><td>2024 EPS</td><td class="num">1.92 TRY</td><td>Quick reference kaynak.</td></tr>
+                <tr><td>2024 F/K</td><td class="num">14.0x</td><td>Hızlı referans tahmini.</td></tr>
+                <tr><td>EV/EBITDA bandı</td><td class="num">9x - 10x</td><td>Kaynak paketleri farklı tanımlar kullandı.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Çarpanlar, piyasanın EREGL'i tamamen kötü bir varlık olarak değil, fakat kazanç kalitesi zayıf bir endüstriyel isim olarak fiyatladığını gösteriyor. Bu nedenle hisse, varlık bazında ucuz ama kazanç bazında pahalı algısı taşıyor. Böyle bir profil, marj normalleşmesi olmadan kalıcı rerating üretmez.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Senaryo tablosu, değerleme yaklaşımının omurgasıdır. Neden bakıyoruz: piyasanın tek bir sayı değil, bir değer aralığı satın aldığını göstermek için.</p>
+          <div class="table-card">
+            <div class="table-caption">Senaryo Bazlı Hedef Fiyatlar</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Senaryo</th>
+                  <th class="num">Hedef Fiyat</th>
+                  <th class="num">Olasılık</th>
+                  <th>Ana varsayım</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Bear</td>
+                  <td class="num">17.0 TRY</td>
+                  <td class="num">%25</td>
+                  <td>AB safeguard ve CBAM baskısı sertleşir, marjlar zayıf kalır.</td>
+                </tr>
+                <tr>
+                  <td>Base</td>
+                  <td class="num">25.0 TRY</td>
+                  <td class="num">%50</td>
+                  <td>Marjlar sınırlı toparlanır, CAPEX yükü devam eder.</td>
+                </tr>
+                <tr>
+                  <td>Bull</td>
+                  <td class="num">34.0 TRY</td>
+                  <td class="num">%25</td>
+                  <td>Marj toparlanır, AB etkisi sınırlı kalır, ürün karması iyileşir.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Baz senaryo fiyatı mevcut piyasa fiyatının altında olduğundan, hisse kısa vadede "güçlü fiyatlanmış bir umut" profiline yakın duruyor. Yani piyasa yalnız bilanço dayanıklılığını değil, aynı zamanda marj toparlanmasını da önden fiyatlıyor olabilir. Eğer 2026 verileri bunu doğrulamazsa, değerleme baskısı yeniden artar.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Duyarlılık, yüksek faiz döneminde özellikle önemlidir. Neden bakıyoruz: tek bir varsayımın hedef fiyatı nasıl değiştirdiğini görmek için.</p>
+          <div class="table-card">
+            <div class="table-caption">Duyarlılık Matrisi (Özet)</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>WACC</th>
+                  <th class="num">Terminal %2</th>
+                  <th class="num">Terminal %3</th>
+                  <th class="num">Terminal %4</th>
+                  <th class="num">Terminal %5</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>%22.0</td><td class="num">17.2</td><td class="num">17.9</td><td class="num">18.6</td><td class="num">19.4</td></tr>
+                <tr><td>%24.0</td><td class="num">15.0</td><td class="num">15.5</td><td class="num">16.0</td><td class="num">16.6</td></tr>
+                <tr><td>%25.4</td><td class="num">13.7</td><td class="num">14.1</td><td class="num">14.5</td><td class="num">15.0</td></tr>
+                <tr><td>%28.0</td><td class="num">11.6</td><td class="num">11.9</td><td class="num">12.2</td><td class="num">12.6</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Bu matrisin ana mesajı, WACC değişiminin terminal büyümeden daha kritik olmasıdır. Türkiye faizi aşağı gelmedikçe DCF taban fiyatın baskılanması beklenir. Buna karşılık çarpan bazlı ve relative valuation yaklaşımı, şirketin defter kalitesini daha fazla ödüllendirir.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Sektör Karşılaştırması</h2>
+            <p>Bu bölüm, EREGL'i tek başına değil emsalleriyle birlikte okur. Çelik şirketleri arasında farkı yaratan; marj, sermaye yapısı, borçluluk ve özsermaye getirisi gibi çoklu boyutların birlikte değerlendirilmesidir. EREGL burada varlık kalitesiyle öne çıkarken kazanç kalitesiyle geride kalıyor.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Peers</div>
+            <div>Peer setinde EREGL, ISDMR, KCAER ve MT kullanıldı.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki grup çubuk grafik, peer karşılaştırmasının görsel özüdür. Neden bakıyoruz: yatırımcıların hangi çarpanda şirketi yanlış okuduğunu görmek için.</p>
+          <div class="chart-card">
+            <h3>Peer Karşılaştırma Grafiği</h3>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 500 250" aria-label="Peer karşılaştırma grouped bar grafik">
+                <rect x="0" y="0" width="500" height="250" fill="#ffffff"></rect>
+                <line x1="46" y1="22" x2="46" y2="202" stroke="#cbd5e1" stroke-width="1"></line>
+                <line x1="46" y1="202" x2="478" y2="202" stroke="#cbd5e1" stroke-width="1"></line>
+
+                <text x="73" y="226" text-anchor="middle" font-size="10" fill="#334155">EREGL</text>
+                <text x="175" y="226" text-anchor="middle" font-size="10" fill="#334155">ISDMR</text>
+                <text x="277" y="226" text-anchor="middle" font-size="10" fill="#334155">KCAER</text>
+                <text x="379" y="226" text-anchor="middle" font-size="10" fill="#334155">MT</text>
+
+                <rect x="58" y="186" width="18" height="16" fill="#1B3A6B"></rect>
+                <rect x="82" y="188" width="18" height="14" fill="#C8102E"></rect>
+                <rect x="106" y="173" width="18" height="29" fill="#E8A020"></rect>
+                <rect x="130" y="165" width="18" height="37" fill="#3b82f6"></rect>
+
+                <rect x="160" y="120" width="18" height="82" fill="#1B3A6B"></rect>
+                <rect x="184" y="157" width="18" height="45" fill="#C8102E"></rect>
+                <rect x="208" y="165" width="18" height="37" fill="#E8A020"></rect>
+                <rect x="232" y="158" width="18" height="44" fill="#3b82f6"></rect>
+
+                <rect x="262" y="136" width="18" height="66" fill="#1B3A6B"></rect>
+                <rect x="286" y="152" width="18" height="50" fill="#C8102E"></rect>
+                <rect x="310" y="145" width="18" height="57" fill="#E8A020"></rect>
+                <rect x="334" y="154" width="18" height="48" fill="#3b82f6"></rect>
+
+                <rect x="364" y="110" width="18" height="92" fill="#1B3A6B"></rect>
+                <rect x="388" y="163" width="18" height="39" fill="#C8102E"></rect>
+                <rect x="412" y="162" width="18" height="40" fill="#E8A020"></rect>
+                <rect x="436" y="150" width="18" height="52" fill="#3b82f6"></rect>
+
+                <text x="68" y="180" text-anchor="middle" font-size="9" fill="#1B3A6B">0.26</text>
+                <text x="92" y="182" text-anchor="middle" font-size="9" fill="#C8102E">13.65</text>
+                <text x="116" y="167" text-anchor="middle" font-size="9" fill="#E8A020">0.74</text>
+                <text x="140" y="159" text-anchor="middle" font-size="9" fill="#3b82f6">428</text>
+
+                <text x="170" y="114" text-anchor="middle" font-size="9" fill="#1B3A6B">4.63</text>
+                <text x="194" y="151" text-anchor="middle" font-size="9" fill="#C8102E">9.17</text>
+                <text x="218" y="159" text-anchor="middle" font-size="9" fill="#E8A020">0.83</text>
+                <text x="242" y="152" text-anchor="middle" font-size="9" fill="#3b82f6">20</text>
+
+                <text x="272" y="130" text-anchor="middle" font-size="9" fill="#1B3A6B">3.87</text>
+                <text x="296" y="146" text-anchor="middle" font-size="9" fill="#C8102E">7.74</text>
+                <text x="320" y="139" text-anchor="middle" font-size="9" fill="#E8A020">1.73</text>
+                <text x="344" y="148" text-anchor="middle" font-size="9" fill="#3b82f6">45</text>
+
+                <text x="374" y="104" text-anchor="middle" font-size="9" fill="#1B3A6B">6.02</text>
+                <text x="398" y="157" text-anchor="middle" font-size="9" fill="#C8102E">12.94</text>
+                <text x="422" y="156" text-anchor="middle" font-size="9" fill="#E8A020">0.82</text>
+                <text x="446" y="144" text-anchor="middle" font-size="9" fill="#3b82f6">14.8</text>
+
+                <rect x="52" y="25" width="10" height="10" fill="#1B3A6B"></rect>
+                <text x="66" y="34" font-size="10" fill="#334155">ROE</text>
+                <rect x="96" y="25" width="10" height="10" fill="#C8102E"></rect>
+                <text x="110" y="34" font-size="10" fill="#334155">FD/FAVÖK</text>
+                <rect x="154" y="25" width="10" height="10" fill="#E8A020"></rect>
+                <text x="168" y="34" font-size="10" fill="#334155">PD/DD</text>
+                <rect x="206" y="25" width="10" height="10" fill="#3b82f6"></rect>
+                <text x="220" y="34" font-size="10" fill="#334155">F/K</text>
+              </svg>
+            </div>
+            <div class="chart-note">Grafikte EREGL'in ROE tarafında peer'lara göre geride kaldığı, FD/FAVÖK tarafında ise pahalı kaldığı görülüyor. Bu kombinasyon, "ucuz varlık - pahalı kazanç" profilini güçlendiriyor.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Peer tablosu, grafikte görülen farkları sayısallaştırır. Neden bakıyoruz: hangi metrikte iskonto, hangi metrikte prim var onu açık okumak için.</p>
+          <div class="table-card">
+            <div class="table-caption">Peer Karşılaştırma Tablosu</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Şirket</th>
+                  <th class="num">ROE</th>
+                  <th class="num">FD/FAVÖK</th>
+                  <th class="num">PD/DD</th>
+                  <th class="num">F/K</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>EREGL</td><td class="num">%0.26</td><td class="num">13.65x</td><td class="num">0.74x</td><td class="num">428.1x</td></tr>
+                <tr><td>ISDMR</td><td class="num">%4.63</td><td class="num">9.17x</td><td class="num">0.83x</td><td class="num">20.1x</td></tr>
+                <tr><td>KCAER</td><td class="num">%3.87</td><td class="num">7.74x</td><td class="num">1.73x</td><td class="num">45.2x</td></tr>
+                <tr><td>MT</td><td class="num">%6.02</td><td class="num">12.94x</td><td class="num">0.82x</td><td class="num">14.8x</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>EREGL'in ROE'si peer grubun belirgin biçimde altında. Buna rağmen FD/FAVÖK çarpanı hâlâ yüksek; yani piyasa, varlık kalitesini ödüllendiriyor ama kazanç üretimini cezalandırıyor. Bu, kalıcı rerating için önce kârlılık normalleşmesi gerektiğini açıkça söylüyor.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">SWOT, sektörel resmin kısa ve yönetici dostu özetidir. Neden bakıyoruz: fırsat ve riskleri tek sayfada ayırmak için.</p>
+          <div class="swot-grid">
+            <div class="swot-box">
+              <h4>Güçlü</h4>
+              <ul>
+                <li>Lider pazar konumu ve güçlü marka.</li>
+                <li>Yüksek likidite ve yönetilebilir borç seviyesi.</li>
+                <li>Premium ürün karmasına geçiş kapasitesi.</li>
+              </ul>
+            </div>
+            <div class="swot-box">
+              <h4>Zayıf</h4>
+              <ul>
+                <li>ROE ve net marj çok düşük.</li>
+                <li>Çelik döngüsüne aşırı duyarlılık.</li>
+                <li>Avrupa gelir yoğunluğu.</li>
+              </ul>
+            </div>
+            <div class="swot-box">
+              <h4>Fırsat</h4>
+              <ul>
+                <li>Yeşil dönüşümle CBAM baskısını azaltma.</li>
+                <li>Working capital serbestleşmesiyle FCF artışı.</li>
+                <li>Ermaden opsiyonelliği doğrulanırsa ek değer.</li>
+              </ul>
+            </div>
+            <div class="swot-box">
+              <h4>Tehdit</h4>
+              <ul>
+                <li>AB safeguard ve CBAM kombinasyonu.</li>
+                <li>Enerji maliyeti şoku.</li>
+                <li>HRC fiyat baskısı ve Çin rekabeti.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Sektör karşılaştırması, EREGL'in iyi bir sanayi varlığı olduğunu ama iyi bir kazanç varlığı olmadığını teyit ediyor. Bu durum, hisseyi tamamen kaçınılması gereken bir isim yapmıyor; fakat yeniden değerleme için olayların olumlu yönde sıralanmasını gerektiriyor. Kısacası değer, operasyon kadar zamanlamaya da bağlı.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Makro Ortam</h2>
+            <p>Makro bölüm, çelik şirketleri için sadece genel ekonomi değildir. Faiz, enflasyon, enerji tarifeleri, döviz kuru, CBAM ve AB safeguard gibi unsurlar doğrudan marj ve nakit akışına geçer. EREGL'nin makro hassasiyeti bu yüzden yüksek ve çok katmanlıdır.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Macro</div>
+            <div>Faiz, enerji ve Avrupa regülasyonu aynı anda baskı kuruyor.</div>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card" style="border-left-color: var(--brand-primary);">
+            <div class="label">TCMB politika faizi</div>
+            <div class="value">%37</div>
+            <div class="delta neutral">Hâlâ sıkı para politikası</div>
+          </div>
+          <div class="kpi-card" style="border-left-color: var(--warning);">
+            <div class="label">Enflasyon</div>
+            <div class="value">~%35</div>
+            <div class="delta neutral">Tahmini CPI seviyesi</div>
+          </div>
+          <div class="kpi-card" style="border-left-color: var(--negative);">
+            <div class="label">Doğalgaz tarife artışı</div>
+            <div class="value">+%18.61</div>
+            <div class="delta negative">Maliyet şoku</div>
+          </div>
+          <div class="kpi-card" style="border-left-color: var(--positive);">
+            <div class="label">CBAM sertifika fiyatı</div>
+            <div class="value">€75.36</div>
+            <div class="delta neutral">7 Nisan 2026 referansı</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Makro etkiler çelikte doğrudan maliyet ve satış kanalına dönüşür. Neden bakıyoruz: para politikası ve enerji fiyatları marjı iki uçtan sıkıştırır.</p>
+          <div class="table-card">
+            <div class="table-caption">Makro Faktör - EREGL Etki Tablosu</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Makro Faktör</th>
+                  <th class="num">Son Gözlem</th>
+                  <th>EREGL'e geçiş</th>
+                  <th>Etki</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>TCMB politika faizi</td>
+                  <td class="num">%37</td>
+                  <td>Finansman maliyeti ve iskonto oranı</td>
+                  <td>Negatif / fakat zirveden hafif rahatlama</td>
+                </tr>
+                <tr>
+                  <td>CPI</td>
+                  <td class="num">~%35</td>
+                  <td>İşçilik, enerji ve genel maliyetler</td>
+                  <td>Negatif</td>
+                </tr>
+                <tr>
+                  <td>Doğalgaz</td>
+                  <td class="num">+%18.61</td>
+                  <td>Yüksek fırın maliyeti</td>
+                  <td>Negatif, doğrudan COGS baskısı</td>
+                </tr>
+                <tr>
+                  <td>Elektrik</td>
+                  <td class="num">+%5.8</td>
+                  <td>Enerji yoğun üretim</td>
+                  <td>Negatif</td>
+                </tr>
+                <tr>
+                  <td>AB safeguard</td>
+                  <td class="num">1 Temmuz 2026</td>
+                  <td>Avrupa satışları</td>
+                  <td>Çok negatif, ana stratejik risk</td>
+                </tr>
+                <tr>
+                  <td>CBAM</td>
+                  <td class="num">Aktif</td>
+                  <td>Ton başı karbon maliyeti</td>
+                  <td>Negatif, yapısal</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Makro baskı çok katmanlıdır: para politikası borç maliyetini sıkı tutarken, enerji tarifeleri operasyonel maliyeti artırıyor; AB safeguard ve CBAM ise satış kanalını daraltıyor. Bu kombinasyon çelik için sıradan bir çevrimsel baskı değil, aynı anda hem maliyet hem gelir tarafını etkileyen bir şok kümesidir.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki tablo, özellikle AB şoku ve CBAM geçişini özetler. Neden bakıyoruz: regülasyon riskinin büyüklüğü tek satırda görünür olsun diye.</p>
+          <div class="table-card">
+            <div class="table-caption">AB Safeguard ve CBAM Özeti</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Başlık</th>
+                  <th class="num">Değer</th>
+                  <th>Okuma</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>AB safeguard kota kesintisi</td><td class="num">-%47</td><td>1 Temmuz 2026'da yürürlük.</td></tr>
+                <tr><td>Tarife seviyesi</td><td class="num">%50</td><td>HRC ihracat kanalı için sertleşme.</td></tr>
+                <tr><td>Avrupa gelir payı</td><td class="num">%47.8</td><td>Direkt maruziyet çok yüksek.</td></tr>
+                <tr><td>CBAM maliyet aralığı</td><td class="num">0.4 - 2.3B TRY</td><td>2026 efektif tahmin bandı.</td></tr>
+                <tr><td>Uzun vadeli CBAM tam maliyet</td><td class="num">490 - 626M EUR</td><td>Yapısal dönüşüm baskısı.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>AB tarafındaki ana risk, EREGL'in Avrupa'daki satış hacmini değil, o satışın marjını ve sürekliliğini tehdit ediyor. Bu yüzden şirketin cevap vermesi gereken ana soru, alternatif pazarların Avrupa kaybını ne kadar emebileceği değil, hangi marjla emebileceğidir. CBAM ise bu yapısal resimde yalnızca ek masraf değil, aynı zamanda dönüşüm yatırımı zorunluluğudur.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Jeopolitik aktarım kanalı burada önem kazanır. Neden bakıyoruz: enerji ve tedarik şokları, makro seviyeden üretim maliyetine geçer.</p>
+          <div class="callout callout-info">
+            <strong>Jeopolitik risk kanalı:</strong> İran-ABD gerilimi ve Rusya-Ukrayna savaşı, Türkiye enerji fiyatları üzerinden EREGL'e geçer. Bu, doğalgaz ve elektrik maliyetini yukarı çeker; dolaylı olarak COGS ve CBAM yükümlülüklerini artırır. Çelikte jeopolitik risk, doğrudan tank değil, fatura etkisi yaratır.
+          </div>
+          <div class="small-note">Bu bölümde canlı web verisi doğrulanmadığı için bazı etkiler yönsel yorum olarak sunulmuştur; büyüklükler makro agent paketi ve sektör yayılımı üzerinden türetilmiştir.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Teknik Analiz</h2>
+            <p>Teknik bölüm, fiyatın kısa vadeli davranışını özetler. Ancak bu raporda teknik veri paketi canlı web erişimi olmadan üretildiği için güven seviyesi düşüktür. Bu yüzden teknik sinyaller, temel ve makro veriye kıyasla yardımcı rol oynar; ana yatırım kararı burada verilmemelidir.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Technical</div>
+            <div>Canlı veri eksikliği nedeniyle düşük güvenli gösterge seti.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Önce fiyat referanslarını netleştiriyoruz. Neden bakıyoruz: teknik yorum hangi fiyat bazına oturuyor, onu sabitlemek için.</p>
+          <div class="table-card">
+            <div class="table-caption">Fiyat Referansları ve Kaynak Farkı</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tarih / Kaynak</th>
+                  <th class="num">Fiyat</th>
+                  <th>Not</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>10 Nisan 2026 kapanış</td><td class="num">31.30 TRY</td><td>CEO mandatında referans fiyat.</td></tr>
+                <tr><td>13 Nisan 2026 piyasa snapshot</td><td class="num">27.04 TRY</td><td>En güncel market reference.</td></tr>
+                <tr><td>Teknik agent morning pack</td><td class="num">29.36 TRY</td><td>Low-confidence teknik pakette görülen ara referans.</td></tr>
+                <tr><td>52 haftalık yüksek</td><td class="num">32.72 TRY</td><td>Yakın zirve bandı.</td></tr>
+                <tr><td>52 haftalık düşük</td><td class="num">20.10 TRY</td><td>Uzun vadeli taban.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Burada küçük ama önemli bir kaynak çatışması var: teknik pakette ara fiyat 29.36 TRY iken market snapshot 27.04 TRY gösteriyor. Bu nedenle raporun ana fiyat bazını 27.04 TRY olarak alıyoruz, 29.36 TRY'yi ise teknik kaynağın düşük güvenli ara referansı olarak not ediyoruz. Teknik analiz, bu yüzden yönsel bir yardımcı sinyaldir.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Destek ve direnç seviyelerini birlikte okuyoruz. Neden bakıyoruz: kısa vadede fiyatın hangi koridorda hareket ettiğini görmek için.</p>
+          <div class="table-card">
+            <div class="table-caption">Destek ve Direnç Seviyeleri</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Seviye</th>
+                  <th>Tür</th>
+                  <th>Güç</th>
+                  <th>Yorum</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>32.72</td><td>Direnç</td><td>Orta</td><td>52 haftalık tepe.</td></tr>
+                <tr><td>31.30</td><td>Direnç</td><td>Orta</td><td>Önceki kapanış referansı.</td></tr>
+                <tr><td>30.96 - 30.03</td><td>Direnç zonu</td><td>Güçlü</td><td>MA duvarı.</td></tr>
+                <tr><td>29.74</td><td>Direnç / dönüş</td><td>Orta</td><td>Fibonacci %23.6 civarı.</td></tr>
+                <tr><td>27.90</td><td>Destek</td><td>Güçlü</td><td>Fibonacci %38.2.</td></tr>
+                <tr><td>26.41</td><td>Destek</td><td>Güçlü</td><td>Fibonacci %50.</td></tr>
+                <tr><td>24.92</td><td>Destek</td><td>Orta</td><td>Fibonacci %61.8.</td></tr>
+                <tr><td>20.10</td><td>Taban</td><td>Yüksek</td><td>52 haftalık düşük.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Teknik yapıda en kritik bölge 30.0-31.0 bandıdır; bu alan aşılmadıkça kısa vadeli toparlanma tam onay almış sayılmaz. Aşağı tarafta ise 27.9 ve 26.4 seviyeleri destek hattını oluşturuyor. Güncel fiyat 27.04 olduğuna göre hisse destek alanında ama henüz rahat bölgede değil.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Hareketli ortalamalar kısa vadeli trendin omurgasını verir. Neden bakıyoruz: fiyatın tüm MA'ların altında mı üstünde mi olduğunu görmek için.</p>
+          <div class="table-card">
+            <div class="table-caption">Hareketli Ortalamalar</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>MA</th>
+                  <th class="num">Seviye</th>
+                  <th>Fiyatla ilişkisi</th>
+                  <th>Okuma</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>MA5</td><td class="num">30.964</td><td>Fiyat altında</td><td>Bearish.</td></tr>
+                <tr><td>MA10</td><td class="num">30.786</td><td>Fiyat altında</td><td>Bearish.</td></tr>
+                <tr><td>MA20</td><td class="num">30.505</td><td>Fiyat altında</td><td>Bearish.</td></tr>
+                <tr><td>MA50</td><td class="num">30.035</td><td>Fiyat altında</td><td>Bearish duvar.</td></tr>
+                <tr><td>MA100</td><td class="num">28.5 - 29.0</td><td>Yakın</td><td>Yakın destek.</td></tr>
+                <tr><td>MA200</td><td class="num">27.0 - 27.5</td><td>Üzerinde / yakın</td><td>Uzun vadeli denge.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Fiyatın kısa vadeli ortalamaların altında olması, teknik resmin zayıf olduğunu gösterir. Buna rağmen MA200 bölgesine yakınlık, düşüşün tamamen serbest bir kırılma olmadığını düşündürür. Yani teknik olarak hisse kırılgan; fakat aşırı çöküşten ziyade destek arayan bir yapı içinde.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Senaryo analizi, teknik görünümün olası yollarını özetler. Neden bakıyoruz: riskin hangi koşulda kısa süreli tepkiye dönüşeceğini görmek için.</p>
+          <div class="table-card">
+            <div class="table-caption">3 Senaryo Analizi</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Senaryo</th>
+                  <th class="num">Hedef Bölge</th>
+                  <th>Gerekçe</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Bear devam</td><td class="num">26.4 - 24.9</td><td>MA duvarı aşılamaz ve makro baskı sürer.</td></tr>
+                <tr><td>Konsolidasyon</td><td class="num">27.9 - 30.0</td><td>Destek korunur, haber akışı bekler.</td></tr>
+                <tr><td>Kısa vadeli toparlanma</td><td class="num">30.0 - 31.3</td><td>Hacimli geri dönüş ve MA kümesi üstü kapanış gerekir.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Teknik görünüm, temel baskı nedeniyle temkinli kalmalıdır. Eğer fiyat 30.0-31.3 bandını hacimle aşamazsa, kısa vadeli ralliler tepki hareketi olarak kalabilir. Bu yüzden teknik sinyal tek başına alım gerekçesi üretmez; ancak risk yönetimi için destek bölgesi sağlar.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki küçük grafik, destek ve direnç mantığını görselleştirir. Neden bakıyoruz: teknik seviyeleri tek bakışta görmek için.</p>
+          <div class="chart-card">
+            <h3>Destek / Direnç Haritası</h3>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 500 250" aria-label="Destek direnç haritası">
+                <rect x="0" y="0" width="500" height="250" fill="#fff"></rect>
+                <line x1="50" y1="30" x2="50" y2="210" stroke="#cbd5e1" stroke-width="1"></line>
+                <line x1="50" y1="210" x2="470" y2="210" stroke="#cbd5e1" stroke-width="1"></line>
+
+                <rect x="76" y="34" width="66" height="12" fill="#fee2e2" rx="3"></rect>
+                <text x="150" y="44" font-size="10" fill="#1e293b">32.72</text>
+
+                <rect x="76" y="64" width="66" height="12" fill="#fee2e2" rx="3"></rect>
+                <text x="150" y="74" font-size="10" fill="#1e293b">31.30</text>
+
+                <rect x="76" y="92" width="180" height="12" fill="#fde68a" rx="3"></rect>
+                <text x="264" y="102" font-size="10" fill="#1e293b">30.0 - 31.0 MA duvarı</text>
+
+                <rect x="76" y="126" width="94" height="12" fill="#fde68a" rx="3"></rect>
+                <text x="178" y="136" font-size="10" fill="#1e293b">27.90</text>
+
+                <rect x="76" y="156" width="136" height="12" fill="#bbf7d0" rx="3"></rect>
+                <text x="220" y="166" font-size="10" fill="#1e293b">26.41</text>
+
+                <rect x="76" y="186" width="180" height="12" fill="#bbf7d0" rx="3"></rect>
+                <text x="264" y="196" font-size="10" fill="#1e293b">24.92</text>
+
+                <circle cx="280" cy="150" r="7" fill="#C8102E"></circle>
+                <text x="294" y="154" font-size="10" fill="#C8102E" font-weight="700">Güncel fiyat 27.04</text>
+
+                <text x="76" y="226" font-size="10" fill="#64748b">Kırmızı: direnç | Sarı: kritik bant | Yeşil: destek</text>
+              </svg>
+            </div>
+            <div class="chart-note">Grafik, fiyatın destek bölgesine yakın olduğunu ama üst dirençleri aşmadan rahatlamadığını anlatıyor. Teknik görünüm bu nedenle nötr değil, baskılıdır.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>KAP Olayları</h2>
+            <p>Bu bölümde son 12 aylık KAP akışı, finansal ve yönetişim etkileriyle birlikte düzenlenmiştir. Önemli not: finansal etkisi olmayan rutin filing'ler ile gerçek nakit/özsermaye etkisi taşıyan olaylar ayrıştırılmıştır. En kritik ekonomik olaylar temettü, hisse geri alımı ve FY 2025 sonuçlarıdır.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">KAP Scan</div>
+            <div>Kaynak penceresi: 13 Nisan 2025 - 13 Nisan 2026</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">KAP listesi olay akışını verir. Neden bakıyoruz: şirketin resmen açıkladığı şeylerle piyasa fiyatının neden hareket ettiğini eşleştirmek için.</p>
+          <div class="table-card">
+            <div class="table-caption">Son 12 Ay KAP Olayları</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tarih</th>
+                  <th>Bildirim</th>
+                  <th>Tür</th>
+                  <th>Özet</th>
+                  <th>Finansal Etki</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>11.06.2025</td>
+                  <td>Ermaden rezerv tespit çalışması</td>
+                  <td>ÖDA</td>
+                  <td>Yaygın sondaj ve pozitif mineralizasyon sinyalleri.</td>
+                  <td>Şimdilik spekülatif; opsiyon değeri.</td>
+                </tr>
+                <tr>
+                  <td>23.08.2025</td>
+                  <td>Genel Müdür ataması</td>
+                  <td>Yönetim değişimi</td>
+                  <td>Şaban Yazıcı atandı.</td>
+                  <td>Doğrudan finansal kayıt yok; dolaylı etki.</td>
+                </tr>
+                <tr>
+                  <td>17.02.2026</td>
+                  <td>FY 2025 finansal tablolar</td>
+                  <td>Periyodik rapor</td>
+                  <td>Net kâr 511.8M TRY, EBITDA 20.45B TRY.</td>
+                  <td>Raporlanan sonuçları doğruladı.</td>
+                </tr>
+                <tr>
+                  <td>03.03.2026</td>
+                  <td>Temettü önerisi</td>
+                  <td>Temettü</td>
+                  <td>0.55 TRY brüt/hisse önerisi.</td>
+                  <td>Yaklaşık 3.85B TRY nakit çıkışı.</td>
+                </tr>
+                <tr>
+                  <td>10.03.2026</td>
+                  <td>Olağan genel kurul çağrısı</td>
+                  <td>Rutin filing</td>
+                  <td>Temettü ve yönetim gündemi duyuruldu.</td>
+                  <td>Doğrudan nakit etkisi yok.</td>
+                </tr>
+                <tr>
+                  <td>23.03.2026</td>
+                  <td>2025 entegre raporu</td>
+                  <td>Rutin filing</td>
+                  <td>Yeşil dönüşüm, ESG ve strateji açıklandı.</td>
+                  <td>Yapısal yönlendirme, anlık nakit etkisi yok.</td>
+                </tr>
+                <tr>
+                  <td>23.03.2026</td>
+                  <td>Bağımsız denetçi seçimi</td>
+                  <td>Yönetişim</td>
+                  <td>EY seçimi teyit edildi.</td>
+                  <td>Rutin yönetişim etkisi.</td>
+                </tr>
+                <tr>
+                  <td>26.03.2026</td>
+                  <td>Temettü onayı</td>
+                  <td>Temettü</td>
+                  <td>Genel kurul 0.55 TRY/hisse dağıtımı onayladı.</td>
+                  <td>Nakit çıkışı ekonomik olarak bağlayıcı hale geldi.</td>
+                </tr>
+                <tr>
+                  <td>31.03.2026</td>
+                  <td>Hisse geri alım programı</td>
+                  <td>Geri alım</td>
+                  <td>Payların geri alınmasına ilişkin bildirim.</td>
+                  <td>Potansiyel sermaye tahsisi ve fiyat desteği.</td>
+                </tr>
+                <tr>
+                  <td>09.04.2026</td>
+                  <td>Kurumsal yönetim komite atamaları</td>
+                  <td>Yönetişim</td>
+                  <td>Komite yapısı yenilendi.</td>
+                  <td>Doğrudan finansal etki yok.</td>
+                </tr>
+                <tr>
+                  <td>09.04.2026</td>
+                  <td>Bağlı ortaklık yönetim atamaları</td>
+                  <td>Yönetişim</td>
+                  <td>OYAK grup şirketleri yönetim değişiklikleri.</td>
+                  <td>Dolaylı yönetişim etkisi.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Olay akışında iki ekonomik kırılma öne çıkıyor: FY 2025 sonuçları ve temettü onayı. Rezerv tespiti ise şu aşamada yalnızca potansiyel opsiyon değeridir; proven reserve olmadığı için temel değerlemeye dahil edilmemelidir. Geri alım ve komite yeniden yapılanması ise piyasa sinyali ve yönetişim iyileştirmesi olarak okunabilir.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki kısa özet, KAP olaylarının ne anlama geldiğini sadeleştirir. Neden bakıyoruz: hangi olayın nakit, hangi olayın yalnız iletişim olduğunu ayırmak için.</p>
+          <div class="callout callout-info">
+            <strong>İşaret edilen ana ayrım:</strong> Temettü önerisi ile temettü onayı ekonomik olarak aynı nakit dağıtımına bağlanır; raporda ikisi ayrı olay olarak gösterilse de finansal etki tek kez sayılmalıdır. Aynı şekilde rutin filing'ler ile yönetim değişiklikleri doğrudan gelir veya kâr yaratmaz; etkileri dolaylıdır.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Risk Değerlendirmesi</h2>
+            <p>Risk bölümünde amaç, EREGL'nin önündeki tehditleri sıralamak değil, onları büyüklük ve zamanlama açısından ayırmaktır. En yüksek riskler AB safeguard, CBAM ve enerji maliyeti şoklarıdır. İkincil riskler ise marj normalleşmesinin gecikmesi, teknik kırılım ve temettü sürdürülebilirliğidir.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Risk Map</div>
+            <div>0-10 ölçeğinde renk kodlu skorlar.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Risk barları tek bakışta önem sırası verir. Neden bakıyoruz: hangi riskin kritik, hangisinin yönetilebilir olduğunu görmek için.</p>
+          <div class="chart-card">
+            <h3>Risk Skorları</h3>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 500 250" class="risk-bars" aria-label="Risk skorları yatay çubuk grafik">
+                <rect x="0" y="0" width="500" height="250" fill="#ffffff"></rect>
+
+                <text x="10" y="26" font-size="10.5" fill="#1e293b">AB safeguard</text>
+                <rect x="128" y="13" width="270" height="18" fill="#fee2e2" rx="4"></rect>
+                <rect x="128" y="13" width="243" height="18" fill="#dc2626" rx="4"></rect>
+                <text x="406" y="27" font-size="10" fill="#dc2626" font-weight="700">9/10</text>
+
+                <text x="10" y="58" font-size="10.5" fill="#1e293b">CBAM</text>
+                <rect x="128" y="45" width="270" height="18" fill="#fff7ed" rx="4"></rect>
+                <rect x="128" y="45" width="216" height="18" fill="#d97706" rx="4"></rect>
+                <text x="406" y="59" font-size="10" fill="#d97706" font-weight="700">8/10</text>
+
+                <text x="10" y="90" font-size="10.5" fill="#1e293b">Enerji maliyeti</text>
+                <rect x="128" y="77" width="270" height="18" fill="#fff7ed" rx="4"></rect>
+                <rect x="128" y="77" width="216" height="18" fill="#d97706" rx="4"></rect>
+                <text x="406" y="91" font-size="10" fill="#d97706" font-weight="700">8/10</text>
+
+                <text x="10" y="122" font-size="10.5" fill="#1e293b">Marj baskısı</text>
+                <rect x="128" y="109" width="270" height="18" fill="#fff7ed" rx="4"></rect>
+                <rect x="128" y="109" width="189" height="18" fill="#eab308" rx="4"></rect>
+                <text x="406" y="123" font-size="10" fill="#eab308" font-weight="700">7/10</text>
+
+                <text x="10" y="154" font-size="10.5" fill="#1e293b">FCF sürdürülebilirliği</text>
+                <rect x="128" y="141" width="270" height="18" fill="#fef3c7" rx="4"></rect>
+                <rect x="128" y="141" width="162" height="18" fill="#eab308" rx="4"></rect>
+                <text x="406" y="155" font-size="10" fill="#eab308" font-weight="700">6/10</text>
+
+                <text x="10" y="186" font-size="10.5" fill="#1e293b">Teknik trend kırılması</text>
+                <rect x="128" y="173" width="270" height="18" fill="#fef3c7" rx="4"></rect>
+                <rect x="128" y="173" width="135" height="18" fill="#f59e0b" rx="4"></rect>
+                <text x="406" y="187" font-size="10" fill="#f59e0b" font-weight="700">5/10</text>
+
+                <text x="10" y="218" font-size="10.5" fill="#1e293b">Ermaden opsiyonu</text>
+                <rect x="128" y="205" width="270" height="18" fill="#dcfce7" rx="4"></rect>
+                <rect x="128" y="205" width="108" height="18" fill="#059669" rx="4"></rect>
+                <text x="406" y="219" font-size="10" fill="#059669" font-weight="700">4/10</text>
+              </svg>
+            </div>
+            <div class="chart-note">En kritik riskler, şirketin satış kanalını ve maliyet tabanını aynı anda etkileyen AB ve enerji başlıklarıdır. Ermaden opsiyonelliği ise ancak kanıtlanırsa anlamlı hale gelir.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki tablo riskleri metin olarak netleştirir. Neden bakıyoruz: riskin kaynağı, etkisi ve azaltıcı hamlesi aynı anda görülsün diye.</p>
+          <div class="table-card">
+            <div class="table-caption">Risk Matrisi</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Risk</th>
+                  <th class="num">Skor</th>
+                  <th>Etkileme kanalı</th>
+                  <th>Azaltıcı hamle</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>AB safeguard</td><td class="num">9</td><td>Gelir ve hacim</td><td>Alternatif pazar, ürün karması, ön yükleme.</td></tr>
+                <tr><td>CBAM</td><td class="num">8</td><td>Karbon maliyeti</td><td>EAF yatırımı, emisyon verisi, müşteri fiyat geçişi.</td></tr>
+                <tr><td>Enerji maliyeti</td><td class="num">8</td><td>COGS</td><td>Verimlilik, fiyat geçişi, yakıt optimizasyonu.</td></tr>
+                <tr><td>Marj baskısı</td><td class="num">7</td><td>EBITDA ve net kâr</td><td>Premium ürün karması, spread normalleşmesi.</td></tr>
+                <tr><td>FCF oynaklığı</td><td class="num">6</td><td>Temettü ve yatırım</td><td>İşletme sermayesi serbestleşmesi.</td></tr>
+                <tr><td>Teknik kırılma</td><td class="num">5</td><td>Kısa vadeli fiyat</td><td>Destek takibi, hacim teyidi.</td></tr>
+                <tr><td>Yönetişim iskontosu</td><td class="num">5</td><td>Çarpanlar</td><td>Daha yüksek şeffaflık ve iletişim.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Risk haritası, EREGL'nin kısa vadeli düşmanının fiyat hareketi değil, regülasyon ve maliyet şokları olduğunu gösteriyor. Teknik kırılmalar bu resimde ikincildir. Şirketin en etkili savunması ise operasyonel verimlilik ve ürün karmasıyla gelir kalitesini artırmak olacaktır.</p>
+          </div>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>Özet Risk Cümlesi:</strong> EREGL için asıl risk "borç batağı" değil, "kar marjı ve Avrupa erişimi daralırken sermaye yoğunluğunu koruma" problemidir. Bu sorun çözülmeden çarpan genişlemesi sınırlı kalır.
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Genel Değerlendirme</h2>
+            <p>Bu bölüm, raporun nihai yargısını verir. EREGL, güçlü bilanço ve güçlü marka avantajına rağmen, düşük net kâr ve yüksek regülasyon riskinin altında kalan bir sanayi hissesi olarak öne çıkıyor. Bu yüzden şirket ne tamamen defansif ne de yüksek büyüme hikayesi olarak okunmalı; daha doğru okuma, savunmalı dönüşüm geçiren bir sanayi lideri olduğudur.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Final View</div>
+            <div>Investable, fakat koşullu ve takip gerektiren bir profil.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Skor kartı, karar özetini tek satırda verir. Neden bakıyoruz: kurumsal yönetici için bölüm bölüm değil, bir bütün olarak son durumu görmek için.</p>
+          <div class="scorecard">
+            <div class="score-item">
+              <div class="score-label">Finansal Sağlık</div>
+              <div class="score-value">5.0 / 10</div>
+              <div class="score-bar"><div class="score-fill" style="width:50%;"></div></div>
+              <div class="score-subtext">Likidite iyi, kârlılık zayıf.</div>
+            </div>
+            <div class="score-item">
+              <div class="score-label">Büyüme Potansiyeli</div>
+              <div class="score-value">5.0 / 10</div>
+              <div class="score-bar"><div class="score-fill" style="width:50%;"></div></div>
+              <div class="score-subtext">Yeşil CAPEX var, sonuç henüz sınırlı.</div>
+            </div>
+            <div class="score-item">
+              <div class="score-label">Sektör Pozisyonu</div>
+              <div class="score-value">7.0 / 10</div>
+              <div class="score-bar"><div class="score-fill" style="width:70%;"></div></div>
+              <div class="score-subtext">Liderlik güçlü.</div>
+            </div>
+            <div class="score-item">
+              <div class="score-label">Makro Uyumluluk</div>
+              <div class="score-value">3.0 / 10</div>
+              <div class="score-bar"><div class="score-fill" style="width:30%;"></div></div>
+              <div class="score-subtext">AB ve enerji baskısı yüksek.</div>
+            </div>
+            <div class="score-item">
+              <div class="score-label">Teknik Görünüm</div>
+              <div class="score-value">4.0 / 10</div>
+              <div class="score-bar"><div class="score-fill" style="width:40%;"></div></div>
+              <div class="score-subtext">Düşük güvenli sinyal seti.</div>
+            </div>
+            <div class="score-item">
+              <div class="score-label">ESG / Dönüşüm</div>
+              <div class="score-value">5.7 / 10</div>
+              <div class="score-bar"><div class="score-fill" style="width:57%;"></div></div>
+              <div class="score-subtext">Raporlama iyi, emisyon yoğunluğu yüksek.</div>
+            </div>
+          </div>
+
+          <div class="callout callout-info">
+            <strong>Genel Skor:</strong> 4.9 / 10. Bu skor, şirketin "kötü" olduğunu değil, risk-getiri dengesinin dikkatli izlenmesi gerektiğini söyler. EREGL bugün için güçlü bir sanayi varlığı, ama yüksek betalı bir marj ve regülasyon hikayesidir.
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">İzleme planı, yatırımcı için pratik aksiyon listesi oluşturur. Neden bakıyoruz: hangi tarihlerin karar verici olduğunu ortaya koymak için.</p>
+          <div class="table-card">
+            <div class="table-caption">İzleme Planı ve Kritik Kilometre Taşları</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tarih / Dönem</th>
+                  <th>Takip Edilecek Olay</th>
+                  <th>Beklenen Etki</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Nisan 2026</td><td>Q1 2026 sonuçları</td><td>Marj baskısı ve enerji tarifesi etkisi.</td></tr>
+                <tr><td>18 Nisan 2026</td><td>Temettü ödeme tarihi</td><td>Nakit çıkışı ve likidite sonrası görünüm.</td></tr>
+                <tr><td>Mayıs-Haziran 2026</td><td>AB safeguard ön hazırlık</td><td>Sevk ön yükleme ve alternatif pazarlar.</td></tr>
+                <tr><td>Haziran 2026</td><td>Ermaden sondaj sonuçları</td><td>Opsiyon değeri yalnızca doğrulanırsa artar.</td></tr>
+                <tr><td>1 Temmuz 2026</td><td>AB safeguard yürürlük</td><td>Gelir ve marj üzerinde kritik şok.</td></tr>
+                <tr><td>Ocak 2026 sonrası</td><td>CBAM maliyet geçişi</td><td>Yapısal karbon maliyeti ve fiyatlama gücü.</td></tr>
+                <tr><td>2027</td><td>EAF ilerlemesi</td><td>Orta vadeli marj ve emisyon iyileşmesi.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis-commentary">
+            <p>Bu izleme planı, yatırım tezi için kritik olan tarihlere odaklanır: Q1 sonuçları, temettü ödeme tarihi, AB safeguard, Ermaden ve EAF. Yatırımcı bu başlıkların her birini takip etmeden EREGL pozisyonunu yalnız çarpanlar üzerinden okuyamaz. Şirketin kaderi, 2026 içinde marj ve regülasyonun nasıl kesişeceğine bağlıdır.</p>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Aşağıdaki özet, yatırım tavrını birkaç cümlede toplar. Neden bakıyoruz: yönetim kuruluna kısa bir son karar cümlesi sunmak için.</p>
+          <div class="callout callout-positive">
+            <strong>Sonuç:</strong> EREGL, güçlü bilanço ve lider pazar konumunu koruyan ama marj baskısı ve Avrupa regülasyon şokları nedeniyle kısa vadede ihtiyatla yaklaşılması gereken bir sanayi hissesidir. Baz senaryoda fiyat mevcut seviyenin altında kalıyor; bu yüzden yeni pozisyon, yalnızca 2026 marj normalleşmesi ve AB etkisinin yönetilebilir olduğuna inanan yatırımcı için anlamlıdır.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-inner">
+        <div class="section-hero">
+          <div class="title-copy">
+            <h2>Zorunlu Bildirimler</h2>
+            <p>Bu son bölüm, yasal uyarıları, kaynakları ve metodolojik sınırlılıkları içerir. Rapor bağımsız Finance X analizidir; şirket tarafından hazırlanmış veya onaylanmış resmi bir doküman değildir. Bu nedenle kurumsal kimlik dili, şirketten çıkmış izlenimi vermeyecek şekilde tasarlanmıştır.</p>
+          </div>
+          <div class="tagbox">
+            <div class="brand-mark-small">Disclosures</div>
+            <div>Bağımsız analiz, yatırım tavsiyesi değildir.</div>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Önce metodolojik uyarılar. Neden bakıyoruz: okurun raporu doğru bağlamda kullanması için.</p>
+          <div class="callout callout-warning">
+            <strong>Yasal Uyarı:</strong> Bu rapor kamuya açık veriler, şirket yayımları ve upstream analitik paketler kullanılarak oluşturulmuş bağımsız bir Finance X değerlendirmesidir. Yatırım tavsiyesi değildir. Raporun tamamı tek bir doğrulanmış veri paketi değildir; bazı bölümlerde kaynaklar arasında küçük sayısal farklar bulunduğu için, rapor bu farkları görünür kılmış ve değerlendirmeyi en güçlü doğrulanmış omurgaya bağlamıştır.
+          </div>
+          <div class="callout callout-info">
+            <strong>Kaynak Hiyerarşisi:</strong> 1) reconciliation_output, 2) financial_analysis_output, 3) context_extraction_output içindeki contradiction-hold notu, 4) data_collection_output ve quick reference, 5) diğer sekonder/yardımcı çıktılar. Canlı web erişimi olmayan teknik, haber ve konsensüs alanları düşük/orta güvenle sunulmuştur.
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Kaynakların kısa listesi. Neden bakıyoruz: okurun gerektiğinde birincil kaynağa ulaşması için.</p>
+          <div class="table-card">
+            <div class="table-caption">Ana Kaynaklar</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kaynak</th>
+                  <th>Tür</th>
+                  <th>Not</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>KAP / şirket finansal raporları</td><td>Birincil</td><td>FY 2025 ve karşılaştırmalı dönemler.</td></tr>
+                <tr><td>Erdemir yatırımcı ilişkileri</td><td>Birincil</td><td>Faaliyet raporu, ESG ve kurumsal bilgi.</td></tr>
+                <tr><td>reconciliation_output</td><td>Analitik çekirdek</td><td>2025 sayıları için kontrol omurgası.</td></tr>
+                <tr><td>financial_analysis_output</td><td>Analitik çekirdek</td><td>Kritik oranlar ve kaynak hiyerarşisi.</td></tr>
+                <tr><td>context_extraction_output</td><td>Bağlam paketi</td><td>Brand identity ve contradiction-hold notu.</td></tr>
+                <tr><td>data_collection_output / quick reference</td><td>Destek</td><td>Piyasa snapshot, ownership, rating ve temettü özetleri.</td></tr>
+                <tr><td>macro / valuation / ESG / sector / technical / KAP paketleri</td><td>Destek</td><td>Risk, opsiyon ve görsel katmanlar.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Sınırlılık tablosu, raporun nerede daha dikkatli okunması gerektiğini açıklar. Neden bakıyoruz: özellikle çelişkili veya düşük güvenli alanları işaretlemek için.</p>
+          <div class="table-card">
+            <div class="table-caption">Metodolojik Sınırlılıklar</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Alan</th>
+                  <th>Durum</th>
+                  <th>Okuyucu notu</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Teknik analiz</td><td>Düşük güven</td><td>Canlı veri yok; yalnız yönsel sinyal.</td></tr>
+                <tr><td>Haber ve sentiment</td><td>Orta güven</td><td>Real-time web doğrulaması yok.</td></tr>
+                <tr><td>Analist konsensüsü</td><td>Orta güven</td><td>23 kurum ortalaması, ancak ayrıntıların bir kısmı tahmini.</td></tr>
+                <tr><td>FCF tanımı</td><td>Standartlaştırıldı</td><td>Bu rapor OCF - CAPEX tanımını kullanır.</td></tr>
+                <tr><td>Ownership yüzdesi</td><td>Kaynak varyansı</td><td>49.29%-52.54% aralığı görüldü; kontrol yönü değişmiyor.</td></tr>
+                <tr><td>Ermaden</td><td>Spekülatif</td><td>Proven reserve yok; temel değerlemeye dahil edilmedi.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <p class="analysis-intro">Son olarak, raporun profesyonel amaçla nasıl kullanılacağını özetliyoruz. Neden bakıyoruz: kurumsal sunum standardında yanlış kullanım riskini azaltmak için.</p>
+          <div class="callout callout-info">
+            <strong>Kullanım notu:</strong> Bu HTML, Puppeteer ile PDF'e dönüştürülmek üzere tasarlanmıştır. Kurumsal bir yönetim kurulu sunumu, yatırım komitesi dosyası ya da iç denetim ön raporu olarak kullanılabilir. Ancak içinde yer alan bazı teknik ve haber verileri canlı web erişimi olmaksızın üretildiği için, bunlar karar verici ana veri değil yardımcı veri olarak görülmelidir.
+          </div>
+          <div class="small-note">
+            Hazırlayan: Finance X Platform | Bağımsız analitik katman | Çıktı dili: Türkçe | Stil: Kurumsal araştırma raporu | Logo/kimlik: metinsel amblem kullanımı
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

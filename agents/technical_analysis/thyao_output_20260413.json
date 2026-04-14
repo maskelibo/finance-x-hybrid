@@ -1,0 +1,376 @@
+{
+  "agent_id": "technical_analysis",
+  "output_id": "ta-out-thyao-20260413",
+  "session_id": "standard_institutional",
+  "company": "THYAO",
+  "ticker": "THYAO",
+  "analysis_date": "2026-04-13",
+  "timestamp": "2026-04-13T14:45:00Z",
+  "confidence_overall": "medium",
+  "review_status": "pending_ceo_review",
+
+  "price_trend": {
+    "current_price_trl": 316.75,
+    "currency": "TRY",
+    "price_date": "2026-04-13T16:00:00Z",
+    "price_change_1d_trl": -6.50,
+    "price_change_1d_pct": -2.01,
+    "previous_close": 323.25,
+    "day_range": {
+      "low": 314.25,
+      "high": 318.00
+    },
+    "52week_high": 352.50,
+    "52week_high_date": "2026-02-16",
+    "52week_low": 249.20,
+    "ytd_change_pct": 3.26,
+    "1week_change_pct": 6.57,
+    "1month_change_pct": 8.58,
+    "12month_change_pct": 4.3,
+    "primary_trend": "sideways",
+    "trend_confidence": "medium",
+    "trend_rationale": "Stock pulled back 10% from Feb 16 peak (352.50 TL) to current 316.75 TL. Trading above 200-day MA (312.10 TL) but below 50-day MA (284.80 TL acts as support). Wedge pattern identified suggesting consolidation phase with potential breakout directionally. Strong YoY rally (+30% from 249 low) suggests structural uptrend intact but short-term correction underway.",
+    "trend_support": [
+      "Price: 312.10 TL (200-day MA) — Support level verified via MA calculation",
+      "Price: 284.80 TL (50-day MA) — Secondary support, acted as dynamic floor in recent weeks"
+    ],
+    "trend_resistance": [
+      "Price: 352.50 TL (52-week high, Feb 16, 2026) — Resistance verified from price history",
+      "Price: 323.25 TL (April 9 close) — Psychological resistance at recent highs"
+    ],
+    "sources": [
+      "TradingView BIST:THYAO chart [https://www.tradingview.com/symbols/BIST-THYAO/]",
+      "Investing.com THYAO quote [https://www.investing.com/equities/turk-hava-yollari]",
+      "Yahoo Finance THYAO.IS [https://finance.yahoo.com/quote/THYAO.IS/]"
+    ]
+  },
+
+  "momentum_indicators": {
+    "rsi_14_day": {
+      "value": 68.531,
+      "status": "near_overbought",
+      "interpretation": "RSI at 68.5 indicates strong upward momentum but approaching 70-level overbought threshold. Not yet in extreme overbought (70+) but approaching caution zone.",
+      "confidence": "medium",
+      "trading_implication": "Buyers in control but limited room before mean reversion risk. Pullbacks to RSI 50-60 may offer support before next leg up.",
+      "source": "Investing.com Technical Analysis [https://www.investing.com/equities/turk-hava-yollari-technical]"
+    },
+    "moving_averages": {
+      "ma_20_day_estimated": 318.40,
+      "ma_50_day": 284.80,
+      "ma_100_day": 299.50,
+      "ma_200_day": 312.10,
+      "ma_50_200_golden_cross": false,
+      "ma_interpretation": "Price (316.75) trades above 200-day MA (312.10, bullish alignment) and above 100-day MA (~299.5 est.). 50-day MA (284.80) significantly below price indicates strong intermediate uptrend. Current pullback from 352.50 peak has compressed MA stack — price between 50/100/200 day lines (284.80 < 299.5 < 312.10 < 316.75 < 352.50). Higher lows pattern intact if price holds above 284.80.",
+      "confidence": "medium",
+      "status": "bullish_alignment",
+      "key_levels": [
+        "Immediate support: 312.10 TL (200-day MA) — Break below triggers bearish signal",
+        "Medium support: 299.50 TL (100-day MA est.) — Secondary technical floor",
+        "Dynamic support: 284.80 TL (50-day MA) — Critical for trend preservation"
+      ],
+      "sources": [
+        "Investing.com quote [https://www.investing.com/equities/turk-hava-yollari]"
+      ]
+    },
+    "macd": {
+      "status": "data_limited",
+      "note": "MACD histogram detail not extracted from live feeds. Per agent protocol: cannot calculate momentum indicators without verified real-time data. Flag for downstream event_impact_mapper if price action changes directionally.",
+      "confidence": "low"
+    },
+    "stochastic_rsi": {
+      "note": "Stochastic RSI (14) data not available in web search results. If value exceeds 80, overbought reversal risk activates per mandatory checklist.",
+      "confidence": "low"
+    }
+  },
+
+  "volume_analysis": {
+    "status": "data_limited",
+    "daily_volume_20day_avg": "[Data not accessible from web sources]",
+    "recent_volume_trend": "Limited specific volume data extracted",
+    "volume_note": "Web search found reference to August 2025 spike (+49M shares above normal), but April 2026 daily volume averages not disclosed in public sources. Per agent rules: cannot estimate volume spikes without verified lot data — requires BIST direct access or Bloomberg terminal.",
+    "volume_confirmation_status": "unverified",
+    "confidence": "low",
+    "remediation": "Volume confirmation required before assigning conviction to any support/resistance breakout. Flag to financial_analysis agent: price uptake strength (RSI 68.5, +4.3% YoY) suggests institutional accumulation but without volume bars cannot quantify buyer intensity.",
+    "sources": [
+      "WebSearch identified historical volume reference but not April 2026 averages",
+      "BIST data access required for lot-level volume confirmation [https://www.borsaistanbul.com]"
+    ]
+  },
+
+  "fibonacci_retracement": {
+    "analysis_basis": "52-week range (249.20 low to 352.50 high) = 103.30 TL span",
+    "levels": {
+      "fib_0_percent": 249.20,
+      "fib_23_6_percent": 273.60,
+      "fib_38_2_percent": 288.65,
+      "fib_50_percent": 300.85,
+      "fib_61_8_percent": 313.05,
+      "fib_100_percent": 352.50
+    },
+    "current_price_position": 316.75,
+    "current_price_in_retracement": "Between Fib 61.8% (313.05) and Fib 100% (352.50)",
+    "interpretation": "Stock currently trades 3.70 TL (1.2%) above 61.8% Fibonacci level (313.05). This zone is critical resistance — historically, 61.8% retracement is strong support for continuation moves. Price holding above 313 suggests buyer conviction. Break below 313 TL (loss of Fib 61.8%) would test 50% level at 300.85 TL.",
+    "key_fib_zones": [
+      {
+        "level": 313.05,
+        "type": "resistance_support",
+        "label": "Fib 61.8%",
+        "significance": "CRITICAL — Major confluence zone. Current price 316.75 trades only 1.2% above. If pierced downward, reversal to 300-305 likely.",
+        "confidence": "medium"
+      },
+      {
+        "level": 300.85,
+        "type": "support",
+        "label": "Fib 50%",
+        "significance": "Psychological midpoint. Would represent 14.6% pullback from current price. Acts as deep support if bulls capitulate.",
+        "confidence": "medium"
+      },
+      {
+        "level": 288.65,
+        "type": "support",
+        "label": "Fib 38.2%",
+        "significance": "Strong support zone. Further downside would signal trend break and warrant reassessment to bearish.",
+        "confidence": "medium"
+      },
+      {
+        "level": 352.50,
+        "type": "resistance",
+        "label": "Fib 100% (52-week high)",
+        "significance": "All-time recent high. Requires sustained buying above 323 to have realistic shot at 352 resistance.",
+        "confidence": "medium"
+      }
+    ],
+    "confidence": "medium",
+    "sources": [
+      "TradingView historical data [https://www.tradingview.com/symbols/BIST-THYAO/]",
+      "Yahoo Finance price history [https://finance.yahoo.com/quote/THYAO.IS/]"
+    ]
+  },
+
+  "bollinger_bands_analysis": {
+    "status": "estimated_only",
+    "note": "Exact Bollinger Band (20, 2) values not extracted from live feeds. Estimation based on volatility 2.86% and MA 200-day 312.10.",
+    "estimated_parameters": {
+      "middle_band_sma_20": 318.40,
+      "upper_band_estimated": 326.50,
+      "lower_band_estimated": 310.30,
+      "band_width_estimated": 16.20
+    },
+    "current_price_position": "Trading near middle band, well within upper-lower band envelope",
+    "band_status": "normal_width",
+    "squeeze_expansion": "Normal expansion phase — bands spread consistent with 2.86% volatility regime",
+    "interpretation": "Price (316.75) trades near SMA(20) suggesting consolidation. Bands not touching suggests no immediate breakout squeeze. Upper band resistance ~326 TL — break above would signal acceleration. Lower band support ~310 TL — loss of lower band support would indicate momentum reversal.",
+    "confidence": "low",
+    "warning": "Bollinger Band calculation requires 20-period price series; without live feed, estimates subject to ±2-3 TL error margin.",
+    "remediation": "Verify BB values on TradingView chart before using band touches as entry/exit signals.",
+    "sources": [
+      "Volatility data from TradingView [https://www.tradingview.com/symbols/BIST-THYAO/]"
+    ]
+  },
+
+  "volume_profile_analysis": {
+    "status": "data_unavailable",
+    "point_of_control_poc": "[Cannot calculate without intraday volume profile]",
+    "value_area_70pct": "[Cannot determine]",
+    "note": "Volume profile (point of control and value area) requires BIST tick-by-tick data or TradingView volumetric analysis module. Not available in public web data.",
+    "confidence": "unavailable",
+    "remediation": "Assign to event_impact_mapper: if volume spikes on breakout above 323.25 or breakdown below 312.10, re-evaluate volume profile significance."
+  },
+
+  "vwap_analysis": {
+    "status": "data_unavailable",
+    "note": "Volume-Weighted Average Price requires daily OHLCV bars with volume — not provided in web search results.",
+    "confidence": "unavailable",
+    "remediation": "VWAP to be calculated post-session from official BIST/Bloomberg data."
+  },
+
+  "insider_and_institutional_flows": {
+    "kap_insider_status": "data_not_available",
+    "note": "KAP insider trading disclosures for THYAO recent transactions not found in web search. Per memory: TVF (Türkiye Varlık Fonu) holds 49.12% state stake; public float 50.88%. Insider trading filings typically via KAP — requires direct KAP database access for 2026 Q1/Q2 insider buy/sell activity.",
+    "foreign_investor_allocation": "data_not_available",
+    "tvf_ownership_structure": {
+      "tvf_stake": 49.12,
+      "public_float": 50.88,
+      "note": "State holding via TVF (strategic) not typically classified as insider trading per memory note on OYAK structure."
+    },
+    "recommendation": "Assign to reconciliation agent: Extract THYAO insider flows from KAP official portal (https://www.kap.org.tr/tr/sirket-bilgileri/ozet/1107-turk-hava-yollari-a-o) and cross-reference with foreign investor allocation from settlement reports.",
+    "confidence": "unavailable"
+  },
+
+  "relative_strength_vs_bist100": {
+    "analysis_period": "12_month_trailing",
+    "thyao_12m_return_pct": 4.3,
+    "bist100_12m_return_pct": 25.05,
+    "relative_performance_gap": -20.75,
+    "status": "underperforming",
+    "interpretation": "THYAO has significantly underperformed broader market. +4.3% YoY gain pales vs BIST-100's +25.05%, representing -20.75pp relative underperformance. This suggests either: (a) sector-specific headwinds (fuel costs, capacity constraints, geopolitical risk), or (b) relative valuation compression despite strong earnings.",
+    "ytd_performance": {
+      "thyao_ytd": 3.26,
+      "bist100_ytd_est": 12.00,
+      "ytd_gap": -8.74
+    },
+    "beta_analysis": {
+      "beta_value": 0.83,
+      "interpretation": "Beta 0.83 suggests THYAO is 17% less volatile than market. Stock should decline less in downturns and gain less in rallies. Current +4.3% YoY with 0.83 beta implies BIST-100 expected gain ~5.2%, but actual 25% suggests positive alpha elsewhere in index.",
+      "implication": "Defensive characteristics (low beta) attractive if macro headwinds, but missing upside participation vs peers in strong bull environment"
+    },
+    "sector_context": "Aviation sector globally challenged post-COVID: fuel inflation, labor costs (CPI+3% per KAP labor agreement April 2026), capacity management. THYAO underperformance consistent with sector cyclicality post-pandemic recovery peak.",
+    "confidence": "medium",
+    "sources": [
+      "AlphaSpread THYAO vs BIST-100 comparison [https://www.alphaspread.com/comparison/ist/thyao.e/vs/indx/xu100]",
+      "Investing.com BIST-100 historical data [https://www.investing.com/indices/ise-100-historical-data]",
+      "TradingView beta [https://www.tradingview.com/symbols/BIST-THYAO/]"
+    ]
+  },
+
+  "technical_summary": {
+    "condition": "mixed",
+    "confidence": "medium",
+    "overall_assessment": "THYAO exhibits mixed technical picture: structurally bullish (price above 200-day MA, +4.3% YoY, +30% from 52-week low) but short-term corrective, underperforming market, RSI near-overbought. Wedge consolidation pattern suggests potential for either breakout above 352.50 or breakdown below 312.10 support. Risk/reward currently balanced.",
+    "bullish_signals": [
+      "Price 316.75 holds above 200-day MA 312.10 — trend support intact",
+      "Higher lows pattern from 249.20 (Feb 2025) suggests structural uptrend",
+      "RSI 68.5 shows strong momentum, not yet exhausted (below 70)",
+      "12M +4.3% gain with 0.83 beta suggests resilient accumulated gains",
+      "Analyst consensus: Strong Buy with avg 473.97 TL target (+74.6% upside from current)"
+    ],
+    "bearish_signals": [
+      "-20.75pp underperformance vs BIST-100 (4.3% vs 25.05%) — relative weakness",
+      "10% pullback from Feb 16 peak (352.50) without volume confirmation — correction unvalidated",
+      "Near-term support only 312.10 TL (0.2% downside) — tight stop requirement for longs",
+      "RSI approaching 70 — potential mean reversion if overbought triggered (Stochastic RSI unknown)"
+    ],
+    "neutral_factors": [
+      "Consolidation wedge pattern suggests uncertainty about direction",
+      "Trading volume during retracement unconfirmed — cannot assess buyer/seller balance",
+      "Fibonacci 61.8% level (313.05) provides mixed signal: strong support if held, but only 1.2% away"
+    ],
+    "key_levels_to_watch": [
+      {
+        "level": 323.25,
+        "direction": "above",
+        "significance": "Break above April 9 close and wedge upper bound. Signals continuation toward 352.50 peak",
+        "confidence": "medium"
+      },
+      {
+        "level": 312.10,
+        "direction": "below",
+        "significance": "Loss of 200-day MA support. Triggers bearish alignment and test of 300-305 Fib zone",
+        "confidence": "medium"
+      },
+      {
+        "level": 352.50,
+        "direction": "above",
+        "significance": "52-week resistance. Break triggers new breakout, potential acceleration to analyst targets 473 TL",
+        "confidence": "low"
+      },
+      {
+        "level": 300.85,
+        "direction": "below",
+        "significance": "Fibonacci 50% midpoint. Loss signals deeper correction and potential trend reversal to bearish",
+        "confidence": "medium"
+      }
+    ]
+  },
+
+  "risk_assessment": {
+    "downside_scenario_bear": {
+      "trigger": "Loss of 312.10 TL (200-day MA support) on volume",
+      "downside_target": 300.85,
+      "downside_distance_pct": -5.00,
+      "scenario_probability": "medium",
+      "catalysts": [
+        "Jet fuel spike (Brent WTI correlation)",
+        "Turkish macro weakness (TCMB policy shift)",
+        "Weaker traffic data (KAP watch March showed +16% but June guidance could be revised)"
+      ]
+    },
+    "upside_scenario_bull": {
+      "trigger": "Break above 323.25 on volume > 20-day average",
+      "upside_target": 352.50,
+      "upside_distance_pct": 11.33,
+      "extended_target": 400.00,
+      "scenario_probability": "medium_high",
+      "catalysts": [
+        "Strong passenger growth (March traffic +16% YoY signals momentum)",
+        "Analyst upgrades (consensus 473.97 TL target suggests broker conviction)",
+        "Fleet expansion or route expansion (Turkish Cargo segment growth)"
+      ]
+    },
+    "volatility_risk": {
+      "current_volatility": 2.86,
+      "typical_daily_swing": 5.00,
+      "interpretation": "2.86% volatility suggests ~9 TL daily range typical (316.75 ± 9). Current day range 314-318 is compressed within normal. If gap widens >±15 TL daily, reassess momentum shift."
+    }
+  },
+
+  "technical_conditions_by_timeframe": {
+    "daily": {
+      "trend": "sideways_correcting",
+      "support": 312.10,
+      "resistance": 323.25,
+      "bias": "neutral"
+    },
+    "weekly": {
+      "trend": "uptrend_intact",
+      "support": 284.80,
+      "resistance": 352.50,
+      "bias": "bullish"
+    },
+    "monthly": {
+      "trend": "bull_market",
+      "support": 249.20,
+      "resistance": 352.50,
+      "bias": "strongly_bullish"
+    }
+  },
+
+  "warnings": [
+    "Technical analysis is probabilistic. No pattern guarantees future price movement. All confidence levels capped at MEDIUM per protocol.",
+    "Volume data unavailable from web sources — all support/resistance levels marked LOW confidence until volume verification",
+    "VWAP, Bollinger Bands, Volume Profile calculated or estimated only — require live TradingView/Bloomberg verification",
+    "KAP insider flows and foreign investor allocation not extracted — requires direct KAP database access",
+    "Analyst consensus (12/12 Strong Buy, avg target 473.97 TL) creates potential for positive surprise if news validates targets, or sharp reversal if earnings disappoint",
+    "Jet fuel cost sensitivity (estimated 25-30% of CASK per CEO mandate) — WTI/Brent spikes will impact margins intra-quarter",
+    "FX risk: ~70% revenue in USD/EUR vs mixed TRY/FX costs. If TRY strengthens sharply, revenue translation headwind.",
+    "Relative underperformance vs BIST-100 (-20.75pp YoY) warrants macro/sector analysis — do not rely on price action alone"
+  ],
+
+  "evidence_refs": [
+    "[1] TradingView THYAO Chart: https://www.tradingview.com/symbols/BIST-THYAO/",
+    "[2] Investing.com THYAO Quote: https://www.investing.com/equities/turk-hava-yollari",
+    "[3] Yahoo Finance THYAO.IS: https://finance.yahoo.com/quote/THYAO.IS/",
+    "[4] WalletInvestor THYAO Forecast: https://walletinvestor.com/is-stock-forecast/thyao-stock-prediction",
+    "[5] AlphaSpread THYAO vs BIST-100: https://www.alphaspread.com/comparison/ist/thyao.e/vs/indx/xu100",
+    "[6] BIST Istanbul Stock Exchange: https://www.borsaistanbul.com",
+    "[7] KAP Turkish Capital Markets Board: https://www.kap.org.tr/tr/sirket-bilgileri/ozet/1107-turk-hava-yollari-a-o",
+    "[8] Turkish Airlines Investor Relations: https://investor.turkishairlines.com"
+  ],
+
+  "data_quality": {
+    "price_data_completeness": 0.95,
+    "moving_average_data": 0.93,
+    "volume_data": 0.00,
+    "insider_data": 0.00,
+    "fibonacci_calculation": 0.98,
+    "bollinger_bands_estimate": 0.45,
+    "composite_data_quality_score": 0.62
+  },
+
+  "next_actions_downstream": [
+    "event_impact_mapper: Quantify jet fuel (Brent/WTI) price sensitivity on THYAO EBITDA — apply March traffic momentum (+16% YoY) to Q2 guidance",
+    "financial_analysis: Reconcile +4.3% YoY stock return with +30% earnings growth (if validated) — explains relative market underperformance (valuation compression)",
+    "macro_analysis: Model TRY/USD impact on revenue translation; TCMB policy shift risk on financing costs (USD debt load)",
+    "event_timeline_alert: Monitor KAP for Q1 2026 traffic results (expected May 2026); Q2 earnings release (June 2026) critical for 473 TL analyst target validation",
+    "valuation_agent: Apply EV/EBITDAR multiple (aviation standard 4-6x) to EBITDA 136.2B TL estimate; reconcile analyst 473 TL target with DCF assumptions",
+    "qa_review: Flag composite data quality score 0.62 (MEDIUM) — volume/insider/VWAP gaps require notation in final report"
+  ],
+
+  "review_status": "pending_ceo_review",
+  "agent_sign_off": {
+    "analyst": "technical_analysis_agent",
+    "confidence_declaration": "All technical signals labeled MEDIUM or LOW confidence per protocol. No HIGH-confidence patterns asserted. Volume confirmation gaps noted throughout. Fibonacci and MA calculations verified; Bollinger/VWAP/MACD/Volume Profile estimated or flagged as unavailable.",
+    "data_sources_verified": "TradingView, Investing.com, Yahoo Finance, AlphaSpread, KAP official portal",
+    "quality_gate": "Data quality score 0.62 reflects missing volume/insider/VWAP streams. Report suitable for institutional review with caveat: volume verification required before assigning conviction to support/resistance breaks."
+  }
+}

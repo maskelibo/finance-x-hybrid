@@ -1,0 +1,690 @@
+{
+  "agent_id": "sector_competition",
+  "output_id": "sc-out-thyao-20260413",
+  "company": "THYAO",
+  "ticker": "THYAO",
+  "sector": "Aviation/Transport",
+  "analysis_date": "2026-04-13",
+  "analysis_period": "FY 2024 + Q1 2026 operational",
+  "timestamp": "2026-04-13T15:30:00Z",
+
+  "peer_group": {
+    "primary_peers": [
+      {
+        "ticker": "PGSUS",
+        "company": "Pegasus Airlines",
+        "market_cap_trl": 90,
+        "sector": "Aviation/Transport",
+        "business_model": "Low-Cost Carrier (LCC)",
+        "selection_rationale": "Only other BIST-listed airline; duopoly in Turkish market; different business model (LCC vs. FSC) provides benchmarking contrast",
+        "comparability_score": 0.88,
+        "notes": "Point-to-point, secondary hubs (SAW, Izmir); 87.7% load factor; EBITDA margin 28-30%"
+      }
+    ],
+    "international_reference_peers": [
+      {
+        "name": "Emirates",
+        "country": "UAE",
+        "business_model": "Full-Service Long-Haul",
+        "comparability_rationale": "Network hub model comparable to THYAO; long-haul operations; full-service premium positioning",
+        "confidence": "medium"
+      },
+      {
+        "name": "Ryanair",
+        "country": "Ireland",
+        "business_model": "Low-Cost Carrier",
+        "comparability_rationale": "LCC benchmark; EBITDA margin ~32%; valuation multiple benchmark (P/E 12x, EV/EBITDA 6.2x)",
+        "confidence": "medium"
+      },
+      {
+        "name": "Wizz Air",
+        "country": "Hungary",
+        "business_model": "Low-Cost Carrier",
+        "comparability_rationale": "Eastern European LCC; regional growth comparable; cost structure benchmark",
+        "confidence": "medium"
+      },
+      {
+        "name": "Lufthansa Group",
+        "country": "Germany",
+        "business_model": "Full-Service Network Carrier",
+        "comparability_rationale": "Global FSC leader; multiple benchmark (P/E 7.5x, EV/EBITDA 4.2x); margin comparison (EBITDA 13%)",
+        "confidence": "medium"
+      },
+      {
+        "name": "IAG (Iberia Air Group)",
+        "country": "Spain",
+        "business_model": "Full-Service Network Carrier",
+        "comparability_rationale": "European FSC; leverage comparison (0.7x), margin benchmark",
+        "confidence": "medium"
+      }
+    ],
+    "sector_classification": "BIST Transport / Civil Aviation",
+    "peer_group_rationale": "Turkish aviation sector operates as duopoly (THYAO + PEGASUS). No other BIST-listed competitors. International peers used for valuation multiple context and margin benchmarking, but BIST-primary focus enforced per mandate."
+  },
+
+  "benchmarking_scorecard": {
+    "financial_metrics": [
+      {
+        "metric": "Gross Profit Margin (%)",
+        "thyao_2024": 19.2,
+        "sector_median_fsc": 20.0,
+        "sector_top_quartile": 23.0,
+        "sector_bottom_quartile": 15.0,
+        "global_lcc_typical": 38.0,
+        "thyao_rank": "in-line FSC",
+        "assessment": "THYAO aligned with full-service carrier norms; fuel pass-through limits gross margin expansion",
+        "confidence": 0.88
+      },
+      {
+        "metric": "EBITDA Margin (%)",
+        "thyao_2024": 18.3,
+        "sector_median_fsc": 12.5,
+        "sector_top_quartile": 16.0,
+        "sector_bottom_quartile": 8.5,
+        "pegasus_2024": 29.0,
+        "global_lcc_typical": 28.0,
+        "global_fsc_typical": 12.0,
+        "thyao_rank": "above FSC median; below LCC",
+        "assessment": "THYAO EBITDA margin 18.3% is above global FSC average (10-15%) and FSC peer Lufthansa (13%), but compressed by full-service cost model vs. PEGASUS 28-30%",
+        "confidence": 0.90
+      },
+      {
+        "metric": "Operating Profit Margin (EBIT %)",
+        "thyao_2024": 10.8,
+        "thyao_rank": "above FSC median",
+        "assessment": "Operating leverage healthy; EBIT 10.8% above global FSC typical (8-12%)",
+        "confidence": 0.85
+      },
+      {
+        "metric": "Net Profit Margin (%)",
+        "thyao_2024": 15.2,
+        "global_fsc_typical": 8.0,
+        "global_lcc_typical": 16.0,
+        "thyao_rank": "top FSC range",
+        "assessment": "Elevated by IAS 29 parasal kazanç (Turkish inflation adjustment); operational net margin likely 10-12% after inflation norm. Still above FSC peers.",
+        "confidence": 0.78
+      },
+      {
+        "metric": "Return on Equity (ROE %)",
+        "thyao_2024": 16.7,
+        "global_fsc_typical": 10.0,
+        "global_lcc_typical": 17.0,
+        "thyao_rank": "in-line LCC, above FSC",
+        "assessment": "ROE 16.7% strong for FSC; reflects state ownership (lower cost of capital) and profitability recovery post-COVID",
+        "confidence": 0.82
+      },
+      {
+        "metric": "Return on Assets (ROA %)",
+        "thyao_2024": 8.1,
+        "global_fsc_typical": 6.5,
+        "global_lcc_typical": 11.0,
+        "thyao_rank": "above FSC median",
+        "assessment": "Asset-intensive industry norm; THYAO 8.1% acceptable for FSC with modern fleet and infrastructure",
+        "confidence": 0.85
+      },
+      {
+        "metric": "Current Ratio (x)",
+        "thyao_2024": 1.01,
+        "airline_typical_range_low": 1.0,
+        "airline_typical_range_high": 1.5,
+        "thyao_rank": "tight but typical",
+        "assessment": "Airlines historically run tight working capital (advance ticket sales = deferred revenue). THYAO 1.01x is normal; limited buffer but manageable for strong cash generator",
+        "confidence": 0.85
+      },
+      {
+        "metric": "Debt-to-Equity Ratio (x)",
+        "thyao_2024": 1.06,
+        "airline_typical_low": 0.8,
+        "airline_typical_high": 1.5,
+        "thyao_rank": "elevated within airline range",
+        "assessment": "1.06x within airline norms but elevated; reflects post-COVID refinancing and fleet modernization debt",
+        "confidence": 0.90
+      },
+      {
+        "metric": "Net Debt / EBITDA (x)",
+        "thyao_2024_estimated": 1.9,
+        "airline_typical_low": 1.5,
+        "airline_typical_high": 2.5,
+        "thyao_rank": "upper range",
+        "assessment": "1.9x at upper end of airline range; reflects high debt load and depreciation pressure. Serviceable given EBITDA stability, but limited debt capacity",
+        "confidence": 0.75
+      },
+      {
+        "metric": "Interest Coverage (EBIT / Interest Expense) (x)",
+        "thyao_2024": 3.0,
+        "airline_typical_low": 3.0,
+        "airline_typical_high": 5.0,
+        "thyao_rank": "minimum adequate",
+        "assessment": "3.0x interest coverage at lower end of acceptable range; limited cushion for demand shock",
+        "confidence": 0.80
+      }
+    ],
+    "operational_kpi": [
+      {
+        "kpi": "Load Factor (%)",
+        "thyao_2024": 78.5,
+        "thyao_jan_2026": 84.2,
+        "thyao_mar_2026": 83.6,
+        "pegasus_2025": 87.7,
+        "ryanair_typical": 87.0,
+        "lufthansa_typical": 81.0,
+        "thyao_rank": "below LCC, in-line FSC",
+        "assessment": "THYAO load factor 78-84% is competitive for FSC (Lufthansa 81-82% typical) but 3-4pp below PEGASUS 87.7%. Slight improvement Jan-Mar 2026 suggests recovery momentum",
+        "confidence": 0.92
+      },
+      {
+        "kpi": "Revenue per ASK (RASK)",
+        "thyao_2024_estimated": 2.93,
+        "currency": "TRY/ASK",
+        "pegasus_2025_guidance": "declining 6-8% YoY",
+        "global_benchmark": "yield pressure sector-wide",
+        "thyao_rank": "compressed",
+        "assessment": "THYAO RASK declining due to capacity growth (8.7% ASK increase) outpacing demand (+9%). PEGASUS guidance confirms yield compression across sector. Capacity-driven commoditization risk",
+        "confidence": 0.75
+      },
+      {
+        "kpi": "Cost per ASK (CASK)",
+        "thyao_2024_estimated": 2.37,
+        "currency": "TRY/ASK",
+        "pegasus_cask_ex_fuel": "rising 3-5% ex-fuel (2025)",
+        "thyao_rank": "higher than PEGASUS (FSC model)",
+        "assessment": "THYAO CASK estimated 2.37 TRY/ASK derived from COGS. Rising labor costs (CPI+3% union agreement 2026-27) expected to drive CASK +6-8% YoY. Inflation-driven compression",
+        "confidence": 0.68
+      },
+      {
+        "kpi": "Passengers (Millions)",
+        "thyao_2024": 85.2,
+        "thyao_mar_2026_yoy": 16.0,
+        "pegasus_estimated_2024": 14.0,
+        "thyao_rank": "scale leader",
+        "assessment": "THYAO 85.2M passengers (2024) is 6x PEGASUS. March 2026 shows +16% YoY momentum. Absolute scale provides cost negotiation leverage",
+        "confidence": 0.95
+      },
+      {
+        "kpi": "Available Seat Kilometers (ASK, Billions)",
+        "thyao_2024": 254.1,
+        "thyao_mar_2026_monthly": 22.8,
+        "thyao_mar_2026_yoy_growth": 8.7,
+        "sector_growth": 10.0,
+        "thyao_rank": "in-line sector",
+        "assessment": "THYAO ASK 254.1B annually; growing 8.7% YoY but below sector average 10-12%. Reflects hub saturation (Istanbul IST capacity constraints)",
+        "confidence": 0.92
+      },
+      {
+        "kpi": "Fleet Size (Aircraft)",
+        "thyao_2024": 528,
+        "thyao_growth_yoy": 11.9,
+        "thyao_on_order_2026": 90,
+        "pegasus_estimated": 120,
+        "thyao_rank": "large absolute, moderate growth",
+        "assessment": "Fleet 528 aircraft with 90 on order modernizes capacity mix (A321neo, B787, A350). Growth rate 11.9% but slowing vs. 2023. D&A pressure from new deliveries expected 2026+",
+        "confidence": 0.90
+      },
+      {
+        "kpi": "Cargo Volume (Million Tonnes)",
+        "thyao_2024": 2.0,
+        "thyao_feb_2026_growth": 11.9,
+        "pegasus_cargo": "minimal/included in pax",
+        "thyao_rank": "revenue diversifier",
+        "assessment": "Turkish Cargo segment 2.0M tonnes (2024), growing +11.9% YoY (Feb 2026). Margin accretive; e-commerce tailwind. PEGASUS lacks cargo diversification",
+        "confidence": 0.88
+      }
+    ]
+  },
+
+  "competitive_position": {
+    "market_position": {
+      "market_share_thyao": 49.1,
+      "market_share_ajets_subsidiary": 14.3,
+      "market_share_thyao_group": 63.4,
+      "market_share_pegasus": 20.3,
+      "market_share_other": 16.3,
+      "competitive_structure": "Duopoly (THYAO + PEGASUS) with complementary business models",
+      "thyao_assessment": "Scale leader; market dominance concentrated in premium/hub segments"
+    },
+    "cost_competitiveness": {
+      "ebitda_margin_spread": {
+        "pegasus_2024": 29.0,
+        "thyao_2024": 18.3,
+        "spread_percentage_points": -10.7,
+        "primary_driver": "Business model efficiency (LCC vs. FSC). LCC model inherently 40-50% lower unit cost due to simplified operations, younger fleet, single aircraft type, less product complexity"
+      },
+      "labor_cost_trajectory": {
+        "thyao_union_agreement_2026_27": "CPI+3% annual escalation",
+        "turkish_inflation_current": 3.5,
+        "implied_thyao_wage_inflation": 6.5,
+        "pegasus_exposure": "Unknown; likely similar pressure",
+        "competitive_impact": "THYAO cost competitiveness erosion vs. PEGASUS expected 2026-27; FSC labor typically higher base, amplifying inflation impact"
+      },
+      "fuel_cost_exposure": {
+        "fuel_percent_of_cask": 25.0,
+        "wti_current_usd": 75.0,
+        "wti_2026_forecast_range": "65-75",
+        "thyao_hedging_status": "Partial",
+        "competitive_impact": "Deflationary tailwind 2026; supports margin vs. labor inflation offset"
+      },
+      "conclusion": "PEGASUS cost leader. THYAO cost-disadvantaged but mitigated by premium pricing in FSC segments"
+    },
+    "margin_trajectory": {
+      "2024_actuals": {
+        "thyao_ebitda_margin": 18.3,
+        "pegasus_ebitda_margin": 29.0
+      },
+      "2025_guidance": {
+        "thyao_margin_outlook": "Stable-to-compressed (implies margin pressure from labor/depreciation outweighing volume growth)",
+        "pegasus_margin_outlook": "Compressed to ~26% (from 28-30%, due to inflation and yield decline 6-8%)"
+      },
+      "2026_forecast": {
+        "thyao_ebitda_margin_midpoint": 16.5,
+        "thyao_margin_compression_driver": [
+          "Labor cost inflation +6-8% (CPI+3% union agreement)",
+          "D&A pressure from 90 aircraft 2026 deliveries (depreciation +5-10%)",
+          "RASK yield decline 3-5% (capacity overgrowth)",
+          "Partially offset by fuel deflation ~$5-10/bbl"
+        ],
+        "pegasus_ebitda_margin_2026": 25.0,
+        "sector_trend": "Margin compression across both carriers due to inflation and yield pressure"
+      },
+      "medium_term_outlook": "Normalization: THYAO margin 16-18% (2026-2027), PEGASUS margin 24-26%. Post-2028 (IST slot ceiling binding) margins normalize to 12-15% FSC, 20-25% LCC as growth decelerates"
+    }
+  },
+
+  "sector_dynamics_summary": {
+    "sector_lifecycle_phase": "GROWTH (2024-2028 projected)",
+    "phase_characteristics": {
+      "demand_growth": "Strong: +16% YoY (Mar 2026), +9% annual sector forecast",
+      "capacity_growth": "Aggressive: THYAO +8.7%, PEGASUS +14-16%, sector +10-12%",
+      "profitability": "Elevated: THYAO EBITDA 18.3%, PEGASUS 28-30% vs. global airline 10%",
+      "competition_intensity": "Moderate: Duopoly with segment-based differentiation (hub vs. point-to-point)",
+      "regulatory_environment": "Stable but tightening: IST slot rationing Q1 2026, capacity ceiling 100M pax by 2028"
+    },
+    "key_demand_drivers": [
+      {
+        "driver": "Tourism Recovery",
+        "current_impact": "+15-20% YoY leisure passenger growth",
+        "2026_2027_outlook": "Sustained if no macro shock; normalization risk if GDP growth slows",
+        "sector_impact": "Positive; sustains above-trend growth"
+      },
+      {
+        "driver": "Business Travel Recovery",
+        "current_impact": "~80% of 2019 levels; premium cabin pickup",
+        "2026_2027_outlook": "Gradual return to 100% by 2027",
+        "sector_impact": "Positive for THYAO (premium), mixed for PEGASUS"
+      },
+      {
+        "driver": "Istanbul Hub Connectivity",
+        "current_impact": "THYAO expanding long-haul routes (A350, B787); Star Alliance integration",
+        "2026_2027_outlook": "Network effects accretive; hub economics improve with fleet modernization",
+        "sector_impact": "Positive for THYAO; limited impact PEGASUS (LCC model)"
+      },
+      {
+        "driver": "E-commerce / Cargo Growth",
+        "current_impact": "Turkish Cargo +11.9% YoY",
+        "2026_2027_outlook": "Moderate growth post-pandemic surge normalization",
+        "sector_impact": "Margin-accretive for THYAO; diversification advantage"
+      },
+      {
+        "driver": "Turkish Economic Growth",
+        "current_impact": "3-4% real GDP growth (vs. EU 0-1%)",
+        "2026_2027_outlook": "Outperformance likely sustained",
+        "sector_impact": "Positive relative advantage vs. European peers"
+      }
+    ],
+    "key_supply_constraints": [
+      {
+        "constraint": "Istanbul IST Runway Capacity",
+        "current_status": "~90% utilization; slot rationing implemented Q1 2026",
+        "timeline": "Hard capacity ceiling ~100M pax/year by 2028 (3rd runway on 10-year horizon)",
+        "sector_impact": "Supportive for yields (artificial scarcity); limits growth for hub-based carriers (THYAO)"
+      },
+      {
+        "constraint": "Aircraft Availability",
+        "current_status": "Strong order books (THYAO 90+, PEGASUS 120+); Airbus/Boeing supply chain constraints 2026-27",
+        "timeline": "Modulates growth; aircraft shortage may benefit existing operators vs. entrants",
+        "sector_impact": "Supply-side support for pricing; limits new entrant capacity additions"
+      },
+      {
+        "constraint": "Labor Availability",
+        "current_status": "Turkish labor market tight (tourism, construction competing)",
+        "timeline": "Wage inflation (CPI+3% THYAO agreement) expected 2026-27",
+        "sector_impact": "Cost headwind; both airlines exposed; PEGASUS advantage if non-unionized"
+      }
+    ],
+    "cost_structure_pressures": {
+      "fuel_25_30_percent": {
+        "current_wti": 75.0,
+        "2026_forecast": "65-75 (deflationary)",
+        "impact": "Supportive; margins compressed by other factors but fuel deflationary"
+      },
+      "labor_30_35_percent_ex_fuel": {
+        "current_trend": "CPI+3% (THYAO union 2026-27)",
+        "turkish_inflation": 3.5,
+        "implied_wage_inflation": 6.5,
+        "impact": "Major headwind; locks in 6-8% labor cost growth 2026-27"
+      },
+      "depreciation_aircraft_lease_15_20_percent": {
+        "current_status": "Rising due to 90 aircraft deliveries THYAO 2026",
+        "impact": "Moderate headwind; new aircraft deliveries increase D&A 5-10% cumulatively"
+      },
+      "airport_fees_10_15_percent": {
+        "current_status": "Controlled by Turkish DHMİ monopoly",
+        "expected_inflation": "3-5% annual",
+        "impact": "Minor headwind; less discretion than labor"
+      }
+    },
+    "competitive_dynamics": {
+      "market_share_trend": "THYAO stable (49%); PEGASUS growing gradually via secondary hubs",
+      "business_model_differentiation": "THYAO hub/premium, PEGASUS point-to-point/budget; complementary, not directly competitive",
+      "pricing_strategy_divergence": "THYAO yield management (premium pricing, business class), PEGASUS volume/cost leadership (low fares, à la carte)",
+      "market_equilibrium": "Stable duopoly; minimal disruption risk; gradual share shifts manageable"
+    },
+    "regulatory_risk_factors": [
+      {
+        "risk": "Istanbul IST Capacity Policy",
+        "status": "Slot rationing Q1 2026; 3rd runway on 10-year horizon",
+        "impact": "Supportive for yields (scarcity); growth ceiling 2028+ (THYAO hub dependent)"
+      },
+      {
+        "risk": "Turkish Inflation (IAS 29)",
+        "status": "3-5% annual; 100%+ cumulative 3-yr activates IAS 29",
+        "impact": "Cost headwind (labor clauses); parasal kazanç inflates reported NI (accounting artifact)"
+      },
+      {
+        "risk": "Turkish Interest Rates (TCMB)",
+        "status": "Policy rate ~20% (Jan 2026); high real rates",
+        "impact": "Debt servicing pressure; refinancing expensive (THYAO 1.9x leverage)"
+      },
+      {
+        "risk": "USD/TRY Exchange Rate",
+        "status": "44.70 (Apr 2026); 50-60% depreciation since 2019",
+        "impact": "Translation risk; THYAO's USD-denominated debt (aircraft loans) burdens increasing"
+      },
+      {
+        "risk": "Geopolitical / EU-Turkey Relations",
+        "status": "Stable for aviation (bilateral rights intact)",
+        "impact": "Low probability; high impact if EU flights restricted"
+      }
+    ]
+  },
+
+  "porter_five_forces": {
+    "rivalry_existing_competitors": {
+      "score": 4.0,
+      "scale_1_5": 5,
+      "trend": "stable",
+      "evidence": [
+        "Duopoly: THYAO 49.1%, PEGASUS 20.3%; limited new entrants",
+        "Market segmentation by business model (hub vs. point-to-point) reduces direct rivalry intensity",
+        "Capacity growth (8.7% THYAO, 14-16% PEGASUS) outpaces demand (+9%); yield compression suggests moderate-to-high competitive pressure",
+        "Load factor divergence (THYAO 78-84% vs. PEGASUS 87.7%) indicates segmented competition, not all-out price war"
+      ],
+      "competitive_implication": "Moderate-high rivalry within segments; segmented by business model; stable equilibrium"
+    },
+    "threat_new_entrants": {
+      "score": 2.0,
+      "scale_1_5": 5,
+      "trend": "declining",
+      "evidence": [
+        "High capital requirements (aircraft $75-150M each; THYAO fleet 528 aircraft)",
+        "Regulatory barriers (Turkish SHGM licensing, EU traffic rights, slot constraints at IST)",
+        "IST capacity bottleneck: slot rationing Q1 2026; new entrants compete with incumbents for limited slots",
+        "No new Turkish-based airline launched 2024-2026; consolidation risk limited"
+      ],
+      "competitive_implication": "LOW entry risk; high barriers protect incumbent duopoly; IST slot scarcity deter new entrants"
+    },
+    "threat_substitutes": {
+      "score": 2.5,
+      "scale_1_5": 5,
+      "trend": "stable",
+      "evidence": [
+        "High-Speed Rail (Istanbul-Ankara): 4.5 hrs rail vs. 1.5 hrs flight; competitive for business segment",
+        "Bus/Coach: Price advantage but time prohibitive for medium-distance (<500 km)",
+        "Video conferencing: Global impact on business travel, but uniformly distributed"
+      ],
+      "competitive_implication": "MODERATE-LOW substitution threat; rail expansion could impact domestic short-haul (5-10 year horizon)"
+    },
+    "bargaining_power_suppliers": {
+      "score": 3.5,
+      "scale_1_5": 5,
+      "trend": "increasing",
+      "evidence": [
+        "Aircraft manufacturers oligopoly: Airbus + Boeing dominate; limited negotiating power",
+        "Fuel costs: 25-30% of total costs; WTI volatility ($10/bbl swing = 2-3% CASK), hedging imperfect",
+        "Labor costs: Unionized workforce; THYAO CPI+3% wage agreement locks in 6-8% inflation",
+        "Airport monopoly: Turkish DHMİ controls landing/handling fees; IST slot rationing increases leverage"
+      ],
+      "competitive_implication": "MODERATE-HIGH supplier power; aircraft manufacturers inflexible, fuel volatile, labor unionized, airport monopolist control"
+    },
+    "bargaining_power_buyers": {
+      "score": 3.5,
+      "scale_1_5": 5,
+      "trend": "increasing",
+      "evidence": [
+        "Leisure segment (60-80% of volume): High price sensitivity; online booking enables real-time comparison",
+        "Load factor divergence: PEGASUS 87.7% > THYAO 78-84% suggests pricing power varies by segment",
+        "Capacity growth (8.7-14-16% ASK) puts downward pressure on yields (RASK declining 6-8% per PEGASUS guidance)",
+        "Business segment (THYAO 25%, PEGASUS 5%): Higher loyalty; Star Alliance membership increases switching costs"
+      ],
+      "competitive_implication": "MODERATE-HIGH buyer power; leisure segment highly price-sensitive; online distribution lowers switching costs; capacity-driven yield pressure"
+    },
+    "overall_sector_attractiveness": {
+      "composite_score": 3.1,
+      "scale_1_5": 5,
+      "interpretation": "MODERATE attractiveness; growth phase offset by cost pressures and capacity constraints",
+      "key_positive_factors": [
+        "Strong demand recovery (+16% YoY pax)",
+        "Duopoly stability (high entry barriers)",
+        "Elevated profitability (18%+ EBITDA vs. 10% global average)",
+        "IST hub geographic advantage"
+      ],
+      "key_negative_factors": [
+        "Capacity overgrowth relative to demand (yield compression structural)",
+        "Labor cost inflation (CPI+3% union clauses)",
+        "IST slot ceiling by 2028 (growth constraint)",
+        "Turkish macro risks (TRY weakness, interest rates 20%, geopolitical tail risks)"
+      ]
+    }
+  },
+
+  "swot_analysis": {
+    "strengths": [
+      "Market dominance: 49% share (THYAO), 63% with AJet subsidiary; scale advantages in supplier negotiation",
+      "Hub model: Istanbul IST positioned as strategic connecting hub for Europe-Asia traffic; network effects and connectivity premium",
+      "State backing: 49% owned by Türkiye Varlık Fonu; implicit government support and political protection",
+      "Fleet modernization: A321neo, B787, A350 orders modernize aircraft mix; narrow-body + wide-body capability",
+      "Star Alliance: Premium cabin pricing, frequent flier partnerships, code-share network; yield support and customer loyalty",
+      "Cargo segment: Turkish Cargo subsidiary growing +11.9% YoY; margin-accretive diversification away from passenger segment",
+      "Profitability: EBITDA margin 18.3%, net margin 15.2%; above global airline averages"
+    ],
+    "weaknesses": [
+      "Operational efficiency gap: Load factor 78-84% vs. PEGASUS 87.7%; LCC inherent efficiency advantage 3-4pp",
+      "Cost structure: EBITDA margin 18.3% vs. PEGASUS 28-30%; full-service model inherently costlier 40-50% higher unit cost",
+      "Labor costs locked in: Union agreement CPI+3% (2026-27) locks in 6-8% wage inflation; cost competitiveness erosion",
+      "High leverage: Net debt/EBITDA 1.9x; debt servicing burden ($27B interest annual); limited debt capacity",
+      "D&A pressure: 90 aircraft deliveries 2026+ increase depreciation 5-10% cumulatively; margin headwind",
+      "Valuation discount: Trading P/E 3.7x (vs. 8-12x global FSC peers); market pricing in risks or growth discount (state ownership, EM currency, leverage)",
+      "Currency risk: Revenue ~70% USD/EUR, costs partially TRY; weak TRY (44.70 level) hurts profitability translation"
+    ],
+    "opportunities": [
+      "Tourism recovery: +15-20% YoY leisure pax growth (2024-25); sustained demand post-COVID",
+      "Istanbul hub growth: Geopolitical pivoting (Europe-Asia connectivity via Turkey); long-haul expansion upside",
+      "E-commerce cargo: Turkish Cargo riding e-commerce boom; international overnight courier growth tailwind",
+      "Secondary market expansion: Istanbul SAW, Izmir, Antalya underutilized; capacity expansion opportunity without IST slot constraints",
+      "Business travel recovery: ~80% of 2019 levels; room for margin improvement as premium segment recovers to 100%",
+      "Economic outperformance: Turkey 3-4% GDP growth vs. EU 0-1%; relative advantage sustains travel demand"
+    ],
+    "threats": [
+      "Capacity overgrowth: +10-12% sector ASK vs. +9% demand growth; yield compression structural and ongoing",
+      "Istanbul slot ceiling: IST capacity hard cap ~100M pax by 2028; growth capped for hub-dependent carriers (THYAO)",
+      "Labor inflation: CPI+3% wage clauses lock in 6-8% cost growth 2026-27; margin compression inevitable",
+      "Fuel volatility: WTI $10/bbl swing = 2-3% CASK change; 25-30% of costs exposed; hedging imperfect",
+      "Turkish macro risks: TRY depreciation (FC debt burden), TCMB rates 20% (refinancing expensive), inflation 3-5% (wage escalation)",
+      "EU competition: Lufthansa, Air France, KLM entering Turkish market; external competitive pressure increasing",
+      "Demand shock risk: Economic recession, terrorism, pandemic → pax demand cliff (COVID precedent); low probability but high impact"
+    ]
+  },
+
+  "confidence_assessment": {
+    "peer_group_definition": {
+      "confidence": 0.92,
+      "rationale": "BIST duopoly clear; no other Turkish-listed airlines. Global peers identified but secondary. Peer group limited but appropriate for mandate."
+    },
+    "porter_five_forces_scoring": {
+      "confidence": 0.80,
+      "rationale": "Forces based on disclosed data (market share, capacity growth, labor agreements, slot policy). Trend analysis limited to 12-month window. Some qualitative assessments (competitive dynamics) subject to interpretation."
+    },
+    "benchmarking_metrics_thyao": {
+      "confidence": 0.88,
+      "rationale": "THYAO financials from KAP XBRL (audited). Operational KPIs from verified sources (AeroHaber, Investor Relations). Some metrics (RASK, CASK) estimated from aggregated data; not line-item disclosed."
+    },
+    "pegasus_comparative_data": {
+      "confidence": 0.72,
+      "rationale": "Guidance-based (not FY audited results). 2024 detailed P&L (EBIT, NI) not extracted; estimates used. Full-year 2025 results pending disclosure. Investor presentations reviewed but detail limited."
+    },
+    "margin_trajectory_projections": {
+      "confidence": 0.68,
+      "rationale": "Based on cost inflation trends (labor+CPI), capacity growth (ASK), RASK decline guidance. Assumes macro stability (no demand shock, geopolitical stable). Tail risks identified but not quantified."
+    },
+    "sector_dynamics_turkish_market": {
+      "confidence": 0.78,
+      "rationale": "Based on historical trends (pax +16% YoY), slot policy announced (IST rationing Q1 2026), analyst consensus (6-8% growth forecast). Structural drivers documented; forward guidance subject to change."
+    },
+    "competitive_position_assessment": {
+      "confidence": 0.75,
+      "rationale": "SWOT analysis qualitative; based on disclosed competitive strategies and financial metrics. Unquantified competitive advantages (Star Alliance network value, brand premium) identified but not modeled."
+    },
+    "valuation_multiple_comparison": {
+      "confidence": 0.82,
+      "rationale": "Based on public market data (BIST, web search) and global peer multiples (Ryanair, Lufthansa, IAG). Not independently verified against live Bloomberg/FactSet feeds; sourcing from Yahoo Finance and company reports."
+    },
+    "overall_confidence": 0.77,
+    "confidence_label": "MEDIUM",
+    "primary_limitations": [
+      "PEGASUS detailed 2024-2025 P&L not fully extracted; relying on guidance and estimates",
+      "Forward-looking margin forecasts dependent on macro stability assumptions",
+      "Competitive advantage quantification (Star Alliance, hub premium) qualitative, not modeled",
+      "Management competitive assessment from context_extraction not yet available",
+      "Global peer multiple sourcing from web search; not independently verified against Bloomberg/FactSet"
+    ]
+  },
+
+  "evidence_refs": [
+    {
+      "claim": "Turkish Airlines 49.1% market share, Pegasus 20.3%",
+      "source_title": "CAPA Centre for Aviation — Turkish Airlines SWOT",
+      "source_url": "https://centreforaviation.com/analysis/reports/turkish-airlines--pegasus-airlines-competitive-equilibrium-712900",
+      "access_date": "2026-04-13",
+      "confidence": "high"
+    },
+    {
+      "claim": "THYAO March 2026 passengers +16% YoY, Load Factor 83.6%",
+      "source_title": "AeroHaber — March 2026 Turkish Airlines Traffic Figures",
+      "source_url": "https://aerohaber.com/turkish-airlines-announces-march-2026-traffic-figures/",
+      "access_date": "2026-04-13",
+      "confidence": "high"
+    },
+    {
+      "claim": "PEGASUS Load Factor 87.7% (2025), EBITDA margin 28-30% (2024), 26% guidance (2025)",
+      "source_title": "Pegasus Q4 2024 Investor Presentation (March 2025)",
+      "source_url": "https://www.pegasusinvestorrelations.com/medium/image/2024-q4-investor-presentation_1496/view.aspx",
+      "access_date": "2026-04-13",
+      "confidence": "high"
+    },
+    {
+      "claim": "THYAO 2024 Revenue 745.4B TRY, EBITDA 136.2B (18.3% margin), Net Profit 113.4B (15.2% margin)",
+      "source_title": "KAP Financial Statements (XBRL) + Turkish Airlines Investor Relations",
+      "source_url": "https://kap.org.tr/tr/sirket-bilgileri/ozet/1107-turk-hava-yollari-a-o",
+      "access_date": "2026-04-13",
+      "confidence": "high"
+    },
+    {
+      "claim": "Global airline industry net profit margin 3.9% (2026 forecast), fuel 25.7% of costs",
+      "source_title": "IATA 2026 Outlook: Airline Profitability Stabilizes",
+      "source_url": "https://www.iata.org/en/pressroom/2025-releases/2025-12-09-01/",
+      "access_date": "2026-04-13",
+      "confidence": "high"
+    },
+    {
+      "claim": "Istanbul IST slot rationing Q1 2026, capacity ceiling ~100M pax by 2028",
+      "source_title": "THYAO capacity guidance, AeroHaber, Air Service One analysis",
+      "source_url": "https://airserviceone.com/new-route-of-the-day-29-march-2026-lufthansa-between-munich-and-istanbul-ist/",
+      "access_date": "2026-04-13",
+      "confidence": "medium"
+    },
+    {
+      "claim": "THYAO union agreement CPI+3% wage increase (2026-27), Turkish CPI 3-5% annual",
+      "source_title": "KAP Watch Output — Labor Agreement Notification",
+      "source_url": "internal_pipeline_data",
+      "access_date": "2026-04-13",
+      "confidence": "high"
+    },
+    {
+      "claim": "Turkish Airlines P/E 3.7x, EV/EBITDA 2.7x, P/BV 0.33x (April 2026)",
+      "source_title": "Yahoo Finance, isyatirim.com.tr, Uzman Para",
+      "source_url": "https://finance.yahoo.com/quote/THYAO.IS/",
+      "access_date": "2026-04-13",
+      "confidence": "medium"
+    },
+    {
+      "claim": "Ryanair P/E 12x, EV/EBITDA 6.2x, Lufthansa P/E 7.5x, EV/EBITDA 4.2x",
+      "source_title": "Web search — airline valuation multiples",
+      "source_url": "google_search_synthesis",
+      "access_date": "2026-04-13",
+      "confidence": "medium"
+    },
+    {
+      "claim": "Turkish Airlines fleet 528 aircraft (+11.9% YoY), 90 aircraft on order (2026)",
+      "source_title": "AeroHaber, GCM Investment research",
+      "source_url": "https://aerohaber.com/turkish-airlines-earned-2-2-billion-profit-in-2025-90-new-aircraft-arriving-in-2026/",
+      "access_date": "2026-04-13",
+      "confidence": "high"
+    }
+  ],
+
+  "warnings": [
+    {
+      "warning_type": "data_gap",
+      "severity": "medium",
+      "description": "PEGASUS detailed 2024 P&L (EBIT, net profit, ROE) not independently extracted from audited financials. Estimates derived from management guidance and investor presentations. Full-year 2025 results pending disclosure."
+    },
+    {
+      "warning_type": "forecast_assumption",
+      "severity": "medium",
+      "description": "Margin trajectory projections (2026-2028) assume Turkish macro stability (inflation moderates, no geopolitical shock, tourism sustained). Tail risks (EU conflict, economic recession, oil price spike) could materially alter sector dynamics."
+    },
+    {
+      "warning_type": "valuation_risk",
+      "severity": "medium",
+      "description": "THYAO trading at severe discount to global FSC peers (P/E 3.7x vs. 8-12x). Discount drivers include state ownership (governance discount), EM currency risk (TRY), leverage (1.9x), and Turkey macro risk. Discount may persist or widen."
+    },
+    {
+      "warning_type": "operational_risk",
+      "severity": "high",
+      "description": "IST capacity ceiling by 2028 creates hard growth limit for hub-dependent carrier. THYAO growth rates 16% YoY unsustainable beyond 2027-2028. Structural deceleration likely post-2028."
+    },
+    {
+      "warning_type": "cost_pressure",
+      "severity": "high",
+      "description": "Labor union agreement (CPI+3%) locks in 6-8% wage inflation 2026-27. Combined with new aircraft D&A and TRY depreciation, margin compression 2-3pp expected. Fuel deflation ($5-10/bbl) only partial offset."
+    },
+    {
+      "warning_type": "peer_data_incomplete",
+      "severity": "medium",
+      "description": "Global peer multiples (Ryanair, Lufthansa) sourced from web search, not independently verified against Bloomberg/FactSet. Multiples subject to daily market fluctuation."
+    },
+    {
+      "warning_type": "management_assessment_pending",
+      "severity": "medium",
+      "description": "Management competitive assessment from context_extraction agent not yet integrated. THYAO faaliyet raporu (annual report) may contain competitive self-assessment not reflected in this analysis."
+    }
+  ],
+
+  "review_status": "pending_ceo_review",
+  "next_actions": [
+    "CEO cross-check: Margin compression forecast (THYAO 18.3% → 16.5% 2026) against financial_analysis agent detailed P&L modeling",
+    "CEO cross-check: IST growth ceiling assumption (100M pax by 2028) against kap_watch timeline for SHGM slot policy updates",
+    "CEO cross-check: PEGASUS comparative data (2024-25 P&L detail) — escalate to data_collection if full investor materials available",
+    "Integrate management_competitive_assessment from context_extraction agent output (if available)",
+    "Forward to strategic_synthesis agent for investment recommendation synthesis with risk assessment"
+  ]
+}

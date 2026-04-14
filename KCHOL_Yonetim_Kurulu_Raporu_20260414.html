@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koç Holding A.Ş. — Kapsamlı Şirket Analizi | Finance X Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --brand-primary: #1e40af;
+            --brand-secondary: #1a1a2e;
+            --brand-accent: #f59e0b;
+            --brand-bg: #f8fafc;
+            --positive: #059669;
+            --negative: #dc2626;
+            --warning: #d97706;
+        }
+        @page {
+            size: A4;
+            margin: 20mm 15mm;
+            @bottom-center { content: "Finance X Platform | Confidential — Sayfa " counter(page); font-size: 8pt; }
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 10pt;
+            line-height: 1.5;
+            color: #1e293b;
+            background: var(--brand-bg);
+        }
+        .page {
+            page-break-before: always;
+            page-break-inside: avoid;
+            background: white;
+            padding: 20mm;
+            margin-bottom: 10mm;
+            break-before: page;
+        }
+        .page:first-of-type { page-break-before: avoid; }
+        .cover-page {
+            background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            padding: 40mm;
+        }
+        .cover-page .brand-mark {
+            font-size: 11pt;
+            font-weight: 700;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 60px;
+            letter-spacing: 1px;
+        }
+        .cover-page h1 {
+            font-size: 42pt;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+        .cover-page .ticker {
+            font-size: 18pt;
+            font-weight: 600;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+        .cover-page .report-date {
+            font-size: 11pt;
+            margin-top: 40px;
+            opacity: 0.85;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--brand-primary);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+        .company-ticker {
+            font-weight: 700;
+            color: var(--brand-primary);
+            font-size: 11pt;
+            margin-right: 12px;
+        }
+        .report-section {
+            font-size: 10pt;
+            color: #64748b;
+        }
+        .brand-mark {
+            background: var(--brand-primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 11pt;
+        }
+        h1 { font-size: 22pt; font-weight: 700; color: var(--brand-primary); margin: 20px 0 15px 0; }
+        h2 { font-size: 16pt; font-weight: 700; color: var(--brand-primary); margin: 18px 0 12px 0; border-bottom: 2px solid var(--brand-primary); padding-bottom: 5px; }
+        h3 { font-size: 13pt; font-weight: 600; color: #1e3a5f; margin: 14px 0 8px 0; }
+        h4 { font-size: 11pt; font-weight: 600; margin: 10px 0 6px 0; }
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+        p.analysis-intro {
+            font-style: italic;
+            color: #475569;
+            margin-bottom: 12px;
+            font-size: 9.5pt;
+            border-left: 3px solid var(--brand-primary);
+            padding-left: 10px;
+        }
+        .analysis-block {
+            margin: 20px 0;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .analysis-commentary {
+            background: #f8fafc;
+            border-radius: 4px;
+            padding: 12px 15px;
+            margin-top: 12px;
+            font-size: 9.5pt;
+            line-height: 1.7;
+            color: #1e293b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        table thead tr {
+            background: var(--brand-primary);
+            color: white;
+        }
+        table th {
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 9pt;
+        }
+        table td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 9pt;
+        }
+        table td.num {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+        table tbody tr:nth-child(even) {
+            background: #f1f5f9;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .kpi-card {
+            border-left: 4px solid var(--brand-primary);
+            background: #f8fafc;
+            padding: 12px 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .kpi-label {
+            font-size: 8.5pt;
+            color: #64748b;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .kpi-value {
+            font-size: 16pt;
+            font-weight: 700;
+            color: var(--brand-primary);
+            margin: 5px 0;
+        }
+        .kpi-change {
+            font-size: 9pt;
+            font-weight: 600;
+        }
+        .kpi-change.positive { color: var(--positive); }
+        .kpi-change.negative { color: var(--negative); }
+        .callout {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .callout.positive { background: #ecfdf5; border-left-color: var(--positive); }
+        .callout.negative { background: #fef2f2; border-left-color: var(--negative); }
+        .chart-container {
+            margin: 15px 0;
+            text-align: center;
+            max-height: 250px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .chart-container svg {
+            width: 100%;
+            max-width: 500px;
+        }
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .scenario-box {
+            border: 2px solid var(--brand-primary);
+            border-radius: 4px;
+            padding: 12px;
+            text-align: center;
+        }
+        .scenario-label { font-weight: 600; font-size: 9pt; color: var(--brand-primary); margin-bottom: 5px; }
+        .scenario-value { font-size: 14pt; font-weight: 700; color: var(--brand-primary); margin: 5px 0; }
+        .scenario-note { font-size: 8.5pt; color: #64748b; }
+        .data-warning {
+            background: #fef3c7;
+            border-left: 3px solid #d97706;
+            padding: 10px 12px;
+            margin: 10px 0;
+            font-size: 8.5pt;
+            border-radius: 3px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 8pt;
+            font-weight: 600;
+        }
+        .badge-high { background: #ecfdf5; color: var(--positive); }
+        .badge-medium { background: #fffbeb; color: var(--warning); }
+        .badge-low { background: #fef2f2; color: var(--negative); }
+        ul { margin-left: 20px; margin-bottom: 10px; }
+        li { margin: 5px 0; font-size: 9.5pt; }
+        strong { font-weight: 700; }
+        em { font-style: italic; }
+        .toc-page { page-break-after: avoid; }
+        .toc-page h2 { margin-top: 0; }
+        .toc-list { margin-left: 15px; font-size: 10pt; line-height: 1.8; }
+        .toc-list li { margin: 6px 0; }
+        @media print {
+            body { background: white; }
+            .page { background: white; box-shadow: none; }
+        }
+        p, li, .analysis-block, .callout {
+            orphans: 4;
+            widows: 4;
+        }
+        h1, h2, h3, h4 {
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        tr { page-break-inside: avoid; break-inside: avoid; }
+        h2 + p, h3 + p {
+            page-break-before: avoid;
+            break-before: avoid;
+        }
+    </style>
+</head>
+<body>
+
+<!-- KAPAK SAYFASI -->
+<div class="page cover-page">
+    <div class="brand-mark">Finance X | Kurumsal Araştırma</div>
+    <h1>Koç Holding A.Ş.</h1>
+    <div class="ticker">KCHOL.IS</div>
+    <div style="font-size: 12pt; margin-top: 30px; opacity: 0.9;">Kapsamlı Şirket Analizi</div>
+    <div style="font-size: 11pt; margin-top: 20px; opacity: 0.85;">Delta-Update | 10–14 Nisan 2026</div>
+    <div class="report-date">Hazırlayan: Finance X Platform<br/>Alıcı: Kurumsal Yatırımcı<br/>14 Nisan 2026</div>
+</div>
+
+<!-- İÇİNDEKİLER -->
+<div class="page toc-page">
+    <h2>İçindekiler</h2>
+    <div class="toc-list">
+        <ul style="list-style: none; margin: 0;">
+            <li><strong>I. Yönetici Özeti</strong> .................................. Sayfa 3</li>
+            <li><strong>II. Şirket Profili</strong> .................................. Sayfa 5</li>
+            <li><strong>III. Finansal Analiz</strong> .................................. Sayfa 7</li>
+            <li><strong>IV. Değerleme & Hedef Fiyat</strong> .................................. Sayfa 10</li>
+            <li><strong>V. Sektör & Rekabet Analizi</strong> .................................. Sayfa 13</li>
+            <li><strong>VI. Makroekonomik Bağlam</strong> .................................. Sayfa 15</li>
+            <li><strong>VII. Teknik Analiz</strong> .................................. Sayfa 17</li>
+            <li><strong>VIII. ESG Değerlendirmesi</strong> .................................. Sayfa 19</li>
+            <li><strong>IX. Haber & Sentiment</strong> .................................. Sayfa 20</li>
+            <li><strong>X. KAP Olayları & Etki</strong> .................................. Sayfa 22</li>
+            <li><strong>XI. Risk Değerlendirmesi</strong> .................................. Sayfa 24</li>
+            <li><strong>XII. Sonuç & Öneriler</strong> .................................. Sayfa 26</li>
+            <li><strong>Zorunlu Bildirimler</strong> .................................. Sayfa 28</li>
+        </ul>
+    </div>
+</div>
+
+<!-- I. YÖNETİCİ ÖZETİ -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Yönetici Özeti</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>I. Yönetici Özeti</h1>
+
+    <h2>Temel Değerlendirme</h2>
+    
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            Koç Holding, Türkiye'nin en büyük çeşitlendirilmiş konglomerası olarak enerji, bankacılık, otomotiv, dayanıklı tüketim, telekom ve çelik sektörlerinde faaliyet göstermektedir. 14 Nisan 2026 itibarıyla 204 TL piyasa fiyatıyla, blended NAV tahminimiz olan 388 TL'nin %47.4 iskontosunda işlem görmektedir.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th class="num">Değer</th>
+                    <th class="num">Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Mevcut Fiyat</td>
+                    <td class="num">204 TL</td>
+                    <td class="num">—</td>
+                </tr>
+                <tr>
+                    <td>Blended NAV</td>
+                    <td class="num">385–388 TL</td>
+                    <td class="num">ORTA</td>
+                </tr>
+                <tr>
+                    <td>Holding İskontosu</td>
+                    <td class="num">%47.4</td>
+                    <td class="num">⚠️ Zirve</td>
+                </tr>
+                <tr style="background: #ecfdf5;">
+                    <td><strong>Baz Hedef (12 ay)</strong></td>
+                    <td class="num"><strong>252 TL</strong></td>
+                    <td class="num"><strong>+23.5%</strong></td>
+                </tr>
+                <tr>
+                    <td>Bull Hedef</td>
+                    <td class="num">338 TL</td>
+                    <td class="num">+65.7%</td>
+                </tr>
+                <tr>
+                    <td>Bear Hedef</td>
+                    <td class="num">170 TL</td>
+                    <td class="num">−16.7%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            <strong>Temel Bulgu:</strong> KCHOL, parçaların toplamı (SOTP) değerleme metodolojisine göre %47 iskontoda işlem görmektedir. Bu iskonto, yapısal sermaye verimliliği sorununu (ROE %3.25 vs. sermaye maliyeti %38) ve Fitch görünüm indiriminin makro baskısını yansıtmaktadır. Tarihsel ortalama iskonto %20–30 bandında seyrederken, mevcut %47.4 level, iskonto normalizasyonu potansiyeli ile birlikte yapısal değer açılması riskini göstermektedir.
+        </div>
+    </div>
+
+    <h2>4 Kritik Bulgu</h2>
+
+    <div class="analysis-block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Bulgu</th>
+                    <th>Etki</th>
+                    <th>Güven</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Net Karın %70'i Tek Seferlik</strong><br/>TUPRS satışı + Koç Finansman çıkışı</td>
+                    <td>Operasyonel NI ~6.6B TL; F/K 850x→300x</td>
+                    <td><span class="badge badge-high">YÜKSEK</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TUPRS Marjı Geçici</strong><br/>$10–14/bbl vs. normalize $5–7/bbl</td>
+                    <td>21 Nisan dönüm noktası; −1.5–2.5% NAV riski</td>
+                    <td><span class="badge badge-medium">ORTA</span></td>
+                </tr>
+                <tr>
+                    <td><strong>YKBNK NIM Desteği Kısa Vadeli</strong><br/>%37 TCMB + BDDK CAR %12 artırımı</td>
+                    <td>22 Nisan PPK sonrası NIM baskısı olası</td>
+                    <td><span class="badge badge-medium">ORTA</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Fitch İskonto Baskısı Kalıcı</strong><br/>Net FX rezervi $19B; BB-/Stable</td>
+                    <td>İskonto +2–3pp = −8–12 TL NAV</td>
+                    <td><span class="badge badge-high">YÜKSEK</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            Bu dört faktör KCHOL'un FY2026 performansının temel belirlenim unsurlarıdır. Operasyonel karlılık (Q1: Tek seferlik satışların olmayışı) ve makro (faiz, enflasyon, jeopolitik) bu yılın getiri sürücüleridir. Enflasyonist ortamda temettü desteği tutarlı kalacak (5 yıl geçmişi) olmakla birlikte, ROE iyileştirmesi olmadan iskonto normalizasyonu gecikecektir.
+        </div>
+    </div>
+
+    <h2>Skor Kartı</h2>
+    
+    <div class="kpi-grid">
+        <div class="kpi-card" style="border-left-color: var(--positive);">
+            <div class="kpi-label">Finansal Sağlık</div>
+            <div class="kpi-value">6.0/10</div>
+            <div class="kpi-change">Nakit güçlü; FCF negatif</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: var(--warning);">
+            <div class="kpi-label">Büyüme Potansiyeli</div>
+            <div class="kpi-value">5.0/10</div>
+            <div class="kpi-change">Operasyonel zayıf</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: var(--positive);">
+            <div class="kpi-label">Sektör Pozisyonu</div>
+            <div class="kpi-value">8.0/10</div>
+            <div class="kpi-change">Lider varlıklar</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: var(--negative);">
+            <div class="kpi-label">Makro Uyum</div>
+            <div class="kpi-value">4.0/10</div>
+            <div class="kpi-change">Çoklu baskı</div>
+        </div>
+    </div>
+
+    <div class="callout negative">
+        <strong>⚠️ Veri Kalitesi Uyarısı:</strong> Pipeline QA Skoru 0.676/1.0 (eşik: 0.80). Gelir Q4/FY karışıklığı, DSO blocked, IFRS 8 segment %0 nedeniyle bazı metrikler [DÜŞÜK GÜVEN] etiketiyle sunulmaktadır.
+    </div>
+
+</div>
+
+<!-- II. ŞİRKET PROFİLİ -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Şirket Profili</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>II. Şirket Profili</h1>
+
+    <h2>Kurumsal Yapı</h2>
+    
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            Koç Holding A.Ş. 1963 yılında kurulan ve BIST'te işlem gören Türkiye'nin en büyük sanayi konglomerası olup, 6 ana sektörde faaliyet göstermektedir. Yönetim Kurulu Başkanı Ömer Koç, CEO Levent Çakıroğlu.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>İştirak</th>
+                    <th class="num">Sektör</th>
+                    <th class="num">Pay %</th>
+                    <th class="num">SOTP Katkısı (TL)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>YKBNK</td>
+                    <td class="num">Bankacılık</td>
+                    <td class="num">61.17</td>
+                    <td class="num">160–175</td>
+                </tr>
+                <tr>
+                    <td>TUPRS</td>
+                    <td class="num">Rafineri</td>
+                    <td class="num">40.5*</td>
+                    <td class="num">105–120</td>
+                </tr>
+                <tr>
+                    <td>AKBNK</td>
+                    <td class="num">Bankacılık</td>
+                    <td class="num">20.5</td>
+                    <td class="num">40–48</td>
+                </tr>
+                <tr>
+                    <td>FROTO</td>
+                    <td class="num">Otomotiv</td>
+                    <td class="num">41.75</td>
+                    <td class="num">38–45</td>
+                </tr>
+                <tr>
+                    <td>TCELL</td>
+                    <td class="num">Telekom</td>
+                    <td class="num">28.0</td>
+                    <td class="num">22–28</td>
+                </tr>
+                <tr>
+                    <td>ARCLK</td>
+                    <td class="num">Dayanıklı Tüketim</td>
+                    <td class="num">37.5</td>
+                    <td class="num">8–12</td>
+                </tr>
+                <tr>
+                    <td>EREGL</td>
+                    <td class="num">Çelik</td>
+                    <td class="num">5.5</td>
+                    <td class="num">5–7</td>
+                </tr>
+                <tr style="background: #ecfdf5; font-weight: 700;">
+                    <td colspan="2">GCM SOTP Toplam</td>
+                    <td colspan="2" class="num">~406 TL/hisse</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            * TUPRS payı: Doğrudan %4.27 + EYAŞ aracılığıyla %36–40 = Efektif %40.5–44.8. Önceki raporlarda yalnızca doğrudan pay (%26.2) kullanılmıştır. [KAYNAK: GCM Yatırım Q4 2025 SOTP]
+        </div>
+    </div>
+
+    <h2>Segment Performansı (FY2025)</h2>
+    
+    <div class="analysis-block">
+        <div class="chart-container">
+            <h3>Segment Net Kar Katkısı (Milyar TL)</h3>
+            <svg viewBox="0 0 500 200">
+                <!-- Y Ekseni -->
+                <line x1="50" y1="10" x2="50" y2="160" stroke="#ccc" stroke-width="1"/>
+                <!-- X Ekseni -->
+                <line x1="50" y1="160" x2="480" y2="160" stroke="#ccc" stroke-width="1"/>
+                
+                <!-- Barlar -->
+                <g id="bars">
+                    <!-- TUPRS: 13.4B -->
+                    <rect x="70" y="90" width="50" height="70" fill="#059669"/>
+                    <text x="95" y="165" text-anchor="middle" font-size="9" fill="#333">TUPRS</text>
+                    <text x="95" y="83" text-anchor="middle" font-size="10" font-weight="bold" fill="#059669">+13.4B</text>
+                    
+                    <!-- FROTO: 17.7B (EN YÜKSEK) -->
+                    <rect x="130" y="60" width="50" height="100" fill="#0d9488"/>
+                    <text x="155" y="165" text-anchor="middle" font-size="9" fill="#333">FROTO</text>
+                    <text x="155" y="53" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d9488">+17.7B</text>
+                    
+                    <!-- Finans: 4.2B -->
+                    <rect x="190" y="133" width="50" height="27" fill="#3b82f6"/>
+                    <text x="215" y="165" text-anchor="middle" font-size="9" fill="#333">Finans</text>
+                    <text x="215" y="128" text-anchor="middle" font-size="10" font-weight="bold" fill="#3b82f6">+4.2B</text>
+                    
+                    <!-- ARCLK: -10.9B (NEGATIF) -->
+                    <rect x="250" y="110" width="50" height="50" fill="#dc2626"/>
+                    <text x="275" y="165" text-anchor="middle" font-size="9" fill="#333">ARCLK</text>
+                    <text x="275" y="105" text-anchor="middle" font-size="10" font-weight="bold" fill="#dc2626">−10.9B</text>
+                    
+                    <!-- Diğer: -2.4B -->
+                    <rect x="310" y="150" width="50" height="10" fill="#94a3b8"/>
+                    <text x="335" y="165" text-anchor="middle" font-size="9" fill="#333">Diğer</text>
+                    <text x="335" y="145" text-anchor="middle" font-size="9" fill="#666">−2.4B</text>
+                </g>
+                
+                <!-- Y Ekseni İşaretleri -->
+                <text x="45" y="160" text-anchor="end" font-size="8" fill="#666">0</text>
+                <text x="45" y="110" text-anchor="end" font-size="8" fill="#666">10B</text>
+                <text x="45" y="60" text-anchor="end" font-size="8" fill="#666">20B</text>
+            </svg>
+            
+            <p style="text-align: left; font-size: 9pt; margin-top: 10px;">
+                <strong>Açıklama:</strong> FROTO ve TUPRS birlikte net karın %70'ini oluşturmaktadır. ARCLK'nın −10.9 milyar TL zararı 3 yıllık yapısal sorun olarak devam etmektedir. Finansal segment (YKBNK+AKBNK) yüksek faiz ortamından yararlansa da, NPL risk ve regulatory CAR artırımı 2026'da baskı yaratacaktır.
+            </p>
+        </div>
+
+        <div class="analysis-commentary">
+            KCHOL'un 2025 net kar profili, tek seferlik varlık satışlarına (TUPRS hisse satışı 9.3 milyar TL + Koç Finansman çıkışı 6.1 milyar TL = 15.4 milyar TL) büyük ölçüde bağımlıdır. Operasyonel temeli daha zayıf; ARCLK zarar devamı ve YKBNK NIM baskısının 2026'da yavaşlaması beklenmektedir.
+        </div>
+    </div>
+
+</div>
+
+<!-- III. FİNANSAL ANALİZ -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Finansal Analiz</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>III. Finansal Analiz</h1>
+
+    <h2>Gelir & Kârlılık Metrikleri</h2>
+    
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            Koç Holding'in FY2025 finansal sonuçları, gelir tabanında 2,760 milyar TL konsolide satışları ve 22.0 milyar TL net karı göstermektedir. Ancak, net karın %70'i varlık satışlarından kaynaklandığından, operasyonel temeli değerlendirirken dikkat gerekir.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th class="num">FY2025</th>
+                    <th class="num">FY2024</th>
+                    <th class="num">Değişim %</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Konsolide Net Satışlar (B TL)</td>
+                    <td class="num">2,760</td>
+                    <td class="num">752</td>
+                    <td class="num">+267%*</td>
+                </tr>
+                <tr>
+                    <td>FAVÖK (B TL)</td>
+                    <td class="num">181.5</td>
+                    <td class="num">[VERİ YOK]</td>
+                    <td class="num">—</td>
+                </tr>
+                <tr>
+                    <td>FAVÖK Marjı</td>
+                    <td class="num">6.6%</td>
+                    <td class="num">—</td>
+                    <td class="num">—</td>
+                </tr>
+                <tr>
+                    <td>Net Kar (B TL)</td>
+                    <td class="num">22.0</td>
+                    <td class="num">21.7</td>
+                    <td class="num">+1.4%</td>
+                </tr>
+                <tr style="background: #fef2f2;">
+                    <td>Op. Net Kar (arındırılmış)</td>
+                    <td class="num">6.6</td>
+                    <td class="num">~6.0</td>
+                    <td class="num">+10%</td>
+                </tr>
+                <tr>
+                    <td>ROE</td>
+                    <td class="num">3.25%</td>
+                    <td class="num">~3.0%</td>
+                    <td class="num">+8%</td>
+                </tr>
+                <tr>
+                    <td>ROCE</td>
+                    <td class="num">1.48%</td>
+                    <td class="num">~1.2%</td>
+                    <td class="num">+23%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            * Gelir tabanındaki %267 artış, YKBNK'nın 924 milyar TL geliri konsolidasyonundan kaynaklanmaktadır. Operasyonel temeli değerlendirecek olursak, single-digit büyüme görülmektedir. ROE %3.25, sermaye maliyeti %38'nin çok altında olup, holding yapısının yapısal bir değer yok edici olduğunu göstermektedir. [KAYNAK: GCM Yatırım Q4 2025, QA Rev2]
+        </div>
+    </div>
+
+    <h2>İşletme Sermayesi & Nakit Akışı</h2>
+    
+    <div class="analysis-block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th class="num">FY2025</th>
+                    <th class="num">Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>DIO (Stok Devir Süresi)</td>
+                    <td class="num">135 gün</td>
+                    <td class="num">[DÜŞÜK GÜVEN]</td>
+                </tr>
+                <tr>
+                    <td>DPO (Tedarikçi Ödeme Süresi)</td>
+                    <td class="num">189 gün</td>
+                    <td class="num">[DÜŞÜK GÜVEN]</td>
+                </tr>
+                <tr style="background: #fef2f2;">
+                    <td>CCC (Nakit Döngüsü)</td>
+                    <td class="num">−54 gün (kısmi)</td>
+                    <td class="num">DSO BLOCKED</td>
+                </tr>
+                <tr>
+                    <td>NWC (Milyar TL)</td>
+                    <td class="num">−443</td>
+                    <td class="num">Negatif (banka etkisi)</td>
+                </tr>
+                <tr>
+                    <td>NWC / Revenue</td>
+                    <td class="num">−55.2%</td>
+                    <td class="num">Bankacılık distorsiyonu</td>
+                </tr>
+                <tr style="background: #ecfdf5;">
+                    <td><strong>OCF (İşletme Nakit Akışı)</strong></td>
+                    <td class="num"><strong>−101.9 B TL</strong></td>
+                    <td class="num"><strong>YKBNK kredi büyümesi</strong></td>
+                </tr>
+                <tr>
+                    <td>FCF (Serbest Nakit Akışı)</td>
+                    <td class="num">~−120 B TL</td>
+                    <td class="num">Temettü nakit tüketiyor</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            Negatif OCF, YKBNK'nın tam konsolidasyonunda kredi portföyü büyümesinden kaynaklanmaktadır. Banka dışı operasyonlar nakit üretseler de, grup düzeyinde görülen negatif akış, bankacılık dinamiklerinin hakim olduğunu göstermektedir. Bu durum temettü dağıtımını varlık satışlarından finanse etmeyi gerektirmektedir — 2026'da varlık satışı olmasa temettü kapasitesi test edilecektir.
+        </div>
+    </div>
+
+</div>
+
+<!-- IV. DEĞERLEME -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Değerleme & Hedef Fiyat</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>IV. Değerleme & Hedef Fiyat</h1>
+
+    <h2>SOTP (Sum-of-the-Parts) NAV Analizi</h2>
+    
+    <div class="analysis-block">
+        <p class="analysis-intro">
+            Holding şirketlerinin değerlemesinde endüstri standardı olan SOTP yöntemi kullanılmıştır. Her bağlı ortaklık için uygun piyasa-tabanlı çarpanlar (P/BV, EV/EBITDA, P/Satış) uygulanarak, bağımsız valuasyonlar yapılmıştır.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Metodoloji</th>
+                    <th class="num">Ağırlık %</th>
+                    <th class="num">Değer (TL)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>SOTP (GCM Analist)</strong></td>
+                    <td class="num">85</td>
+                    <td class="num">406 TL</td>
+                </tr>
+                <tr>
+                    <td>Peer P/NAV Kalibrasyonu</td>
+                    <td class="num">10</td>
+                    <td class="num">—</td>
+                </tr>
+                <tr>
+                    <td>DDM (Gordon Growth)</td>
+                    <td class="num">5</td>
+                    <td class="num">21 TL</td>
+                </tr>
+                <tr style="background: #ecfdf5; font-weight: 700;">
+                    <td colspan="2">Blended NAV (50% GCM + 50% Market)</td>
+                    <td class="num">~388 TL</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Güncel NAV (TUPRS +3.73%, Fitch −2%)</td>
+                    <td class="num">~385 TL</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            GCM Yatırım'ın Şubat 2026 SOTP analiziyle uyumlu hareket edilmiştir. TUPRS'ın 10–14 Nisan'da %3.73 yükselmesi (+5 TL NAV etkisi) ve Fitch downgrade'inin makro risk primi (−8 TL NAV etkisi) güncel valuasyona yansıtılmıştır. Sonuç 385 TL NAV, mevcut 204 TL fiyatın %88'i iskont demektir. [KAYNAK: GCM Yatırım Q4 2025, event_impact_mapper, macro_analysis]
+        </div>
+    </div>
+
+    <h2>Holding İskontosu Sensitivitesi</h2>
+    
+    <div class="analysis-block">
+        <table style="font-size: 8.5pt;">
+            <thead>
+                <tr>
+                    <th>Holding İskontosu →</th>
+                    <th class="num">25%</th>
+                    <th class="num">30%</th>
+                    <th class="num">35%</th>
+                    <th class="num">40%</th>
+                    <th class="num">47%</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>NAV 388 TL</strong></td>
+                    <td class="num">291 TL</td>
+                    <td class="num">272 TL</td>
+                    <td class="num">252 TL ★</td>
+                    <td class="num">233 TL</td>
+                    <td class="num">204 TL ◆</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="font-size: 8.5pt; margin-top: 8px;">★ Baz senaryo (tarihsel ort. %30→35 dönüş) | ◆ Güncel fiyat (mevcut iskonto)</p>
+
+        <div class="analysis-commentary">
+            Holding iskontosunun normalizasyonu KCHOL hedef fiyatlandırmasının en kritik değişkenidir. Tarihi ortalama %20–30 bandında seyrederken, mevcut %47 level ekstrem görülmektedir. Baz senaryomuzda %35 iskonto (Fitch baskısı altında) 252 TL hedefine karşılık gelir. SAHOL seviyesi %25 iskontoya dönüş halinde 291 TL, tam normalizasyon %20'ye ise 310 TL+ potansiyeldir.
+        </div>
+    </div>
+
+    <h2>Hedef Fiyat Senaryoları</h2>
+    
+    <div class="scenario-grid">
+        <div class="scenario-box" style="border-color: #dc2626;">
+            <div class="scenario-label">🔴 BEAR</div>
+            <div class="scenario-value">170 TL</div>
+            <div class="scenario-note">−16.7% | Marj normalleşme + iskonto %50</div>
+        </div>
+        <div class="scenario-box" style="border-color: #0d9488;">
+            <div class="scenario-label">🟡 BASE</div>
+            <div class="scenario-value">252 TL</div>
+            <div class="scenario-note">+23.5% | Iskonto %35 (tarihi dönüş)</div>
+        </div>
+        <div class="scenario-box" style="border-color: #059669;">
+            <div class="scenario-label">🟢 BULL</div>
+            <div class="scenario-value">338 TL</div>
+            <div class="scenario-note">+65.7% | Iskonto %25 (SAHOL)</div>
+        </div>
+    </div>
+
+    <p style="font-size: 9pt; text-align: center; margin-top: 15px;">
+        <strong>Ağırlıklı Hedef = (170 × 25%) + (252 × 50%) + (338 × 25%) = 253 TL</strong>
+    </p>
+
+    <div class="callout warning">
+        <strong>Varsayımlar:</strong> SOTP NAV 385–388 TL; TUPRS efektif pay %40.5; YKBNK NPL %2.7 (normal); ARCLK toparlanma gecikmiş (2027+); Fitch BB-/Stable devam; TCMB %37 (sabit beklentisi).
+    </div>
+
+</div>
+
+<!-- V. SEKTÖR ANALİZİ -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Sektör & Rekabet</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>V. Sektör & Rekabet Analizi</h1>
+
+    <h2>Porter's Five Forces (Holding Düzeyinde)</h2>
+    
+    <div class="analysis-block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Güç</th>
+                    <th class="num">Skor (1–5)</th>
+                    <th>Trend & Not</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. Mevcut Rekabet</strong></td>
+                    <td class="num">4/5</td>
+                    <td>↑ TUPRS duopoly; TCELL oligopoly; YKBNK 6+ oyuncu</td>
+                </tr>
+                <tr>
+                    <td><strong>2. Yeni Girenler</strong></td>
+                    <td class="num">3/5</td>
+                    <td>↓ TUPRS $700M capex bariyeri; spectrum ihalesi</td>
+                </tr>
+                <tr>
+                    <td><strong>3. İkame Ürün</strong></td>
+                    <td class="num">4/5</td>
+                    <td>↑ TUPRS yeşil yakıtlar; TCELL OTT; AKBNK fintechs</td>
+                </tr>
+                <tr>
+                    <td><strong>4. Tedarikçi Gücü</strong></td>
+                    <td class="num">4/5</td>
+                    <td>↑ BOTAS +18.61% (4 Nisan 2026); OPEC ham petrol</td>
+                </tr>
+                <tr style="background: #ecfdf5;">
+                    <td><strong>5. Müşteri Gücü</strong></td>
+                    <td class="num">3/5</td>
+                    <td>→ TUPRS dağınık; TCELL 40M abone (düşük churn)</td>
+                </tr>
+                <tr style="background: #fef2f2; font-weight: 700;">
+                    <td colspan="2"><strong>Net Tehdit Seviyesi</strong></td>
+                    <td><strong>ORTA-YÜKSEK (3.6/5)</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            Holding seviyesinde değerlendirdiğimizde, yapısal rekabet yoğunluğu ve tedarikçi gücü (BOTAS) net tehdit oluşturmaktadır. TUPRS'ın rafineri market'ini kontrol etmesi pozitif; ancak enerji dönüşümü ve fintech inovasyonu uzun vadeli ikame riskini göstermektedir. Müşteri gücünün moderate olması, niş ürünler ve hizmetlerde (TCELL postpaid, YKBNK kurumsal) yüksek marj koruma potansiyeline işaret etmektedir.
+        </div>
+    </div>
+
+    <h2>SWOT Özeti</h2>
+    
+    <div class="kpi-grid">
+        <div class="kpi-card" style="border-left-color: #059669;">
+            <div class="kpi-label">✅ Güçlü Yönler</div>
+            <div class="kpi-value" style="font-size: 11pt;">Lider pozisyonlar; NAV açılması; EUR hedge</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: #dc2626;">
+            <div class="kpi-label">❌ Zayıf Yönler</div>
+            <div class="kpi-value" style="font-size: 11pt;">ROE %3.25; ARCLK zarar; −FCF</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: #0d9488;">
+            <div class="kpi-label">🟢 Fırsatlar</div>
+            <div class="kpi-value" style="font-size: 11pt;">İskonto norm.; FROTO EV; TUPRS capex</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: #d97706;">
+            <div class="kpi-label">🔴 Tehditler</div>
+            <div class="kpi-value" style="font-size: 11pt;">Marj normal.; NPL; jeopolitik</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- VI. MAKRO BAĞLAM -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Makroekonomik Bağlam</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>VI. Makroekonomik Bağlam</h1>
+
+    <h2>Kritik Makro Göstergeler</h2>
+    
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">TCMB Politika Faizi</div>
+            <div class="kpi-value">37.00%</div>
+            <div class="kpi-change positive">▲ Sabit (22 Nis PPK)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">TÜFE YoY</div>
+            <div class="kpi-value">30.87%</div>
+            <div class="kpi-change positive">▼ Dezenflasyon yavaş</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">USD/TRY Kuru</div>
+            <div class="kpi-value">44.70</div>
+            <div class="kpi-change">→ Stabil (kısa vade)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Net FX Rezervi</div>
+            <div class="kpi-value">$19B</div>
+            <div class="kpi-change negative">🔴 Kritik seviye</div>
+        </div>
+    </div>
+
+    <h2>Sektör-Spesifik Makro İtişler</h2>
+    
+    <div class="analysis-block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sektör / Bağlı</th>
+                    <th>Makro Kanal</th>
+                    <th class="num">Etki Yönü</th>
+                    <th class="num">Etki Büyüklüğü</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>TUPRS (Rafineri)</strong></td>
+                    <td>Brent $103 → $85–90 (marj norm.)</td>
+                    <td class="num">−</td>
+                    <td class="num">−1.5–2.5% NAV</td>
+                </tr>
+                <tr>
+                    <td><strong>YKBNK/AKBNK (Banka)</strong></td>
+                    <td>NIM %37 TCMB + NPL gelişimi</td>
+                    <td class="num">+/−</td>
+                    <td class="num">±0.5–1.0% NAV</td>
+                </tr>
+                <tr>
+                    <td><strong>FROTO (Otomotiv)</strong></td>
+                    <td>EUR/TRY tüm avantaj; iç talep zayıf</td>
+                    <td class="num">+/−</td>
+                    <td class="num">±1.0–1.5% NAV</td>
+                </tr>
+                <tr>
+                    <td><strong>ARCLK (Tüketim)</strong></td>
+                    <td>AB talebi %10 düşüş; TCMB %37 iç daralmıştır</td>
+                    <td class="num">−</td>
+                    <td class="num">−1.5–2.0% NAV</td>
+                </tr>
+                <tr style="background: #f1f5f9; font-weight: 700;">
+                    <td colspan="3"><strong>Konsolide Makro Etki (FY2026 Baz Senaryo)</strong></td>
+                    <td class="num"><strong>−0.5 to −1.5%</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            Makro ortam kısa vadede (Q2-Q3 2026) hafif negatif görülmektedir. TUPRS marjı normalleşmesi sürücü; BOTAS +18.61% gaz artışı COGS'ta −1.4 milyar TL etkisi; YKBNK NIM baskı ancak Fitch downgrade etkisi kalıcıdır. 22 Nisan TCMB PPK'sı sabit kalırsa (beklentisi %37), tüketici talebi baskı devam edecektir. Net FX rezervi $19B kritik seviyede —TL şoku potansiyeli mevcuttur.
+        </div>
+    </div>
+
+    <h2>Jeopolitik Risk: 21 Nisan Ateşkes Sona Erme</h2>
+    
+    <div class="callout negative">
+        <strong>⚠️ KRITIK TARİH:</strong> 21 Nisan 2026, İran-ABD ateşkesi sona eriyor. Abluka devam eder veya mu müzakere yeniden başlar mı, TUPRS rafineri marjını doğrudan belirleyecektir. Mevcut Brent $103/bbl, normalize $85–90 seviyeleri ise, her $1/bbl düşüş KCHOL NAV'ını −0.19% etkiyecektir. Beklenti dışında bir eskalasyon (Hormuz kapatılması) marj spike'ı yaratabilir, ancak crude temin krizi ile dengelenecektir.
+    </div>
+
+</div>
+
+<!-- VII. TEKNİK ANALİZ -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Teknik Analiz</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>VII. Teknik Analiz</h1>
+
+    <h2>Fiyat Trend Analizi (10–14 Nisan)</h2>
+    
+    <div class="analysis-block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Metrik</th>
+                    <th class="num">Değer</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Kapanış (10 Nisan)</strong></td>
+                    <td class="num">204.00 TL</td>
+                    <td><span class="badge badge-high">Baseline</span></td>
+                </tr>
+                <tr>
+                    <td>52 Hafta Range</td>
+                    <td class="num">133.70 – 229.10 TL</td>
+                    <td>Orta-üst bölge</td>
+                </tr>
+                <tr>
+                    <td>20-MA (Hareketli Ortalama)</td>
+                    <td class="num">190.69 TL</td>
+                    <td>Fiyat +7.0% üstü (bullish)</td>
+                </tr>
+                <tr>
+                    <td>50-MA</td>
+                    <td class="num">195.21 TL</td>
+                    <td>Fiyat +4.5% üstü</td>
+                </tr>
+                <tr>
+                    <td>100-MA / 200-MA</td>
+                    <td class="num">[VERİ YOK]</td>
+                    <td><span class="badge badge-low">Blocked — momentum tasdiki yapılmadı</span></td>
+                </tr>
+                <tr style="background: #ecfdf5;">
+                    <td><strong>Trend Sonucu</strong></td>
+                    <td colspan="2"><strong>Kısa vadeli ✅ Yükseliş aktif; Orta vadeli ⚠️ Belirtilmez (100/200-MA veri yok)</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            20-MA > 50-MA bullish konfigürasyonu kısa vadeli yükseliş momentumunu desteklemektedir. Ancak, 100-MA ve 200-MA verisi eksik olması, orta vadeli trend belirlenmesini engellemiştir. 10–14 Nisan delta window'unda +%0 değişim göz önüne alındığında, 204 TL düzeyinde konsolidasyon gözlenmektedir.
+        </div>
+    </div>
+
+    <h2>Destek & Direnç Seviyeleri</h2>
+    
+    <div class="analysis-block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Seviye</th>
+                    <th class="num">Fiyat (TL)</th>
+                    <th>Hacim Teyidi</th>
+                    <th class="num">Güven</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Fibonacci 23.6% Direnç</strong></td>
+                    <td class="num">206.60</td>
+                    <td>10 Nis: 5.02B TL hacim</td>
+                    <td><span class="badge badge-medium">ORTA</span></td>
+                </tr>
+                <tr style="background: #ecfdf5;">
+                    <td><strong>Dönüm Noktası (Pivot)</strong></td>
+                    <td class="num">204–206 TL</td>
+                    <td>Mevcut fiyat bölgesi</td>
+                    <td>ORTA</td>
+                </tr>
+                <tr>
+                    <td>Fibonacci 38.2% Destek</td>
+                    <td class="num">192.68</td>
+                    <td>[Veri yok]</td>
+                    <td><span class="badge badge-low">DÜŞÜK</span></td>
+                </tr>
+                <tr>
+                    <td>Fibonacci 50% Destek</td>
+                    <td class="num">181.40</td>
+                    <td>[Veri yok]</td>
+                    <td>DÜŞÜK</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            Fibonacci pattern analizi, fiyatın 204–207 TL pivot zonasında yer aldığını göstermektedir. 207 TL direncini kırırsa 213–225 TL test edilebilir. 192 TL desteğini kırması halinde bearish sinyal oluşacaktır. Hacim tasdiki eksikliği güveni sınırlamaktadır. [KAYNAK: technical_analysis QA Rev2 — ORTA GÜVEN]
+        </div>
+    </div>
+
+</div>
+
+<!-- VIII. ESG -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">ESG Değerlendirmesi</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>VIII. ESG Değerlendirmesi</h1>
+
+    <h2>ESG Skor Kartı</h2>
+    
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">E (Çevresel)</div>
+            <div class="kpi-value">5.0/10</div>
+            <div class="kpi-change">Net-zero 2050; Scope 3 eksik</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">S (Sosyal)</div>
+            <div class="kpi-value">4.0/10</div>
+            <div class="kpi-change">LTIR veri yok; çeşitlilik eksik</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">G (Yönetişim)</div>
+            <div class="kpi-value">6.5/10</div>
+            <div class="kpi-change">YK %36.4 bağımsız; iyi yapı</div>
+        </div>
+        <div class="kpi-card" style="background: #fef2f2; border-left-color: #dc2626;">
+            <div class="kpi-label">GENEL ESG</div>
+            <div class="kpi-value">5.3/10</div>
+            <div class="kpi-change"><strong>ORTA-DÜŞÜK</strong></div>
+        </div>
+    </div>
+
+    <div class="analysis-block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Parametre</th>
+                    <th class="num">Durum</th>
+                    <th>Not</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Net-zero 2050 Taahhüdü</td>
+                    <td class="num">✅ Var</td>
+                    <td>Scope 1/2/3 bölme eksik</td>
+                </tr>
+                <tr>
+                    <td>BIST Sürdürülebilirlik Endeksi</td>
+                    <td class="num">⚠️ [DOĞRULANAMADI]</td>
+                    <td>10 yıllık üyelik (bellek); 2025 teyiti gerekli</td>
+                </tr>
+                <tr>
+                    <td>YK Bağımsızlık</td>
+                    <td class="num">%36.4</td>
+                    <td>SPK min. %33 ✅; best practice %50+ ❌</td>
+                </tr>
+                <tr>
+                    <td>TFRS-S1/S2 (TSRS) Uyum</td>
+                    <td class="num">⚠️ Belirsiz</td>
+                    <td>2025 faaliyet raporu PDF çekilmedi</td>
+                </tr>
+                <tr>
+                    <td>Çeşitlilik & Kadın Yönetici %</td>
+                    <td class="num">[VERİ YOK]</td>
+                    <td>Faaliyet raporu sürdürülebilirlik bölümü eksi</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            KCHOL'un ESG profili holding büyüklüğüne göre daha ileri raporlama bekliyormuştur. Net-zero taahhüdü ileri görülmeli; ancak Scope breakdown ve CDP şeffaflığı eksik. Yönetişim iyi (YK yapısı, bağımsız üyeler); sosyal ve çevresel veri boşluğu greenwashing riski taşımaktadır. [KAYNAK: esg_agent QA Rev2 — ORTA GÜVEN]
+        </div>
+    </div>
+
+</div>
+
+<!-- IX. HABER & SENTIMENT -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Haber & Sentiment</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>IX. Haber & Sentiment Analizi</h1>
+
+    <h2>10–14 Nisan 2026 Olayları (Delta Window)</h2>
+    
+    <div class="analysis-block">
+        <table style="font-size: 8.5pt;">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Olay</th>
+                    <th class="num">Duygu</th>
+                    <th class="num">Materiality</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>8–13 Nis</td>
+                    <td>İran Ateşkes → Abluka Eskalasyonu (Brent –%15 → +%11)</td>
+                    <td style="color: #d97706; font-weight: 700;">VOLATIL</td>
+                    <td class="num">YÜKSEK</td>
+                </tr>
+                <tr>
+                    <td>10 Nis</td>
+                    <td>KCHOL 2025 Temettü: 6.83 TL brüt/hisse</td>
+                    <td style="color: #059669; font-weight: 700;">✅ POZİTİF</td>
+                    <td class="num">ORTA</td>
+                </tr>
+                <tr>
+                    <td>11–13 Nis</td>
+                    <td>Analist Konsensüs: 11 BUY / 0 SELL; ort. HF 292 TL</td>
+                    <td style="color: #059669; font-weight: 700;">✅ POZİTİF</td>
+                    <td class="num">YÜKSEK</td>
+                </tr>
+                <tr>
+                    <td>10 Nis</td>
+                    <td>Fitch Türkiye BB-/Stable (Pozitif→Stabil)</td>
+                    <td style="color: #dc2626; font-weight: 700;">❌ NEGATİF</td>
+                    <td class="num">YÜKSEK</td>
+                </tr>
+                <tr>
+                    <td>4 Nis</td>
+                    <td>BOTAS Gaz +18.61% (etkin tarih)</td>
+                    <td style="color: #dc2626; font-weight: 700;">❌ NEGATİF</td>
+                    <td class="num">YÜKSEK</td>
+                </tr>
+                <tr>
+                    <td>13 Nis</td>
+                    <td>TUPRS Marj Revizyonu: 6.5→10.5 $/bbl (İş Yatırım)</td>
+                    <td style="color: #059669; font-weight: 700;">✅ POZİTİF</td>
+                    <td class="num">YÜKSEK</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            10–14 Nisan window'unda 6 material olay raporlanmıştır. Net sentiment karışıktır: TUPRS marj revizyonu ve analist iyimserliği pozitif; Fitch downgrade ve BOTAS şoku negatif. İran jeopolitiğinin volatilitesi kısa vadeli herhangi bir fiyat trendinin taşıyıcılığını düşürmektedir. 21 Nisan ateşkes sona ermesi katalist olacaktır. [KAYNAK: sentiment_news_agent, event_impact_mapper, analyst_consensus_agent]
+        </div>
+    </div>
+
+    <h2>Pazar Duygusu Skoru</h2>
+    
+    <div class="callout" style="background: #fffbeb;">
+        <strong>Sentiment Skoru: −0.5 / 5.0</strong> (Hafif Negatif)<br/>
+        Trend: Kötüleşiyor (10 Nis +0.3 → 14 Nis −0.5)<br/>
+        Sebep: Fitch downgrade baskısı, Brent volatilitesi, BOTAS şoku konsensüs iyimserliğini bastırıyor.
+    </div>
+
+</div>
+
+<!-- X. KAP OLAYLARI -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">KAP Olayları & Etki</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>X. KAP Olayları & Etki Analizi</h1>
+
+    <h2>Son 12 Ay Özel Durum Bildirimleri</h2>
+    
+    <div class="data-warning">
+        <strong>⚠️ VERİ NOTU:</strong> KAP IDs 10–14 Nisan window'unda çekilemedi (web search kısıtlaması). Temettü ve TUPRS satışı teyit edilmiş; diğer bildirimleri doğrulamak için KAP XBRL erişimi gerekli.
+    </div>
+
+    <div class="analysis-block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Şirket</th>
+                    <th>Olay Türü</th>
+                    <th>Tarih</th>
+                    <th class="num">Etki</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>KCHOL</strong></td>
+                    <td>2025 Temettü: 6.83 TL brüt/hisse</td>
+                    <td>Feb 2026</td>
+                    <td class="num">CF ↓ 187.9B</td>
+                </tr>
+                <tr>
+                    <td><strong>TUPRS</strong></td>
+                    <td>2026 Kar Payı (14.56 vs 10.38 TL tutar çelişkisi) + 700M USD CAPEX</td>
+                    <td>Mar 2026</td>
+                    <td class="num">[Tutarsız]</td>
+                </tr>
+                <tr>
+                    <td><strong>TUPRS</strong></td>
+                    <td>KCHOL %2.1 hisse satışı</td>
+                    <td>Mar 2026</td>
+                    <td class="num">+9.32B TL likidite</td>
+                </tr>
+                <tr>
+                    <td><strong>ARCLK</strong></td>
+                    <td>2025 Temettü YOK (−10.944B TL zarar)</td>
+                    <td>Feb 2026</td>
+                    <td class="num">−10.9B konsol. etki</td>
+                </tr>
+                <tr>
+                    <td><strong>FROTO</strong></td>
+                    <td>2025 Temettü: 3.64 TL brüt/hisse</td>
+                    <td>Mar 2026</td>
+                    <td class="num">Minor</td>
+                </tr>
+                <tr>
+                    <td><strong>YKBNK</strong></td>
+                    <td>Q1 2026 Bilançosu (29 Nisan due)</td>
+                    <td>Forward</td>
+                    <td class="num">NIM test</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            KCHOL'un FY2025 strateji (portföy optimizasyonu) KAP bildirimlerde teyit edilmiştir: TUPRS satışı 9.32 milyar TL nakit, Koç Finansman çıkışı, Göcek marina girişi. Dağlı ortaklıklar seviyesinde temettü politikası tutarlı (TUPRS, FROTO dağıtım devam; ARCLK zarardan dağıtım yok). 29 Nisan YKBNK Q1 raporası kritik: NIM sürdürülebilirliği test edilecektir. [KAYNAK: kap_watch, event_impact_mapper — ORTA GÜVEN; KAP IDs eksik]
+        </div>
+    </div>
+
+</div>
+
+<!-- XI. RİSK DEĞERLENDİRMESİ -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Risk Değerlendirmesi</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>XI. Risk Değerlendirmesi</h1>
+
+    <h2>Temel Risk Faktörleri (Yatırım Perspektifinden)</h2>
+    
+    <div class="analysis-block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Risk</th>
+                    <th class="num">Etki</th>
+                    <th class="num">Olasılık</th>
+                    <th class="num">Skor (1–10)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>TUPRS Marj Normalleşme</strong> (21 Nis ateşkes)</td>
+                    <td class="num">−1.5–2.5% NAV</td>
+                    <td class="num">%65</td>
+                    <td class="num">8</td>
+                </tr>
+                <tr>
+                    <td><strong>Fitch İskonto Baskısı</strong> ($19B rezerv riski)</td>
+                    <td class="num">+2–3pp iskonto</td>
+                    <td class="num">%40–50</td>
+                    <td class="num">7</td>
+                </tr>
+                <tr>
+                    <td><strong>ARCLK Zarar Devamı</strong> (2026)</td>
+                    <td class="num">−3.7B TL katkı</td>
+                    <td class="num">%55–60</td>
+                    <td class="num">7</td>
+                </tr>
+                <tr>
+                    <td><strong>YKBNK NPL Spike</strong> (H2 2026)</td>
+                    <td class="num">−1.8–2.4B TL</td>
+                    <td class="num">%35–45</td>
+                    <td class="num">6</td>
+                </tr>
+                <tr>
+                    <td><strong>Net FX Rezerv Krizi</strong> (TL şoku)</td>
+                    <td class="num">FX kayıpları; CAD spike</td>
+                    <td class="num">%20–25</td>
+                    <td class="num">5</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="analysis-commentary">
+            En yüksek etki-olasılık kombinasyonu TUPRS marj normalleşmesi ve Fitch makro baskısıdır. Her iki risk de Nisan 2026'nın son haftasında (21 Nisan) tetikleme zamanı taşımaktadır. ARCLK ve YKBNK riskeri daha gecikmiş (H2 2026) fakat kronik karakterlidir. Net FX rezervi riski, iyi yönetilen portföy dışlaması halinde katlaşabilir. [KAYNAK: macro_analysis, event_impact_mapper, financial_analysis]
+        </div>
+    </div>
+
+    <h2>Risk Haritası (Etki × Olasılık)</h2>
+    
+    <div class="chart-container">
+        <svg viewBox="0 0 400 300">
+            <!-- Grid Lines -->
+            <line x1="50" y1="20" x2="50" y2="260" stroke="#ddd" stroke-width="1"/>
+            <line x1="50" y1="260" x2="400" y2="260" stroke="#ddd" stroke-width="1"/>
+            
+            <!-- Quadrants -->
+            <rect x="50" y="20" width="175" height="120" fill="#ecfdf5" opacity="0.3"/> <!-- Low-Low -->
+            <rect x="225" y="20" width="175" height="120" fill="#fef3c7" opacity="0.3"/> <!-- High-Low -->
+            <rect x="50" y="140" width="175" height="120" fill="#fef3c7" opacity="0.3"/> <!-- Low-High -->
+            <rect x="225" y="140" width="175" height="120" fill="#fef2f2" opacity="0.3"/> <!-- High-High -->
+            
+            <!-- Axes -->
+            <text x="20" y="150" font-size="9" text-anchor="end">Olasılık</text>
+            <text x="225" y="280" font-size="9" text-anchor="middle">Etki →</text>
+            
+            <!-- Risk Bubbles -->
+            <circle cx="310" cy="100" r="20" fill="#dc2626" opacity="0.7"/> <!-- TUPRS Marj -->
+            <text x="310" y="105" text-anchor="middle" font-size="7" fill="white" font-weight="bold">TUPRS</text>
+            
+            <circle cx="280" cy="130" r="18" fill="#d97706" opacity="0.7"/> <!-- Fitch -->
+            <text x="280" y="135" text-anchor="middle" font-size="7" fill="white">Fitch</text>
+            
+            <circle cx="260" cy="160" r="16" fill="#d97706" opacity="0.6"/> <!-- ARCLK -->
+            <text x="260" y="165" text-anchor="middle" font-size="6" fill="white">ARCLK</text>
+            
+            <circle cx="200" cy="180" r="14" fill="#f59e0b" opacity="0.6"/> <!-- YKBNK NPL -->
+            <text x="200" y="183" text-anchor="middle" font-size="6" fill="white">YKBNK</text>
+            
+            <circle cx="120" cy="220" r="10" fill="#f59e0b" opacity="0.5"/> <!-- FX Kriz -->
+            <text x="120" y="222" text-anchor="middle" font-size="6" fill="white">FX</text>
+        </svg>
+    </div>
+
+    <div class="callout negative" style="margin-top: 15px;">
+        <strong>📍 Riskli Bölge (Sağ-Üst):</strong> TUPRS marj normalleşme ve Fitch downgrade etkisi yüksek-olasılıklı kombinasyon oluşturmakta. Bu riskler KCHOL NAV'ını 240–260 TL bölgesine çekebilir.
+    </div>
+
+</div>
+
+<!-- XII. SONUÇ -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Sonuç & Öneriler</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>XII. Sonuç & Öneriler</h1>
+
+    <h2>Yatırım Tezi</h2>
+    
+    <div class="callout positive">
+        <strong>KCHOL: Holding İskontosuna Bahis (MEDIUM-TERM HOLD)</strong><br/><br/>
+        Türkiye'nin lider holding şirketi 204 TL'de, 385–388 TL blended NAV'ın %47 iskontosunda işlem görmektedir. Bu iskonto, yapısal sermaye verimliliği sorununu (ROE %3.25 vs %38 Ke) ve Fitch makro downgrade'ini yansıtmaktadır. <br/><br/>
+        <strong>Temel argümanlar:</strong><br/>
+        1. <strong>İskonto normalizasyonu potansiyeli:</strong> %35 iskontoya dönüş = +252 TL (+23.5%)<br/>
+        2. <strong>Portföy kalitesi:</strong> TUPRS (rafineri lider), FROTO (EUR ihracat), YKBNK (banka)<br/>
+        3. <strong>Temettü desteği:</strong> 5 yıl kesintisiz, %3.35 verimi<br/>
+        4. <strong>Aktif yönetim:</strong> Portföy optimizasyonu devam (varlık satışları)<br/><br/>
+        <strong>Riskler:</strong> TUPRS marj normalleşme (21 Nisan), Fitch baskı kalıcı, ARCLK zarar devamı, net FX rezervi kritikal.
+    </div>
+
+    <h2>Hedef Fiyat Önerisi</h2>
+    
+    <div class="scenario-grid">
+        <div class="scenario-box">
+            <div class="scenario-label">Zamanı Çerçevesi</div>
+            <div class="scenario-value" style="font-size: 12pt;">12 Ay</div>
+        </div>
+        <div class="scenario-box">
+            <div class="scenario-label">Ağırlıklı Hedef</div>
+            <div class="scenario-value">253 TL</div>
+            <div class="scenario-note">+24.0% potansiyel</div>
+        </div>
+        <div class="scenario-box">
+            <div class="scenario-label">Tavsiye</div>
+            <div class="scenario-value" style="font-size: 12pt; color: var(--warning);">HOLD</div>
+            <div class="scenario-note">Katalizör beklentisi</div>
+        </div>
+    </div>
+
+    <h2>İzleme Noktaları (12 Ay Ufku)</h2>
+    
+    <div class="analysis-block">
+        <ul>
+            <li><strong>21 Nisan 2026:</strong> İran ateşkes sona erme — TUPRS marjı yönü kritik</li>
+            <li><strong>22 Nisan 2026:</strong> TCMB PPK — faiz politikası sinyali (NIM baskı görülür mü?)</li>
+            <li><strong>29 Nisan 2026:</strong> YKBNK Q1 bilançosu — NIM sürdürülebilirliği doğrulanacak</li>
+            <li><strong>Q2 2026:</strong> TUPRS marj normalleşme etkisi finansal tablolara yansıyacak</li>
+            <li><strong>H2 2026:</strong> ARCLK toparlanma sinyali veya devam eden zararlar; YKBNK NPL eğilimi</li>
+            <li><strong>FY2026 raporlama:</strong> Operasyonel net kar profili ve iskonto dinamikleri re-evaluate edilecek</li>
+        </ul>
+    </div>
+
+    <h2>Risk/Reward Profili</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Senaryo</th>
+                <th class="num">Hedef Fiyat</th>
+                <th class="num">Potansiyel</th>
+                <th class="num">Olasılık</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background: #ecfdf5;">
+                <td><strong>Upside (Bull):</strong> İskonto %25'e daralması</td>
+                <td class="num">338 TL</td>
+                <td class="num">+65.7%</td>
+                <td class="num">%25</td>
+            </tr>
+            <tr style="background: white;">
+                <td><strong>Base:</strong> İskonto %35 (tarihsel norm)</td>
+                <td class="num">252 TL</td>
+                <td class="num">+23.5%</td>
+                <td class="num">%50</td>
+            </tr>
+            <tr style="background: #fef2f2;">
+                <td><strong>Downside (Bear):</strong> Marj normalleşme + iskonto %50</td>
+                <td class="num">170 TL</td>
+                <td class="num">−16.7%</td>
+                <td class="num">%25</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="data-warning">
+        <strong>⚠️ YASAL UYARI:</strong> Bu analiz yatırım tavsiyesi niteliği taşımaz. Lisanslı bir finansal danışmanla görüşün.
+    </div>
+
+</div>
+
+<!-- ZORUNLU BİLDİRİMLER -->
+<div class="page">
+    <div class="page-header">
+        <div>
+            <span class="company-ticker">KCHOL</span>
+            <span class="report-section">Zorunlu Bildirimler</span>
+        </div>
+        <div class="brand-mark">Koç Holding</div>
+    </div>
+
+    <h1>Zorunlu Bildirimler</h1>
+
+    <h2>Yatırımcı Uyarıları</h2>
+    
+    <p>
+        <strong>1. Veri Kalitesi Uyarısı:</strong> Bu rapor, Finance X Platform'un analiz pipeline'ının QA Skoru 0.676/1.0 düzeyinde ürettiği çıktılara dayanmaktadır (eşik: 0.80). Gelir rakamı Q4/FY karışıklığı, ticari alacaklar verisi eksikliği (DSO blocked), ve IFRS 8 segment EBITDA ekstraksiyon %0 olması nedeniyle bazı metrikler [DÜŞÜK GÜVEN] etiketiyle sunulmaktadır. İstatistiksel taraflılık veya ölçüm hatası mevcuttur.
+    </p>
+
+    <p>
+        <strong>2. Makroekonomik Risik Kritiği:</strong> KCHOL'un valuasyonu, İran-ABD ateşkes döneminin (21 Nisan 2026 sona ermesi), TCMB faiz politikası, net FX rezervi seviyesi ($19B) ve enflasyon eğilimi gibi çok sayıda makroekonomik faktöre duyarlıdır. Bu faktörlerdeki hızlı değişimler hedef fiyatlandırmasını önemli ölçüde etkileyebilir.
+    </p>
+
+    <p>
+        <strong>3. Holding İskontosunun Kalıcılığı:</strong> Mevcut %47.4 holding iskontosu, yapısal ROE/Ke makasına (ROE %3.25 vs. Ke %38) dayanmaktadır. Bu makas, aktif yönetim değişiklikleri, ARCLK/EREGL satışları veya YKBNK kısmi dekonsolidasyonu olmaksızın kapatılmayacaktır. Normalleşme zamanı belirsizdir.
+    </p>
+
+    <p>
+        <strong>4. TUPRS Marj Volatilitesi:</strong> TUPRS'nin rafineri marjı, Brent petrol fiyatına, jeopolitik olaylara ve OPEC arzı kararlarına oldukça duyarlıdır. Mevcut $10–14/bbl marj düzeyi, tarihsel ortalama $5/bbl'nin 2–3 katıdır ve geçici görülmektedir. Normalleşme beklenmiş olup, zamanlaması ve hızı belirsizdir.
+    </p>
+
+    <p>
+        <strong>5. ARCLK Zararlarının Devamı:</strong> Arçelik'in FY2025 −10.944 milyar TL net zararı, 3 yıllık yapısal sorunun devam ettiğini göstermektedir. Yönetim 2026–2027 toparlanmasından bahsetmekle birlikte, krediblilitesi test ediliyor. Eğer zarar devamı görülürse, KCHOL net karı baskı altında kalacaktır.
+    </p>
+
+    <p>
+        <strong>6. Banka Segmenti Riskleri (YKBNK / AKBNK):</strong> Bankacılık segmenti, konsolide aktif tabanının %61.17'sini (YKBNK tam konsolidasyonu) oluşturmaktadır. Faiz ortamı normalleşirse NIM baskısı ortaya çıkacak; NPL spike riski H2 2026'da (6–12 ay lag) beklenmektedir. Sermaye yeterliliği (CAR) artırımı (BDDK %12) de kârlılığı kısıtlayacaktır.
+    </p>
+
+    <h2>Veri Kaynakları</h2>
+    
+    <ul>
+        <li>GCM Yatırım Q4 2025 Raporu (Şubat 2026) — SOTP ANCHOR</li>
+        <li>Koç Holding KAP Bildirimleri — Temettü, Satış İşlemleri</li>
+        <li>TCMB Resmi Açıklamaları — Politika Faizi, FX Rezervleri</li>
+        <li>Bloomberg Energy / Investing.com — Brent Petrol, Kur Verileri</li>
+        <li>Fitch Ratings Türkiye Raporu (10 Nisan 2026) — Sovereign Rating</li>
+        <li>Finance X Platform Agent Pipeline Çıktıları (QA Rev. 2) — Anlık Analiz</li>
+    </ul>
+
+    <h2>Hukuki Uyarılar</h2>
+    
+    <p>
+        Bu rapor, yalnızca bilgilendirme amacıyla sunulmuştur. SPK mevzuatı çerçevesinde lisanslı yatırım danışmanı niteliğinde değildir. Herhangi bir yatırım kararı almadan önce, bağımsız bir finansal danışmanla görüşün. Rapordaki tahminler ve görüşler, belirtilen tarihte mevcut olan bilgilere dayanmaktadır; gelecek veriler farklı olabilir.
+    </p>
+
+    <p style="margin-top: 20px; font-size: 9pt; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+        <strong>Rapor Tarihi:</strong> 14 Nisan 2026<br/>
+        <strong>Hazırlayan:</strong> Finance X Platform | Kurumsal Araştırma<br/>
+        <strong>Güvenlik Seviyesi:</strong> Confidential — Kurumsal Yatırımcılar İçin
+    </p>
+
+</div>
+
+</body>
+</html>
