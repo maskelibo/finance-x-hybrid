@@ -32,7 +32,7 @@
     "skills"
   ],
   "scripts": {
-    "preflight:workspace-links": "tsx ../scripts/ensure-workspace-package-links.ts",
+    "preflight:workspace-links": "node --import ./node_modules/tsx/dist/loader.mjs ../scripts/ensure-workspace-package-links.ts",
     "dev": "pnpm run preflight:workspace-links && tsx src/index.ts",
     "dev:watch": "pnpm run preflight:workspace-links && cross-env PAPERCLIP_MIGRATION_PROMPT=never PAPERCLIP_MIGRATION_AUTO_APPLY=true tsx ./scripts/dev-watch.ts",
     "prepare:ui-dist": "bash ../scripts/prepare-server-ui-dist.sh",
