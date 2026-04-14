@@ -15,7 +15,7 @@ import { Agent } from '../types'
 import { agents, agentGroupColors } from '../data/agents'
 import AgentCard from '../components/AgentCard'
 import StatusBadge from '../components/StatusBadge'
-import { api } from '../api'
+import { api, getApiBaseUrl } from '../api'
 
 const tabs: { label: string; value: string }[] = [
   { label: 'Tümü', value: 'Tümü' },
@@ -42,7 +42,7 @@ const AgentDetailModal: React.FC<{ agent: Agent; onClose: () => void }> = ({ age
       setLoading(true)
       api.getAgent(toBackendId(agent.id))
         .then((res) => setPromptText(res.systemPrompt || 'Bu agent için henüz system prompt yazılmamış.'))
-        .catch((err) => setPromptText(`Yüklenemedi: ${err.message}\n\nBackend çalışıyor mu? (localhost:4000)`))
+        .catch((err) => setPromptText(`Yüklenemedi: ${err.message}\n\nBackend çalışıyor mu? (${getApiBaseUrl()})`))
         .finally(() => setLoading(false))
     }
   }, [tab, agent.id])
