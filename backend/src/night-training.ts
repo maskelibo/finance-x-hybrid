@@ -1,14 +1,15 @@
-import { spawn } from 'node:child_process';
 import { nanoid } from 'nanoid';
 import { db } from './db.js';
 import { loadAgent } from './agents.js';
 import { readCEOMemory } from './memory.js';
-import { CLAUDE_SPAWN_OPTIONS, CLAUDE_MODEL } from './config.js';
+import { getModelForAgent } from './config.js';
+import { createDefaultProviderRouter, resolveFallbackProviderId } from './llm/default-router.js';
 
 let nightTrainingTimer: NodeJS.Timeout | null = null;
 let isRunning = false;
 let targetHourUTC = 23; // 02:00 Istanbul = 23:00 UTC (Istanbul UTC+3)
 let lastRunDate = ''; // YYYY-MM-DD — prevents double-trigger within same day
+const providerRouter = createDefaultProviderRouter();
 
 /**
  * Başlat: Her gece belirtilen saatte (UTC) gece eğitimi protokolünü tetikler
@@ -98,18 +99,44 @@ export async function runNightTrainingCycle(): Promise<void> {
       ``,
       tonightsAgents.map(a => `- ${a}`).join('\n'),
       ``,
+      `## 3 KATMANLI HAFIZA SİSTEMİ`,
+      ``,
+      `Her ajanin 3 hafiza dosyasi var:`,
+      `- **memory.md** (max 6KB): Kalici kurallar, kontrol listeleri. HER calismasinda otomatik yuklenir.`,
+      `- **knowledge.md** (max 8KB): Domain bilgisi, formuller, benchmark, best practice. Agent ihtiyac duyunca Read ile acar.`,
+      `- **memory_archive.md** (sinirsiz): Tum ham egitim kayitlari. Sadece gece egitiminde okunur.`,
+      ``,
       `## PROTOKOL (her ajan icin)`,
-      `1. agents/{ajan_id}/memory.md dosyasini Read ile oku`,
-      `2. Onceki feedback'ler uygulanmis mi kontrol et`,
-      `3. WebSearch ile ajanin uzmanlik alaninda guncel bilgi topla`,
-      `4. Memory dosyasini Edit ile guncelle (yeni ogrenmeleri ekle)`,
-      `5. Ogrenme puani (0-100) belirle`,
+      ``,
+      `### Adim 1: Mevcut durumu oku`,
+      `- \`Read\` ile \`agents/{ajan_id}/memory.md\` (kurallar)`,
+      `- \`Read\` ile \`agents/{ajan_id}/knowledge.md\` (bilgi bankasi)`,
+      `- \`Read\` ile \`agents/{ajan_id}/memory_archive.md\` (gecmis kayitlar)`,
+      ``,
+      `### Adim 2: Yeni bilgi topla`,
+      `- WebSearch ile ajanin uzmanlik alaninda guncel bilgi ara`,
+      `- Son raporlardaki feedback'leri kontrol et`,
+      ``,
+      `### Adim 3: Hafizaya yaz (DOGRU KATMANA!)`,
+      `- Yeni kalici kural ogrenmissen → \`Edit\` ile **memory.md**'ye ekle`,
+      `- Yeni domain bilgisi/formul/benchmark ogrenmissen → \`Edit\` ile **knowledge.md**'ye ekle`,
+      `- Ham arastirma notlarini → \`Edit\` ile **memory_archive.md** sonuna ekle`,
+      ``,
+      `### Adim 4: Boyut kontrolu`,
+      `- memory.md > 6KB mi? → En eski ogrenimi knowledge.md'ye tasi`,
+      `- knowledge.md > 8KB mi? → En eski bilgiyi memory_archive.md'ye tasi`,
+      `- memory_archive.md sinirsiz buyuyebilir`,
+      ``,
+      `### Adim 5: Ogrenme puani ver (0-100)`,
       ``,
       `## KURALLAR`,
       `- Sadece yukaridaki ${tonightsAgents.length} ajana odaklan, digerlerine dokunma`,
       `- Her ajan icin max 15 dakika harca`,
       `- Turkce calis`,
-      `- Memory dosyalarini 5KB'in altinda tut`,
+      `- **memory.md ASLA 6KB'yi gecemez** — kural tasimazsan reject`,
+      `- **knowledge.md ASLA 8KB'yi gecemez** — bilgi tasimazsan reject`,
+      `- LLM'in zaten bildigi temel bilgileri yazma (ROE formulu gibi)`,
+      `- Sektore ozgu, pratige dayali, somut bilgileri yaz`,
       ``,
       `## CEO HAFIZA`,
       memory.slice(0, 2000),
@@ -142,49 +169,23 @@ export function isNightTrainingRunning(): boolean {
   return isRunning;
 }
 
-function runClaude(prompt: string, timeoutMs: number): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const args = [
-      '-p', prompt,
-      '--model', CLAUDE_MODEL,
-      '--permission-mode', 'bypassPermissions',
-      '--output-format', 'json',
-    ];
-
-    const child = spawn('claude', args, {
-      ...CLAUDE_SPAWN_OPTIONS,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-
-    let stdoutBuf = '';
-    let stderrBuf = '';
-    child.stdout.on('data', (c: Buffer) => { stdoutBuf += c.toString('utf8'); });
-    child.stderr.on('data', (c: Buffer) => { stderrBuf += c.toString('utf8'); });
-
-    const timeout = setTimeout(() => child.kill('SIGTERM'), timeoutMs);
-
-    child.on('error', (err) => {
-      clearTimeout(timeout);
-      reject(err);
-    });
-
-    child.on('close', (code) => {
-      clearTimeout(timeout);
-      if (code !== 0) {
-        const combined = (stderrBuf + ' ' + stdoutBuf).toLowerCase();
-        const isRateLimit = combined.includes('limit') || combined.includes('quota') || combined.includes('429');
-        const errMsg = isRateLimit
-          ? 'Rate limit — night training postponed, will retry tomorrow'
-          : (stderrBuf || `Exited with ${code}`);
-        reject(new Error(errMsg));
-        return;
-      }
-      let result = stdoutBuf;
-      try {
-        const parsed = JSON.parse(stdoutBuf);
-        if (parsed.result) result = parsed.result;
-      } catch {}
-      resolve(result);
-    });
+async function runClaude(prompt: string, timeoutMs: number): Promise<string> {
+  const primaryProvider = providerRouter.getPrimaryProvider().id;
+  const result = await providerRouter.run({
+    prompt,
+    model: getModelForAgent('ceo', primaryProvider),
+    fallbackModel: resolveFallbackProviderId()
+      ? getModelForAgent('ceo', resolveFallbackProviderId()!)
+      : undefined,
+    timeoutMs,
   });
+
+  if (!result.success) {
+    if (result.errorType === 'rate_limit') {
+      throw new Error('Rate limit — night training postponed, will retry tomorrow');
+    }
+    throw new Error(result.error || 'Night training provider failed');
+  }
+
+  return result.output;
 }

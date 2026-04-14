@@ -3,7 +3,7 @@ import cors from 'cors';
 import { nanoid } from 'nanoid';
 import { db } from './db.js';
 import { listAgents } from './agents.js';
-import { startAnalysisSession, type RuntimeMode, type AnalysisLayer } from './orchestrator.js';
+import { startAnalysisSession } from './orchestrator.js';
 import { chatWithCEO, streamChatWithCEO, getSessionHistory, clearSession, abortCEOChat } from './ceo-chat.js';
 import { startHeartbeat, stopHeartbeat, runHeartbeatCycle, isHeartbeatRunning } from './heartbeat.js';
 import { startNightTraining, stopNightTraining, runNightTrainingCycle, isNightTrainingRunning } from './night-training.js';
@@ -12,33 +12,36 @@ import { startWatchdog, stopWatchdog, manualResumeCheck, cleanupZombiesOnStartup
 import { resumeSession, resumeAllPausedSessions } from './orchestrator.js';
 import { getAllSettings, updateSettings } from './settings.js';
 import { runFeedbackLoop } from './feedback-loop.js';
+import { ANALYSIS_LAYERS, ANALYSIS_MODES, VALID_ANALYSIS_LAYERS, VALID_RUNTIME_MODES, type AnalysisLayer, type RuntimeMode } from './analysis-config.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
-import { CLAUDE_PATH, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_INTERVAL_MIN, NIGHT_TRAINING_HOUR_UTC } from './config.js';
+import { ALLOWED_ORIGINS, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_INTERVAL_MIN, NIGHT_TRAINING_HOUR_UTC } from './config.js';
+import { createDefaultProviderRouter } from './llm/default-router.js';
 
-// Startup check: verify claude CLI is available
-try {
-  const version = execSync('claude --version', { env: { ...process.env, PATH: CLAUDE_PATH }, timeout: 5000 }).toString().trim();
-  console.log(`✅ Claude CLI: ${version}`);
-} catch {
-  console.error('❌ Claude CLI bulunamadı! PATH:', CLAUDE_PATH);
-  console.error('   "npm install -g @anthropic-ai/claude-code" ile kurabilirsiniz.');
-  console.error('   veya "claude login" ile giriş yapmanız gerekiyor.');
-  process.exit(1);
-}
+void (async () => {
+  try {
+    const startupProviderRouter = createDefaultProviderRouter();
+    const startupAvailability = await startupProviderRouter.probeRoutedAvailability();
+    if (startupAvailability.available) {
+      console.log(`✅ LLM provider available: ${startupAvailability.provider}`);
+      return;
+    }
+
+    console.error('⚠️  No configured LLM provider is currently available.');
+    console.error(`   Reason: ${startupAvailability.reason || 'unknown'}`);
+    console.error('   Backend started anyway; analysis endpoints may fail until Claude/Codex auth is fixed.');
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`⚠️  LLM provider startup probe failed: ${message}`);
+    console.error('   Backend started anyway; analysis endpoints may fail until provider checks pass.');
+  }
+})();
 
 const app = express();
 
-// CORS — sadece localhost dashboard'a izin ver
+// CORS
 app.use(cors({
-  origin: [
-    'http://localhost:5173',  // Vite dev server
-    'http://localhost:5174',  // Vite dev server (alt port)
-    'http://localhost:4173',  // Vite preview
-    'http://localhost:3000',
-    `http://localhost:${PORT}`,
-  ],
+  origin: ALLOWED_ORIGINS,
 }));
 app.use(express.json({ limit: '10mb' }));
 
@@ -62,6 +65,13 @@ if (API_KEY) {
 // Health
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'finance-x-backend' });
+});
+
+app.get('/api/analysis/config', (_req, res) => {
+  res.json({
+    modes: ANALYSIS_MODES,
+    layers: ANALYSIS_LAYERS,
+  });
 });
 
 // List all agents (with live status from last runs) — single JOIN query instead of N+1
@@ -133,14 +143,13 @@ app.post('/api/analysis/start', (req, res) => {
 
   // Mode validation
   const mode: RuntimeMode = runtimeMode || 'standard_institutional';
-  if (!['fast_screening', 'standard_institutional', 'deep_dive'].includes(mode)) {
+  if (!VALID_RUNTIME_MODES.has(mode)) {
     return res.status(400).json({ error: 'Geçersiz analiz modu' });
   }
 
   // Layer validation
-  const validLayers: AnalysisLayer[] = ['fundamental', 'technical', 'events', 'sector', 'macro'];
   const filteredLayers = Array.isArray(layers)
-    ? layers.filter(l => validLayers.includes(l as AnalysisLayer))
+    ? layers.filter((layer): layer is AnalysisLayer => VALID_ANALYSIS_LAYERS.has(layer as AnalysisLayer))
     : undefined;
 
   // Require at least one layer if layers array is provided
@@ -341,7 +350,18 @@ app.post('/api/ceo/chat/stream', (req, res) => {
   if (!sessionId || !message) {
     return res.status(400).json({ error: 'sessionId and message required' });
   }
-  streamChatWithCEO(sessionId, message, res);
+  try {
+    streamChatWithCEO(sessionId, message, res);
+  } catch (err: any) {
+    if (!res.headersSent) {
+      res.status(500).json({ error: err?.message || 'CEO stream failed' });
+      return;
+    }
+    try {
+      res.write(`data: ${JSON.stringify({ type: 'error', message: err?.message || 'CEO stream failed' })}\n\n`);
+    } catch {}
+    res.end();
+  }
 });
 
 app.get('/api/ceo/chat/:sessionId', (req, res) => {

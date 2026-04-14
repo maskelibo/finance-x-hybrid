@@ -1,13 +1,14 @@
-import { spawn } from 'node:child_process';
 import { nanoid } from 'nanoid';
 import { db } from './db.js';
 import { loadAgent } from './agents.js';
 import { readCEOMemory } from './memory.js';
-import { CLAUDE_SPAWN_OPTIONS, CLAUDE_MODEL } from './config.js';
+import { getModelForAgent } from './config.js';
+import { createDefaultProviderRouter, resolveFallbackProviderId } from './llm/default-router.js';
 
 let heartbeatTimer: NodeJS.Timeout | null = null;
 let isRunning = false;
 let intervalMs = 30 * 60 * 1000; // 30 minutes default
+const providerRouter = createDefaultProviderRouter();
 
 export function startHeartbeat(intervalMinutes: number = 30) {
   intervalMs = intervalMinutes * 60 * 1000;
@@ -77,7 +78,7 @@ export async function runHeartbeatCycle(): Promise<void> {
       `Eğer hiçbir önemli şey yoksa "Sakin döngü, önemli olay yok" yaz.`,
     ].join('\n');
 
-    const result = await runClaude(prompt, 5 * 60 * 1000);
+    const result = await runHeartbeatLLM(prompt, 5 * 60 * 1000);
     const durationMs = Date.now() - startedAt;
 
     db.prepare(`
@@ -104,48 +105,26 @@ export function isHeartbeatRunning(): boolean {
 }
 
 function runClaude(prompt: string, timeoutMs: number): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const args = [
-      '-p', prompt,
-      '--model', CLAUDE_MODEL,
-      '--permission-mode', 'bypassPermissions',
-      '--output-format', 'json',
-    ];
+  return runHeartbeatLLM(prompt, timeoutMs);
+}
 
-    const child = spawn('claude', args, {
-      ...CLAUDE_SPAWN_OPTIONS,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-
-    let stdoutBuf = '';
-    let stderrBuf = '';
-    child.stdout.on('data', (c: Buffer) => { stdoutBuf += c.toString('utf8'); });
-    child.stderr.on('data', (c: Buffer) => { stderrBuf += c.toString('utf8'); });
-
-    const timeout = setTimeout(() => child.kill('SIGTERM'), timeoutMs);
-
-    child.on('error', (err) => {
-      clearTimeout(timeout);
-      reject(err);
-    });
-
-    child.on('close', (code) => {
-      clearTimeout(timeout);
-      if (code !== 0) {
-        const combined = (stderrBuf + ' ' + stdoutBuf).toLowerCase();
-        const isRateLimit = combined.includes('limit') || combined.includes('quota') || combined.includes('429');
-        const errMsg = isRateLimit
-          ? 'Rate limit — heartbeat atlandı, bir sonraki döngüde tekrar denenecek'
-          : (stderrBuf || `Exited with ${code}`);
-        reject(new Error(errMsg));
-        return;
-      }
-      let result = stdoutBuf;
-      try {
-        const parsed = JSON.parse(stdoutBuf);
-        if (parsed.result) result = parsed.result;
-      } catch {}
-      resolve(result);
-    });
+async function runHeartbeatLLM(prompt: string, timeoutMs: number): Promise<string> {
+  const primaryProvider = providerRouter.getPrimaryProvider().id;
+  const result = await providerRouter.run({
+    prompt,
+    model: getModelForAgent('ceo', primaryProvider),
+    fallbackModel: resolveFallbackProviderId()
+      ? getModelForAgent('ceo', resolveFallbackProviderId()!)
+      : undefined,
+    timeoutMs,
   });
+
+  if (!result.success) {
+    if (result.errorType === 'rate_limit') {
+      throw new Error('Rate limit — heartbeat atlandı, bir sonraki döngüde tekrar denenecek');
+    }
+    throw new Error(result.error || 'Heartbeat provider failed');
+  }
+
+  return result.output;
 }

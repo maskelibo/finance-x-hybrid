@@ -4,6 +4,7 @@ import { runAgent } from './agent-runner.js';
 import { getAgentMeta } from './agents.js';
 import { runFeedbackLoop } from './feedback-loop.js';
 import { CONTEXT_CHAR_LIMIT } from './config.js';
+import { ANALYSIS_LAYERS, MODE_DEFAULT_LAYERS, type AnalysisLayer, type RuntimeMode } from './analysis-config.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -73,11 +74,12 @@ async function generatePdfFromFormatterOutput(ticker: string, formatterOutput: s
   }
 
   const chartCount = (html.match(/<canvas/g) || []).length;
-  if (chartCount === 0) {
-    console.warn(`[orchestrator] HTML has no Chart.js canvases. Charts may be missing from report.`);
+  const svgCount = (html.match(/<svg/gi) || []).length;
+  if (svgCount === 0 && chartCount === 0) {
+    console.warn(`[orchestrator] HTML has no charts (no SVG or Chart.js canvas). Charts may be missing from report.`);
   }
 
-  console.log(`[orchestrator] HTML validation passed: ${html.length} chars, ${pageCount} pages, ${chartCount} charts`);
+  console.log(`[orchestrator] HTML validation passed: ${html.length} chars, ${pageCount} pages, ${svgCount} SVGs, ${chartCount} canvas charts`);
   // --- END HTML QUALITY VALIDATION ---
 
   // Dynamic import puppeteer (it's a CommonJS module)
@@ -163,10 +165,6 @@ async function generatePdfFromFormatterOutput(ticker: string, formatterOutput: s
   return pdfPath;
 }
 
-export type RuntimeMode = 'fast_screening' | 'standard_institutional' | 'deep_dive';
-
-export type AnalysisLayer = 'fundamental' | 'technical' | 'events' | 'sector' | 'macro';
-
 // Map each layer to the agents it requires
 const LAYER_AGENTS: Record<AnalysisLayer, string[]> = {
   fundamental: ['data_collection', 'parse_standardization', 'reconciliation', 'context_extraction', 'financial_analysis'],
@@ -174,13 +172,18 @@ const LAYER_AGENTS: Record<AnalysisLayer, string[]> = {
   events: ['kap_watch', 'event_classification', 'event_impact_mapper', 'event_timeline_alert'],
   sector: ['sector_competition'],
   macro: ['macro_analysis'],
+  valuation: ['valuation_agent'],
+  sentiment: ['sentiment_news_agent'],
+  consensus: ['analyst_consensus_agent'],
+  esg: ['esg_agent'],
 };
 
 // Agents that always run regardless of layers (backbone)
-const BACKBONE_AGENTS = ['ceo', 'qa_review', 'strategic_synthesis', 'final_summary', 'report_formatter'];
+const BACKBONE_AGENTS = ['ceo', 'coo', 'qa_review', 'strategic_synthesis', 'final_summary', 'report_formatter'];
 
 const AGENT_PIPELINE: Array<{ id: string; phase: string }> = [
   { id: 'ceo', phase: 'Mandate Interpretation' },
+  { id: 'coo', phase: 'Pre-Flight Check' },
   { id: 'data_collection', phase: 'Data Acquisition' },
   { id: 'parse_standardization', phase: 'Document Parsing' },
   { id: 'reconciliation', phase: 'Data Quality' },
@@ -204,7 +207,7 @@ const AGENT_PIPELINE: Array<{ id: string; phase: string }> = [
 ];
 
 const PIPELINE_BY_MODE: Record<RuntimeMode, string[]> = {
-  fast_screening: ['ceo', 'data_collection', 'financial_analysis', 'technical_analysis', 'final_summary'],
+  fast_screening: AGENT_PIPELINE.map(a => a.id),
   standard_institutional: AGENT_PIPELINE.map(a => a.id),
   deep_dive: AGENT_PIPELINE.map(a => a.id),
 };
@@ -214,13 +217,10 @@ const activeSessionPromises = new Map<string, Promise<void>>();
 
 function buildPipelineForLayers(runtimeMode: RuntimeMode, layers?: AnalysisLayer[]): string[] {
   const basePipeline = PIPELINE_BY_MODE[runtimeMode];
+  const selectedLayers = layers && layers.length > 0 ? layers : MODE_DEFAULT_LAYERS[runtimeMode];
 
-  // If no layers specified, use the full mode pipeline
-  if (!layers || layers.length === 0) return basePipeline;
-
-  // Collect all agents required by the selected layers
   const required = new Set<string>(BACKBONE_AGENTS);
-  for (const layer of layers) {
+  for (const layer of selectedLayers) {
     const agents = LAYER_AGENTS[layer];
     if (agents) agents.forEach(a => required.add(a));
   }
@@ -233,13 +233,14 @@ function buildPipelineForLayers(runtimeMode: RuntimeMode, layers?: AnalysisLayer
 export function startAnalysisSession(ticker: string, runtimeMode: RuntimeMode, layers?: AnalysisLayer[]): string {
   const sessionId = nanoid();
   const now = new Date().toISOString();
+  const selectedLayers = layers && layers.length > 0 ? layers : MODE_DEFAULT_LAYERS[runtimeMode];
 
   db.prepare(`
-    INSERT INTO analysis_sessions (id, ticker, runtime_mode, status, started_at)
-    VALUES (?, ?, ?, 'pending', ?)
-  `).run(sessionId, ticker.toUpperCase(), runtimeMode, now);
+    INSERT INTO analysis_sessions (id, ticker, runtime_mode, selected_layers, status, started_at)
+    VALUES (?, ?, ?, ?, 'pending', ?)
+  `).run(sessionId, ticker.toUpperCase(), runtimeMode, JSON.stringify(selectedLayers), now);
 
-  const agentIds = buildPipelineForLayers(runtimeMode, layers);
+  const agentIds = buildPipelineForLayers(runtimeMode, selectedLayers);
   const insertRun = db.prepare(`
     INSERT INTO agent_runs (id, session_id, agent_id, agent_display_name, status)
     VALUES (?, ?, ?, ?, 'pending')
@@ -250,7 +251,7 @@ export function startAnalysisSession(ticker: string, runtimeMode: RuntimeMode, l
     insertRun.run(nanoid(), sessionId, agentId, meta.displayName);
   }
 
-  const promise = executeSession(sessionId, ticker, runtimeMode).catch((err) => {
+  const promise = executeSession(sessionId, ticker, runtimeMode, selectedLayers).catch((err) => {
     console.error(`Session ${sessionId} crashed:`, err);
     db.prepare(`
       UPDATE analysis_sessions
@@ -274,9 +275,10 @@ export function resumeSession(sessionId: string): boolean {
 
   const session = db.prepare(`SELECT * FROM analysis_sessions WHERE id = ?`).get(sessionId) as any;
   if (!session) return false;
-  if (session.status !== 'paused_rate_limit' && session.status !== 'failed') return false;
+  if (session.status !== 'paused_rate_limit' && session.status !== 'paused_stuck_agent' && session.status !== 'failed') return false;
+  const selectedLayers = parseSelectedLayers(session.selected_layers);
 
-  const promise = executeSession(session.id, session.ticker, session.runtime_mode as RuntimeMode).catch((err) => {
+  const promise = executeSession(session.id, session.ticker, session.runtime_mode as RuntimeMode, selectedLayers).catch((err) => {
     console.error(`Session ${sessionId} resume crashed:`, err);
     db.prepare(`
       UPDATE analysis_sessions
@@ -297,7 +299,7 @@ export function resumeSession(sessionId: string): boolean {
 export function resumeAllPausedSessions(): number {
   const paused = db.prepare(`
     SELECT id FROM analysis_sessions
-    WHERE status = 'paused_rate_limit'
+    WHERE status = 'paused_rate_limit' OR status = 'paused_stuck_agent'
   `).all() as Array<{ id: string }>;
 
   let resumedCount = 0;
@@ -312,16 +314,16 @@ export function resumeAllPausedSessions(): number {
 // Parallel execution phases — agents within the same phase run concurrently
 const EXECUTION_PHASES: Array<{ name: string; agents: string[][] }> = [
   { name: 'Mandate', agents: [['ceo']] },
+  { name: 'Pre-Flight', agents: [['coo']] }, // COO: veri kaynakları erişilebilir mi, agent'lar hazır mı
   { name: 'Data Acquisition', agents: [['data_collection', 'kap_watch']] }, // parallel
   { name: 'Parsing', agents: [['parse_standardization']] },
   { name: 'Data Quality', agents: [['reconciliation']] }, // DATA QUALITY GATE after this
-  { name: 'Analysis', agents: [['context_extraction', 'financial_analysis', 'macro_analysis', 'sector_competition', 'technical_analysis', 'sentiment_news_agent', 'analyst_consensus_agent']] }, // all parallel
-  { name: 'Valuation & ESG', agents: [['valuation_agent', 'esg_agent']] }, // parallel — depend on financial_analysis output
+  { name: 'Analysis', agents: [['context_extraction', 'financial_analysis', 'macro_analysis', 'sector_competition', 'technical_analysis', 'sentiment_news_agent', 'analyst_consensus_agent', 'esg_agent']] }, // all parallel — esg_agent bağımsız, buraya taşındı
+  { name: 'Valuation', agents: [['valuation_agent']] }, // financial_analysis çıktısına bağımlı
   { name: 'Events', agents: [['event_classification'], ['event_impact_mapper', 'event_timeline_alert']] },
   { name: 'Quality Review', agents: [['qa_review']] }, // QA REVISION LOOP after this
   { name: 'Synthesis', agents: [['strategic_synthesis']] },
   { name: 'Final Report', agents: [['final_summary']] },
-  { name: 'Report Formatting', agents: [['report_formatter']] },
 ];
 
 // Agent timeout configuration
@@ -354,21 +356,26 @@ async function runSingleAgent(
 
   db.prepare(`UPDATE analysis_sessions SET current_phase = ? WHERE id = ?`).run(phase, sessionId);
   const runId = runRow.id;
-  db.prepare(`UPDATE agent_runs SET status = 'running', started_at = ?, error_message = NULL WHERE id = ?`)
+  db.prepare(`UPDATE agent_runs SET status = 'running', started_at = ?, error_message = NULL, provider_used = NULL WHERE id = ?`)
     .run(new Date().toISOString(), runId);
 
   const taskPrompt = buildTaskPrompt(agentId, ticker, accumulatedContext);
   const timeoutMs = getAgentTimeout(agentId);
-  const RETRY_AGENTS = ['strategic_synthesis', 'final_summary', 'financial_analysis', 'report_formatter', 'context_extraction', 'valuation_agent'];
-  const maxAttempts = RETRY_AGENTS.includes(agentId) ? 2 : 1;
+  // Sadece geçici hata (network/timeout) için 1 retry — aynı prompt ile tekrar çalıştırmanın anlamı yok
+  const maxAttempts = 2; // 1 deneme + 1 retry
   let result: Awaited<ReturnType<typeof runAgent>> | null = null;
 
   try {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      if (attempt > 1) console.log(`  retry: ${agentId} (attempt ${attempt}/${maxAttempts})`);
+      if (attempt > 1) {
+        console.log(`  retry: ${agentId} (attempt ${attempt}/${maxAttempts})`);
+        // Brief pause before retry to let transient network issues clear
+        await new Promise(resolve => setTimeout(resolve, 15000));
+      }
       result = await runAgent({ agentId, taskPrompt, context: accumulatedContext, timeoutMs });
       if (result.success) break;
-      if (result.errorType === 'rate_limit' || result.errorType === 'auth') break;
+      if (result.errorType === 'rate_limit' || result.errorType === 'auth') break; // Rate limit/auth → pause, retry yapmaz
+      // Diğer tüm hatalar (network, timeout, unknown) → retry
     }
 
     if (!result) throw new Error('runAgent returned no result');
@@ -377,57 +384,90 @@ async function runSingleAgent(
     if (result.success) {
       db.prepare(`
         UPDATE agent_runs SET status = 'completed', completed_at = ?, duration_ms = ?,
-        output_text = ?, tokens_used = ?, cost_usd = ?, input_prompt = ? WHERE id = ?
-      `).run(completedAt, result.durationMs, result.output, result.tokensUsed, result.costUsd, taskPrompt, runId);
+        output_text = ?, tokens_used = ?, cost_usd = ?, input_prompt = ?, error_message = NULL, provider_used = ? WHERE id = ?
+      `).run(completedAt, result.durationMs, result.output, result.tokensUsed, result.costUsd, taskPrompt, result.provider, runId);
 
       costTracker.totalCost += result.costUsd;
       costTracker.totalTokens += result.tokensUsed;
       db.prepare(`UPDATE analysis_sessions SET total_cost_usd = ?, total_tokens = ? WHERE id = ?`)
         .run(costTracker.totalCost, costTracker.totalTokens, sessionId);
 
-      accumulatedContext[`${agentId}_output`] = result.output.slice(0, CONTEXT_CHAR_LIMIT);
+      // Store output with conservative limit — downstream agents will get even less via dependency matrix
+      accumulatedContext[`${agentId}_output`] = result.output.slice(0, 1000000);
 
       if (agentId === 'final_summary') {
-        db.prepare(`INSERT INTO reports (id, session_id, report_type, title, content, created_at) VALUES (?, ?, 'executive', ?, ?, ?)`)
-          .run(nanoid(), sessionId, `${ticker} — Yonetici Ozeti`, result.output, completedAt);
-      }
-
-      // After report_formatter completes, extract HTML and generate PDF
-      if (agentId === 'report_formatter') {
-        try {
-          await generatePdfFromFormatterOutput(ticker, result.output);
-        } catch (pdfErr: any) {
-          console.error(`[orchestrator] PDF generation failed for ${ticker}:`, pdfErr.message);
-          // Non-blocking — report data is still saved, PDF is a bonus
+        const scoreMatch = result.output.match(/(?:overall[_\s-]*score|genel[_\s-]*puan|puan)\D{0,20}(\d{1,3}(?:[.,]\d+)?)/i);
+        const overallScore = scoreMatch ? Number.parseFloat(scoreMatch[1].replace(',', '.')) : null;
+        if (overallScore !== null && Number.isFinite(overallScore)) {
+          db.prepare(`UPDATE analysis_sessions SET overall_score = ? WHERE id = ?`)
+            .run(overallScore, sessionId);
         }
       }
       return 'ok';
     } else {
       if (result.errorType === 'rate_limit') {
-        db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, error_message = 'Rate limit' WHERE id = ?`).run(runId);
+        db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, error_message = 'Rate limit', provider_used = ? WHERE id = ?`)
+          .run(result.provider, runId);
         db.prepare(`UPDATE analysis_sessions SET status = 'paused_rate_limit', error_message = ?, current_phase = ? WHERE id = ?`)
           .run(`Rate limit — ${agentId}`, phase, sessionId);
         return 'rate_limit';
       }
-      db.prepare(`UPDATE agent_runs SET status = 'failed', completed_at = ?, duration_ms = ?, error_message = ?, input_prompt = ? WHERE id = ?`)
-        .run(completedAt, result.durationMs, result.error || 'Unknown', taskPrompt, runId);
+      db.prepare(`UPDATE agent_runs SET status = 'failed', completed_at = ?, duration_ms = ?, error_message = ?, input_prompt = ?, provider_used = ? WHERE id = ?`)
+        .run(completedAt, result.durationMs, result.error || 'Unknown', taskPrompt, result.provider, runId);
       accumulatedContext[`${agentId}_output`] = `[DEGRADED] ${agentId} failed: ${(result.error || '').slice(0, 200)}`;
       return 'failed';
     }
   } catch (err: any) {
-    db.prepare(`UPDATE agent_runs SET status = 'failed', error_message = ?, completed_at = ? WHERE id = ?`)
+    db.prepare(`UPDATE agent_runs SET status = 'failed', error_message = ?, completed_at = ?, provider_used = NULL WHERE id = ?`)
       .run(err.message || String(err), new Date().toISOString(), runId);
     accumulatedContext[`${agentId}_output`] = `[DEGRADED] ${agentId} crashed: ${(err.message || '').slice(0, 200)}`;
     return 'failed';
   }
 }
 
-async function executeSession(sessionId: string, ticker: string, runtimeMode: RuntimeMode): Promise<void> {
+function parseSelectedLayers(raw: unknown): AnalysisLayer[] | undefined {
+  if (typeof raw !== 'string' || raw.trim() === '') return undefined;
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return undefined;
+    const validLayers = new Set<AnalysisLayer>(ANALYSIS_LAYERS.map((layer) => layer.id));
+    const filtered = parsed.filter(
+      (value): value is AnalysisLayer => typeof value === 'string' && validLayers.has(value as AnalysisLayer),
+    );
+    return filtered.length > 0 ? filtered : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function executeSession(
+  sessionId: string,
+  ticker: string,
+  runtimeMode: RuntimeMode,
+  selectedLayers?: AnalysisLayer[],
+): Promise<void> {
   db.prepare(`UPDATE analysis_sessions SET status = 'running', error_message = NULL WHERE id = ?`).run(sessionId);
 
   const runRows = db.prepare(`SELECT agent_id FROM agent_runs WHERE session_id = ? ORDER BY rowid ASC`)
     .all(sessionId) as Array<{ agent_id: string }>;
-  const activeAgentIds = new Set(runRows.length > 0 ? runRows.map(r => r.agent_id) : PIPELINE_BY_MODE[runtimeMode]);
+  const pipeline = buildPipelineForLayers(runtimeMode, selectedLayers);
+  const activeAgentIds = new Set(runRows.length > 0 ? runRows.map(r => r.agent_id) : pipeline);
+
+  // PIPELINE MIGRATION: Insert agent_run rows for any agents that are in the current pipeline
+  // but were not present when this session was originally created (added in a later code update).
+  // This ensures sessions started before a pipeline update still run the new agents.
+  const currentPipeline = pipeline;
+  const insertMissingRun = db.prepare(`INSERT OR IGNORE INTO agent_runs (id, session_id, agent_id, agent_display_name, status) VALUES (?, ?, ?, ?, 'pending')`);
+  for (const agentId of currentPipeline) {
+    if (!activeAgentIds.has(agentId)) {
+      const meta = getAgentMeta(agentId);
+      if (!meta) continue;
+      insertMissingRun.run(nanoid(), sessionId, agentId, meta.displayName);
+      activeAgentIds.add(agentId);
+      console.log(`  [pipeline-migration] Added missing agent to session: ${agentId}`);
+    }
+  }
 
   // DELTA ANALYSIS: Check for previous completed analysis of same ticker
   const previousReport = db.prepare(`
@@ -442,7 +482,7 @@ async function executeSession(sessionId: string, ticker: string, runtimeMode: Ru
     .all(sessionId) as any[];
   const accumulatedContext: Record<string, unknown> = { ticker, runtimeMode };
   for (const r of completedRuns) {
-    if (r.output_text) accumulatedContext[`${r.agent_id}_output`] = String(r.output_text).slice(0, CONTEXT_CHAR_LIMIT);
+    if (r.output_text) accumulatedContext[`${r.agent_id}_output`] = String(r.output_text).slice(0, 1000000);
   }
 
   // Include previous report summary for delta analysis (agents can compare/update)
@@ -499,27 +539,162 @@ async function executeSession(sessionId: string, ticker: string, runtimeMode: Ru
       }
     }
 
-    // QA REVISION LOOP: after qa_review phase
+    // ============================================================
+    // PRE-QA COMPLETENESS GATE — Events phase bittikten sonra
+    // QA'ya girmeden önce analiz agent'larının çıktıları yeterli mi?
+    // ============================================================
+    // PRE-QA gate kaldırıldı — gereksiz re-run döngüsü yaratıyordu.
+    // Truncation Claude output limiti yüzünden oluyor, tekrar çalıştırınca da aynı.
+    // QA zaten eksikleri tespit ediyor.
+
+    // ============================================================
+    // QA REVISION LOOP — Max 2 tur revision, sonra block
+    // ============================================================
     if (phase.name === 'Quality Review') {
-      const qaOutput = String(accumulatedContext['qa_review_output'] || '').toLowerCase();
-      if (qaOutput.includes('revision_requested')) {
-        const revisionTargets = ['financial_analysis', 'macro_analysis', 'technical_analysis', 'sector_competition'];
-        for (const target of revisionTargets) {
-          if (qaOutput.includes(target) && activeAgentIds.has(target)) {
-            console.log(`  QA revision: re-running ${target}`);
-            const revisionPrompt = buildTaskPrompt(target, ticker, accumulatedContext)
-              + `\n\nQA REVISION: Fix the issues flagged by QA:\n${String(accumulatedContext['qa_review_output'] || '').slice(0, 3000)}`;
-            const revResult = await runAgent({ agentId: target, taskPrompt: revisionPrompt, context: accumulatedContext, timeoutMs: 15 * 60 * 1000 });
-            if (revResult.success) {
-              accumulatedContext[`${target}_output`] = revResult.output.slice(0, CONTEXT_CHAR_LIMIT);
-              costTracker.totalCost += revResult.costUsd;
-              costTracker.totalTokens += revResult.tokensUsed;
-              db.prepare(`UPDATE analysis_sessions SET total_cost_usd = ?, total_tokens = ? WHERE id = ?`)
-                .run(costTracker.totalCost, costTracker.totalTokens, sessionId);
-              console.log(`  QA revision done: ${target}`);
-            }
+      const MAX_QA_ROUNDS = 2;
+
+      for (let qaRound = 1; qaRound <= MAX_QA_ROUNDS; qaRound++) {
+        const qaOutputRaw = String(accumulatedContext['qa_review_output'] || '');
+        const qaOutput = qaOutputRaw.toLowerCase();
+
+        // GOVERNANCE GATE — check qa_review DB status
+        const qaRunRow = db.prepare(`SELECT status, error_message FROM agent_runs WHERE session_id = ? AND agent_id = 'qa_review'`)
+          .get(sessionId) as { status: string; error_message: string | null } | undefined;
+
+        if (qaRunRow?.status === 'failed') {
+          const errMsg = (qaRunRow.error_message || '').toLowerCase();
+          const isTransientError = errMsg.includes('enotfound') || errMsg.includes('unable to connect')
+            || errMsg.includes('econnrefused') || errMsg.includes('network') || errMsg.includes('timeout');
+
+          if (isTransientError) {
+            console.error(`[GOVERNANCE] qa_review failed (geçici ağ hatası) — session duraklatılıyor`);
+            db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, error_message = 'Ağ hatası — otomatik yeniden denenecek' WHERE session_id = ? AND agent_id = 'qa_review'`)
+              .run(sessionId);
+            db.prepare(`UPDATE analysis_sessions SET status = 'paused_rate_limit', error_message = ?, current_phase = 'Quality Review' WHERE id = ?`)
+              .run('Kalite kontrol geçici ağ hatası — otomatik yeniden deneme bekliyor', sessionId);
+          } else {
+            console.error(`[GOVERNANCE] qa_review başarısız — rapor oluşturma ENGELLENDİ`);
+            db.prepare(`UPDATE analysis_sessions SET status = 'failed', error_message = ?, completed_at = ? WHERE id = ?`)
+              .run('Kalite kontrol başarısız — rapor oluşturma engellendi.', new Date().toISOString(), sessionId);
+          }
+          return;
+        }
+
+        // Check if QA requests revision — WHITELIST approach: only pass explicit approval
+        // "conditional_pass" is a masked failure — it acknowledges problems while passing. BLOCKED.
+        const QA_BLOCK_KEYWORDS = [
+          'revision_requested', 'rejected', 'reject', 'revision required',
+          'fail', 'failed', 'block', 'blocked',
+          'hard rejection', 'hard fail',
+          'conditional_pass', 'condition_pass', 'koşullu geçiş', 'koşullu onay',
+          'başarısız', 'reddedildi', 'revizyon gerekli', 'düzeltme gerekli',
+        ];
+        const keywordBlock = QA_BLOCK_KEYWORDS.some(marker => qaOutput.includes(marker));
+
+        // Score-based blocking: extract numeric QA score, block if < 0.75
+        const qaScoreMatch = qaOutputRaw.match(/overall[_\s-]*(?:score|puan|skor)["\s:]*([0-9]+(?:[.,][0-9]+)?)/i)
+          || qaOutputRaw.match(/(?:genel|toplam)[_\s]*(?:score|puan|skor)["\s:]*([0-9]+(?:[.,][0-9]+)?)/i)
+          || qaOutputRaw.match(/kalite[_\s-]*(?:score|puan|skor)["\s:]*([0-9]+(?:[.,][0-9]+)?)/i)
+          || qaOutputRaw.match(/qa[_\s-]*(?:score|puan|skor)["\s:]*([0-9]+(?:[.,][0-9]+)?)/i);
+        const qaNumericRaw = qaScoreMatch ? parseFloat(qaScoreMatch[1].replace(',', '.')) : null;
+        // Normalize: scores on 0-10 scale are converted to 0-1
+        const qaNormalized = qaNumericRaw !== null
+          ? (qaNumericRaw > 1.5 ? qaNumericRaw / 10 : qaNumericRaw)
+          : null;
+        const scoreBlock = qaNormalized !== null && qaNormalized < 0.75;
+        if (scoreBlock && !keywordBlock) {
+          console.log(`[QA GATE] Score-based block: QA score ${qaNormalized?.toFixed(2)} < 0.75`);
+        }
+
+        const qaBlocksRelease = keywordBlock || scoreBlock;
+
+        if (!qaBlocksRelease) {
+          console.log(`[QA GATE] Round ${qaRound}/${MAX_QA_ROUNDS}: QA PASSED — devam ediliyor`);
+          break; // QA passed, continue pipeline
+        }
+
+        // QA failed — if this is the last round, LOG WARNING but CONTINUE
+        // Rapor eksik olabilir ama çıksın — Chairman kendi değerlendirir
+        if (qaRound >= MAX_QA_ROUNDS) {
+          console.warn(`[QA GATE] ${MAX_QA_ROUNDS} tur revision sonrası hâlâ geçemedi — UYARI ile devam ediliyor`);
+          accumulatedContext['qa_warning'] = `QA ${MAX_QA_ROUNDS} turda onay veremedi. Rapor eksiklikler içerebilir.`;
+          break; // Block etme, devam et
+        }
+
+        // QA failed, round < max — REVISION: parse which agents need re-run
+        console.log(`[QA GATE] Round ${qaRound}/${MAX_QA_ROUNDS}: QA revision requested — revize ediliyor`);
+        db.prepare(`UPDATE analysis_sessions SET current_phase = ? WHERE id = ?`)
+          .run(`QA Revision (Round ${qaRound + 1})`, sessionId);
+
+        // Sadece P0/P1 blocker olarak işaretlenen agent'ları revize et
+        // QA çıktısında her agent'ın adı geçer (değerlendirme yapıyor) — ama sadece
+        // "BLOCKER" veya "P0" veya "P1" ile birlikte geçenler gerçekten revize edilmeli
+        const REVISABLE_AGENTS = [
+          'financial_analysis', 'data_collection', 'reconciliation',
+          'context_extraction', 'valuation_agent',
+        ];
+        const agentsToRevise: string[] = [];
+        for (const agentId of REVISABLE_AGENTS) {
+          // Agent adı P0/P1/BLOCKER bağlamında mı geçiyor?
+          const agentPattern = new RegExp(`(P0|P1|BLOCKER|blocker|critical).*${agentId}|${agentId}.*(P0|P1|BLOCKER|blocker|critical)`, 'i');
+          if (agentPattern.test(qaOutputRaw)) {
+            agentsToRevise.push(agentId);
           }
         }
+
+        // Max 3 agent revize et — daha fazlası gereksiz maliyet
+        const revisionTargets = agentsToRevise.length > 0
+          ? agentsToRevise.slice(0, 3)
+          : ['financial_analysis'];
+
+        console.log(`[QA REVISION] Revize edilecek agent'lar: ${revisionTargets.join(', ')}`);
+
+        // Inject TARGETED QA feedback — agent'a spesifik eksik listesi + knowledge.md yönlendirme
+        accumulatedContext['qa_revision_feedback'] = qaOutputRaw.slice(0, 5000);
+        accumulatedContext['qa_revision_round'] = qaRound + 1;
+        accumulatedContext['qa_revision_instruction'] = [
+          `QA REVISION TURU ${qaRound + 1} — ÖNCEKİ ÇIKTINDA EKSİKLER BULUNDU.`,
+          ``,
+          `YAPMAN GEREKENLER:`,
+          `1. Yukarıdaki qa_revision_feedback'i oku — QA hangi eksikleri bulmuş?`,
+          `2. \`Read\` ile kendi \`knowledge.md\` dosyanı aç — eksik formüller/benchmark'lar orada`,
+          `3. SADECE eksik bölümleri tamamla — zaten doğru olan kısımları tekrar yazma`,
+          `4. Çıktını kısa tut — sadece eksik metrikleri/bölümleri ekle`,
+          `5. Truncation olmasın diye önce en kritik eksikleri yaz`,
+        ].join('\n');
+
+        // Re-run flagged agents — ORİJİNAL ÇIKTIYI KORU, revision patch olarak ekle
+        for (const agentId of revisionTargets) {
+          if (!activeAgentIds.has(agentId)) continue;
+          // Orijinal çıktıyı context'te sakla — revision agent bunu görecek
+          const originalRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
+            .get(sessionId, agentId) as { output_text: string | null } | undefined;
+          if (originalRun?.output_text) {
+            accumulatedContext[`${agentId}_original_output`] = originalRun.output_text.slice(0, 10000);
+          }
+          db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, error_message = 'QA revision round ${qaRound + 1} — hedefli düzeltme' WHERE session_id = ? AND agent_id = ?`)
+            .run(sessionId, agentId);
+          const status = await runSingleAgent(agentId, sessionId, ticker, accumulatedContext, costTracker);
+          if (status === 'rate_limit') return;
+          // Revision sonrası: orijinal + revision birleştir
+          const revisedRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
+            .get(sessionId, agentId) as { output_text: string | null } | undefined;
+          if (originalRun?.output_text && revisedRun?.output_text) {
+            const merged = originalRun.output_text + '\n\n---\n## QA REVISION EKI\n' + revisedRun.output_text;
+            db.prepare(`UPDATE agent_runs SET output_text = ? WHERE session_id = ? AND agent_id = ?`)
+              .run(merged, sessionId, agentId);
+            accumulatedContext[`${agentId}_output`] = merged.slice(0, 1000000);
+          }
+        }
+
+        // Clean up revision instruction after re-runs
+        delete accumulatedContext['qa_revision_instruction'];
+
+        // Re-run QA
+        db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, output_text = NULL, error_message = 'QA re-review round ${qaRound + 1}' WHERE session_id = ? AND agent_id = 'qa_review'`)
+          .run(sessionId);
+        const qaRetryStatus = await runSingleAgent('qa_review', sessionId, ticker, accumulatedContext, costTracker);
+        if (qaRetryStatus === 'rate_limit') return;
       }
     }
   }
@@ -554,8 +729,168 @@ async function executeSession(sessionId: string, ticker: string, runtimeMode: Ru
     return; // Don't mark as completed, don't run feedback loop
   }
 
+  // ============================================================
+  // CEO APPROVAL GATE — RAPOR ONAYLANMADAN ÇIKMAZ
+  // Chairman Direktifi: "Onaysız rapor çıkmasın. Bir daha böyle rapor getirme."
+  // ============================================================
+  const CEO_APPROVAL_AGENTS = ['qa_review', 'strategic_synthesis', 'final_summary'];
+  const MIN_OUTPUT_LENGTH: Record<string, number> = {
+    qa_review: 500,          // QA yorumları minimum 500 karakter olmalı
+    strategic_synthesis: 2000, // Sentez minimum 2000 karakter
+    final_summary: 5000,     // Final rapor minimum 5000 karakter
+  };
+  const DEGRADED_MARKERS = ['[DEGRADED]', 'crashed:', 'failed:', '[pending]'];
+
+  const approvalFailures: string[] = [];
+
+  for (const agentId of CEO_APPROVAL_AGENTS) {
+    // 1. Agent pipeline'da aktif mi?
+    if (!activeAgentIds.has(agentId)) continue;
+
+    // 2. DB'deki run durumunu kontrol et
+    const runRow = db.prepare(`SELECT status, output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
+      .get(sessionId, agentId) as { status: string; output_text: string | null } | undefined;
+
+    if (!runRow) {
+      approvalFailures.push(`${agentId}: agent_run kaydı yok`);
+      continue;
+    }
+
+    if (runRow.status !== 'completed') {
+      approvalFailures.push(`${agentId}: status='${runRow.status}' (completed değil)`);
+      continue;
+    }
+
+    const output = runRow.output_text || '';
+
+    // 3. Truncation / boş çıktı kontrolü
+    const minLen = MIN_OUTPUT_LENGTH[agentId] || 200;
+    if (output.length < minLen) {
+      approvalFailures.push(`${agentId}: çıktı çok kısa (${output.length} karakter, minimum ${minLen})`);
+      continue;
+    }
+
+    // 4. Degraded marker kontrolü
+    const degraded = DEGRADED_MARKERS.some(marker => output.startsWith(marker));
+    if (degraded) {
+      approvalFailures.push(`${agentId}: degraded/hatalı çıktı — "${output.slice(0, 80)}"`);
+      continue;
+    }
+
+    // 5. Agent-specific content check
+    if (agentId === 'qa_review') {
+      const hasReview = /kalite|quality|score|puan|review|denetim|kontrol|eksik|eksiklik|sorun/i.test(output);
+      if (!hasReview) {
+        approvalFailures.push(`qa_review: gerçek kalite incelemesi içermiyor`);
+      }
+    }
+
+    if (agentId === 'strategic_synthesis') {
+      const hasSynthesis = /skor|score|sentez|synthesis|yatırım|değerlendirme|sonuç|risk|boyut/i.test(output);
+      if (!hasSynthesis) {
+        approvalFailures.push(`strategic_synthesis: sentez içeriği eksik (skor kartı veya değerlendirme bulunamadı)`);
+      }
+    }
+
+    if (agentId === 'final_summary') {
+      const hasContent = /hedef fiyat|target price|bear|bull|skor|özet|yönetici|rapor/i.test(output);
+      if (!hasContent) {
+        approvalFailures.push(`final_summary: zorunlu rapor içeriği eksik (hedef fiyat, yönetici özeti)`);
+      }
+    }
+  }
+
+  if (approvalFailures.length > 0) {
+    const warningMsg = `CEO APPROVAL UYARI — ${approvalFailures.length} eksiklik:\n${approvalFailures.map(f => `  • ${f}`).join('\n')}`;
+    console.warn(`\n⚠️  [CEO APPROVAL GATE] ${warningMsg}\n`);
+    // Block etme, uyarı ile devam et — rapor çıksın, Chairman değerlendirir
+    accumulatedContext['ceo_approval_warning'] = warningMsg;
+  } else {
+    console.log(`\n✅ [CEO APPROVAL GATE] Tüm kritik agent'lar onaylandı — rapor teslime hazır\n`);
+  }
+  // ============================================================
+  // END CEO APPROVAL GATE
+  // ============================================================
+
+  const finalSummaryRun = db.prepare(`
+    SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = 'final_summary'
+  `).get(sessionId) as { output_text: string | null } | undefined;
+  const finalSummaryOutput = finalSummaryRun?.output_text || '';
+  if (!finalSummaryOutput.trim()) {
+    console.warn(`[PIPELINE] final_summary çıktısı boş — mevcut strategic_synthesis çıktısı ile devam ediliyor`);
+    // Boş final_summary yerine strategic_synthesis çıktısını kullan
+    const fallbackOutput = String(accumulatedContext['strategic_synthesis_output'] || 'Rapor özeti oluşturulamadı.');
+    db.prepare(`INSERT INTO reports (id, session_id, report_type, title, content, created_at) VALUES (?, ?, 'executive', ?, ?, ?)`)
+      .run(nanoid(), sessionId, `${ticker} — Yonetici Ozeti (Kısmi)`, fallbackOutput, new Date().toISOString());
+  }
+
+  const completedAt = new Date().toISOString();
+  db.prepare(`INSERT INTO reports (id, session_id, report_type, title, content, created_at) VALUES (?, ?, 'executive', ?, ?, ?)`)
+    .run(nanoid(), sessionId, `${ticker} — Yonetici Ozeti`, finalSummaryOutput, completedAt);
+
+  if (activeAgentIds.has('report_formatter')) {
+    const formatterStatus = await runSingleAgent('report_formatter', sessionId, ticker, accumulatedContext, costTracker);
+    if (formatterStatus !== 'ok') {
+      console.warn(`[PIPELINE] report_formatter fail — PDF olmadan devam ediliyor, text rapor mevcut`);
+      // Block etme — text rapor reports tablosunda, PDF olmasa da rapor tamamlansın
+    }
+
+    const formatterRun = db.prepare(`
+      SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = 'report_formatter'
+    `).get(sessionId) as { output_text: string | null } | undefined;
+
+    // ============================================================
+    // COO DELIVERY CHECK — Rapor finalize olmadan son kontrol
+    // ============================================================
+    if (activeAgentIds.has('coo')) {
+      console.log(`\n--- COO Delivery Check ---`);
+      accumulatedContext['report_formatter_html'] = (formatterRun?.output_text || '').slice(0, 8000);
+      accumulatedContext['delivery_check_mode'] = true;
+
+      db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, output_text = NULL, error_message = 'Delivery check' WHERE session_id = ? AND agent_id = 'coo'`)
+        .run(sessionId);
+      const cooDeliveryStatus = await runSingleAgent('coo', sessionId, ticker, accumulatedContext, costTracker);
+
+      if (cooDeliveryStatus === 'rate_limit') return;
+
+      const cooOutput = String(accumulatedContext['coo_output'] || '').toLowerCase();
+      const deliveryBlocked = cooOutput.includes('revision_needed') || cooOutput.includes('blocked');
+
+      if (deliveryBlocked) {
+        console.error(`[COO DELIVERY] Rapor teslimat kontrolünden geçemedi — revision gerekli`);
+        db.prepare(`DELETE FROM reports WHERE session_id = ? AND report_type = 'executive'`).run(sessionId);
+
+        // Report formatter'ı tekrar çalıştır
+        db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, output_text = NULL, error_message = 'COO delivery revision' WHERE session_id = ? AND agent_id = 'report_formatter'`)
+          .run(sessionId);
+        const retryStatus = await runSingleAgent('report_formatter', sessionId, ticker, accumulatedContext, costTracker);
+        if (retryStatus !== 'ok') {
+          console.warn(`[COO DELIVERY] Formatter retry da fail — text rapor ile devam ediliyor`);
+        } else {
+          // Retry başarılı — PDF'i yeniden üret
+          const retryFormatterRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = 'report_formatter'`).get(sessionId) as { output_text: string | null } | undefined;
+          try {
+            await generatePdfFromFormatterOutput(ticker, retryFormatterRun?.output_text || '');
+          } catch (pdfErr: any) {
+            console.warn(`[COO DELIVERY] PDF retry failed: ${pdfErr.message} — text rapor ile devam`);
+          }
+        }
+      }
+    }
+    // ============================================================
+    // END COO DELIVERY CHECK
+    // ============================================================
+
+    try {
+      await generatePdfFromFormatterOutput(ticker, formatterRun?.output_text || '');
+    } catch (pdfErr: any) {
+      console.warn(`[PIPELINE] PDF generation failed: ${pdfErr.message} — text rapor ile tamamlanıyor`);
+      // PDF fail olsa bile text rapor reports tablosunda mevcut — block etme
+    }
+  }
+
   db.prepare(`UPDATE analysis_sessions SET status = 'completed', completed_at = ?, current_phase = NULL WHERE id = ?`)
-    .run(new Date().toISOString(), sessionId);
+    .run(completedAt, sessionId);
 
   // Post-completion: CEO feedback loop
   console.log(`Starting CEO feedback loop for ${ticker}`);
@@ -567,26 +902,95 @@ async function executeSession(sessionId: string, ticker: string, runtimeMode: Ru
   }
 }
 
+// ============================================================
+// AGENT DEPENDENCY MATRIX — her agent sadece ihtiyacı olan context'i alır
+// ============================================================
+const AGENT_DEPENDENCIES: Record<string, string[]> = {
+  ceo: [],
+  coo: ['ceo_output'],
+  data_collection: ['ceo_output', 'coo_output'],
+  kap_watch: ['ceo_output'],
+  parse_standardization: ['data_collection_output'],
+  reconciliation: ['data_collection_output', 'parse_standardization_output'],
+  context_extraction: ['data_collection_output', 'parse_standardization_output'],
+  financial_analysis: ['parse_standardization_output', 'reconciliation_output', 'context_extraction_output'],
+  technical_analysis: ['context_extraction_output'],
+  macro_analysis: ['context_extraction_output'],
+  sector_competition: ['context_extraction_output', 'financial_analysis_output'],
+  valuation_agent: ['financial_analysis_output', 'context_extraction_output', 'macro_analysis_output'],
+  esg_agent: ['context_extraction_output', 'data_collection_output'],
+  sentiment_news_agent: ['context_extraction_output'],
+  analyst_consensus_agent: ['context_extraction_output'],
+  event_classification: ['kap_watch_output'],
+  event_impact_mapper: ['event_classification_output', 'context_extraction_output'],
+  event_timeline_alert: ['event_classification_output', 'event_impact_mapper_output'],
+  qa_review: ['financial_analysis_output', 'context_extraction_output', 'reconciliation_output', 'valuation_agent_output', 'strategic_synthesis_output'],
+  strategic_synthesis: ['financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'context_extraction_output', 'event_impact_mapper_output', 'valuation_agent_output'],
+  final_summary: ['strategic_synthesis_output', 'financial_analysis_output', 'valuation_agent_output', 'qa_review_output', 'macro_analysis_output', 'technical_analysis_output', 'sector_competition_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output'],
+  report_formatter: ['final_summary_output', 'strategic_synthesis_output', 'financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'valuation_agent_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output', 'event_impact_mapper_output', 'analyst_consensus_agent_output', 'reconciliation_output'],
+};
+
+// Agent tipine göre context karakter limiti
+const AGENT_CONTEXT_LIMITS: Record<string, number> = {
+  // Veri agent'ları — az context yeterli
+  data_collection: 3000, kap_watch: 2000, parse_standardization: 8000,
+  reconciliation: 8000, event_classification: 3000,
+  // Hepsi 100KB — maliyet farkı rapor başına ~$0.04, kalite farkı çok büyük
+  sentiment_news_agent: 1000000, analyst_consensus_agent: 1000000,
+  event_impact_mapper: 1000000, event_timeline_alert: 1000000,
+  financial_analysis: 1000000, context_extraction: 1000000,
+  technical_analysis: 1000000, macro_analysis: 1000000,
+  sector_competition: 1000000, valuation_agent: 1000000, esg_agent: 1000000,
+  qa_review: 1000000, strategic_synthesis: 1000000, final_summary: 1000000,
+  report_formatter: 1000000,
+  ceo: 1000000, coo: 1000000,
+};
+
 function buildTaskPrompt(agentId: string, ticker: string, context: Record<string, unknown>): string {
-  // For synthesis agents, only include critical analysis outputs to prevent context window bloat
-  const SYNTHESIS_AGENTS = ['strategic_synthesis', 'final_summary'];
-  const CRITICAL_OUTPUTS = ['strategic_synthesis_output', 'financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output',
-                            'sector_competition_output', 'event_impact_mapper_output', 'context_extraction_output',
-                            'qa_review_output', 'event_timeline_alert_output', 'reconciliation_output'];
+  // Use dependency matrix to filter context — each agent only sees what it needs
+  const deps = AGENT_DEPENDENCIES[agentId] || [];
+  const contextLimit = AGENT_CONTEXT_LIMITS[agentId] || CONTEXT_CHAR_LIMIT;
 
-  let ctxKeys = Object.keys(context).filter(k => k.endsWith('_output'));
-
-  if (SYNTHESIS_AGENTS.includes(agentId)) {
-    // Filter to only critical analysis outputs for synthesis agents
-    ctxKeys = ctxKeys.filter(k => CRITICAL_OUTPUTS.includes(k));
+  let ctxKeys: string[];
+  if (deps.length > 0) {
+    // Only include declared dependencies
+    ctxKeys = deps.filter(k => context[k] !== undefined);
+  } else {
+    // No dependencies declared — no prior outputs
+    ctxKeys = [];
   }
 
+  // Build context string with per-agent limit — distribute budget across dependencies
+  const perDepLimit = ctxKeys.length > 0 ? Math.floor(contextLimit / ctxKeys.length) : 0;
   const priorOutputs = ctxKeys.length > 0
-    ? `\n\nPrior agent outputs available in context: ${ctxKeys.join(', ')}`
+    ? `\n\n## Prior Agent Outputs\n` + ctxKeys.map(k => {
+        const val = String(context[k] || '').slice(0, perDepLimit);
+        return `### ${k.replace('_output', '')}\n${val}`;
+      }).join('\n\n')
     : '';
 
   const perAgent: Record<string, string> = {
     ceo: `Interpret the analysis mandate for BIST-listed company ${ticker}. Define quality thresholds, assign work to specialist agents, and set the session scope. Output the mandate as a structured plan.`,
+    coo: context.delivery_check_mode
+      ? `DELIVERY CHECK MODE: ${ticker} raporu finalize edilmek üzere. report_formatter HTML çıktısını kontrol et.
+
+Kontrol listesi:
+1. HTML bütünlüğü (DOCTYPE, head, body, table kapanışları, sayfa sayısı)
+2. İçerik bütünlüğü (kapak, yatırımcı kartı, finansal tablolar, SWOT, değerleme, risk matrisi)
+3. Veri tutarlılığı (rapordaki rakamlar financial_analysis ile eşleşiyor mu, skor strategic_synthesis ile tutarlı mı)
+4. Tablo genişlikleri taşıyor mu, sayfa geçişleri doğru mu
+
+Çıktında delivery_status alanı ZORUNLU: "APPROVED" veya "REVISION_NEEDED" veya "BLOCKED".
+REVISION_NEEDED veya BLOCKED dersen report_formatter tekrar çalışır.${priorOutputs}`
+      : `PRE-FLIGHT CHECK: ${ticker} analizi başlamak üzere.
+
+Kontrol et:
+1. WebFetch ile kap.org.tr erişilebilir mi test et
+2. WebFetch ile isyatirim.com.tr erişilebilir mi test et
+3. Bu ticker için daha önce analiz yapılmış mı (context'te previous_report_date var mı bak)
+4. Pipeline'daki agent sayısını raporla
+
+Çıktında pre_flight_status alanı ZORUNLU: "GO" veya "NO_GO" veya "CONDITIONAL".${priorOutputs}`,
     data_collection: `Collect public data for ${ticker}: last 5 years of financial statements (balance sheet, income, cash flow), annual/activity reports, and KAP disclosures. Use WebSearch and WebFetch to find actual data from isyatirim.com.tr, kap.org.tr, and company investor relations pages. Provide real numbers where possible.
 
 ADDITIONALLY COLLECT:

@@ -17,6 +17,30 @@ Systematically locate and inventory all available primary-source financial data 
 
 ---
 
+## FALİYET RAPORU = BİRİNCİL KAYNAK (Chairman Direktifi — 12 Nisan 2026)
+
+**"Her veri faaliyet raporundan gelecek. Sallamadan yaz."**
+
+Faaliyet raporları sadece context için değil — finansal veri için de birincil kaynaktır. Bunları KAP SPK tablosuyla birlikte her analiz için ZORUNLU topla.
+
+**Faaliyet raporlarında bulunan ve SPK tablosunda olmayan kritik veriler:**
+- **FAVÖK** (açıkça tablo halinde, yıllık karşılaştırmalı)
+- **Net Borç** (şirketin kendi hesabı)
+- **CAPEX** breakdown (proje bazlı)
+- **Segment FAVÖK/gelir** (IFRS 8 değil, yönetim raporlaması)
+- **Operasyonel KPI'lar** (kapasite kullanımı, üretim hacmi, verimlilik)
+- **D&A ayrıntısı** (hangi varlık grubundan ne kadar)
+
+**Data manifest'e eklenecek alan:**
+```json
+"favored_for_financial_data": true,  // Faaliyet raporu finansal veri için kullanılabilir mi?
+"contains_ebitda_table": true,        // FAVÖK tablosu var mı?
+"contains_net_debt_table": true,      // Net borç tablosu var mı?
+"financial_highlights_pages": "40-45" // Finansal özet hangi sayfalarda?
+```
+
+---
+
 ## FAİYET RAPORU DERİN ANALİZİ (YENİ — ZORUNLU, April 12, 2026)
 
 Finansal tablolara ek olarak, şirketin son 5 yıllık faaliyet raporlarını da topla ve envanterle. Bu raporlar context_extraction agent tarafından analiz edilecek.
@@ -25,8 +49,11 @@ Finansal tablolara ek olarak, şirketin son 5 yıllık faaliyet raporlarını da
 
 **KAP'tan topla:**
 1. Son 5 yıl yıllık faaliyet raporu PDF'lerini bul (kap.org.tr → şirket sayfası → "Dönemsel Raporlar")
-2. Her PDF için: belge ID, URL, yıl, sayfa sayısı, dosya boyutu
-3. Türkçe + İngilizce versiyonlar varsa ikisini de kaydet
+2. **PDF'leri indir ve text'e çevir:** `Bash` tool ile `node scripts/fetch-pdf.js "<kap-pdf-url>" "output/<TICKER>_faaliyet_<YIL>.txt"` çalıştır. Sonra `Read` ile oku.
+   - KAP PDF URL: `https://www.kap.org.tr/tr/api/BildirimPdf/<bildirim-id>`
+   - Şirket IR PDF: `node scripts/fetch-pdf.js "https://sirket.com/rapor.pdf" "output/TICKER_rapor.txt"`
+3. Her PDF için: belge ID, URL, yıl, sayfa sayısı, dosya boyutu
+4. Türkçe + İngilizce versiyonlar varsa ikisini de kaydet
 4. **Özellikle çıkar:**
    - CEO/YK Başkanı Mektubu sayfaları (genelde ilk 10 sayfa)
    - İçindekiler tablosu (rapor yapısını anlamak için)
@@ -179,3 +206,166 @@ Since you are a data collection agent, your "evidence" is the proof of source re
   "review_status": "pending_ceo_review"
 }
 ```
+
+---
+
+## ZORUNLU: KAYNAK ETİKETLEME SİSTEMİ (Chairman Direktifi — 13 Nisan 2026)
+
+**Her rakamın yanında kaynak etiketi ZORUNLUDUR. Etiket yoksa o rakam kullanılamaz.**
+
+### Etiket Formatı
+Her finansal rakam, oran veya istatistiğin yanına şu etiketlerden birini koy:
+
+- `[KAYNAK: kap.org.tr/bildirim/...]` — KAP'tan doğrulanmış veri
+- `[KAYNAK: isyatirim.com.tr/...]` — İş Yatırım'dan doğrulanmış veri
+- `[KAYNAK: faaliyet_raporu_2025_s42]` — Faaliyet raporunun 42. sayfası
+- `[KAYNAK: sirket_ir_sayfasi]` — Şirket IR sayfasından
+- `[DOĞRULANAMADI]` — Kaynak bulunamadı, doğrulanamadı
+
+### Kurallar
+1. **Kaynaksız rakam YASAK.** Kaynak bulamadıysan rakamı yazma, `[VERİ YOK]` yaz.
+2. **Tahmin YASAK.** "Tahmini", "yaklaşık", "muhtemelen" gibi ifadelerle rakam verme.
+3. **Eski veriyi güncel gösterme YASAK.** 2023 verisini 2025 verisi gibi sunma.
+4. **Cross-check:** Aynı rakamı 2 farklı kaynaktan doğrula. Uyuşmuyorsa ikisini de yaz.
+5. **data_gaps:** Bulamadığın her veriyi data_gaps listesine ekle — downstream agent'lar neyin eksik olduğunu bilmeli.
+
+### Örnek
+```
+Net Satışlar (2024): 45.2 milyar TL [KAYNAK: kap.org.tr/bildirim/12345]
+FAVÖK (2024): 8.1 milyar TL [KAYNAK: faaliyet_raporu_2024_s38]
+Net Borç (2024): [VERİ YOK] — faaliyet raporunda net borç tablosu bulunamadı
+```
+
+**Bu direktif CEO ve Chairman tarafından onaylanmıştır. Uygulanmazsa raporunuz reddedilir.**
+
+---
+
+## KAP VERİ TOPLAMA STRATEJİSİ (Chairman Direktifi — 14 Nisan 2026)
+
+**KAP'ta her şirketin 2005'ten bugüne tüm finansal tabloları ve faaliyet raporları var. "Bulamadım" mazeret değil.**
+
+**TAHMİNİ RAKAM YASAK. Gerçekleşen yıllar için KAP'ta kesin rakam var — onu bul ve kullan.**
+
+### ADIM 1: KAP'ta Şirketi Bul (Bildirim Arama)
+
+KAP bildirim sayfasında şirket ismi veya ticker ile arama yapılır. Finansal bildirimler "FR" (Finansal Rapor) tipinde yayınlanır.
+
+**Bildirim bulma yöntemi:**
+```
+WebSearch "[TICKER] finansal tablo 2025 site:kap.org.tr"
+WebSearch "[TICKER] faaliyet raporu 2025 site:kap.org.tr"
+WebSearch "[ŞİRKET ADI] yıllık finansal tablolar KAP 2025"
+```
+
+Her arama sonucunda KAP bildirim sayfası URL'si çıkar. URL'den bildirim ID'sini al.
+
+**ÖNEMLİ — YILLARIN TAKVİMİ:**
+- FY2025 yıllık raporu → **Mart 2026'da** yayınlanır (KAP'ta 2026 yılı Mart ayı bildirimlerinde ara)
+- FY2024 yıllık raporu → **Mart 2025'te** yayınlandı
+- FY2023 yıllık raporu → **Mart 2024'te** yayınlandı
+- Bugün Nisan 2026 — yani FY2025 verileri KAP'ta MEVCUT
+
+### ADIM 2: KAP PDF İndirme ve Okuma
+
+Bildirim ID'sini bulduktan sonra:
+
+```bash
+node scripts/fetch-pdf.js "https://www.kap.org.tr/tr/api/BildirimPdf/[BILDIRIM_ID]" "output/[TICKER]_finansal_[YIL].txt"
+```
+
+Sonra `Read` ile oku: `output/[TICKER]_finansal_[YIL].txt`
+
+**Her bildirimde genelde 1 PDF var — tıkla, ID'yi al, indir.**
+
+### ADIM 3: 4 ZORUNLU TABLO (Her biri ayrı bildirim olabilir)
+
+KAP'ta finansal tablolar tek bir büyük PDF olarak veya ayrı ayrı yayınlanabilir:
+
+1. **Gelir Tablosu (IS)** — "Kar veya Zarar Tablosu" başlığı ile
+2. **Bilanço (BS)** — "Finansal Durum Tablosu" başlığı ile  
+3. **Nakit Akış Tablosu (CF)** — "Nakit Akışları Tablosu" başlığı ile ← **ATLANMAYACAK**
+4. **Özsermaye Değişim Tablosu (SE)** — "Özkaynak Değişim Tablosu" başlığı ile ← **ATLANMAYACAK**
+
+**Genelde 4'ü tek PDF'de olur — yıllık konsolide finansal tablolar bildirimi.**
+
+Eğer tek PDF'de yoksa ayrı ayrı ara:
+```
+WebSearch "[TICKER] nakit akış tablosu 2025 site:kap.org.tr"
+WebSearch "[TICKER] özkaynak değişim tablosu 2025 site:kap.org.tr"
+```
+
+### ADIM 4: Faaliyet Raporu PDF
+
+Faaliyet raporu ayrı bir bildirimdir — "Faaliyet Raporu" başlığıyla yayınlanır.
+
+```
+WebSearch "[TICKER] faaliyet raporu 2025 site:kap.org.tr"
+```
+
+PDF indir ve oku. İçinde bul:
+- FAVÖK tablosu ("Finansal Göstergeler" bölümü)
+- Net Borç hesabı
+- CAPEX detayı (yatırım harcamaları)
+- Segment bazlı gelir dağılımı
+- CEO/YK Başkanı mesajı
+- Ortaklık yapısı
+
+### ADIM 5: 5 YILLIK VERİ TOPLAMA
+
+**Son 5 yılın verisini topla: FY2021, FY2022, FY2023, FY2024, FY2025.**
+
+Her yıl için aynı adımları tekrarla. KAP'ta 2005'e kadar geriye gidilebilir.
+
+Minimum: Her yıl için Net Satışlar, Brüt Kar, FAVÖK, Net Kar, Toplam Varlık, Toplam Özsermaye, Net Borç.
+
+**Tahmini rakam YASAK. KAP'ta kesin rakam var — onu bul.**
+
+### ADIM 6: Şirket IR Sayfası + isyatirim
+
+```
+WebSearch "[TICKER] investor relations" veya "[ŞİRKET ADI] yatırımcı ilişkileri"
+WebFetch https://www.isyatirim.com.tr/tr-tr/analiz/hisse/Sayfalar/sirket-karti.aspx?hession=[TICKER].E.BIST
+```
+
+Buralardan al:
+- Güncel hisse fiyatı + piyasa değeri
+- Toplam hisse sayısı
+- Ortaklık yapısı (yabancı oranı, halka açıklık)
+- F/K, PD/DD, temettü verimi
+- 52 hafta düşük/yüksek
+
+### ADIM 7: Holding İştirak Verileri
+
+**Holding şirketi ise (KCHOL, SAHOL, DOHOL, TAVHL):**
+
+Her borsada işlem gören iştirak için:
+1. İştirak ticker + ortaklık oranı
+2. `WebSearch "[İŞTİRAK_TICKER] piyasa değeri"` → güncel piyasa değeri
+3. NAV katkısı = Piyasa Değeri × Ortaklık Oranı
+4. İştirak FAVÖK/Net Kar (son yıl)
+
+### ADIM 8: Haberler + Analist
+
+```
+WebSearch "[TICKER] haber son 1 ay" — en az 5 haber
+WebSearch "[TICKER] hedef fiyat analist 2026" — en az 3 analist
+```
+
+---
+
+## ÇIKTI KONTROLÜ (Göndermeden Önce)
+
+- [ ] IS (Gelir Tablosu) — 5 yıllık gerçek rakamlar VAR MI?
+- [ ] BS (Bilanço) — 5 yıllık gerçek rakamlar VAR MI?
+- [ ] CF (Nakit Akış) — OCF, ICF, FCF gerçek rakamlar VAR MI?
+- [ ] SE (Özsermaye Değişim) — VAR MI?
+- [ ] Faaliyet Raporu — FAVÖK, Net Borç, CAPEX VAR MI?
+- [ ] Her rakamda `[KAYNAK: kap.org.tr/bildirim/...]` etiketi VAR MI?
+- [ ] Tahmini rakam VAR MI? → **VARSA SİL, gerçek rakamı bul**
+- [ ] Holding ise: iştirak piyasa değerleri + ortaklık oranları VAR MI?
+- [ ] Güncel hisse fiyatı VAR MI?
+
+**TAHMİNİ RAKAM, PROXY, REVERSE-ENGINEERED, INFERRED — HEPSİ YASAK.**
+**KAP'ta gerçek rakam var. Git bul. Bulamıyorsan WebSearch sorgunu değiştir, tekrar ara.**
+
+**CONDITIONAL PASS verme yetkini YOK. Eksik varsa bildir, karar verme.**

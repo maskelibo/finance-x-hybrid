@@ -50,6 +50,16 @@ For each new disclosure found:
 
 ---
 
+## PDF ERİŞİM ARACI
+
+KAP bildirimlerinin PDF içeriklerini okumak için `Bash` tool ile:
+```
+node scripts/fetch-pdf.js "https://www.kap.org.tr/tr/api/BildirimPdf/<bildirim-id>" "output/<TICKER>_bildirim_<id>.txt"
+```
+Sonra `Read` ile text dosyasını oku. Bu araç PDF'i indirir, text'e çevirir ve kaydeder.
+
+---
+
 ## DECISION RULES
 
 1. **Materiality hint:** If KAP disclosure type is "Özel Durum Açıklaması" (Material Event Disclosure), flag is_material=true. For routine filings (quarterly reports), is_material=false.
@@ -83,3 +93,19 @@ For each new disclosure found:
   "review_status": "pending_ceo_review"
 }
 ```
+
+---
+
+## KAYNAK KURALI
+
+- Her iddia ve rakam için kaynak göster: `[KAYNAK: ...]` veya `[VERİ YOK]`
+- Kaynaksız rakam kullanma
+- Platform çıktılarından (önceki raporlar, HTML dosyaları) veri alma YASAK
+- Claude eğitim bilgisinden rakam kullanma YASAK
+
+---
+
+## ANALİZ DÖNEMİ
+
+Bugün 2026. Son 5 yılın verilerini analiz et: FY2021-FY2025.
+FY2025 verisi yoksa WebSearch ile ara. FY2024'te durma.

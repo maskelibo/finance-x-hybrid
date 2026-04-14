@@ -1,119 +1,132 @@
-# ESG Agent — Bilgi Defteri
-
-## Kimlik Kartı
+# ESG Agent — Damitilmis Hafiza
 
 ---
 
-| Alan | Bilgi |
-|---|---|
-| Ajan Adı | ESG Agent |
-| Uzmanlık | ESG (Environmental, Social, Governance) Analizi |
-| Oluşturma Tarihi | 2026-04-09 |
-| Son Güncelleme | 2026-04-12 |
-| Bağlı Olduğu Ajan | META (CEO) |
-| Toplam Tamamlanan Analiz | 1 (TUPRS) |
-| Ortalama Öğrenme Puanı | — |
+## Kalici Kurallar
 
----
+- **Sektor baglami zorunlu:** E puani sektore gore kalibre edilmeli. Mutlak emisyon degil, yonetim kalitesi ve taahhut ciddiyeti degerlendir.
+- **Veri yoksa tahmin yapma:** "Veri mevcut degil" yaz; uydurma YASAK.
+- **Greenwashing uyarisi flag'le:** Taahhut/kapasite orantisizliklarini W-xxx formatinda kaydet.
+- **Kaynak goster:** CDP, BIST uyeligi icin URL/kaynak adi.
+- **G agirligi %40:** YK bagimsizligi ve iliskili taraf derinlemesine analiz.
+- **TSRS uyumu sor:** FY2024+ BIST sirketleri icin TSRS/TFRS-S1/S2 uyum durumu — KAP'ta aranmali. Pre-flight check'e ekle.
+- **ETS riski dahil et:** Rafineri, enerji, cimento, celik sirketleri icin ETS maliyet etkisi hesapla.
+- **CDP once ara:** "Bulunamadi" demeden cdp.net'ten sirket kaydini kontrol et. CDP public database'den Scope 1/2/3 cek.
+- **ESG skor verdiginde puan metodunu ve agirliklarini kisa tabloyla acikla.**
+- **Her ana ESG riskini nakit akisi, CAPEX veya regulasyon etkisine bagla.**
+- **Endeks uyeligi ve dis rating'lerde en resmi kaynagi kullan.**
+- **Sosyal/yonetisim metriklerinde trend ve sektor benchmark'ini birlikte ver.**
+- **Celik sirketlerinde tCO2/ton crude steel yogunlugu mutlaka aranmali.** CBAM etkisi bu metrik olmadan eksik kalir.
+- **CBAM ve ESG baglantisi sayisal kurulmali:** Scope 1 -> CBAM default vs dogrulanmis karsilastirmasi -> yillik tasarruf.
 
-## Temel Yetenek Haritası
+## Zorunlu Kontrol Listesi
 
-| Konu | Seviye (1–10) | Not |
-|---|---|---|
-| Çevresel analiz (E) | 5 | TUPRS analiziyle ilk deneyim; CDP, MRV, net-zero framework öğrenildi |
-| Sosyal analiz (S) | 5 | Çeşitlilik metrikleri, LTIR framework öğrenildi; veri eksikliği yönetimi deneyimlendi |
-| Yönetişim analizi (G) | 6 | YK bağımsızlığı, CEO dualitesi, ilişkili taraf analizi uygulandı |
-| ESG rating yorumlama | 6 | CDP A-, Sustainalytics, MSCI, S&P Global, FTSE4Good framework öğrenildi |
-| BIST Sürdürülebilirlik Endeksi | 7 | BIST üyelik teyiti yapıldı; 2014'ten beri üyelik metodolojisi anlaşıldı |
-| Greenwashing tespiti | 6 | SAF ve yeşil hidrojen taahhütleri için orantılılık testi uygulandı |
+**Her raporda zorunlu:**
+1. CDP kaydi + skor (cdp.net'ten ara)
+2. BIST Surdurulebilirlik Endeksi uyeligi teyidi
+3. TSRS uyum beyani (KAP'ta TFRS-S1/S2)
+4. YK bagimsizlik orani (SPK %33 min, best practice %50+)
+5. CEO dualitesi kontrolu
+6. Iliskili taraf konsantrasyonu
+7. E/S/G puan metodolojisi ve agirliklari tablosu
 
----
+**Celik sektoru ek zorunlu:**
+1. CDP kaydi + Scope 1 tCO2/ton celik (CBAM baglantisi)
+2. Turkiye ETS kapsam durumu + tahmini maliyet yuku
+3. LTIR (faaliyet raporu HSE bolumu)
+4. EAF donusum plani + karbon hedefleri
+5. OYAK sahipliginin yonetisim etkisi (iliskili taraf + azinlik haklari)
 
-## Öğrenme Geçmişi
+**Rafineri sektoru ek zorunlu:**
+1. CDP public database'den Scope 1/2/3
+2. Faaliyet raporu HSE bolumunden LTIR/TRIR
+3. SAF/yesil yatirim TL ve $ karsiligi (yuzde degil, somut rakam)
+4. YK bagimsizlik -> MSCI ESG etkisi (~%15-20 agirlik)
+5. ETS maliyet riski
 
-### TUPRS Analizi — 2026-04-12
-
-**Şirket Bağlamı:** Ham petrol rafineri sektörü (Enerji). Türkiye'nin tek entegre rafinerisi.
-
-**ESG Sonuçları:**
-- E: 7/10 (CDP A- dominant — rafineri sektöründe güçlü)
-- S: 6/10 (sınırlı kamuya açık data; %10 kadın oranı zayıf)
-- G: 5/10 (%33 YK bağımsızlığı + Koç aile kontrolü yapısal zayıflık)
-- Genel: 5.9/10
-
-**Temel Öğrenmeler:**
-1. **CDP skoru**, rafineri sektörü için en önemli kamuya açık çevresel sinyal olarak öne çıkıyor. A- = sektörel lider.
-2. **LTIR ve güvenlik metrikleri** endüstriyel şirketlerde kamuya açık kaynaklarda nadiren bulunuyor — sürdürülebilirlik raporuna doğrudan erişim gerekiyor.
-3. **Scope 1/2 mutlak rakamları** (ton CO2e) özet analizlerde yer almıyor; full sustainability report gerekli.
-4. **Greenwashing testi:** SAF 300.000 ton/yıl vs 30 MMT toplam kapasite = %1 orantısızlığı — taahhüt iletişimi ile gerçek etki arasındaki uçurum işaretlenmeli.
-5. **BIST Sürdürülebilirlik Endeksi** üyeliği Sustainalytics/Morningstar TUPRS sayfasından teyit edilebiliyor.
-6. **MSCI ESG Rating** ve **S&P Global ESG Score** TUPRS için public kaynaklarda tespit edilemiyor — platform üyeliği gerekiyor.
-7. **YK yapısı analizi için** context_extraction çıktısı en güvenilir kaynak (üye listesi, bağımlılık bilgisi).
-8. **İlişkili taraf analizi:** Müşteri + iştirak çakışması (Opet: %40 iştirak + %18 gelir) her zaman CUP yöntemi olsa bile governance skoru üzerinde baskı yaratır.
-9. **Rafineri sektöründe** sektör bağlamı çok kritik — mutlak emisyon düzeyi değil, yönetim kalitesi ve taahhüt ciddiyeti değerlendirilmeli.
-10. **CEO dualitesi yokluğu** (YK Başkanı ≠ CEO) olumlu governance sinyali; ancak YK Başkanı'nın hâkim hissedarla bağlantısı bu avantajı zayıflatıyor.
-
----
-
-## Rules Learned (CEO Direktifleri ve Platform Standartları)
-
-1. **Sektör bağlamı zorunlu:** "Madencilik şirketinden düşük karbon emisyonu beklenmez" — rafineri için de aynı mantık. E puanı sektöre göre kalibre edilmeli.
-2. **Veri yoksa tahmin yapma:** LTIR, Scope 1/2 rakamları tespit edilemediğinde "veri mevcut değil" yazılır; uydurma yapılmaz.
-3. **Greenwashing uyarısı flag'le:** Taahhüt/kapasite orantısızlıklarını (SAF %1 örneği gibi) W-xxx formatında kaydet.
-4. **Kaynak göster:** CDP, BIST üyeliği gibi her teyit için URL veya kaynak adı belirt.
-5. **G ağırlığı %40:** Yönetişim diğer boyutları etkiler — YK bağımsızlığı ve ilişkili taraf konsantrasyonu mutlaka derinlemesine analiz edilmeli.
-
----
-
-## Sektör Referansları
-
-### Enerji / Ham Petrol Rafineri
-- CDP A- = petrol & gaz sektöründe en üst %10
-- BIST Sürdürülebilirlik Endeksi: rafineri için mevcut endeks üyeliği = güçlü sinyal
-- SASB EM-RM kategorisi: GHG emisyonları + hava kalitesi + su + tehlikeli maddeler + iş güvenliği materyal
-- YK bağımsızlığı: %33 minimum SPK; best practice %50+; aile şirketlerinde %33 yaygın ama yatırımcı iskontosu yaratiyor
-- Rafineri sektöründe tipik LTIR norm: 0.5–1.5 aralığı
-
----
-
-## KPI Takip Tablosu
-
-| Tarih | Şirket | E | S | G | Genel | Veri Kalitesi | Not |
-|---|---|---|---|---|---|---|---|
-| 2026-04-12 | TUPRS | 7 | 6 | 5 | 5.9 | Partial | İlk analiz; CDP A-, BIST üye; LTIR ve Scope 1/2 rakamları eksik |
-
----
-
-## Güçlü Yönlerim
-
-- YK bağımsızlığı ve CEO dualitesi analizini hızlı tamamlıyorum
-- CDP ve BIST Sürdürülebilirlik Endeksi teyidini web üzerinden yapabiliyorum
-- Greenwashing orantısızlık testini (taahhüt/kapasite karşılaştırması) uyguluyorum
-- SASB materiality haritasını sektöre göre uyarlıyorum
-
-## Gelişim Alanlarım
-
-- Scope 1/2/3 mutlak rakamlarına erişmek için doğrudan PDF sürdürülebilirlik raporu okuma
-- MSCI ve Refinitiv ESG Score teyidi için platform erişimi şart
-- LTIR benchmark değerlerini sektör bazında öğrenmeli (rafineri endüstrisi LTIR norm: 0.5-1.5 aralığı tipik)
-
----
-
-*Bu dosya her analizden sonra güncellenir.*
-*Dosya sahibi: ESG Agent | Denetleyen: META (CEO)*
-
----
-
-## CEO Geri Bildirimi — 2026-04-12 — TUPRS Raporu
+## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
-- **Scope 1/2 mutlak emisyon rakamları "kamuya açık değil" deyip geçildi:** CDP A- derecelendirmesi için TUPRS verileri CDP'ye sunuluyor — bu veriler CDP public database'de mevcut. "Bulunamadı" demeden önce cdp.net'ten TUPRS kaydı aranmalıydı.
-- **LTIR (Kayıp Zamanlı İş Kazası Sıklık Oranı) bulunamadı:** İş güvenliği metriği rafineri şirketleri için kritik (30 MMT/yıl kapasiteli bir tesisin kazasız çalışma oranı). KAP faaliyet raporunda HSE bölümü var mı kontrol edilmedi.
-- **SAF (Sürdürülebilir Havacılık Yakıtı) yatırımı TL karşılığı verilmedi:** "Toplam kapasitenin %1'i" kapsam verildi ama CAPEX büyüklüğü (2026 ve 2027 için planlanan yatırım tutarı) hesaplanmadı.
-- **YK bağımsızlık oranı (%33) kurumsal yönetim riskinin yatırım etkisi değerlendirilmedi:** "SPK minimumunda" notu var ama bu durum ESG ratinglerini (MSCI, Sustainalytics) nasıl etkiliyor? Spesifik rating indirimi riski tartışılmadı.
+- **CORSIA uyum takvimi "Not Disclosed"** — IATA üyeliği olan havacılık şirketinde CORSIA zorunlu (2027+). "Not Disclosed" kabul edilemez; IATA CORSIA public tracker'dan THYAO'nun compliance durumu araştırılmalıydı.
+- **Carbon intensity (CO2/ton-km veya CO2/yolcu-km) hesabı yok** — Havacılıkta sektör normunun en kritik çevre metriği; Scope 1 emisyon / RPK = CO2 per ton-km. Bu hesap yapılmadı.
+- **Yeni CEO/Chairman sonrası governance skoru güncellenmedi** — 10 Nisan 2026 liderlik değişikliği G boyutunu etkiliyor; Prof. Murat Şeker (eski CFO, şimdi Chairman) dualite riski var mı? Bu değişiklik ESG G puanına yansıtılmadı.
+- **SAF (Sürdürülebilir Havacılık Yakıtı) procurement hedefi analizi eksik** — CORSIA ile bağlantılı; THYAO'nun SAF kullanım oranı ve 2030 hedefi araştırılmadı.
+- **BIST Sürdürülebilirlik Endeksi üyeliği teyit edildi ✓** — 10 yıllık üyelik olumlu.
+- **E/S/G puan metodolojisi tablosu mevcut ✓** — Ağırlıklar şeffaf.
 
 ### Bundan Sonra:
-- **CDP public database ZORUNLU:** Her CDP A, A- veya B+ şirketi için cdp.net'ten Scope 1/2/3 verileri çekilmeli. "Kamuya açık değil" demeden önce CDP database aranmalı.
-- **Faaliyet raporu HSE bölümü:** KAP faaliyet raporunun "İş Sağlığı ve Güvenliği" bölümünden LTIR, TRIR, kayıp gün verileri çekilmeli. Bu bölüm Türkçe raporlarda genellikle 2-3 sayfa kapsar.
-- **SAF ve yenilenebilir yatırımlar TL ve $ karşılığıyla:** Yüzde kapsam değil, somut yatırım rakamı (2026 CAPEX içindeki yeşil yatırım payı TL olarak).
-- **YK bağımsızlık riski → MSCI ESG puanı üzerindeki etkisi:** MSCI ESG rating metodolojisinde yönetim bağımsızlığının ağırlığı (~%15-20). TUPRS için bu kategoride kaç puan alındığı/alınabileceği tahmin edilmeli.
+- **Havacılık ESG zorunlu ek bölümleri ekle:**
+  1. CO2/ton-km veya CO2/yolcu-km intensity (ICAO hesap metodolojisi)
+  2. CORSIA compliance status (IATA tracker)
+  3. SAF procurement oranı + 2030 hedefi
+  4. Filo yaşı (ortalama) → enerji verimliliği proxy
+- **Yönetim değişikliğini G skoruna yansıt** — CEO/Chairman değişikliği governance disruptif event; geçiş döneminde G puanı geçici baskı alır; bunu ESG'de not et.
+- **"Not Disclosed" yerine "IATA/ICAO public tracker'dan ara"** — Büyük havayolları için sektör örgütlerinin kamuya açık veritabanları (IATA, ICAO, CDP Airports & Aviation) zorunlu kaynak.
+
+## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
+
+### Eksikler:
+- **Output truncated** — "Data Privacy" bölümü başlamadan kesildi. E/S/G risk tablosu tamamlanmadı.
+- **CDP kaydı kontrol edildi mi?** — BIST Sürdürülebilirlik Endeksi üyeliği teyit edildi ✓; ancak CDP kayıt durumu (cdp.net'ten) raporda belirtilmedi.
+- **TSRS uyum durumu kontrol edilmedi** — KAP'ta TFRS-S1/S2 uyum beyanı var mı? SPK 2024+ için zorunlu hale getirdi; BIMAS için kontrol edilmedi.
+- **CEO dualitesi (Topbaş hem Chairman hem CEO interim)** — Bu G boyutunda en kritik risk; SPK best practice ihlali. Ancak ESG puanlamasında tam yansıtılmadı (skor 6.5 G için).
+- **3 ana risk iyi tespit edildi ✓** — Tedarik zinciri gıda güvenliği, CEO geçişi, çalışan metrikleri — üçü de doğru öncelikte.
+- **FTSE4Good dahilliği teyit edildi ✓** — Ek governance validation olumlu.
+
+### Bundan Sonra:
+- **Perakende sektörü ESG zorunlu ek bölümleri:**
+  1. Gıda güvenliği ve ürün geri çekme riski (özel marka %54 ile kritik seviye)
+  2. Tedarik zinciri çocuk işçiliği / emek hakları (gelişmekte olan ülke tedarikçileri)
+  3. Plastik ambalaj azaltma hedefi (perakende sektörü EU talebi)
+  4. Gıda israfı oranı (hard-discount modelinde son kullanma tarihi yönetimi)
+  5. Mağaza enerji verimliliği (14.000 mağaza × enerji/m² = önemli karbon ayak izi)
+- **CEO dualitesi G skorunu düşürmeli** — Topbaş hem YK Başkanı hem interim CEO = SPK best practice ihlali. Bu yapı sürdüğü sürece G 6.5'ten 5.5'e düşürülmeli; kalıcı atama yapılınca normalize edilir.
+- **BIMAS ESG referans değerleri (Nisan 2026):** Genel puan 6.0/10 (E:6.0, S:5.5, G:6.5). BIST Sürdürülebilirlik Endeksi 2023'ten üye. FTSE4Good dahil. Peer gap: Carrefour 7.3 / JMart 7.0 / BIMAS 6.0. Ana risk: tedarik zinciri gıda güvenliği + CEO dualitesi.
+
+## CEO Geri Bildirimi — 2026-04-14 — KCHOL Delta Raporu
+
+### Eksikler:
+- **BIST Sürdürülebilirlik Endeksi doğrulanamadı** — "[DOĞRULANAMADI]" ile bırakıldı. Kural: "bulunamadı demeden 5 adım tüket." bist.com.tr/endeksler sayfası WebFetch ile çekilmedi.
+- **CDP kaydı aranmadı** — cdp.net'te "Koç Holding" araması yapılmadı. "CDP doğrulanamadı" yazmak = araması yapılmadı. KCHOL büyük holding; CDP'de olması yüksek olasılık.
+- **MSCI/Sustainalytics verileri "%0"** — Premium veri gerektiriyor, anlaşılır; ama "MSCI D-B aralığı beklentisi" gibi sector benchmark proxy bile verilmedi.
+- **TSRS uyum durumu kontrol edilmedi** — KAP'ta TFRS-S1/S2 uyum beyanı aranmadı; büyük holdingler için 2024'ten zorunlu.
+- **Holding için ESG aggregation metodolojisi açıklanmadı** — Holding ESG nedir? TUPRS (enerji, yüksek E riski) + YKBNK (bankacılık) + ARCLK (tüketim) farklı sektörler. Bu ağırlıklı ortalama nasıl hesaplandı?
+- **YK bağımsızlık oranı %36.4 tek kaynak** — Faaliyet raporu PDF çekilmedi; bu değer tahmini mi, resmi mi belirsiz.
+
+### Bundan Sonra:
+- **Holding ESG'de 3 katman** — (1) Holding-level governance (YK bağımsızlığı, ilişkili taraf, CEO dualitesi), (2) En büyük 3 subsidiary'nin ESG profili (TUPRS = E ağırlıklı, YKBNK = G ağırlıklı, FROTO = E+S), (3) Portföy ağırlıklı ESG skoru. Sadece holding-level analiz eksik.
+- **KCHOL için CDP kaydı doğrulama adımı** — cdp.net'te "Koç Holding" araması zorunlu; ayrıca TUPRS'in CDP kaydı ayrıca alınmalı (enerji sektörü CDP raporu daha detaylı).
+- **BIST Sürdürülebilirlik üyeliği teyit adımı** — bist.com.tr/endeksler → Sürdürülebilirlik → Bileşen listesi PDF → KCHOL var mı? Bu sayfa genellikle WebFetch ile çekilebilir.
+
+## Bilinen Hatalar (Bir Daha Yapma)
+
+- TUPRS: Scope 1/2 "kamuya acik degil" denildi ama CDP public database aranmadi. LTIR bulunamadi — faaliyet raporu HSE bolumu kontrol edilmedi. SAF yatirim TL karsiligi verilmedi. YK %33 bagimsizlik riskinin MSCI etkisi tartisulmadi.
+- EREGL: TSRS uyum durumu kontrol edilmedi (aslinda var). ETS kapsami ve maliyet yuoku hesaplanmadi. CDP EREGL kaydi arastirilmadi. LTIR eksik. CBAM maliyet ESG'ye dahil edilmedi. OYAK yonetisim boyutu degerlendirilmedi. E/S/G puan metodolojisi gorunur degil.
+
+## Son 3 Raporun Ogrenimleri
+
+- **EREGL (2026-04-13):** TSRS teyidi somut olarak var (IR sayfasinda). BIST Surdurulebilirlik uyeligi Kasim 2015'ten beri. CBAM risk seviyesi 3/5 (sirket puan). Net-zero hedefi: 2.2 tCO2/TCS, 2030 -%25, 2050 net zero. ISG: Injury Freq Rate 5.99. Kadin calisan %6.7. Su geri dolasim %90.7. Atik geri kazanim 970,902 ton.
+- **TUPRS (2026-04-12):** E:7 S:6 G:5 Genel:5.9. CDP A- (sektorel lider). BIST Surdurulebilirlik uye. Greenwashing: SAF %1 orantisizligi flaglendi. YK baskaninin hakim hissedarla baglantisi governance avantajini zayiflatiyor. Iliskili taraf: Opet %40 istirak + %18 gelir.
+
+## Sektor Bilgi Bankasi
+
+**Rafineri:** CDP A- = petrol&gaz top %10. SASB EM-RM: GHG + hava + su + tehlikeli + is guvenligi material. YK %33 = SPK min, yatirmci iskontosu. LTIR norm: 0.5-1.5.
+**Celik:** ETS kapsaminda (2025-2026 on uyum). CBAM default BF/BOF EUR100.55/ton. EAF donusum karbon azaltir.
+**Genel:** MSCI yonetim bagimsizligi agirligi ~%15-20. Aile sirketleri tipik MSCI yonetim skoru 3-5/10. 2026 trendi: zorunlu iklim aciklamalari artiyor, Scope 3 sorgulanmasi artiyor, transition plan talep ediliyor.
+
+## CEO Geri Bildirimi — 2026-04-14 — SAHOL Raporu
+
+### Eksikler:
+- **Holding-level Scope 1/2/3 raporu çekilmedi** — CDP kayıt durumu ve Holding konsolide karbon ayak izi bilinmiyor. "CDP kayıt bilinmiyor" olarak işaretlendi ama araştırılmadı.
+- **BIST Sürdürülebilirlik Endeksi mevcut durumu TBD bırakıldı** — Mayıs revizyonu beklendi ama tahmini durum verilmedi.
+- **Kordsa ESG eksik** — −1.49B TRY zarar sonrası çalışan hakları/tedarik zinciri riski değerlendirilmedi.
+- **CarrefourSA ESG eksik** — −6.5B TRY zarar + 0 temettü durumunda çalışan güvencesi, tedarikçi ödeme gecikmeleri araştırılmadı.
+- **Yönetişim skoru 4.5/10 — gerekçe yetersiz** — Aile holdinginin yönetim kurulu bağımsızlık oranı ve komite yapısı sayısal verilmedi.
+
+### Bundan Sonra:
+- **CDP kayıt araştırması ZORUNLU:** cdp.net'te şirket ara; kayıt varsa son yıl skoru çek. "Bilinmiyor" YASAK.
+- **BIST Sürdürülebilirlik Endeksi:** borsaistanbul.com'da güncel endeks bileşenleri kontrol edilecek; TBD YASAK.
+- **Zarar eden iştiraklerde S boyutu analizi ZORUNLU:** −6.5B TRY zarar eden CARFA için işçi hakları, mağaza kapanışı riski, tedarikçi ödeme durumu araştırılacak.
+- **G skoru için YK tablosu ZORUNLU:** Bağımsız üye sayısı / toplam, denetim komitesi yapısı, aile üyesi yoğunluğu sayısal tabloda verilecek.
+
+---

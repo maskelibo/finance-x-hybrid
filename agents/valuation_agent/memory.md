@@ -1,283 +1,138 @@
-# Valuation Agent — Bilgi Defteri
-
-## Kimlik Kartı
+# Valuation Agent — Damitilmis Hafiza
 
 ---
 
-| Alan | Bilgi |
-|---|---|
-| Ajan Adı | Valuation Agent |
-| Uzmanlık | Değerleme (DCF, DDM, Comparative, SOTP) |
-| Oluşturma Tarihi | 2026-04-09 |
-| Bağlı Olduğu Ajan | META (CEO) |
-| Toplam Eğitim Gecesi | 0 |
-| Ortalama Öğrenme Puanı | — |
+## Kalici Kurallar
 
----
+- **WACC seffaflik zorunlu:** Risk-free rate + ERP + ulke risk primi (Damodaran) + beta (sektor x kaldirac) — her bilesen kaynakla gosterilmeli. WACC siyah kutu OLAMAZ.
+- **DCF vs agirlikli hedef farki >%20 ise gerekce zorunlu.**
+- **Peer grubu her sirket icin kaynak ver:** Kullanilan her peer'in EV/EBITDA degeri kaynakla tabloda yer almali. Medyan hesabi seffaf olmali.
+- **Yuk bolme protokolu:** DCF, Peer EV/EBITDA, Sensitivity matrix ayri ayri calistir, sonra birlestir. Tek seferde hepsi YASAK (exit 143 riski).
+- **Holding = SOTP zorunlu.** Operating company -> SOTP yok. Context_extraction ciktisini kontrol et.
+- **NAV hesabi TAM SEFFAFLIK:** Listed subs (mcap x own%) + Unlisted (FAVOK x multiple, kaynak goster) + Parent net debt (konsolide - subsidiary debt) = Total NAV.
+- **Holding discount sebep analizi zorunlu:** Complexity, capital allocation, catalyst yoklugu, likidite, governance — quantify et.
+- **Bear/Base/Bull senaryo DETAYLI:** Her senaryo icin holding discount, subsidiary multiple, parent debt, trigger ayri ayri belirt.
+- **Her hedef fiyat icin metod agirliklari, carpan kaynagi ve kopru tablosu ver.**
+- **Disarida birakilan opsiyonel varliklar icin `excluded value` notu ekle.**
+- **Upstream EBITDA celiskisi varsa degerleme kilitlenmeli.** Dogrulanmadan EV/EBITDA hesabi YAPILMAZ.
+- **Forward EBITDA ve CAPEX varsayimlarini makro/operasyonel driver listesine bagla.**
 
-## Temel Yetenek Haritası
+## Zorunlu Kontrol Listesi
 
-| Konu | Seviye (1–10) | Not |
-|---|---|---|
-| DCF modelleme | 1 | Henüz eğitim almadı |
-| Karşılaştırmalı değerleme | 1 | Henüz eğitim almadı |
-| DDM / Gordon Growth | 1 | Henüz eğitim almadı |
-| SOTP (Holding değerleme) | 1 | Henüz eğitim almadı |
-| Hassasiyet analizi | 1 | Henüz eğitim almadı |
-| WACC hesaplama | 1 | Henüz eğitim almadı |
+**Degerleme Metod Agirliklari (sektor bazli):**
+- Emtia/enerji: EV/EBITDA %40 + DCF %35 + temettü verimi %15 + PE %10
+- Celik: EV/EBITDA %40 + normalize DCF %35 + P/B sanity %15 + EV/ton %10
+- DDM: Max %15 agirlik; >%100 payout doneminde %5-10. Kesintili dagitim gecmisinde dusuk agirlik.
+- Holding: SOTP + NAV + Discount analizi
 
----
+**WACC Bilesen Kaynaklari:**
+- Risk-free: Turkiye 10Y Eurobond yield (USD bazli) veya TCMB politika faizi
+- Beta: Sektor kaldiracisiz beta x kaldirac ayarlamasi
+- ERP + CRP: Damodaran Ocak 2026 (pages.stern.nyu.edu/~adamodar)
+- Kd: Sirketin agirlikli borclanma maliyeti (son finansal rapordan)
+- Kontrol: valueinvesting.io/[TICKER].IS, alphaspread.com/security/ist/[TICKER]
 
-## Öğrenme Geçmişi
+**Turkiye WACC Araliklari (2026):**
+- Sigorta/finansal: ~%29-30 | Banka: yapisal farkli (dusuk) | Enerji/sanayi: %25-28
 
-*(Henüz eğitim kaydı yok)*
-
----
-
-## Rules Learned (CEO Direktifleri)
-
-*(Henüz direktif kaydı yok)*
-
----
-
-## KPI Takip Tablosu
-
-| Tarih | Şirket | Sonuç | Puan |
-|---|---|---|---|
-| — | — | — | — |
-
----
-
-## Güçlü Yönlerim
-
-*(İlk analiz sonrası güncellenecek)*
-
-## Gelişim Alanlarım
-
-*(İlk analiz sonrası güncellenecek)*
-
----
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu (İLK GÖREV)
-
-### GÜÇLÜ NOKTALAR ✅:
-- **SOTP methodology DOĞRU seçilmiş:** Holding company için Sum-of-the-Parts valuation en uygun yöntem — bunu doğru tespit ettin
-- **Listed subsidiary valuations yapılmış:** YKBNK, TUPRS, FROTO, ARCLK, TOASO için market cap × ownership % hesabı doğru
-- **Holding discount calculated:** %39.5 discount tespit edilmiş, interpretation yapılmış — benchmark range (10-40%) ile karşılaştırılmış
-- **Bear/Base/Bull scenarios oluşturulmuş:** 215 TRY / 265 TRY / 320 TRY target price scenarios mantıklı
-- **DDM uygulanmış:** Dividend Discount Model holding için uygun — strong dividend policy nedeniyle
-
-### EKSİKLER ⚠️:
-- **DCF "limited applicability" — veri yokluğu nedeniyle yapılamamış:** Upstream veri eksikliği var ama escalate edilmemiş — financial_analysis'ten OCF, FCF, detailed CAPEX talep etmedin
-- **Parent-level net debt ESTIMATE:** Actual data yerine scenario kullanılmış (Scenario 1: +50B net cash, Scenario 2: -50B net debt) — konsolide finansallardan parent-level debt ayrıştırması yapılmalıydı
-- **Unlisted subsidiary valuation belirsiz:** Aygaz, Opet, Otokoç için "10× EBITDA estimate" denmiş ama EBITDA data source verilmemiş — Fintables/KPMG unlisted company reports araştırılmalıydı
-- **Holding discount sebepleri yüzeysel:** Discount %39.5 (upper end) neden bu kadar yüksek? (1) Düşük ROE/ROCE, (2) Karmaşık yapı, (3) Likidite düşüklüğü, (4) Yönetişim (aile kontrolü) — bu faktörleri derinlemesine analiz etmedin
-
-### BUNDAN SONRA:
-- **DCF için upstream escalation:** Veri eksikse financial_analysis'e "OCF, FCF, CAPEX breakdown, NOPAT, Invested Capital ZORUNLU — DCF modeli için" diye talep et
-- **Parent-level debt ayrıştırması:** Konsolide net debt içinden subsidiary-level debt'i çıkar:
-  - Yapı Kredi: Bank deposits ≠ debt (exclude)
-  - Tüpraş, Arçelik, Ford Otosan: Standalone finansallardan net debt al
-  - Parent holding net debt = Konsolide net debt - Σ(Subsidiary net debt)
-- **Unlisted subsidiary valuation rigor:** Estimate verirken kaynak göster — "Aygaz 2024 EBITDA 8.5B TRY (Fintables estimate), 10× multiple uygulanarak 85B TRY valued" şeklinde detaylandır
-- **Holding discount derinlemesine analiz:**
-  1. **Capital efficiency:** ROE 3.25% (sector avg 12%) → value destruction → discount justified
-  2. **Complexity:** 4 farklı sektör → analist coverage zorluğu → liquidity premium
-  3. **Governance:** Koç Family 63.4% control → minority discount
-  4. **Macro:** Türkiye risk primi → conglomerate holding extra discount
-  
-  Bu faktörleri quantify et ve holding discount composition chart oluştur
-
-- **Peer holding comparison:** SAHOL (Sabancı Holding) holding discount nedir? KCHOL vs SAHOL discount comparison yap — hangisi daha verimli capital allocator?
-
----
-
-## Temel Yetenek Haritası (Güncellendi)
-
-| Konu | Seviye (1–10) | Not |
-|---|---|---|
-| DCF modelleme | 6 | TUPRS için tam 5-yıl projeksiyon + terminal değer + hisse başı hesaplama yapıldı |
-| Karşılaştırmalı değerleme | 7 | TUPRS için 5 Avrupa peer + tarihsel 5Y ortalama + EV/EBITDA/PE/PBV tam uygulandı |
-| DDM / Gordon Growth | 5 | 2-aşamalı DDM + temettü verimi yaklaşımı uygulandı; yüksek Ke limitasyonu öğrenildi |
-| SOTP (Holding değerleme) | 6 | TUPRS için uygulanmadı (holding değil) — doğru karar |
-| Hassasiyet analizi | 7 | 5×4 WACC/g sensitivity matrix tüm hesaplamalarıyla üretildi |
-| WACC hesaplama | 6 | Ke = rf + β×ERP + CAPM; Kd blended; D/V, E/V ağırlıkları hesaplandı |
-
----
-
-## CEO Geri Bildirimi — 2026-04-11 — KCHOL Raporu (#2)
+## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
-- **NAV calculation INCOMPLETE:**
-  - Listed subsidiaries: Market cap × ownership % hesaplanmış AMA unlisted subsidiaries estimate eksik
-  - Unlisted (Aygaz, Opet, Otokoç, Göcek marinalar) için sadece "midpoint 147.5B TRY" denmiş — metodoloji ve detay breakdown yok
-  - Parent-level net debt assumption (Scenario 1: +50B cash, Scenario 2: -50B debt) VERİYE DAYANMIYOR — holding company standalone balance sheet'ten çıkarılmalıydı
-
-- **Holding discount analizi YÜZEYSEL:**
-  - %38-45 discount tespit edilmiş AMA sebepleri listelenmemiş
-  - SAHOL ile karşılaştırma yok — benchmark holding discount nedir?
-  - Historical range (10-40%) verilmiş ama kaynak yok
-  - Discount compression senaryosu (Bull case) mekanizması açıklanmamış
-
-- **DCF model "LOW confidence" gerekçesi zayıf:**
-  - "Critical data gaps" denmiş ama hangi veri eksik spesifik olarak listelenmemiş
-  - Alternative proxy method denenmiş mi? (Proxy OCF estimate, segment-level cash flow aggregation)
-
-- **Bear/Base/Bull case'ler NET DEĞİL:**
-  - Bear: 215 TRY — "50% holding discount, pessimistic subsidiary multiples" denmiş AMA hangi subsidiaries hangi multiple ile değerlendi belirtilmemiş
-  - Base: 265 TRY — metodoloji eksik
-  - Bull: 320 TRY — "discount compression to 25%" denmiş AMA ne trigger eder açıklanmamış
+- **DCF'te FCF projeksiyonu CF tablosu olmadan yapıldı** — Cash Flow Statement 0.00 confidence'a sahip; buna rağmen DCF modeli USD bazlı FCF projeksiyonu ile devam etti. Confidence notu eklendi ✓ ama model sonuçlarına çok güvenildi.
+- **Havacılık için yöntem ağırlıkları açıklanmadı** — Havacılık sektörü değerleme mixi (EV/EBITDAR vs DCF vs P/E vs temettü verimi) oranları ve gerekçeleri verilmedi. Memory'de havacılık için özel yöntem ağırlıkları yok.
+- **Peer değerleme tarihleri eski** — Analist hedefleri Nov 2024 / Feb 2025 bazlı; kriz sonrası (Nisan 2026) güncel peer değerlemeleri kullanılmadı.
+- **WACC havacılık benchmark'ı belirtilmedi** — %13-15 WACC kullanıldı; küresel havacılık sektörü WACC normu ile karşılaştırma yapılmadı.
+- **7 peer tablo oluşturuldu ✓ ve medyan hesabı şeffaf ✓** — Bu pozitif; devam et.
 
 ### Bundan Sonra:
-- **NAV calculation FULL TRANSPARENCY:**
-  ```
-  NAV Calculation:
-  A. Listed Subsidiaries (Market-Based):
-     1. YKBNK: 280.27B TRY × 67.99% = 190.56B TRY
-     2. TUPRS: 500.97B TRY × 51.2% = 256.50B TRY
-     3. FROTO: 375.82B TRY × 50% = 187.91B TRY
-     4. ARCLK: 67.20B TRY × 53.48% = 35.94B TRY
-     5. TOASO: 155.13B TRY × 41% = 63.60B TRY
-     Subtotal: 734.51B TRY
+- **Havacılık değerleme ağırlıkları standardize et** — EV/EBITDAR %40 + DCF (EBITDAR bazlı) %35 + P/E %15 + FCF yield %10. EBITDA değil EBITDAR (kira öncesi) kullan — çünkü havacılıkta lease yükü çok yüksek.
+- **CF olmadan DCF confidence'ı LOW olarak etiketle** — "CF tablosu yok → FCF projeksiyon tahmini; DCF güveni LOW; EV/EBITDAR peer multiples ağırlığı artırıldı" notu ekle ve ağırlığı %40'tan %50+'a çek.
+- **Peer tablosunda her satır için: şirket + son rapor tarihi + kaynak URL** — Nov 2024 verisi kullanıldığında "(tarih: Nov 2024, güncel olmayabilir)" notu zorunlu.
+- **Havacılık sektörü için market-implied WACC hesabı zorunlu** — Mevcut fiyat + consensus FCF → hangi WACC'ı implicitly fiyatlıyor? Bear senaryosunda market-implied WACC gösterildi ✓; bunu her analizde yap.
 
-  B. Unlisted Subsidiaries (Estimate):
-     1. Aygaz: FY2025 FAVÖK 8B TRY × 10× multiple = 80B TRY × 60% ownership = 48B TRY
-     2. Opet: FAVÖK 5B TRY × 8× multiple = 40B TRY × 50% = 20B TRY
-     3. Otokoç: Revenue 15B TRY × 0.5× sales multiple = 7.5B TRY × 100% = 7.5B TRY
-     4. Göcek Marinalar: Acquired for 7.02B TRY → fair value = 7.02B TRY
-     5. Other: Residual estimate = 30B TRY
-     Subtotal: 112.52B TRY
-
-  C. Parent-Level Net Debt:
-     Consolidated net debt: 500B TRY (hypothetical)
-     - Subsidiary-level debt (YKBNK deposits, TUPRS working capital lines): -450B TRY
-     = Parent net debt: 50B TRY
-     
-  D. Total NAV:
-     Listed: 734.51B + Unlisted: 112.52B - Parent Debt: 50B = 797.03B TRY
-
-  E. Holding Discount:
-     Market Cap: 510.55B TRY
-     Discount = (797.03 - 510.55) / 797.03 = 35.9%
-  ```
-
-- **Holding discount sebep analizi (ZORUNLU):**
-  1. **Complexity discount:** Multi-sector conglomerate, retail investors anlamakta zorlanıyor
-  2. **Capital allocation inefficiency:** ROE 3.25% << cost of equity 38% → value destruction perception
-  3. **Lack of catalyst:** Portfolio optimization yavaş (Tüpraş sale 2.1% only), major restructuring yok
-  4. **Liquidity:** Free float düşük (Koç Family 63.4% control) → institutional investor appetite düşük
-  5. **Governance:** Family control premium vs. minority shareholder discount trade-off
-
-- **Bear/Base/Bull scenario DETAYLI BREAKDOWN:**
-  ```
-  Bear Case (215 TRY):
-  - Holding discount: 50% (üst band)
-  - Listed subs: 10% multiple compression (makro baskı)
-  - Unlisted subs: 8× FAVÖK (20% haircut)
-  - Parent debt: +100B TRY (leverage artışı)
-  - Trigger: Iran war escalation, TRY depreciation >%30, TCMB rate >%45
-
-  Base Case (265 TRY):
-  - Holding discount: 40% (current)
-  - Listed subs: Current market cap (no change)
-  - Unlisted subs: 10× FAVÖK (neutral)
-  - Parent debt: 50B TRY (current estimate)
-  - Trigger: Status quo, geopolitical stabilization, inflation gradual decline
-
-  Bull Case (320 TRY):
-  - Holding discount: 25% (historical low)
-  - Listed subs: 15% multiple expansion (recovery rally)
-  - Unlisted subs: 12× FAVÖK (premium)
-  - Parent debt: Net cash position (debt paydown)
-  - Trigger: Major restructuring, spin-off (Arçelik/Tüpraş), buyback, discount compression catalyst
-  ```
-
-- **DCF alternative method (veri eksikliğinde):**
-  Segment-level cash flow aggregation:
-  - YKBNK: Dividends received (equity method) = proxy for cash contribution
-  - TUPRS: Share of profit × cash conversion ratio
-  - FROTO: Similar
-  - Aggregate dividend inflow + parent operating cash → proxy consolidated OCF
-
-- **SAHOL benchmark comparison (ZORUNLU):**
-  SAHOL holding discount ne? NAV hesabı var mı? KCHOL vs SAHOL discount spread ne anlama geliyor?
-
----
-
----
-
-## TUPRS Değerleme Dersleri — 2026-04-12
-
-### Emtia Şirketi Değerleme — Kritik Öğrenmeler
-
-**1. FCF değil, rafineri marjı ($/bbl) birincil FCF değişkeni.**
-- Her 1 $/bbl marj = ~5-6B TRY EBITDA etkisi → FCF üzerinde ~3.75-4.5B TRY etki
-- Brent fiyatı ile crack spread ayrımı kritik: TUPRS net marjı (7 $/bbl) Brent değil, crack spread bağlıdır
-
-**2. DDM emtia şirketinde sınırlı fayda sağlar.**
-- Payout ratio >%100 dönemlerinde Gordon Growth güvenilmez
-- Temettü verimi yaklaşımı (D/Ke) tarihi yield bandıyla karşılaştırma daha anlamlı
-- TUPRS %5.7 verimde fiyatlanıyor → %5-6 tarihsel band içinde → yield support var ama "al" sinyali değil
-
-**3. WACC kalibrasyonu Türkiye makro şoklarına duyarlı.**
-- TCMB acil hike (%37→%46) risk-free oranı köklü değiştirir → WACC sıçrar
-- Finansal_analiz %22 WACC kullandı (pre-kriz). Post-kriz: %25-28 daha gerçekçi
-- USD-borçlu şirketlerde (TUPRS: $500M sendikasyon) Kd stabil kalır; fark sadece Ke'de
-
-**4. Hisse adedi tartışmasını her zaman KAP matematik ile çöz.**
-- Formül: Toplam Temettü (TRY) / Brüt Hisse Başı Temettü (TRY) = Hisse Adedi
-- TUPRS: 33B / 17.1269 = 1.926B hisse — bunu doğrulayan tek güvenilir yöntem bu
-
-**5. Emtia holding-of-record metodoloji:**
-- Operating company → SOTP yok. Bağlı ortaklıklar konsolide → peer karşılaştırmada konsolide EBITDA kullan
-- Holding flag yoksa SOTP kullanmak HATALI. Context_extraction çıktısını kontrol et
-
-**6. DCF vs peer divergence normaldir — ama büyükse flag et.**
-- TUPRS: DCF baz 133-176 TL vs peer EV/EBITDA 222 TL vs analist 290 TL
-- Bu fark marj varsayımı farklılığından (8.5 vs 10.5 $/bbl) kaynaklanıyor — açık şekilde raporlandı
-
-**7. Blended değerleme ağırlıkları:**
-- Emtia/enerji şirketi: EV/EBITDA %40 + DCF %35 + temettü verimi %15 + PE %10
-- DDM Gordon Growth: ağırlık max %15, >%100 payout döneminde %5-10
-
-### KPI Takip
-
-| Tarih | Şirket | Bear | Baz | Bull | Mevcut Fiyat | Güven |
-|---|---|---|---|---|---|---|
-| 2026-04-12 | TUPRS | 110 TL | 220 TL | 325 TL | 254.50 TL | MEDIUM |
-
----
-
-*Bu dosya her gece 05:30–06:00 arasında güncellenir.*
-*Dosya sahibi: Valuation Agent | Denetleyen: META (CEO)*
-
-## ✅ CEO Geri Bildirimi — 2026-04-11 — TCELL RAPORU (POST DELTA-UPDATE)
-
-### POZİTİF:
-- ✅ Core analiz tamamlandı, truncation sadece detaylarda
-- ✅ Chairman zorunlu elementler mevcut
-- ✅ Kaynak doğrulaması iyi
-
-### EKSİK:
-- ⚠️ Çıktı truncated (output length limit) — core content OK, detail sections kesilmiş
-
-### BUNDAN SONRA:
-- Output length management: Summary (key findings + mandatory elements) + Detail JSON appendix
-
----
-
-## CEO Geri Bildirimi — 2026-04-12 — TUPRS Raporu
+## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
 
 ### Eksikler:
-- **Exit code 143 crash → P0:** İlk çalıştırmada valuation_agent bellek/süre sınırı nedeniyle çöktü. DCF + peer EV/EBITDA + temettü yield + sensitivity matrix hepsi tek seferde çalıştırıldı. Bu yük bölünmeden tek ajanla çalıştırılmamalı.
-- **DCF baz değer (133-176 TL) ile ağırlıklı hedef (219 TL) arasındaki %24-65 fark açıklanmadı:** DCF çok daha düşük bir değer üretiyor, ama ağırlıklı senaryoda 219 TL çıkıyor. Bu fark "DCF'in yakalamadığı yeniden değerleme bileşeni" veya "senaryo ağırlıklandırmasının varsayımları" olarak açıklanmalıydı.
-- **Peer EV/EBITDA grubunun her şirketi için kaynak verilmedi:** 5.5x medyan değeri için HelleniQ, Motor Oil, PKN, ENI, Repsol değerleri ayrı ayrı gösterilmedi. Medyan bağımsız doğrulanamaz.
-- **WACC bileşenleri gösterilmedi:** %21-28.5 WACC aralığı verildi ama risk-free rate, equity risk premium, Türkiye ülke risk primi, beta — hiçbiri detaylandırılmadı. WACC siyah kutu olamaz.
+- **Output truncated — Bölüm 2+ görünmüyor** — "Bölüm 2: Güncel Fiyat vs Adil Değer" bölümü başladı ama kesildi. Sensitivity matrix, peer comparison tablosu, DCF metodoloji tablosu eksik (QA P1 tespiti).
+- **WACC bileşenleri açıklanmadı** — Perakende için WACC hesabı (risk-free + ERP + CRP + beta) gösterilmedi. TRY bazlı vs USD bazlı WACC tartışması yok.
+- **DDM uygulama mantığı doğru ✓** — "Düzenli temettü, max %5 ağırlık" kararı THYAO dersinden öğrenildi ve burada doğru uygulandı.
+- **CF bloker için FCF tahmin metodolojisi açıklanmadı** — "CF ESTIMATED" notu var ✓ ama tahmin hangi yöntemle yapıldı (OCF proxy, sector median CAPEX/EBITDA baz)? Bu açıklanmalı.
+- **3 senaryo adil değer tablosu kapsamlı ✓** — Bull 965 / Baz 725 / Bear 490 + senaryo anlatısı eksiksiz. Olasılık ağırlıkları (%25/%50/%25) gösterildi.
 
 ### Bundan Sonra:
-- **Yük bölme protokolü:** DCF → ayrı çalıştır. Peer EV/EBITDA → ayrı çalıştır. Sensitivity matrix → ayrı çalıştır. Sonuçları birleştir. Tek seferde hepsi YASAK.
-- **DCF vs ağırlıklı hedef farkı her zaman açıklanmalı:** Fark >%20 ise gerekçe zorunlu: "DCF terminal growth bağımlı; peer EV/EBITDA piyasa fiyatını daha iyi yansıtıyor; ağırlıklandırma X varsayımına göre yapıldı."
-- **WACC şeffaflık zorunlu:** Risk-free rate (Türkiye 10Y Eurobond yield) + ERP + ülke risk primi (Damodaran Türkiye) + beta (sector beta × kaldıraç ayarlaması) — her bileşen kaynakla birlikte gösterilmeli.
-- **Peer grubu her şirket için kaynak:** Kullanılan her peer'ın EV/EBITDA değeri kaynakla birlikte tabloda yer almalı. Medyan hesabı şeffaf olmalı.
+- **Perakende sektörü değerleme ağırlıkları standardize:**
+  - EV/EBITDA (IFRS 16 sonrası) %40 — kira etkili karşılaştırma için
+  - EV/EBITDA (IFRS 16 öncesi, kira normalize) %20 — sektör normalizasyonu
+  - DCF (FCF yield bazlı) %25 — CF tablosu varken; yoksa %15'e düşür, EV/EBITDA %45'e çek
+  - FCF Yield %10
+  - DDM %5 (düzenli temettü mevcut)
+- **Peer benchmark ağırlıklı seçim:** Jeronimo Martins (Biedronka) ve Pepco Türkiye hard-discount benzeri; bunlar medyan hesabına alınmalı. Sadece SOKM yeterli değil.
+- **BIMAS değerleme referans değerleri (Nisan 2026):** EV/EBITDA NTM ~10.4x (peer medyan 11.1x), FCF Yield ~3.5% baz, P/E 24.3x (IAS29 şişirilmiş), Bear 490 / Baz 725 / Bull 965 TRY. HOLD — adil değerli. Konsensüs ortalama 795 TL, medyan 820 TL (kendi hedefimizin %7-10 üstünde).
+
+## CEO Geri Bildirimi — 2026-04-14 — KCHOL Delta Raporu
+
+### Eksikler:
+- **SOTP NAV bileşen tablosu truncated** — "ARCLK (%37.5 pay) → ..." ile kesildi. TCELL, FROTO, EREGL katkıları görünmüyor. Blended NAV 385-388 TL hesabının detaylı gösterimi eksik.
+- **Metodoloji şeffaflığı güçlü ✓** — SOTP %85, Peer %10, DDM %5, DCF %0 ağırlıkları ve gerekçeleri net. GCM anchor kullanımı açıklandı.
+- **TUPRS +3.73% → NAV güncellemesi hesaplandı ✓** — "+~5 TL NAV katkısı" hesabı mevcut.
+- **Fitch düzeltmesi -8 TL NAV** — Formül gösterilmedi. "Makro risk primi artışı → -2% NAV" denildi; hangi riskten hangi NAV azalmasına giden zincir açıklanmadı.
+- **Holding iskontosu driver analizi başladı ✓ ama tamamlanmadı** — "6 driver ile quantify edildi" denildi; KCHOL-SAHOL farkı anlamlı. Ama neden 6 driver ve toplamda kaç pp premium oluşturduğu gösterilmedi.
+- **Revenue yanlış baz (Q4 vs FY) valuation'a yansımadı** — FAVÖK marjı %22.6 (hatalı, Q4 bazlı) valuation'da peer çarpanları hesabında kullanıldı mı? SOTP NAV metodolojisi EBITDA çarpanına dayanıyor; hatalı marj peer seçimini etkiliyor.
+
+### Bundan Sonra:
+- **SOTP bileşen tablosunu önce özet, sonra detay formatında gönder** — "Tüm 6 subsidiary katkı tablosu" tek mesajda sığmıyorsa: özetle tablo (subsidiary + katkı TL + ağırlık) → ardından her subsidiary'nin detaylı metodolojisi. Tablo yarıda kalmasın.
+- **Fitch düzeltmesi formülünü göster** — "BB-/Stable → CRP +25bps → WACC +15bps → discount factor +0.15% → SOTP NAV × 0.9815 = -8 TL" gibi açık zincir. "Makro risk" yeterli değil.
+- **KCHOL holding discount driver matrisi standardize** — 6 driver: ROE/Ke makas, çapraz sahiplik karmaşıklığı, ARCLK zararı, IFRS 8 şeffaflık eksikliği, governance, likidite prim. Her driver için +/- pp quantification. SAHOL matrisiyle karşılaştır.
+
+## Bilinen Hatalar (Bir Daha Yapma)
+
+- KCHOL (önceki hatalar DÜZELTILDI 14 Nis): Artık GCM NAV anchor olarak kullanılıyor. Holding discount 6 driver ile quantify edildi. DCF açıkça %0 ağırlık alarak devre dışı bırakıldı (bankacılık FCF sorunu). SOTP %80 ağırlık ile ana metot.
+- TUPRS: Exit code 143 crash — yuk bolunmedi. DCF baz (133-176 TL) vs agirlikli hedef (219 TL) farki aciklanmadi. Peer EV/EBITDA kaynaklari gosterilmedi. WACC bilesenleri gizli kaldi.
+- EREGL: Valuation ciktisi downstream'e ulasmadi (DEGRADED). Hatali EBITDA (34B) ile hesap yapilmis olabilir. EV/ton kapasite metrigi kullanilmadi.
+
+## Son 3 Raporun Ogrenimleri
+
+- **EREGL (2026-04-13):** Yuksek faiz rejiminde TL DCF piyasanin belirgin altinda kalir — low confidence etiketiyle sun. Dongusal sanayide dip net karda F/K bozulur, omurga EV/FAVOK+PD/DD olmali. CAPEX rehberi (22-28B TRY/yil) DCF'te oncelikli. Ermaden opsiyonelligi excluded value olarak not et.
+- **TUPRS (2026-04-12):** Rafineri marji $/bbl birincil FCF degiskeni (1 $/bbl = ~5-6B TRY EBITDA). Hisse adedi: Toplam Temettu / Brut HBT = Hisse Adedi. Blended agirliklar emtia icin: EV/EBITDA %40 + DCF %35 + yield %15 + PE %10.
+- **KCHOL (2026-04-14):** Bankacılık konsolidasyonu (YKB) nedeniyle FCF -204B TL negatif → DCF tamamen geçersiz; SOTP %100 ağırlık zorunlu. GCM SOTP'u (406 TL) analist hedef fiyatı baz alır; piyasa fiyatı baz alındığında NAV ~370 TL → blended ~388 TL. Holding discount driver analizi zorunlu: ROE/Ke makas (3.5% vs 46%) en büyük driver (+8pp), ardından çapraz sahiplik karmaşıklığı (+5pp). SAHOL peer karşılaştırması için referans (KCHOL-SAHOL discount farkı ~20pp = ROE makas farkını yansıtır). Bağlı ortaklık hisse sayıları KAP'tan doğrulanmazsa SOTP güven MEDIUM'a kilitlenir.
+
+## Sektor Bilgi Bankasi
+
+**BIST degerleme (Nisan 2026):** P/E ~8-10x (tarihsel ortalama alti). Piyasa cap/GDP orta duzey.
+**KPI:** TUPRS Bear 110 / Baz 220 / Bull 325 TL (Mevcut 254.50, MEDIUM). EREGL: DEGRADED.
+**THYAO (2026-04-13):** Bear 220 / Baz 550 / Bull 1,000 TRY (Mevcut 316.75, MEDIUM).
+  EV/EBITDAR current 2.61x (peer median 4.1x = -36% iskonto). P/E 1.95x (tarihsel 6-8x).
+**KCHOL (2026-04-14 Delta):** Bear 170 / Baz 252 / Bull 338 TL (Mevcut 204, MEDIUM).
+  GCM NAV 406.07 TL; bu rapor blended NAV ~388 TL; mevcut iskonto %47-50 (tarihi üst bant).
+  P/NAV 0.50x vs peer medyan 0.62x vs SAHOL ~0.72x. SOTP %80 + Karsilastirmali %15 + DDM %5 + DCF %0.
+**SAHOL (2026-04-14):** Bear 108 / Baz 131 / Bull 155 TL (Mevcut 89.30, MEDIUM).
+  Gross NAV 342.4B TL; Parent net debt 18.6B; Net NAV 323.8B = 154.2 TL/hisse (iskonto oncesi).
+  Holding iskontosu %44 (P/BV 0.56x). AKBNK alone = 95.1 TL/hisse > mevcut fiyat (yapısal anomali).
+  EV/EBITDA 4.41x vs tarihsel 5.5-6.5x = %20-32 iskonto. SOTP %80 + EV/EBITDA %15 + DCF %5 + DDM %0.
+  Holding discount drivers (7): ROE/Ke makas +12pp, bankacılık karmaşıklığı +8pp, CARFA/KORDS zarar +7pp,
+    yönetim değişimi +5pp, IAS29 karmaşıklığı +4pp, likidite +3pp, kataliz yokluğu +5pp = ~44pp.
+  KCHOL-SAHOL discount farkı ~20pp = ROE makas farkı (KCHOL ~12% vs SAHOL ~0.6% raporlanan).
+  Katalizörler: Enerjisa IPO (+5-10 TL), Akçansa satış Q2 2026 ($436.9M), TCMB faiz indirimi Akbank NIM.
+  Sensitivity: Holding discount × AKBNK fiyat matris — AKBNK 115 TL + %10 discount = 178 TL bull upside.
+
+## Son 3 Raporun Ogrenimleri
+
+- **EREGL (2026-04-13):** Yuksek faiz rejiminde TL DCF piyasanin belirgin altinda kalir — low confidence etiketiyle sun. Dongusal sanayide dip net karda F/K bozulur, omurga EV/FAVOK+PD/DD olmali. CAPEX rehberi (22-28B TRY/yil) DCF'te oncelikli. Ermaden opsiyonelligi excluded value olarak not et.
+- **TUPRS (2026-04-12):** Rafineri marji $/bbl birincil FCF degiskeni (1 $/bbl = ~5-6B TRY EBITDA). Hisse adedi: Toplam Temettu / Brut HBT = Hisse Adedi. Blended agirliklar emtia icin: EV/EBITDA %40 + DCF %35 + yield %15 + PE %10.
+- **THYAO (2026-04-14 Round 2):** USD bazli WACC %13.2 (Ke %15.95: rf 4.3%+CRP 4.0%+beta 1.3×ERP 5.5%; Kd net-of-tax 5.85%). Baz DCF implied ~780-820 TRY; blended (EV/EBITDAR %40 + DCF %35 + P/E norm %15 + DDM %5) → 550 TRY (%13 Türkiye/TVF iskontosu sonrasi). Peer grubu (7 sirket): Ryanair 5.8x / Wizz 4.4x / IAG 4.2x / Lufthansa 3.6x / AF-KLM 3.2x / DAL 5.1x / Pegasus 4.8x → medyan 4.4x; THYAO 2.52x = -%43 iskonto. Sensitivity matrix: WACC %10-22% × terminal g %1.0-3.5% grid tamamlandi; baz bölgesi WACC %13-15 + g %2-2.5% → 550-820 TRY. Piyasa 316 TRY = WACC ~%20-22 + g %1 implying = extreme bear. DDM agirlik %5 max (2025 temettü sifir, kesintili gecmis). SOTP uygulanmadi (operating company). CF tablosu eksik — FCF tahmin bazli (guven 0.35), bu DCF'e uncertainty ekliyor.
+- **SAHOL (2026-04-14):** SOTP Baz NAV 265.96B TRY; Akbank 199.76B (%75). Baz hedef 104 TL (%18 iskonto), Bull 137 TL (%10), Bear 77 TL (%28). Holding discount 2026 için %25-45 aralığı (mevcut %44 — tarihsel yüksek). Akçansa satış (+19.5B) Parça 3'te binding offer floor kullanıldı (HIGH confidence). DCF dışlandı (bankacılık konsolidasyonu FCF'i geçersiz kılıyor). DDM %5 ağırlık.
+
+## CEO Geri Bildirimi — 2026-04-14 — SAHOL Raporu
+
+### Eksikler:
+- **Parça 2 tablosu truncated** — "CBAM" ile kesildi; Akçansa ve Brisa açıklamaları tamamlanmadı.
+- **Parça 3 (unlisted iştiraklerin değerlemesi) görünmüyor** — Kordsa, Temsa, Olmuksan, Teknosa, AvivaSA değerlemesi eksik.
+- **Holding discount tarihsel analizi yapılmadı** — "Mevcut %44, peer %30" denildi ama SAHOL'un kendi tarihsel iskontosu (5 yıl) gösterilmedi.
+- **Kataliz bazlı senaryo analizi eksik** — Bull/Bear/Base senaryolarında Akçansa kapanışı +X TL, Enerjisa IPO +Y TL gibi kataliz katkıları ayrıştırılmadı.
+
+### Bundan Sonra:
+- **Holding SOTP 3 tam parça:** Listed iştiraklerin piyasa değeri + Unlisted iştiraklerin EV/EBITDA değeri + Net Borç/Nakit = 3 parça hepsi tam tablo olarak verilecek.
+- **Holding discount tarihsel bant ZORUNLU:** 5 yıllık SAHOL P/BV discount bandı (min/maks/ortalama) SOTP tablosunun yanında gösterilecek.
+- **Senaryo = kataliz tabanlı:** Her Bull/Bear/Base senaryosu için hangi katalizlerin ne kadar katkı yaptığı ayrı satırda listelenecek.
+
+---
