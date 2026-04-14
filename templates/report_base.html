@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TICKER}} — Finance X Yonetim Kurulu Raporu</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <style>
+    /* ============================================================
+       FINANCE X REPORT TEMPLATE — SABIT CSS
+       Bu CSS'i DEĞİŞTİRME. Sadece :root değişkenlerini güncelle.
+       ============================================================ */
+
+    @page {
+      size: A4 portrait;
+      margin: 20mm 15mm 20mm 15mm;
+    }
+
+    :root {
+      /* Brand renkleri — report_formatter bu değişkenleri context_extraction'dan doldurur */
+      --brand-primary: {{BRAND_PRIMARY}};
+      --brand-secondary: {{BRAND_SECONDARY}};
+      --brand-accent: {{BRAND_ACCENT}};
+      --brand-bg: {{BRAND_BG}};
+
+      /* Sabit sistem renkleri */
+      --fx-dark: #1a1a2e;
+      --fx-gray: #6b7280;
+      --fx-light-gray: #f3f4f6;
+      --fx-border: #e5e7eb;
+      --fx-success: #10b981;
+      --fx-warning: #f59e0b;
+      --fx-danger: #ef4444;
+      --fx-white: #ffffff;
+
+      /* Tipografi */
+      --font-main: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'Consolas', 'Monaco', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.5;
+      color: var(--fx-dark);
+      background: var(--fx-white);
+    }
+
+    /* === SAYFA YAPISI === */
+    .page {
+      page-break-before: always;
+      min-height: 257mm;
+      padding: 0;
+      position: relative;
+    }
+    .page:first-child {
+      page-break-before: avoid;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 2px solid var(--brand-primary);
+      margin-bottom: 16px;
+      font-size: 8pt;
+      color: var(--fx-gray);
+    }
+    .page-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .company-ticker {
+      font-weight: 700;
+      color: var(--brand-primary);
+      font-size: 10pt;
+    }
+    .report-section {
+      color: var(--fx-gray);
+    }
+    .page-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-mark {
+      background: var(--brand-primary);
+      color: var(--fx-white);
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 9pt;
+    }
+
+    .page-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7pt;
+      color: var(--fx-gray);
+      border-top: 1px solid var(--fx-border);
+      padding-top: 4px;
+    }
+
+    /* === KAPAK SAYFASI === */
+    .cover-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 257mm;
+      text-align: center;
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+      color: var(--fx-white);
+    }
+    .cover-page .cover-ticker {
+      font-size: 48pt;
+      font-weight: 800;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+    .cover-page .cover-company {
+      font-size: 18pt;
+      font-weight: 300;
+      margin-bottom: 40px;
+      opacity: 0.9;
+    }
+    .cover-page .cover-title {
+      font-size: 14pt;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .cover-page .cover-date {
+      font-size: 11pt;
+      opacity: 0.8;
+    }
+    .cover-page .cover-badge {
+      margin-top: 60px;
+      padding: 8px 24px;
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 4px;
+      font-size: 9pt;
+      opacity: 0.7;
+    }
+
+    /* === YATIRIMCI KARTI === */
+    .investor-card {
+      background: var(--fx-light-gray);
+      border-left: 4px solid var(--brand-primary);
+      padding: 16px 20px;
+      margin: 16px 0;
+      border-radius: 0 6px 6px 0;
+    }
+    .investor-card .score-badge {
+      display: inline-block;
+      font-size: 24pt;
+      font-weight: 800;
+      color: var(--brand-primary);
+      margin-right: 12px;
+    }
+    .investor-card .risk-level {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 9pt;
+      font-weight: 600;
+    }
+    .risk-low { background: #d1fae5; color: #065f46; }
+    .risk-medium { background: #fef3c7; color: #92400e; }
+    .risk-high { background: #fee2e2; color: #991b1b; }
+
+    /* === BAŞLIKLAR === */
+    h1 {
+      font-size: 18pt;
+      font-weight: 700;
+      color: var(--brand-primary);
+      margin: 24px 0 12px 0;
+      border-bottom: 2px solid var(--brand-primary);
+      padding-bottom: 6px;
+    }
+    h2 {
+      font-size: 14pt;
+      font-weight: 600;
+      color: var(--fx-dark);
+      margin: 20px 0 8px 0;
+    }
+    h3 {
+      font-size: 11pt;
+      font-weight: 600;
+      color: var(--brand-primary);
+      margin: 16px 0 6px 0;
+    }
+
+    /* === TABLOLAR === */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 9pt;
+      table-layout: fixed;
+    }
+    table th {
+      background: var(--brand-primary);
+      color: var(--fx-white);
+      font-weight: 600;
+      padding: 8px 10px;
+      text-align: left;
+      border: 1px solid var(--brand-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    table td {
+      padding: 6px 10px;
+      border: 1px solid var(--fx-border);
+      vertical-align: top;
+      word-wrap: break-word;
+    }
+    table tr:nth-child(even) {
+      background: var(--fx-light-gray);
+    }
+    table tr:hover {
+      background: #e8f0fe;
+    }
+    /* Sayısal sütunlar sağa hizalı */
+    table td.num, table th.num {
+      text-align: right;
+      font-family: var(--font-mono);
+    }
+
+    /* === KPI KARTLARI === */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .kpi-card {
+      border: 1px solid var(--fx-border);
+      border-top: 3px solid var(--brand-primary);
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+    }
+    .kpi-card .kpi-value {
+      font-size: 18pt;
+      font-weight: 800;
+      color: var(--brand-primary);
+    }
+    .kpi-card .kpi-label {
+      font-size: 8pt;
+      color: var(--fx-gray);
+      margin-top: 4px;
+    }
+    .kpi-card .kpi-change {
+      font-size: 8pt;
+      margin-top: 2px;
+    }
+    .kpi-change.positive { color: var(--fx-success); }
+    .kpi-change.negative { color: var(--fx-danger); }
+
+    /* === CHART CONTAINER === */
+    .chart-container {
+      width: 100%;
+      max-width: 100%;
+      margin: 16px 0;
+      padding: 12px;
+      border: 1px solid var(--fx-border);
+      border-radius: 6px;
+      background: var(--fx-white);
+    }
+    .chart-container canvas {
+      width: 100% !important;
+      max-height: 250px;
+    }
+
+    /* === SWOT === */
+    .swot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .swot-box {
+      border-radius: 6px;
+      padding: 14px;
+    }
+    .swot-box h4 {
+      font-size: 10pt;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .swot-box ul {
+      padding-left: 16px;
+      font-size: 9pt;
+    }
+    .swot-box li {
+      margin-bottom: 4px;
+    }
+    .swot-strength { background: #d1fae5; border: 1px solid #6ee7b7; }
+    .swot-strength h4 { color: #065f46; }
+    .swot-weakness { background: #fee2e2; border: 1px solid #fca5a5; }
+    .swot-weakness h4 { color: #991b1b; }
+    .swot-opportunity { background: #dbeafe; border: 1px solid #93c5fd; }
+    .swot-opportunity h4 { color: #1e40af; }
+    .swot-threat { background: #fef3c7; border: 1px solid #fcd34d; }
+    .swot-threat h4 { color: #92400e; }
+
+    /* === SENARYO TABLOSU === */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .scenario-box {
+      border-radius: 6px;
+      padding: 14px;
+      text-align: center;
+    }
+    .scenario-bear { background: #fee2e2; border: 2px solid #ef4444; }
+    .scenario-base { background: #dbeafe; border: 2px solid #3b82f6; }
+    .scenario-bull { background: #d1fae5; border: 2px solid #10b981; }
+    .scenario-box .scenario-label {
+      font-size: 10pt;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .scenario-box .scenario-price {
+      font-size: 20pt;
+      font-weight: 800;
+    }
+    .scenario-box .scenario-upside {
+      font-size: 9pt;
+      color: var(--fx-gray);
+      margin-top: 4px;
+    }
+
+    /* === RİSK MATRİSİ === */
+    .risk-matrix {
+      margin: 16px 0;
+    }
+    .risk-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--fx-border);
+    }
+    .risk-score {
+      min-width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 10pt;
+      color: var(--fx-white);
+    }
+
+    /* === YASAL UYARI === */
+    .legal-disclaimer {
+      background: var(--fx-light-gray);
+      border: 1px solid var(--fx-border);
+      border-radius: 4px;
+      padding: 12px;
+      font-size: 7pt;
+      color: var(--fx-gray);
+      margin-top: 24px;
+      line-height: 1.4;
+    }
+
+    /* === METIN === */
+    p {
+      margin: 8px 0;
+      text-align: justify;
+    }
+    ul, ol {
+      margin: 8px 0 8px 20px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+    strong {
+      color: var(--fx-dark);
+    }
+
+    /* === PRINT AYARLARI === */
+    @media print {
+      .page {
+        page-break-before: always;
+        page-break-inside: avoid;
+      }
+      .page:first-child {
+        page-break-before: avoid;
+      }
+      table {
+        page-break-inside: avoid;
+      }
+      .chart-container {
+        page-break-inside: avoid;
+      }
+      .kpi-grid {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     SAYFA 1: KAPAK
+     ============================================================ -->
+<div class="page cover-page">
+  <div class="cover-ticker">{{TICKER}}</div>
+  <div class="cover-company">{{COMPANY_NAME}}</div>
+  <div class="cover-title">Yonetim Kurulu Raporu</div>
+  <div class="cover-date">{{REPORT_DATE}}</div>
+  <div class="cover-badge">Finance X Bagimsiz Analizi | Yatirim tavsiyesi niteliginde degildir</div>
+</div>
+
+<!-- ============================================================
+     SAYFA 2: YATIRIMCI KARTI
+     ============================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="company-ticker">{{TICKER}}</span>
+      <span class="report-section">Yatirimci Karti</span>
+    </div>
+    <div class="page-header-right">
+      <div class="brand-mark">{{TICKER_SHORT}}</div>
+    </div>
+  </div>
+
+  {{INVESTOR_CARD_CONTENT}}
+
+  <div class="page-footer">
+    <span>Gizli — Yatirim tavsiyesi niteliginde degildir</span>
+    <span>Finance X Platform</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SAYFA 3-4: FİNANSAL TABLOLAR
+     ============================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="company-ticker">{{TICKER}}</span>
+      <span class="report-section">Finansal Tablolar</span>
+    </div>
+    <div class="page-header-right">
+      <div class="brand-mark">{{TICKER_SHORT}}</div>
+    </div>
+  </div>
+
+  {{FINANCIAL_TABLES_CONTENT}}
+
+  <div class="page-footer">
+    <span>Gizli — Yatirim tavsiyesi niteliginde degildir</span>
+    <span>Finance X Platform</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SAYFA 5-6: ORAN ANALİZİ VE GRAFİKLER
+     ============================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="company-ticker">{{TICKER}}</span>
+      <span class="report-section">Oran Analizi</span>
+    </div>
+    <div class="page-header-right">
+      <div class="brand-mark">{{TICKER_SHORT}}</div>
+    </div>
+  </div>
+
+  {{RATIO_ANALYSIS_CONTENT}}
+
+  <div class="page-footer">
+    <span>Gizli — Yatirim tavsiyesi niteliginde degildir</span>
+    <span>Finance X Platform</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SAYFA 7: SEKTOR VE REKABET
+     ============================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="company-ticker">{{TICKER}}</span>
+      <span class="report-section">Sektor ve Rekabet</span>
+    </div>
+    <div class="page-header-right">
+      <div class="brand-mark">{{TICKER_SHORT}}</div>
+    </div>
+  </div>
+
+  {{SECTOR_COMPETITION_CONTENT}}
+
+  <div class="page-footer">
+    <span>Gizli — Yatirim tavsiyesi niteliginde degildir</span>
+    <span>Finance X Platform</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SAYFA 8: DEGERLEME
+     ============================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="company-ticker">{{TICKER}}</span>
+      <span class="report-section">Degerleme</span>
+    </div>
+    <div class="page-header-right">
+      <div class="brand-mark">{{TICKER_SHORT}}</div>
+    </div>
+  </div>
+
+  {{VALUATION_CONTENT}}
+
+  <div class="page-footer">
+    <span>Gizli — Yatirim tavsiyesi niteliginde degildir</span>
+    <span>Finance X Platform</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SAYFA 9: TEKNİK ANALİZ
+     ============================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="company-ticker">{{TICKER}}</span>
+      <span class="report-section">Teknik Analiz</span>
+    </div>
+    <div class="page-header-right">
+      <div class="brand-mark">{{TICKER_SHORT}}</div>
+    </div>
+  </div>
+
+  {{TECHNICAL_ANALYSIS_CONTENT}}
+
+  <div class="page-footer">
+    <span>Gizli — Yatirim tavsiyesi niteliginde degildir</span>
+    <span>Finance X Platform</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SAYFA 10: MAKRO ANALİZ
+     ============================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="company-ticker">{{TICKER}}</span>
+      <span class="report-section">Makro Analiz</span>
+    </div>
+    <div class="page-header-right">
+      <div class="brand-mark">{{TICKER_SHORT}}</div>
+    </div>
+  </div>
+
+  {{MACRO_ANALYSIS_CONTENT}}
+
+  <div class="page-footer">
+    <span>Gizli — Yatirim tavsiyesi niteliginde degildir</span>
+    <span>Finance X Platform</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SAYFA 11: SWOT ANALİZİ
+     ============================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="company-ticker">{{TICKER}}</span>
+      <span class="report-section">SWOT Analizi</span>
+    </div>
+    <div class="page-header-right">
+      <div class="brand-mark">{{TICKER_SHORT}}</div>
+    </div>
+  </div>
+
+  {{SWOT_CONTENT}}
+
+  <div class="page-footer">
+    <span>Gizli — Yatirim tavsiyesi niteliginde degildir</span>
+    <span>Finance X Platform</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SAYFA 12: RİSK MATRİSİ
+     ============================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="company-ticker">{{TICKER}}</span>
+      <span class="report-section">Risk Matrisi</span>
+    </div>
+    <div class="page-header-right">
+      <div class="brand-mark">{{TICKER_SHORT}}</div>
+    </div>
+  </div>
+
+  {{RISK_MATRIX_CONTENT}}
+
+  <div class="legal-disclaimer">
+    <strong>Yasal Uyari:</strong> Bu rapor Finance X platformu tarafindan bagimsiz olarak hazirlanmis olup, yatirim tavsiyesi niteliginde degildir. Rapordaki bilgiler kamuya acik kaynaklardan derlenmi olup, dogrulugu garanti edilmez. Yatirim kararlari icin lisansli bir yatirim danismanina basvurmaniz onerilir. Finance X, bu rapora dayanilarak yapilan islemlerden dolayi hicbir sorumluluk kabul etmez.
+  </div>
+
+  <div class="page-footer">
+    <span>Gizli — Yatirim tavsiyesi niteliginde degildir</span>
+    <span>Finance X Platform</span>
+  </div>
+</div>
+
+</body>
+</html>
