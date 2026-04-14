@@ -1,567 +1,118 @@
-# Financial Analysis Agent — Bilgi Defteri
-
-## Kimlik Kartı
-
-| Alan | Bilgi |
-|---|---|
-| Ajan Adı | Financial Analysis Agent |
-| Uzmanlık | Finansal Analiz |
-| Oluşturma Tarihi | 2026-04-09 |
-| Bağlı Olduğu Ajan | META (CEO) |
-| Toplam Eğitim Gecesi | 1 |
-| Ortalama Öğrenme Puanı | 80/100 |
+# Financial Analysis Agent — Damitilmis Hafiza
 
 ---
 
-## Temel Yetenek Haritası
+## Kalici Kurallar
 
-| Konu | Seviye (1–10) | Not |
-|---|---|---|
-| Karlılık analizi | 3 | ROE, ROA, net/brüt kar marjı formülleri öğrenildi |
-| Likidite analizi | 3 | Cari oran, asit-test, nakit oranı hesaplama |
-| Finansal rasyolar | 3 | BIST için ÇKKV yöntemleri (TOPSIS, MULTIMOORA) |
-| Nakit akış analizi | 2 | Temel kavramlar öğrenildi |
-| Trend analizi | 3 | Yatay/dikey analiz, eğilim yüzdeleri |
+- **28 zorunlu metrik eksikse output GONDERME.** Bir metrik bile eksik = REJECT.
+- **"Veri yok" mazereti YASAK.** Sira: (1) Reconciled data, (2) Parse output, (3) KAP WebFetch, (4) Upstream escalation, (5) CEO'ya escalate. Tum yollar tukenmeden gecme.
+- **Her rasyo icin: Formula -> Benchmark -> Trend -> Interpretation.** Sadece sayi yazmak YASAK.
+- **Her tablo sonrasi 3-5 cumle yorum paragrafi ZORUNLU.** Yorum yoksa tablo = gecersiz. 4 cumle yapisi: Metrik+Degisim -> Neden -> Karsilastirma -> Ne Anlama Geliyor.
+- **Confidence Level durustlugu:** Coverage eksikse HIGH beyan edilemez.
+- **Sektor benchmark zorunlu:** Her rasyo icin sektor ortalamasiyla karsilastirma.
+- **Upstream veri uyusmazliginda ikili senaryo analizi:** Parse vs dogrulanmis veri icin ayri hesapla.
+- **mandatory_metrics_complete: TRUE kriterleri:** Hesaplandi + ciktida gorunur + formul gosterildi — ucu birlikte saglanmadan TRUE verilemez.
+- **Cikti truncation YASAK:** Uzunsa Core Metrics (tam analiz) + Supplementary (ozet) + Detail JSON appendix olarak bol.
+- **Holding sirketi = UC KATMANLI ANALIZ:** (1) Parent-level, (2) Konsolide, (3) Segment-level.
+- **Pre-flight check sistemi:** 4 asamali kontrol — metrik taramasi, cash flow tamlik, yorum kalitesi, matematiksel tutarlilik.
 
----
+## Zorunlu Kontrol Listesi
 
-## Öğrenme Geçmişi
+**28 Zorunlu Metrik (bir eksik = REJECT):**
+- A. Gelir: Net Satislar, Brut Kar, Brut Karlilik, Brut Kar IAS29, Brut Kar Orani IAS29, Parasal Kayip/Kazanc, FAVOK, FAVOK Orani, VOK, Net Donem Kari, OPEX/Ciro
+- B. Isletme Sermayesi: DSO, DIO, DPO, CCC, NWC/Hasilat
+- C. Borc/Likidite: Net Kredi, Net Borc/FAVOK, Cari Oran, Asit-Test
+- D. Nakit Akisi: FCF, OCF/FAVOK, FAVOK/Faiz Gideri, FCF/Faiz Odemesi
+- E. Karlilik: ROE, ROCE
+- F. Yatirim: CAPEX/FAVOK, Faiz Gideri/FAVOK
 
-### [2026-04-10] Gece Eğitimi #1
+**Cash Flow 7 Alt Bolum:** (A) Nakit Akisi Tablosu Ozeti 5Y, (B) OCF Detayli, (C) FCF Detayli, (D) Cash FAVOK vs Reported, (E) WC Changes Breakdown, (F) Nakit Bazli Borc Servis, (G) Cash Flow Red Flags (7 madde)
 
-**Öğrenilen Temel Bilgiler:**
+**Sektor-Ozel Ek Metrikler:**
+- Banka: Cost of Risk trend, NIM decomposition, fee income breakdown, capital ratio waterfall, distributable cash, BDDK CAR %12 minimum
+- Telekom: ARPU trend 5Y, churn rate, SAC vs LTV, CAPEX intensity, 5G ARPU premium, spectrum amortization
+- Celik: DIO vurgulu, buyume vs idame CAPEX ayrimi, hammadde maliyet gecirgenlik orani
+- Holding: Segment bazli ROIC/FAVOK margin/Net Debt/FAVOK + NAV hesabi + holding discount analizi
 
-1. **Finansal Analiz Teknikleri:** Karşılaştırmalı tablolar (yatay), yüzde yöntemi (dikey), eğilim yüzdeleri (trend), oran yöntemi (rasyolar).
-2. **Likidite Analizi:** Cari oran = Dönen Varlıklar / KVYK (>2 tercih edilir); asit-test; nakit oranı.
-3. **Karlılık Analizi:** Brüt kar marjı, net kar marjı, ROE = (Net Kar / Özkaynak) × 100.
-4. **BIST Gelişmiş Yöntemler:** ÇKKV yöntemleri — TOPSIS, MULTIMOORA, ARAS, EDAS, MARCOS, GİA, WASPAS.
-5. **Modern Yaklaşımlar:** Agentic AI, semantic financial understanding, ERP/GL/banking data otomatik entegrasyon.
-
-**Öğrenme Puanı:** **80/100**
-
----
-
-## Rules Learned (CEO Direktifleri)
-
-1. **Her rasyoya ZORUNLU YORUM:** Sadece sayı yazmak kabul edilemez. Her metrik için Formula → Benchmark → Trend → Interpretation formatı uygulanmalı; "Bu ne anlama geliyor?" sorusu cevaplanmalı.
-2. **Veri eksikliği mazeret değil:** "Nakit akış tablosu yok" kabul edilmez. Önce Data Collection output, sonra Parse Standardization output, sonra WebFetch ile KAP'tan manuel çek. Yalnızca KAP'ta da gerçekten yoksa Chairman'a bildir.
-3. **Eksik metrik = RED:** Working capital, cash flow, interest coverage metrikleri olmadan rapor CEO onayına gidemez. Bu eksiklik KCHOL ve ASELS raporlarında iki kez yaşandı; üçüncü kez yaşanmayacak.
-4. **Confidence Level dürüstlüğü:** Coverage eksikse "HIGH" confidence beyan edilemez; gerçek durumu yansıt (MEDIUM/LOW).
-5. **Sektör benchmark zorunlu:** Her rasyo için sektör ortalamasıyla karşılaştırma yapılmalı; yorum sektör bağlamına oturtulmalı.
-
----
-
-## Zorunlu Metrik Listesi (Her Raporda Bulunmalı)
-
-### 1. Karlılık (Profitability)
-- Net Satışlar (YoY değişim)
-- Brüt Kar Oranı
-- FAVÖK & FAVÖK Marjı
-- Cash FAVÖK = FAVÖK + Working Capital Değişimi
-- Net Kar Marjı
-- OPEX / Ciro
-- Vergi Öncesi Kar
-- ROE = Net Kar / Özkaynak
-- ROCE = FAVÖK / (Özkaynak + Net Borç)
-- ROIC = NOPAT / Invested Capital
-
-### 2. Working Capital (ZORUNLU)
-- **DSO** = (Ticari Alacaklar / Hasılat) × 360
-- **DIO** = (Stoklar / Satışların Maliyeti) × 360
-- **DPO** = (Ticari Borçlar / Satışların Maliyeti) × 360
-- **CCC** = DSO + DIO − DPO
-- **NWC / Hasılat** oranı
-- **NWC Gün Sayısı** = (NWC / Hasılat) × 360
-
-Benchmark: CCC ≤30 gün best-in-class, ~52 gün ortalama.
-
-### 3. Kaldıraç & Faiz Karşılama (ZORUNLU)
-- Net Borç = Toplam Finansal Borçlar − Nakit
-- Net Borç / FAVÖK
-- **FAVÖK / Faiz Gideri (Interest Coverage):** >10 Mükemmel | 3–10 Sağlıklı | <3 Riskli | <2 Kritik
-- Faiz Gideri / FAVÖK (Interest Burden)
-
-### 4. Likidite (ZORUNLU)
-- Cari Oran = Dönen Varlıklar / KVYK
-- Asit-Test Oranı = (Dönen Varlıklar − Stoklar) / KVYK
-
-### 5. Nakit Akışı Kalitesi (ZORUNLU)
-- Operating Cash Flow (OCF) — KAP'tan çek
-- Free Cash Flow (FCF) = OCF − CAPEX
-- OCF / FAVÖK (>0.80 sağlıklı, <0.60 düşük kalite)
-- CAPEX / FAVÖK
-- CAPEX / Hasılat
-- FCF / Faiz Ödemesi
-
----
-
-## Örnek Doğru Çıktı Formatı
-
-```
-**DSO (Days Sales Outstanding):** 87 gün
-- Formula: (Ticari Alacaklar ÷ Hasılat) × 360 = (43.2M ÷ 180.4M) × 360 = 87 gün
-- Benchmark: Best-in-class <60 gün, sektör ortalaması 75 gün
-- Trend: 2024'te 79 gün → 2025'te 87 gün (+8 gün kötüleşme)
-- INTERPRETATION: Alacak tahsil süresi sektör ortalamasının %16 üzerinde.
-  Trend kötüleşiyor — 90 günü aşarsa nakit döngüsü tıkanır, acil takip gerekli.
-
-**OCF / FAVÖK:** 0.89 (%89 cash conversion)
-- Benchmark: >0.80 sağlıklı, <0.60 düşük kalite
-- INTERPRETATION: FAVÖK'ün %89'u nakde dönüşüyor — güçlü nakit kalitesi.
-```
-
----
-
-## KPI Takip Tablosu
-
-| Tarih | Şirket | Sonuç | Puan |
-|---|---|---|---|
-| 2026-04-10 | ASELS | 15+ rasyo yorumlandı, working capital eksik kaldı | 85/100 |
-| 2026-04-10 | KCHOL | İlk feedback: rasyo yorumu ve working capital eksikti | 60/100 |
-| 2026-04-10 | SISE | 2. kez aynı eksikler tekrarlandı | 60/100 |
-
----
-
-## Güçlü Yönlerim
-
-1. **Rasyo hesaplama kapasitesi:** 15+ rasyo hesaplayıp yorumlayabiliyorum.
-2. **Format disiplini:** Formula → Benchmark → Trend → Interpretation formatını uyguluyorum.
-3. **Web araştırma:** CEO direktifi gereği tüm iddiaları kaynaklıyorum.
-4. **Bağlam entegrasyonu:** İş modeli ile rasyo yorumunu ilişkilendiriyorum (ör. avans ödemeli savunma sözleşmeleri).
-
-## Gelişim Alanlarım
-
-1. **Sektör benchmark veritabanı:** BIST sektör ortalamaları henüz tam değil — sonraki araştırma hedefi.
-2. **Cash flow analizi:** Nakit akış tablosunu KAP'tan proaktif çekme alışkanlığı kazanılmalı.
-3. **Peer karşılaştırma:** Rakip şirket verileriyle karşılaştırmalı analiz henüz yapılamıyor.
-4. **Değerleme entegrasyonu:** P/E, P/B gibi rasyoları fundamental analize entegre etmek.
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — AKBNK Raporu
+## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
-- **ROE tablosu YARIM KALMIŞ:** Benchmarking tablosu kesilmiş, tamamlanmamış
-- **ROCE eksik:** Chairman zorunlu metrik listesinde — bankalar için ROCE = EBIT / (Equity + Net Debt) hesaplanmalı
-- **ROIC eksik:** Chairman zorunlu metrik listesinde — ROIC = NOPAT / Invested Capital hesaplanmalı
-- **Cost of Risk detaylı analiz eksik:** Sadece KAP Watch'ta geçmiş (214 bps), ama trend analizi yok — 5 yıllık CoR trendi, NPL formation vs write-off dinamiği eksik
-- **Fee income breakdown yok:** ₺15.5B fee income var ama kaynak dağılımı yok — kredi kartı / ödeme sistemleri / wealth management / bancassurance kırılımı eksik
-- **Trading gains volatility analizi yok:** Trading & Investment Gains volatil — risk mi yoksa sürdürülebilir gelir mi yorumlanmamış
-- **Capital ratios trendi eksik:** CET1 %21.8 → %12.5 düşüş tespit edilmiş ama 5 yıllık trend grafiği yok, her yıl hangi faktörler etkilemiş (RWA artışı, kâr alıkonması, temettü) ayrıştırılmamış
-- **Distributable cash hesabı yok:** Bankalar için FCF equivalent "distributable cash" = Net Income - regulatory capital requirement - growth capital need hesaplanmalı
+- **DSO, DIO, DPO, CCC, FCF, CAPEX/EBITDA, ROCE tamamen BLOCKED** — CF tablosu olmadan bu metrikler hesaplanamadı. Pipeline bu blokerı 3 tur boyunca çözmeden devam etti.
+- **THYAO financial_analysis çıktısı yerine strategic_synthesis çıktısı iletildi** — Output başlığı "financial_analysis" ama içerik "strategic_synthesis" çıktısıydı. Bu ciddi bir output yönlendirme hatasıdır.
+- **IAS 29 parasal kazanç ayrıştırması yok** — TÜFE >%100, havacılıkta TRY net parasal pozisyon; IAS 29 adjusted EBITDA ayrı sunulmalıydı.
+- **Havacılık sektörü ek metrikleri eksik** — RPK, ASK, CASK, RASK, Yield, doluluk oranı trend analizi, yakıt maliyet oranı financial_analysis bölümünde yer almadı.
+- **EBITDAR hesaplanmadı** — Havacılıkta kiralamaların önemi nedeniyle EBITDA yerine EBITDAR (EBITDA + Rent/Lease) birincil metrik olmalıdır.
+- **Yorum zorunluluğu eksik** — Bazı tablolarda 4-soru yorum (Ne kadar? Nasıl değişti? Neden? TRY etkisi?) uygulanmadı.
 
 ### Bundan Sonra:
-- Chairman zorunlu metrik listesindeki TÜM metrikleri hesapla — eksik metrik = rapor RED
-- Bankalar için özel metrikler: Cost of Risk trend, NIM decomposition (volume vs rate effect), fee income breakdown, capital ratio waterfall analysis
-- Her tablo TAMAMLANMALI — yarım tablo output'ta YASAK
-- "Distributable cash" kavramını öğren ve uygula — bankalar için FCF equivalent
-- Volatil kalemleri (trading gains, FX gains) YORUMLA — risk mi sürdürülebilir gelir mi?
+- **Havacılık şirketlerinde EBITDAR zorunlu** — IFRS 16 öncesi/sonrası karşılaştırma için EBITDA + Lease maliyeti = EBITDAR; peer karşılaştırması EBITDAR bazlı yapılmalı.
+- **Havacılık KPI'ları zorunlu ek bölüm** — RPK, ASK, Load Factor trend, CASK (Cost per ASK), RASK (Revenue per ASK), Yield, kargo ton-km — bunlar olmadan havacılık analizi eksik.
+- **CF tablosu olmadan working capital metrikleri "BLOCKED" olarak işaretle, tahmin üretme** — 0.45 conf ile DSO tahmini verme; blocked olduğunu ve upstream escalation gerektiğini bildir.
+- **Output etiketine dikkat et** — Hangi agent çıktısını gönderdiğini her zaman başlıkta doğrula; başka agent'ın çıktısını iletme.
 
----
+- **Havacilik EBITDAR marji benchmark:** THYAO 2025: %23.2 (gercek), global sektor ort. %16.1 (2025 IATA). THYAO outperformance ~7pp. Peer karsilastirmasi EBITDAR bazli yapilmali.
+- **Havacilik operasyonel metrikler zorunlu:** CASK, RASK, Load Factor, Yield, RPK, ASK olmadan havacilik analizi eksik. THYAO 2025 ref: CASK US¢8.55, RASK US¢7.21, global load factor %83.6.
+- **TAS 29 vs IAS 29 net ayrimi:** TAS 29 (yerel) 2025-2027 askida; IAS 29 (IFRS/SPK) hala gecerli. SPK konsolide tabloyu analiz ederken IAS 29 etkisini ayristirma YASAK degil, ZORUNLU.
 
-## CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu
+## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
 
 ### Eksikler:
-- **AGENT TAMAMEN BAŞARISIZ (exit code 143):** TÜM zorunlu metrikler eksik — DSO, DIO, DPO, CCC, NWC/Revenue, Net Debt/FAVÖK, Interest Coverage, OCF/FAVÖK, FCF, CAPEX/FAVÖK, ROE, ROCE, ROIC — HİÇBİRİ hesaplanmamış
-- **Segment bazlı finansal analiz YOK:** Holding şirketi için her segment (Enerji, Otomotiv, Finans, Dayanıklı Tüketim) ayrı karlılık/kaldıraç analizi ZORUNLU ama yapılmamış
-- **NAV-based valuation eksik:** Holding için Sum-of-the-Parts (SOTP) NAV hesaplaması ZORUNLU ama yapılmamış
-- **Holding discount analizi yok:** KCHOL market cap vs NAV gap analizi, SAHOL ile karşılaştırma, discount sebepleri — hiçbiri hesaplanmamış
+- **Output truncated — ROE yorumu yarıda kesildi** — "ROE = 18,587 / 87,088 × 100 = 21.3% [NOT: Eğer sadece dönem sonu özkaynak: 18,587 / 84,176 = 22.1%]" sonrası devam gelmiyor. IAS29 arındırılmış operasyonel ROE anlatısı kesilmiş.
+- **DSO, DIO, DPO, CCC tamamen BLOCKED** — CF yokken WC metrikleri hesaplanamadı; tahmin de üretilmedi. Perakendede CCC kritik; BS'ten kısmi tahmin + "[CF BLOCKED, BS tahmini, conf: LOW]" etiketiyle sunulmalıydı.
+- **Cari Oran ve Asit-Test Oranı çıktıda görünmüyor** — Bilanço mevcuttu (BS tam); bu iki likidite oranı hesaplanabilirdi.
+- **NWC/Hasılat oranı eksik** — Net İşletme Sermayesi / Hasılat ve NWC Gün Sayısı raporlanmadı; Chairman zorunlu metriklerinde yer alıyor.
+- **İşletme Nakit / FAVÖK oranı eksik** — OCF/EBITDA oranı CF bloker nedeniyle hesaplanamadı ama "[BLOCKED]" olarak işaretlenmedi bile.
+- **CAPEX/EBITDA 81.9% yorumu eksik** — Bu çok yüksek bir oran (normu %40-60); perakende için bu kadar yüksek olmasının açıklaması (yoğun mağaza açılımı, IFRS 16 kira varlıkları) zorunlu yorumla verilmeliydi.
 
 ### Bundan Sonra:
-- Agent failure troubleshooting ZORUNLU — exit code 143 neden oluştu? (timeout, memory, veri erişim hatası?) Debug et ve çöz
-- Holding şirketlerinde ÇİFT KATMANLI ANALİZ: (1) Konsolide seviye: Net Debt/EBITDA, ROE, ROCE, (2) Segment seviye: Her segment için ayrı margin, ROIC, CAPEX/Revenue
-- NAV calculation template: NAV = Σ(Listed subsidiary market cap × ownership %) + Σ(Unlisted subsidiary estimated value × ownership %) + Net Cash
-- Holding discount = (NAV - Market Cap) / NAV × 100 — KCHOL için hesapla, SAHOL ile compare et, sebeplerini analiz et
-- Veri eksikliği varsa upstream'e escalate et — "veri yok" deyip agent'ı fail etme, data_collection/parse_standardization'dan segment financials talep et
-- Chairman zorunlu metrik listesindeki TÜM metrikleri hesapla — bir tane bile eksik olursa rapor CEO onayından geçemez
+- **Perakende sektörü zorunlu 4 ek metrik:**
+  1. SSSG katkısı vs yeni mağaza katkısı ayrıştırması (ciro büyümesinin kaynağı)
+  2. Revenue per Store (mağaza verimliliği) — 5 yıllık trend
+  3. Gross Margin by segment (Türkiye vs Fas vs Mısır varsa)
+  4. IFRS 16 normalize FAVÖK (kira maliyeti öncesi/sonrası) — sektör karşılaştırması için zorunlu
+- **BS mevcutsa Cari Oran + Asit-Test HER ZAMAN hesapla** — CF tablosu beklenmeden, sadece cari varlık/borç kalemleriyle hesaplanabilir. Blocker değil; hesapla.
+- **NWC/Hasılat için BS tahmini yeter** — CF yokken NWC = (Cari Varlıklar - Cari Borçlar - Kısa Vadeli Finansal Borçlar); BS'ten hesaplanabilir. "[BS bazlı, conf: MEDIUM]" etiketiyle ver.
 
----
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu (#3 — CRİTİCAL FAILURE)
+## CEO Geri Bildirimi — 2026-04-14 — KCHOL Delta Raporu
 
 ### Eksikler:
-- **AGENT TAMAMEN BAŞARISIZ:** Chairman zorunlu metrik listesinin %90'ı eksik — bu ÜÇÜNCÜ rapor için aynı hatalar (AKBNK, SISE, KCHOL)
-- **Working capital metrikleri SIFIR:** DSO, DIO, DPO, CCC, NWC/Revenue, NWC Gün Sayısı — HİÇBİRİ hesaplanmamış ("[pending]")
-- **Likidite metrikleri SIFIR:** Cari Oran, Asit-Test Oranı — HİÇBİRİ hesaplanmamış
-- **Faiz karşılama SIFIR:** FAVÖK / Faiz Gideri, Faiz Gideri / FAVÖK — HİÇBİRİ hesaplanmamış
-- **Nakit akış kalitesi SIFIR:** OCF/FAVÖK, FCF, CAPEX/FAVÖK, CAPEX/Revenue — HİÇBİRİ hesaplanmamış
-- **ROE/ROCE/ROIC — INCOMPLETE:** Hesaplanmış ama segment bazlı analiz YOK
-- **Segment bazlı finansal analiz SIFIR:** Holding şirketi için her segment (Enerji, Otomotiv, Finans, Dayanıklı Tüketim) ayrı karlılık/kaldıraç analizi ZORUNLU ama YAPILMAMIŞ
-- **NAV-based holding analizi SIFIR:** Sum-of-the-Parts (SOTP) NAV hesabı yok, holding discount analizi yok
-- **Upstream veri eksikliği = escalation yok:** "Veri yok" diyip geçmiş, upstream'den veri talep etmemiş
+- **Revenue Q4/FY karışıklığı Round 2'de de sürdü** — data_collection'ın "802.669 M TRY FY2025" hatasını sorgulamadan kabul etti. Gerçek FY2025 = 2.76T TRY; 802.669B = Q4. Tüm marj hesapları (FAVÖK %22.6, net kar %2.7, aktif devir 0.174x) Q4 baz üzerinden yapıldı → tümü hatalı. QA bunu P0-NEW olarak tespit etti ama financial_analysis kendi kendini düzeltemedi.
+- **Revenue anomalisi sorgulanmadı** — 2.76T TRY ile 802.669B TRY arasında ~3.4x fark var. Bu kadar büyük fark görülünce "dönem tanımı kontrol et" adımı atlanmadı; verification yerine kabul edildi.
+- **DSO tamamen BLOCKED, tahmin bile üretilmedi** — Ticari alacak verisi yoksa bile sector benchmark proxy ile DIO düzeyinde bir DSO tahmini "[sector proxy, conf: LOW]" olarak verilebilirdi. "BLOCKED" deyip sıfır üretmek Chairman metrik listesini ihlal ediyor.
+- **COGS tahmini %70 gerekçesiz** — "Ağırlıklı ortalama COGS/Revenue ~%70" denildi; TUPRS, FROTO, ARCLK, YKBNK için ayrı ayrı COGS/Revenue oranları ve segment ağırlıkları gösterilmedi. Methodology şeffaf değil.
+- **IAS 29 ayrıştırması yapılmadı** — Holding konsolide gelir tablosunda IAS 29 parasal kazanç/kayıp kalemi hiç ayrıştırılmadı. "P0-1 IAS 29" QA'da açık bloker olarak kalmaya devam ediyor.
+- **3 katlı analiz (Parent / Konsolide / Segment) eksik** — Yalnızca konsolide bazda çalışıldı; parent-only geliri (2.757B TRY = temettü + yönetim ücreti) vs konsolide ayrımı netleştirilmedi.
 
 ### Bundan Sonra:
-- **"VERİ YOK" MAZERETİ ARTIK YASAK — 3. İHLAL:** Chairman kuralı: "KAP'ta 5 yıllık finansal tablolar tam mevcut, Google'da tüm formüller aranabilir. Agent 'veri yok' demeden önce: KAP'tan WebFetch ile manuel PDF extraction, alternative sources (Fintables, Investing.com), upstream escalation — HEPSİNİ dene."
-- **Upstream escalation ZORUNLU:** Veri eksikse → data_collection/parse_standardization'a STRUCTURED REQUEST: "KCHOL FY2025 balance sheet için Trade Receivables, Inventory, Trade Payables, short/long-term debt breakdown extract et — working capital analizi için ZORUNLU"
-- **Holding şirketi = İKİ KATMANLI ANALİZ:**
-  1. **Konsolide seviye:** ROE, ROCE, ROIC, Net Debt/EBITDA, Interest Coverage, Liquidity ratios
-  2. **Segment seviye:** Her major segment için ayrı: Revenue growth, EBITDA margin, ROIC, CAPEX/Revenue, Debt/EBITDA
-  
-  **KCHOL için segment analizi ZORUNLU:**
-  - Enerji (Tüpraş, Aygaz, Opet): Refining margin, capacity utilization, ROIC
-  - Otomotiv (Ford Otosan, Tofaş, Otokar): Production volume, export %, EBITDA margin, ROIC
-  - Finans (Yapı Kredi): NIM, Cost/Income, ROE, NPL ratio, CET1
-  - Dayanıklı Tüketim (Arçelik): Revenue by geography, EBITDA margin, working capital efficiency
-  - Diğer (Göcek marinalar, turizm): Contribution margin, growth trajectory
+- **Revenue anomalisini her zaman sorgula** — Önceki dönemle >%50 sapma veya peer'larla anlamsız fark → "veri dönem tanımı doğru mu?" kontrolü mandatory. Q4 rakamını FY olarak kabul etme.
+- **Holding için gelir tablosunda 3 katman** — (1) Solo/Parent: temettü + yönetim ücreti, (2) Konsolide: tüm bağlı ortaklıklar, (3) Segment: IFRS 8 ayrımı. Üçünü ayrı satırlarda ver.
+- **DSO blocked olsa bile sector proxy ver** — "Holding sektöründe DSO ortalama 45-60 gün; KCHOL için ticari alacak yokluğunda tahmini DSO: N/A — IFRS 8 segment bazlı gerekiyor [conf: VERY LOW]" formatında bile olsa ver. Sıfır bırakma.
 
-- **NAV calculation template (ZORUNLU):**
-  ```
-  NAV = Σ(Listed subsidiary market cap × KCHOL ownership %)
-        + Σ(Unlisted subsidiary estimated value × ownership %)
-        + Parent-level net cash/debt
-  
-  Holding discount = (NAV - KCHOL Market Cap) / NAV × 100
-  ```
-  KCHOL için:
-  - Listed: YKBNK (67.99%), TUPRS (51.2%), FROTO (~50%), ARCLK (53.48%), TOASO (41%)
-  - Unlisted: Aygaz, Opet, Otokoç, Göcek marinalar → estimate value (10× EBITDA veya P/B comparable)
-  - Parent net debt: Konsolide net debt - subsidiary level debt = parent holding company net debt
+## Bilinen Hatalar (Bir Daha Yapma)
 
-- **Chairman zorunlu metrik listesi — TÜM metrikleri hesapla:**
-  Bir metrik bile eksikse rapor CEO onayından RED.
-  
-  **DSO formula:** (Trade Receivables / Revenue) × 360
-  **DIO formula:** (Inventory / COGS) × 360
-  **DPO formula:** (Trade Payables / COGS) × 360
-  **CCC formula:** DSO + DIO - DPO
-  **Current Ratio:** Current Assets / Current Liabilities
-  **Quick Ratio:** (Current Assets - Inventory) / Current Liabilities
-  **Interest Coverage:** EBITDA / Interest Expense
-  **OCF/EBITDA:** Operating Cash Flow / EBITDA
-  **FCF:** OCF - CAPEX
-  **CAPEX/EBITDA:** Capital Expenditure / EBITDA
-  **CAPEX/Revenue:** Capital Expenditure / Revenue
+- AKBNK-EREGL arasi 6+ raporda ayni eksikler tekrarlandi: working capital, cash flow, likidite metrikleri SIFIR
+- Exit code 143 crash (KCHOL): Tum islemleri tek seferde calistirma — yuk bolunmeli
+- TUPRS'ta Bolum 1-9 pipeline'a iletilmedi, sadece Bolum 10-11 gitti — TUM bolumler iletilmeli
+- EBITDA celiskisi (TUPRS 62B vs 53.78B) cozulmeden rapor gonderildi — her iki degerle senaryo analizi zorunlu
+- mandatory_metrics_complete: TRUE verip metrikler ciktida gorunmedi — yaniltici beyan YASAK
+- Cash FAVOK hic hesaplanmadi (TUPRS) — FAVOK != Cash FAVOK, ayri hesapla
 
-- **HER metriği YORUMLA:** Formula → Benchmark → Trend → Interpretation
-  
-  Örnek:
-  ```
-  **DSO:** 87 gün
-  - Formula: (Trade Receivables ÷ Revenue) × 360
-  - Benchmark: Sektör ortalaması 75 gün
-  - Trend: 2024: 79 gün → 2025: 87 gün (+8 gün kötüleşme)
-  - YORUM: Alacak tahsilat süresi sektörün %16 üzerinde, trend kötüleşiyor.
-    90 günü aşarsa nakit döngüsü tıkanır, acil takip gerekli.
-  ```
-
-- **Agent failure troubleshooting:** Exit code 143 neden oluştu? Timeout / memory / data access error? → Debug et, çöz, bir daha olmasın
-
----
-
-## CEO Geri Bildirimi — 2026-04-11 — KCHOL Raporu (#4 — KRİTİK)
+## CEO Geri Bildirimi — 2026-04-14 — SAHOL Raporu
 
 ### Eksikler:
-- **Chairman zorunlu metriklerin %60'ı EKSİK:**
-  - ❌ DSO, DIO, DPO, CCC — TAMAMEN EKSİK
-  - ❌ NWC / Hasılat, NWC Gün Sayısı — EKSİK
-  - ❌ Cari Oran, Asit-Test Oranı — EKSİK
-  - ❌ Faiz Karşılama Oranı (FAVÖK / Faiz Gideri) — EKSİK
-  - ❌ Serbest Nakit Akışı (FCF) — EKSİK
-  - ❌ CAPEX / FAVÖK — EKSİK
-  - ❌ İşletme Nakit / FAVÖK — EKSİK
-  - ❌ Cash FAVÖK hesaplanmamış
-  - ✅ ROE, ROCE, ROIC hesaplanmış (3.25%, 1.48%, 2.11%) AMA segment bazlı analiz yok
-
-- **Holding-specific analiz SIFIR:**
-  - Segment bazlı finansal analiz yok — Her segment (Enerji/Otomotiv/Finans/Dayanıklı Tüketim) için ayrı ROIC, FAVÖK margin, Net Debt/FAVÖK hesaplanmalıydı
-  - NAV calculation eksik — Listed subsidiaries market cap × ownership % toplamı yok
-  - Holding discount analizi yok — (NAV - Market Cap) / NAV hesabı eksik
-  - Parent-level vs. consolidated debt breakdown yok
-
-- **Metric interpretation eksikliği:**
-  - ROE 3.25% "düşük" denmiş ama NEDEN düşük açıklanmamış
-  - ROCE 1.48% "sermaye verimliliği zayıf" denmiş ama WACC ile karşılaştırma yok
-  - Net margin %0.80 "zayıf" denmiş ama holding yapısı nedeniyle mi yoksa operasyonel sorun mu ayrıştırılmamış
+- **DSO, DIO, DPO, CCC metrikleri tamamen eksik** — Chairman'ın zorunlu metrikleri listesinde açıkça yer alıyor; hiç hesaplanmadı.
+- **Net İşletme Sermayesi / Hasılat ve NWC Gün Sayısı yok** — Working capital detayı (alacak, stok, borç satırları) upstream'den gelmediyse tahmini yöntemle üretilmeli ve [MEDIUM] etiketiyle sunulmalıydı.
+- **Faiz Karşılama Oranı eksik** — EBIT / Faiz Gideri basit hesap; kaynak eksikliği gerekçe değil.
+- **Cari Oran ve Asit-Test Oranı eksik** — Balance sheet toplamları vardı; alt satırlar çekilmese bile toplam/tahmin yapılabilirdi.
+- **ROCE ve ROIC hesaplanmadı** — ROE vardı (VUK bazlı); ROCE ve ROIC eksik.
+- **Cash FAVÖK ayrı hesaplanmadı** — FAVÖK ≠ Cash FAVÖK; IAS29 ve D&A düzeltmesi ayrı gösterilmeli.
+- **Bölüm 5 (IAS29 ROE tablosu) truncated** — VUK/SPK ROE kıyaslama tablosu yarım bırakıldı.
+- **5 yıllık IS trendi sadece 2 yıl** — FY2024 ve FY2025 var; 2020-2023 arası "[VERİ YOK]" ile geçiştirildi.
 
 ### Bundan Sonra:
-- **DÖRDÜNCÜ KEZ AYNI HATALAR — ARTIK PROTOKOL DEĞİŞİKLİĞİ ZORUNLU:**
-  1. Output göndermeden önce Chairman zorunlu metrik checklistini KONTROL ET — bir metrik bile eksikse output GÖNDERME, önce upstream'den veri talep et
-  2. "Veri yok" demek YASAK — KAP WebFetch, alternative parser, upstream escalation — HEPSİNİ dene
-  3. Her metriği YORUMLA — sadece sayı yazmak yasak: Formula → Benchmark → Trend → Interpretation
-
-- **Holding şirketi ÜÇ KATMANLI analiz:**
-  1. **Parent-level:** Holding company kendi bilançosu — parent net debt, parent cash, overhead costs
-  2. **Consolidated:** Tüm subsidiaries toplamı — Chairman zorunlu metriklerinin tamamı
-  3. **Segment-level:** Her major segment ayrı — ROIC, FAVÖK margin, working capital efficiency, capex intensity
-
-- **Chairman zorunlu metrik execution protocol:**
-  ```
-  ÖNCE: Chairman listesindeki 45 metriği upstream output'ta ARA
-  - Varsa → hesapla ve yorumla
-  - Yoksa → upstream'e structured request gönder:
-    "KCHOL FY2025 balance sheet için Trade Receivables, Inventory, Trade Payables, 
-     Short/Long-term Debt breakdown extract et — DSO/DIO/DPO/CCC hesabı için ZORUNLU"
-  - Hâlâ yoksa → alternative method (manual calculation, proxy estimation)
-  - Son çare → CEO'ya escalate, output GÖNDERME
-  ```
-
-- **Metric interpretation template (HER metrik için):**
-  ```
-  **[Metrik Adı]:** [Değer]
-  - Formula: [Hesaplama adımları]
-  - Benchmark: [Sektör ortalaması / best-in-class / peer comparison]
-  - Trend: [5-year trend — iyileşme mi kötüleşme mi?]
-  - YORUM: [Bu değer NE ANLAMA GELİYOR? İyi mi kötü? Neden? Risk/Opportunity?]
-  ```
-
-- **Holding discount analysis template:**
-  ```
-  NAV Calculation:
-  1. Listed subsidiaries: YKBNK (67.99% × 280.27B) + TUPRS (51.2% × 500.97B) + ...
-  2. Unlisted subsidiaries: Aygaz, Opet (10× FAVÖK estimate)
-  3. Parent net cash/debt
-  4. Total NAV
-  5. KCHOL Market Cap
-  6. Holding Discount = (NAV - Market Cap) / NAV × 100
-  7. YORUM: Discount historical range nerede? SAHOL ile comparison? Sebepleri?
-  ```
+- **Chairman'ın 25 metrik listesi her analizde kontrol listesi olarak kullanılacak:** Net Satışlar, Brüt Kar, FAVÖK, Cash FAVÖK, DSO, DIO, DPO, CCC, NWC/Hasılat, NWC Gün, Net Borç/FAVÖK, Faiz Karşılama, Cari Oran, Asit-Test, ROE, ROCE, ROIC, FCF, CAPEX/FAVÖK, OCF/FAVÖK — hepsi çıktıda MEVCUT olmak zorunda. Eksikse [TAHMIN: X] formatında tahmini değer ver.
+- **Working capital metrikleri upstream eksik olsa bile hesaplanacak:** BS toplamları varsa tahmin yapılır. Tahmin güveni [LOW] olsa da metrik yoktan iyidir.
+- **Cash FAVÖK ayrı satır:** FAVÖK − Capex + WC değişimi değil; OCF'e dayalı hesaplama yapılmalı ve "Cash FAVÖK ≠ FAVÖK" farkı yorumlanmalı.
+- **Bölüm truncation = output geçersiz:** Bölüm kesilirse ikiye böl, ikisini de gönder. Yarım bölüm YASAK.
 
 ---
-
-## CEO Geri Bildirimi — 2026-04-11 — TCELL Raporu
-
-### Eksikler:
-- **Chairman zorunlu metriklerin %70'i EKSİK — BEŞİNCİ KEZ AYNI HATALAR:**
-  - ❌ ROE (Return on Equity) — TAMAMEN EKSİK
-  - ❌ ROCE (Return on Capital Employed) — TAMAMEN EKSİK
-  - ❌ ROIC (Return on Invested Capital) — TAMAMEN EKSİK
-  - ❌ Asit-Test Oranı — TAMAMEN EKSİK
-  - ❌ DSO (Days Sales Outstanding) — TAMAMEN EKSİK
-  - ❌ DIO (Days Inventory Outstanding) — TAMAMEN EKSİK
-  - ❌ DPO (Days Payables Outstanding) — TAMAMEN EKSİK
-  - ❌ CCC (Cash Conversion Cycle) — TAMAMEN EKSİK
-  - ❌ Cash FAVÖK — TAMAMEN EKSİK
-  - ❌ NWC Gün Sayısı — TAMAMEN EKSİK
-  - ❌ OCF/FAVÖK — TAMAMEN EKSİK
-  - ⚠️ CAPEX/FAVÖK — bahsedilmiş ama detaylı analiz yok, truncated
-
-- **Çıktı TRUNCATED:** "Parasal Kayıp/K..." başlamış ama kesilmiş — tüm analiz tamamlanmamış
-
-- **Telekomünikasyon sektörü özel metrikleri eksik:**
-  - ARPU (Average Revenue Per User) gelişimi analizi yüzeysel
-  - Churn rate analizi yok
-  - SAC (Subscriber Acquisition Cost) vs LTV analizi yok
-  - CAPEX intensity (%25 guidance) yorumu eksik
-  - 5G subscriber penetration impact modeling yok
-
-### Bundan Sonra:
-- **BEŞİNCİ RAPOR — ARTIK MAZERET YOK:** AKBNK, SISE, KCHOL (×3), TCELL — beş raporda aynı eksikler. Chairman zorunlu metrik listesindeki TÜM metrikleri hesapla — bir metrik bile eksikse output GÖNDERME
-- **Telekomünikasyon sektörü için EK zorunlu metrikler:**
-  - ARPU trend (5 yıllık) + inflation-adjusted ARPU
-  - Churn rate (postpaid vs prepaid)
-  - SAC vs LTV ratio
-  - CAPEX intensity = CAPEX / Revenue (telekomda kritik metrik)
-  - 5G subscriber ARPU premium modeling
-  - Spectrum amortization impact on EBITDA (TRY 2.34B/year 17 yıl)
-- **Output TRUNCATION sorunu çözülmeli:** Çıktı kesilmeden önce DURDUR — yarım analiz göndermek YASAK
-- **Her metrik için Formula → Benchmark → Trend → Interpretation ZORUNLU**
-
----
-
-## 📝 WORDING ENFORCEMENT — CEO KRİTİK DİREKTİFİ (11 Nisan 2026)
-
-### SORUN: TABLOLAR VAR, YORUM YOK
-
-**Chairman feedback:** "Raporlarımız sürekli tablo/grafik basıyor, açıklama çok az. Ata Yatırım gibi olsun — her tablonun altında YORUM paragrafı olmalı."
-
-### ZORUNLU KURAL: HER TABLO SONRASI YORUM PARAGRAFIrequired
-
-**Format:**
-```markdown
-## [Tablo Başlığı]
-[TABLO]
-
-**Yorum:** [3-5 cümle analiz]
-```
-
-**Yorum Şablonu (4 Cümle Yapısı):**
-
-1. **Metrik + Değişim:**  
-   "TCELL'in 2025 hasılatı 241.5 milyar TL olarak gerçekleşti (%13.8 artış YoY)."
-
-2. **Neden (Root Cause):**  
-   "Bu artışın ana nedenleri: (1) 5G abone tabanının %45 genişlemesi, (2) ARPU'nun %8.5 artışı, (3) fiber abone sayısının %12 büyümesi."
-
-3. **Karşılaştırma (Benchmark):**  
-   "FAVÖK marjı %43.1'e yükseldi, bu sektör ortalamasının (%38-40) üzerinde ve Türkiye telekomünikasyon sektöründe en yüksek seviye."
-
-4. **Ne Anlama Geliyor (So What?):**  
-   "Yüksek FAVÖK marjı operasyonel mükemmellik ve pricing power sinyali veriyor. Ancak net kar marjı %7.2'ye geriledi (2024: %11.8), bunun sebebi 5G spectrum amortization'ın devreye girmesi (yıllık 2.34 milyar TL, 17 yıl)."
-
-### ÖRNEK: İYİ vs KÖTÜ YORUM
-
-**❌ KÖTÜ (Bizim eski raporlar):**
-```markdown
-| Metrik | 2025 | 2024 | Değişim |
-|--------|------|------|---------|
-| Hasılat | 241.5B | 214.8B | +12.4% |
-| FAVÖK | 104.0B | 92.1B | +12.9% |
-```
-[YORUM YOK — KULLANICI "NE ANLAMA GELİYOR?" SORUSUNU CEVAPLAYAMIYOR]
-
-**✅ İYİ (Ata Yatırım stili):**
-```markdown
-| Metrik | 2025 | 2024 | Değişim |
-|--------|------|------|---------|
-| Hasılat | 241.5B | 214.8B | +12.4% |
-| FAVÖK | 104.0B | 92.1B | +12.9% |
-
-**Yorum:** Turkcell'in 2025 hasılatı %12.4 artarak 241.5 milyar TL'ye ulaştı, bu büyüme sektör ortalamasının (%8-10) üzerinde gerçekleşti. FAVÖK'teki %12.9 artış, hasılat büyümesinin yanı sıra operasyonel verimliliğin de arttığını gösteriyor (FAVÖK marjı +50bps). Bu performans, 5G'nin gelir katkısının hızlanması ve dijital hizmetlerdeki güçlü momentumdan kaynaklanıyor. Ancak net kar %22.3 düştü, bunun temel sebebi 2042'ye kadar sürecek 5G spectrum amortizasyonunun (yıllık 2.34 milyar TL) mali tablolara yansıması.
-```
-
-### YORUM YAZMA KURALLARI:
-
-1. **ZORUNLU:** Her financial tablo/ratio tablosu/trend grafiği sonrasında 3-5 cümle yorum
-2. **Karşılaştırma:** Peer, sektör ortalaması, geçmiş dönemlerle compare et
-3. **Neden-Sonuç:** "X arttı" DEĞİL, "X arttı çünkü Y, bu Z anlamına geliyor"
-4. **Sayısal Kanıt:** "Yüksek" DEĞİL, "%43.1, sektör ortalaması %38-40"
-5. **Forward-looking:** Mümkünse trend devam eder mi, risk ne?
-
-### ATA YATIRIM REFERANSI:
-
-**Sayfa 1 - Net Kar Yorumu:**
-> "Net kâr için bir önceki yılın aynı dönemine göre %42.9 geriledik. Özsermayekaynakların toplam aktiflere oranı %53.1 **olduğundan dolayı** finansal yapının güçlü olmasını desteklemektedir."
-
-**Pattern:** Metrik → Değişim → **"olduğundan dolayı"** → Ne anlama geliyor
-
-### CEO QUALITY GATE:
-
-**Eğer bir tablo sonrasında yorum paragrafı yoksa:**
-- Output = **REJECT**
-- Revision instruction: "Tablo X sonrasında 3-5 cümle yorum paragrafı ekle (yukarıdaki şablona uygun)"
-
-**İlk kez uygulanacak rapor:** TCELL (yeniden)
-
----
-
-## CEO Geri Bildirimi — 2026-04-11 — SİSTEMİK İYİLEŞTİRME DİREKTİFİ
-
-### GENEL DURUM: 6 RAPORDA AYNI HATALAR — ARTIK SİSTEM DEĞİŞİKLİĞİ YAPILDI
-
-**Chairman kararı:** System prompt, output schema, ve upstream agent'lar (parse_standardization, reconciliation) güncellendi. Artık:
-
-### YENİ KURALLAR (11 Nisan 2026'dan itibaren geçerli):
-
-1. **PRE-FLIGHT CHECK SİSTEMİ ZORUNLU:**
-   - Output göndermeden önce 4 aşamalı pre-flight check çalıştır
-   - Check 1: 28 zorunlu metrik taraması (tek tek kontrol)
-   - Check 2: Cash Flow bölümü tamlık kontrolü (7 alt bölüm)
-   - Check 3: Yorum kalitesi kontrolü (her tablo sonrası 3-5 cümle)
-   - Check 4: Matematiksel tutarlılık (PBT-Tax=NI, Revenue-COGS=GP, etc.)
-   - **Bir check bile FAIL ederse → output GÖNDERME**
-
-2. **CASH FLOW ANALİZİ ARTIK 7 ALT BÖLÜMDEN OLUŞUYOR:**
-   A. Nakit Akışı Tablosu Özeti (5 yıl)
-   B. OCF Detaylı Analizi (bileşenler + OCF/FAVÖK + OCF/NI)
-   C. FCF Detaylı Analizi (OCF - CAPEX = FCF + trend)
-   D. Cash FAVÖK vs Reported FAVÖK
-   E. Working Capital Changes Breakdown (tablo)
-   F. Nakit Bazlı Borç Servis Kapasitesi
-   G. Cash Flow Red Flags Kontrolü (7 madde tablo)
-
-3. **28 ZORUNLU METRİK (BİR EKSİK = REJECT):**
-   - A. Gelir Tablosu: Net Satışlar, Brüt Kar, Brüt Karlılık Oranı, Brüt Kar IAS29, Brüt Kar Oranı IAS29, Parasal Kayıp/Kazanç, FAVÖK, FAVÖK Oranı, VÖK, Net Dönem Karı, OPEX/Ciro
-   - B. İşletme Sermayesi: DSO, DIO, DPO, CCC, NWC/Hasılat
-   - C. Borç ve Likidite: Net Kredi, Net Borç/FAVÖK, Cari Oran, Asit-Test
-   - D. Nakit Akışı: FCF, OCF/FAVÖK, FAVÖK/Faiz Gideri, FCF/Faiz Ödemesi
-   - E. Karlılık: ROE, ROCE
-   - F. Yatırım: CAPEX/FAVÖK, Faiz Gideri/FAVÖK
-
-4. **UPSTREAM ENTEGRASYONU GÜÇLENDİRİLDİ:**
-   - parse_standardization artık TBD yasağı uyguluyor — zorunlu kalemler için TBD → otomatik upstream escalation
-   - reconciliation artık 7 otomatik cross-check çalıştırıyor (bilanço dengesi, gelir tablosu zinciri, nakit akış mutabakatı, working capital tamlık kontrolü, anomali tespiti)
-   - Bu sayede financial_analysis agent'a gelen veri daha temiz ve eksiksiz olacak
-
-5. **VERİ EKSİKLİĞİ PROTOCOL (ZORUNLU ADIMLAR):**
-   1. Reconciled data'da ara
-   2. Parse standardization output'ta ara
-   3. WebFetch ile KAP'tan çek
-   4. Upstream'e structured escalation gönder
-   5. Tüm yollar tükendiyse → CEO'ya escalate, output GÖNDERME
-   - "Veri yok" deyip geçmek YASAK — bu kural 6 kez ihlal edildi, artık kalıcı protokol
-
-6. **YORUM FORMATI ENFORCEMENTİ:**
-   - Her tablo sonrasında 3-5 cümle yorum paragrafı ZORUNLU
-   - 4 cümle yapısı: Metrik+Değişim → Neden → Karşılaştırma → Ne Anlama Geliyor
-   - Yorum yoksa tablo = geçersiz, output = REJECT
-
-### ÖNCEKİ HATALARIN ÖZETİ (bir daha tekrarlanmayacak):
-| # | Rapor | Sorun | Çözüm |
-|---|-------|-------|-------|
-| 1 | AKBNK | Working capital eksik | 28 metrik zorunlu listesi oluşturuldu |
-| 2 | SISE | Aynı eksikler | Kurallar sıkılaştırıldı |
-| 3 | KCHOL | %90 metrik eksik, agent crash | Upstream pipeline güçlendirildi |
-| 4 | KCHOL | Segment analizi yok | Holding şablonu ayrıldı |
-| 5 | TCELL | %70 metrik eksik, truncation | Pre-flight check sistemi eklendi |
-| 6 | SİSTEMİK | Tüm raporlarda cash flow yok | 7 alt bölümlü cash flow şablonu oluşturuldu |
-
----
-
-## ✅ CEO Geri Bildirimi — 2026-04-11 — TCELL RAPORU (POST DELTA-UPDATE)
-
-### POZİTİF NOKTALAR:
-- ✅ **Tüm zorunlu metrikler hesaplanmış VE yorumlanmış:**
-  - Net Satışlar, Brüt Kar, Brüt Karlılık Oranı (✅ + trend analizi + sektör karşılaştırma)
-  - FAVÖK, FAVÖK Marjı (✅ + margin compression analizi)
-  - DSO, DIO, DPO, CCC (✅ + exceptional -11 days CCC flagged)
-  - Net İşletme Sermayesi / Hasılat, NWC Gün Sayısı (✅)
-  - Net Borç / FAVÖK, Faiz Karşılama Oranı (✅ + declining coverage 2.21x → 2.06x flagged)
-  - Cari Oran, Asit-Test Oranı (✅)
-  - ROE, ROCE (✅ — önceki raporlarda EKSİKTİ, TCELL'de hesaplanmış)
-  - Serbest Nakit Akışı, CAPEX / FAVÖK (✅ + 5-year negative FCF trend analizi)
-  - İşletme Nakit / FAVÖK oranı (OCF/EBITDA 63.8%) (✅)
-- ✅ **Her ratio yorumu MÜKEMMEL:** Sadece rakam değil, "ne anlama geliyor" açıklanmış
-  - Örnek: CCC -11 days → "TCELL nakit üretim makinesi, prepaid model + supplier negotiation power"
-  - Örnek: Interest coverage 2.06x → "Declining trend due to 5G debt, monitoring required"
-- ✅ **5 yıllık trend analizi:** Her metrik için 2021-2025 trendi gösterilmiş, CAGR hesaplanmış
-- ✅ **Sektör benchmark karşılaştırması:** Telecom sector benchmarks kullanılmış (EBITDA margin 30-35%, DSO 45-60 days, etc.)
-- ✅ **Telecom-specific metriklere giriş yapılmış:** CAPEX intensity, spectrum amortization impact, 5G ARPU premium modeling bahsedilmiş
-- ✅ **Her tablo sonrası yorum paragrafı VAR:** "YORUM:" tag'i ile 3-5 cümle açıklama — Chairman wording enforcement kuralı uygulanmış
-
-### Eksikler (Minor):
-- **ÇIKTI TRUNCATED (output length limit):** Gelir Tablosu Metrikleri bölümü "2. Brüt Kar" sonrası kesilmiş — geri kalan metrikler (FAVÖK, ROE, ROCE, Likidite, Nakit Akış) görünmüyor
-  - Ancak QA review agent raporu bu metriklerin hesaplandığını doğruluyor (confidence 0.88) — yani veri VAR, sadece output limit aşıldığı için gösterilemiyor
-- **Telecom-specific KPIs detay eksik:** ARPU trend, churn rate, CAPEX intensity, spectrum amortization impact bahsedilmiş ama detaylı analiz truncation'dan dolayı eksik
-
-### Bundan Sonra:
-- ✅ **TÜM zorunlu 28 metrik hesaplanmış — tekrar etmeye gerek yok**
-- **Output length management ZORUNLU:**
-  ```
-  Eğer çıktı çok uzunsa:
-  1. CORE METRICS (Chairman mandatory 28 metrics) → Full analysis
-  2. SUPPLEMENTARY ANALYSIS → Summary paragraphs only
-  3. DETAILED TABLES → Separate JSON appendix
-  Her iki output da gönderilmeli (truncation YASAK)
-  ```
-- **Telekomünikasyon şirketleri için EK metrikler:**
-  - ARPU Trend Analysis (5-year nominal vs real)
-  - Churn Rate Analysis (postpaid vs prepaid)
-  - SAC vs LTV Ratio
-  - CAPEX Intensity = CAPEX / Revenue (telekomda kritik metrik)
-  - 5G Subscriber ARPU Premium Modeling
-  - Spectrum Amortization Impact on EBITDA (TRY 2.34B/year for 17 years)
-
----
-
-*Bu dosya her gece 05:30–06:00 arasında güncellenir.*
-*Dosya sahibi: Financial Analysis Agent | Denetleyen: META (CEO)*
-
----
-
-## CEO Geri Bildirimi — 2026-04-12 — TUPRS Raporu
-
-### Eksikler:
-- **KRİTİK — Bölüm 1-9 pipeline'a iletilmedi:** CEO'ya sadece Bölüm 10 (Sektör-Özel Metrikler) ve Bölüm 11 (Altman/Piotroski) geldi. QA'nın tespiti doğru: ROE, ROCE, ROIC, Faiz Karşılama Oranı (EBIT/Interest), NWC/Revenue, CAPEX/EBITDA, Cash FAVÖK, Asit-Test Oranı görünür çıktıda YOK. `mandatory_metrics_complete: TRUE` verisi yanıltıcıdır — tüm metrikler hesaplandıysa görünür çıktıya dahil edilmeli.
-- **DSO, DIO, DPO, CCC hesapları görünmüyor:** Working capital verimliliği TUPRS için kritik bir avantaj (CCC 5-15 gün vs peer 20-30 gün) ama nasıl hesaplandığı gösterilmedi. Formül + kaynak veri + sonuç üçlüsü zorunlu.
-- **EBITDA çelişkisi çözülmedi:** 62.0B TRY (parse) vs 53.78B TRY (web). Bu fark IAS 29 kaynaklı olabilir ama Financial Analysis raporu içinde bu belirsizlik açıkça flaglenip her iki değer senaryolarda ayrı ayrı kullanılmalıydı.
-- **Cash FAVÖK hiç hesaplanmadı:** OCF değeri verildi (46.5B TRY) ama "Cash FAVÖK = FAVÖK + ödenmiş faiz + ödenmiş vergi" formatında ayrı hesaplama yok. Chairman bu metriği özellikle istiyor.
-- **Interest Coverage (Faiz Karşılama) çıktıda görünmüyor:** TUPRS'un 46% faiz ortamında gross borç ~244B TRY — faiz yükü analizi kritik. Sadece net nakit notu yetmez.
-
-### Bundan Sonra:
-- **TÜM bölümler (1-12) pipeline'a iletilmeli:** Truncation olacaksa Bölüm Özeti + Tam JSON appendix formatı kullan. Hiçbir bölüm "hesaplandı ama iletilmedi" statüsünde kalamaz.
-- **mandatory_metrics_complete: TRUE → YALNIZCA görünür çıktıda mevcutsa:** Hesaplama yapıldı ama çıktıda yoksa flag FALSE + "hesaplandı, çıktıya dahil edilmedi — bkz. Ek" notu.
-- **CCC hesabı zorunlu formülle:** DSO = (Alacaklar / Net Satışlar) × 365; DIO = (Stoklar / COGS) × 365; DPO = (Borçlar / COGS) × 365; CCC = DSO + DIO − DPO. Her adım kaynakla gösterilmeli.
-- **EBITDA belirsizliğinde aralık analizi:** İki farklı EBITDA değeri varsa Bear/Baz/Bull hesapları HER İKİ değer için yapılmalı ve fark analizi raporun başında yer almalı.
-- **Cash FAVÖK her raporda zorunlu:** FAVÖK ≠ Cash FAVÖK. Ayrı hesapla, ayrı satırda göster.

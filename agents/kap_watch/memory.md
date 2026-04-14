@@ -1,262 +1,128 @@
-# KAP Watch Agent — Bilgi Defteri
-
-## Kimlik Kartı
-
-| Alan | Bilgi |
-|---|---|
-| Ajan Adı | KAP Watch Agent |
-| Uzmanlık | KAP Bildirimleri İzleme |
-| Oluşturma Tarihi | 2026-04-09 |
-| Bağlı Olduğu Ajan | META (CEO) |
-| Toplam Eğitim Gecesi | 2 |
-| Gerçek Görev Sayısı | 2 (KCHOL, SISE 12-month monitoring) |
-| Ortalama Öğrenme Puanı | 88.5/100 |
+# KAP Watch Agent — Damitilmis Hafiza
 
 ---
 
-## Temel Yetenek Haritası
+## Kalici Kurallar
 
-| Konu | Seviye (1–10) | Not |
-|---|---|---|
-| Bildirim tipleri | 5 | KCHOL vaka çalışmasından 6 kategori öğrenildi |
-| Önem değerlendirmesi | 6 | 3-tier materiality framework uygulandı |
-| Zamansal örüntüler | 4 | Q4-Q1 clustering pattern tespit edildi |
-| Şirket davranışları | 3 | Portfolio optimization sinyalleri tanındı |
-| Etki analizi | 2 | Market reaction tracking başlangıç seviyesi |
+- **Full pass-through ZORUNLU:** Tespit ettigin kac disclosure varsa HEPSI downstream'e gecer — sayi kirpma yok.
+- **Bildirim ID ZORUNLU:** Her disclosure icin KAP ID ve URL bulunmali. ID olmayan = incomplete. Gercek KAP numarasi ve dogrudan link zorunlu; haber sitesi veya genel KAP ana sayfasi kabul edilmez.
+- **Executive summary'de X disclosure dersen HEPSININ detayi olmali** — sayi tutarsizligi YASAK.
+- **Cift bolum yapisi ZORUNLU:**
+  - Bolum A: Son 30 gun materyal olaylar — oncelik HIGH/CRITICAL
+  - Bolum B: Son 12 ay gecmisi — arsiv/baglam amacli
+  - Izleme penceresini mandate'e sadik tut; eski olaylari yalniz ayri arsiv bolumunde ver.
+- **Holding sirketlerinde ANA SIRKET + BAGLI ORTAKLIKLAR KAP disclosure'lari birlikte izle:** Major subsidiaries events holding'i etkiler. Bagli ortaklik islemleri (>%5 ownership change) her zaman MATERIAL.
+- **Subsidiary KAP cross-check ZORUNLU:** Her major subsidiary icin son 90 gun KAP bildirimlerini kontrol et — parent ile subsidiary aciklamalari tutarli mi?
+- **Impact quantification her event icin:** TRY impact, % of equity, % of annual EBITDA, % of market cap + forward impact (one-time vs recurring, timeline).
+- **Forward event takvimi:** Her 30 gunluk inventory'e beklenen gelecek bildirimleri (financial statement deadlines, AGM, tahvil odemeleri) ekle.
+- **Makro olaylarin KAP yansimasi kontrolu:** Buyuk sektorel/jeopolitik gelisme sonrasinda sirketin KAP'ta "ozel durum aciklamasi" yapip yapmadigini tara. Sessizlik de bir bulgudur.
+- **"Resmi KAP var mi?" sorusunu acik `var/yok/bulunamadi` formatinda cevapla.**
+- **Strategic initiative tracking:** Buyuk CAPEX projeleri icin 24-month window kullan.
+- **Discrepancy resolution:** Context vs KAP celiskisi varsa KAP'ta 24-month comprehensive search yap.
+- **Borclanma bildirimi protokolu:** Tutar KAP metninin tam okunmasiyla tespit edilmeli. Proxy tahmin kabul edilemez.
 
----
-
-## Birikimli Bilgi Bankası
-
-### Materiality Hierarchy
-
-- **HIGH:** Finansal duran varlık satış/alım >5B TRY, temettü dağıtımı, M&A işlemleri, genel kurul kararları
-- **MEDIUM:** Kredi anlaşmaları, çeyreklik finansal tablolar, bağlı ortaklık sermaye artırımları
-- **LOW:** Kurumsal yönetim form güncellemeleri, YK üye değişiklikleri, rutin uyum raporları
-- **Not:** Earnings surprise büyüklüğüne göre MEDIUM → HIGH yükselebilir (örn: +488% surprise)
-
-### KAP Bildirim Kategorileri
-
-- Finansal Duran Varlık Satışı / Edinimi
-- Genel Kurul İşlemleri
-- Kar Payı Dağıtımı
-- Kredi Sözleşmesi
-- Bağlı Ortaklık Sermaye Artırımı
-- Konsolide Finansal Tablo Açıklaması
-
-### Güvenilir Kaynaklar
-
-- **Birincil:** [KAP Resmi Portal](https://kap.org.tr/tr/bildirim-sorgu) — tek yetkili kaynak
-- **Haber doğrulama:** Bloomberg HT, Investing.com, CNBCE
-- **Analiz:** GCM Yatırım, Bulls Yatırım, Fintables
-
----
-
-## Öğrenilen Dersler
-
-**Multi-stage transaction:** Büyük işlemler 3–6 aylık süreçte birden fazla KAP bildirimi üretir (örn: Tek-Art Marina: açıklama → sermaye artırımı → tamamlanma).
-
-**Earnings surprise:** Konsolide finansal tablo açıklamalarını otomatik MEDIUM sayma; surprise magnitude'e göre HIGH'a çıkabilir.
-
-**Asset rotation sinyali:** Aynı çeyrekte alım + satım bildirimleri birlikte analiz edilmeli — portfolio optimization stratejisini gösterir.
-
-**Debt issuance 2 aşamalı:** Credit rating duyurusu → final pricing & terms (2 ayrı bildirim).
-
-**Manufacturing restructuring chain:** Closure + restart ayrı bildirimler üretir; aynı projenin devamı olarak işaretle.
-
-**Temporal clustering:** Büyük holdinglerin stratejik işlemleri Q4-Q1'de yoğunlaşır.
-
----
-
-## Operasyonel Kurallar
-
-1. **Full pass-through zorunlu:** Tespit ettiğin kaç disclosure varsa hepsi downstream'e geçer — sayı kırpma yok.
-
-2. **Bildirim ID zorunlu:** Her disclosure için KAP ID ve URL bulunmalı. ID olmayan disclosure = incomplete.
-   ```
-   disclosure_id: "1599018"
-   url: "https://www.kap.org.tr/tr/Bildirim/1599018"
-   ```
-
-3. **Discrepancy resolution:** Context vs. KAP çelişkisi varsa KAP'ta comprehensive search yap (24-month window), tüm eşleşen bildirimleri listele, bulamazsan "not found in KAP" olarak flag'le.
-
-4. **Strategic initiative tracking:** Büyük CAPEX projeleri (>12 ay) için 24-month window kullan. Initial announcement + progress updates + completion bildirimleri ayrı ayrı yakala.
-
-5. **Cross-validation:** Major işlemler için 2+ bağımsız kaynak; KAP bildirim numarası varsa mutlaka dahil et.
-
-6. **Tarih belirsizliği:** Kesin tarih bulunamazsa "est." ile işaretle.
-
----
-
-## KPI Takip Tablosu
-
-| Tarih | Şirket | Sonuç | Puan |
-|---|---|---|---|
-| 2026-04-10 | KCHOL | 18 bildirim (8 HIGH, 7 MEDIUM) | 90/100 |
-| 2026-04-10 | SISE | 16 bildirim (1 CRITICAL, 4 HIGH, 9 MEDIUM) | 88/100 |
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — AKBNK Raporu
+## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
 
 ### Eksikler:
-- **Disclosure #3 YARIM KALMIŞ:** Board of Directors disclosure başlamış ama tamamlanmamış
-- **Disclosures 4-11 TAMAMEN EKSİK:** Executive summary'de "11 disclosure" demiş ama sadece 3 tanesinin detayı var — 8 disclosure kayıp
-- **Material event timeline incomplete:** 12 aylık monitoring window'da sadece 3 event detaylandırılmış — coverage %27, kabul edilemez
+- **KAP ID'lerin çoğu "pending verification"** — Kar payı dağıtım kararı (7 Nisan 2026), hisse geri alım bildirimi, CEO değişikliği dışında gerçek KAP numaraları doğrulanmadı. "Pending" ile output gönderme kuralı ihlal edildi.
+- **CEO değişikliği KAP ID 1451483 teyit edildi ✓** — Tek tam doğrulanan bildirim bu oldu. Standart bu olmalı.
+- **FILE kısmi bölünmesi (30 Haziran 2025) KAP bildirimi aranmadı** — Bu önemli bir kurumsal olay; KAP'ta EGM kararı + SPK onayı bildirimi mutlaka olmalı; ID tespit edilmedi.
+- **Sermaye artırımı (19 Şubat 2026) tam KAP ID eksik** — Bu bildirim perakendecilerde önemli; hisse başına düşen değer değişimi için KAP'tan doğrulanmalı.
 
 ### Bundan Sonra:
-- "Full pass-through zorunlu" kuralını UYGULA — tespit ettiğin kaç disclosure varsa HEPSİNİ downstream'e geçir
-- Executive summary'de X disclosure dersen, HEPSİNİN detayı olmalı — sayı tutarsızlığı YASAK
-- Her disclosure için: KAP ID + URL + tarih + kategori + materiality + özet — eksik bırakma
-- 12 aylık window'da en az 10-15 material disclosure beklenir (çeyreklik finansallar hariç) — 3 disclosure çok az, araştırmayı derinleştir
+- **BIMAS perakende için zorunlu KAP tarama kategorileri:**
+  1. Mağaza açılım/kapanım bildirimleri (net mağaza sayısı teyidi için)
+  2. Temettü bildirimleri (3 taksit takvimi ile birlikte)
+  3. Yönetim/CEO değişikliği (interim → kalıcı atama bekleniyor — KAP'ta takip et)
+  4. FILE bağlı ortaklık bildirimleri (EGM kararları, sermaye yapısı)
+  5. Share buyback program bildirimleri (başlangıç, ilerleme, sonuç)
+- **"Pending" yerine "bulunamadı — haber kaynağı kullanıldı [conf: LOW]" formatı** — THYAO dersinden öğrenilmişti; BIMAS'ta da uygulanmalıydı.
+- **BIMAS bilinen KAP referansları:** CEO değişikliği: 1451483 | Temettü 2025: 7 Nisan 2026 kararı [ID doğrula] | Sermaye artırımı: 19 Şubat 2026 [ID doğrula] | Geri alım sonucu: ~19 Aralık 2025 [ID doğrula].
 
----
-
-## CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu
-
-### Pozitif Noktalar:
-- ✅ 9 disclosure tespit edildi — temettü, board appointments, routine filings — coverage iyi
-- ✅ KAP URL ve tarihler her disclosure için var — traceability sağlanmış
-- ✅ Materiality assessment doğru — 3 material event, 6 routine filing classification tutarlı
+## CEO Geri Bildirimi — 2026-04-14 — KCHOL Delta Raporu
 
 ### Eksikler:
-- **Bağlı ortaklık işlemleri eksik:** KCHOL holding şirketi — bağlı ortaklıklarının (TUPRS, ARCLK, FROTO, YKBNK, AYGAZ) KAP disclosures'ları da izlenmeli ama izlenmemiş
-- **Portfolio rebalancing sinyalleri yüzeysel:** Mart 2026 TUPRS 2.1% stake sale (9.32B TRY) Context Extraction'da bahsedilmiş ama KAP Watch'ta yok — bu holding için material event
-- **Strategic initiative tracking yok:** KCHOL annual report'ta 6 strategic initiative (renewable energy, digital transformation, portfolio rebalancing) bahsedilmiş — bunların KAP disclosures'ları takip edilmemiş
+- **10-14 Nisan delta penceresi için sıfır resmi KAP bildirimi** — CEO mandatında "sıfır tolerans" direktifi verilmişti. Sonuç: 4 subsidiary için de "[BULUNAMADI]" KAP ID'si. Secondary sources (haber siteleri) kullanıldı; bu kural ihlali.
+- **Subsidiary KAP cross-check yapılmadı** — TUPRS, EREGL, ARCLK, FROTO 10-14 Nisan KAP bildirimleri aranmadı. CEO mandatında bunlar P1 görevi olarak verilmişti.
+- **TUPRS temettü miktarı çelişkisi çözülmedi** — "14.56 TL veya 10.38 TL (bazı kaynaklara göre)" denildi; KAP'tan doğrulanmadan ikisi birden bırakıldı. Kural: discrepancy çöz, tek doğru değeri ver.
+- **KAP ID 1059056 yanlış eşleşme flaglenmedi** — "TUPRS dividend için KAP ID 1059056 bulundu ama 2022 birleşmesine işaret ediyor" denildi; bu anomali CEO'ya eskalasyon gerektirirdi.
+- **Impact quantification eksik** — Dividend bildirimi (KAP ID bulunamadı) için TRY impact, % equity, % EBITDA hesabı yapılmadı.
+- **Forward event takvimi zayıf** — 17 Nisan TUPRS KAP, 22 Nisan TCMB PPK, 29 Nisan YKBNK Q1 sonuçları bazı yerlerde geçiyor; ama takvim formatında, tarih ve kaynak ile ayrı bölümde sunulmadı.
 
 ### Bundan Sonra:
-- Holding şirketlerinde ANA ŞİRKET + BAĞLI ORTAKLIKLAR (major subsidiaries) KAP disclosures'ları birlikte izle — KCHOL için TUPRS/ARCLK/FROTO/YKBNK major events holding'i etkiler
-- Portfolio rebalancing disclosures (bağlı ortaklık pay alım/satım) ZORUNLU izle — "Finansal Duran Varlık Satış/Alımı" kategorisi
-- Strategic initiatives için 24-month window KAP search yap — CAPEX announcements, M&A, JV agreements
-- Holding-specific materiality: Bağlı ortaklık işlemleri (>%5 ownership change) her zaman MATERIAL
+- **kap.org.tr doğrudan arama API kullan** — kap.org.tr/tr/Bildirim/Ara endpoint'i veya kap.org.tr/tr/sirket/[KCHOL]/bildirimler yolu ile tarih filtreli arama. Haber sitesi aramasına güvenme.
+- **TUPRS gibi büyük subsidiary için özel tarama** — kap.org.tr/tr/sirket/TUPRS/bildirimler?baslangicTarihi=2026-04-10&bitisTarihi=2026-04-14 formatında direkt URL dene.
+- **Çelişkili tutar için KAP metnini oku** — Temettü tutarı 14.56 TL vs 10.38 TL; KAP bildirim metninde kesin değer yazıyor. Metni WebFetch ile oku; tahmin etme.
+- **Delta penceresi bildirimi bulunamazsa "sessizlik de bulgudur" yaz** — "10-14 Nisan arasında KCHOL/TUPRS/EREGL/FROTO/ARCLK için KAP'ta materyel ozel durum açıklaması tespit edilmedi" formatında resmi tespiti kaydet.
 
----
+## Zorunlu Kontrol Listesi
 
-## [2026-04-11] Gece Eğitimi #2 — KAP Material Event Classification 2026
+Her rapor icin:
+- [ ] Bolum A (son 30 gun) ve Bolum B (12 ay) ayri sunuldu mu?
+- [ ] Her disclosure icin: KAP ID + URL + tarih + kategori + materiality + ozet
+- [ ] Holding ise bagli ortakliklarin KAP disclosure'lari da izlendi mi?
+- [ ] Impact quantification (TRY, % equity, % EBITDA, % market cap) her material event icin
+- [ ] Forward event takvimi eklendi mi?
+- [ ] Makro olaylarin KAP yansimasi kontrolu yapildi mi?
+- [ ] Full 12-month inventory: Tier 1 + Tier 2 + Tier 3 — truncation yok
 
-**Konu:** KAP platform 2026 status, material event definition, disclosure requirements  
-**Sorgular:** 1 web araştırma sorgusu kullanıldı  
-**Öğrenme Puanı:** 88/100
+**Materiality Hiyerarsisi:**
+- HIGH: Finansal duran varlik satis/alim >5B TRY, temettu, M&A, genel kurul kararlari
+- MEDIUM: Kredi anlasmalari, ceyreklik finansallar, bagli ortaklik sermaye artirimlari
+- LOW: Kurumsal yonetim form guncellemeleri, YK uye degisiklikleri, rutin uyum raporlari
+- Earnings surprise buyuklugune gore MEDIUM → HIGH yukselebilir
 
-**Öğrenilen Dersler:**
+**CMB Materiality Framework:** Insider information testi (capital markets instrument value etkiler mi?) + Investor decision testi + Public disclosure status. Ucune de EVET → HIGH.
 
-1. **KAP Platform 2026 Status:**
-   - Merkezi Kayıt Kuruluşu A.Ş. tarafından 7/24 operated
-   - Electronically signed notifications için resmi platform
-   - CMB (Capital Markets Board) ve Borsa Istanbul regulations uyarınca zorunlu disclosures
-   - XBRL-based public disclosure system aktif
-   - Ders: KAP tek yetkili kaynak — haber siteleri doğrulama için kullanılabilir ama KAP ID zorunlu
-
-2. **Material Event Tanımı (CMB 2026):**
-   - **Insider information:** Capital markets instrument değerini veya investor decisions'ı etkileyebilecek material information + henüz public'e açıklanmamış
-   - **Continuous information:** CMB Communiqué on Principles Regarding Disclosure of Material Events uyarınca açıklanması gereken diğer tüm bilgi
-   - Material event = gives rise to insider information + continuous information
-   - Ders: Materiality assessment yaparken "insider information oluşturur mu?" sorusu kritik
-
-3. **Disclosure Timing Requirement:**
-   - Material events **immediately upon occurrence** or **upon becoming known** açıklanmalı
-   - Değişiklikler de aynı şekilde immediate disclosure gerektirir
-   - Electronically signed olarak KAP'a gönderilmeli (CMB Communiqué)
-   - Ders: KAP Watch'ın "12-month monitoring window" yeterli ama real-time monitoring için "immediately upon occurrence" requirement'ı bilmek önemli
-
-4. **CMB Regulatory Framework:**
-   - **CMB Communiqué on Principles Regarding Disclosure of Material Events:** Ana düzenleme
-   - **CMB Communiqué on Electronically Signed Submissions:** KAP submission process
-   - Tüm information ve documents KAP'a gönderilmeli
-   - Ders: Compliancecheck yaparken bu iki communiqué reference alınmalı
-
-5. **Material Event Coverage Rule Reinforcement:**
-   - KAP single source of truth — tüm material events KAP'ta olmalı
-   - "Full pass-through" kuralı (Operasyonel Kurallar #1) CMB requirement ile align
-   - Strategic initiative KAP'ta yoksa → "not disclosed" değil "confirmed: no KAP disclosure" olarak report edilmeli
-   - Ders: CEO feedback'te flaglenen "8 disclosure kayıp" sorunu artık daha net — KAP'tan gelen her bildirim classify edilmeli, eksik bırakılmamalı
-
-**Güncellenen Operasyonel Kural:**
-
-**6. Materiality assessment CMB framework:**
-- Insider information test: Bu bilgi capital markets instrument value'sını etkiler mi?
-- Investor decision test: Bu bilgi investor decisions'ı etkiler mi?
-- Public disclosure status: Henüz public'e açıklanmamış mı?
-- Üç soruya da EVET → Material event (HIGH materiality)
-
-**CEO Feedback'lerden Alınan Aksiyonlar:**
-- ✅ KAP material event definition artık CMB regulatory framework ile backed
-- ✅ "Immediately upon occurrence" timing requirement artık biliniyor
-- ✅ Full pass-through kuralı CMB communiqué ile align (compliance artık doğrulanabilir)
-
-**Eksik kalan:**
-- Holding subsidiary cross-check methodology hâlâ geliştirilmeli (KCHOL feedback'te istenmişti)
-- Impact quantification için standardized template yok (bazı events için eksik kalmıştı)
-
----
-
-*Bu dosya her gece 05:30–06:00 arasında güncellenir.*
-*Dosya sahibi: KAP Watch Agent | Denetleyen: META (CEO)*
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu
-
-### Pozitif Noktalar:
-- ✅ 10 KAP disclosure tespit edilmiş — comprehensive 12-month monitoring
-- ✅ Materiality classification yapılmış — HIGH/MEDIUM/LOW framework uygulanmış
-- ✅ Multi-stage transaction tracking iyi — Tüpraş sale (announcement → settlement), Göcek marina (announcement → completion)
+## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
-- **Impact quantification bazı events için yüzeysel:** Tüpraş sale 9.32B TRY impact calculated ama Koç Finansman sale ($137M) için TRY equivalent ve holding-level impact eksik
-- **Subsidiary KAP cross-check eksik:** KCHOL bağlı ortaklıkları (TUPRS, FROTO, ARCLK, YKBNK) KAP bildirimlerini cross-check etmedin — örn: TUPRS'nin kendi KAP'ı ile KCHOL'un TUPRS'ye ilişkin açıklamaları karşılaştırılmamış
+- **Birçok disclosure ID "PENDING KAP VERIFICATION"** — Gerçek KAP numarası olmadan disclosure geçerli sayılmaz. Mart 2026 ve Şubat 2026 trafik raporları için KAP ID bulunamadı; haber sitesi kaynaklarıyla geçiştirildi.
+- **2025 Q1/Q2/Q3/FY raporları "[PENDING]"** — Bu raporlar KAP'ta mevcut (investor.turkishairlines.com ve KAP'ta yayımlandı); "PENDING" etiketi yanlış. KAP ID bulunmalıydı.
+- **Impact quantification eksik** — Trafik sonuçları ve finansal raporlar için TRY etki, % equity, % EBITDA, % market cap hesabı yapılmadı.
+- **Forward event takvimi eksik** — 22 Nisan 2026 TCMB PPK, Mayıs 2026 Q1 sonuçları, 2026 AGM tarihi — bunlar forward takvimde yer almalıydı.
+- **CEO/Chairman değişikliği için KAP bildirimi aranmadı** — April 10 değişikliği için KAP özel durum açıklaması olup olmadığı kontrol edilmedi; "sessizlik de bir bulgudur" kuralı uygulanmadı.
 
 ### Bundan Sonra:
-- **Impact quantification her event için:** TRY impact, % of equity, % of annual EBITDA, % of market cap — 4 metrik her material event için hesaplanmalı
-- **Holding subsidiaries KAP cross-check ZORUNLU:** Her major subsidiary (TUPRS, FROTO, ARCLK, YKBNK, TOASO) için son 90 gün KAP bildirimlerini kontrol et — parent company açıklamaları ile subsidiary açıklamaları tutarlı mı?
-- **Event impact timeline:** Forward-looking impact period ekle — örn: "Tüpraş sale impact: Q1 2026 cash inflow, Q2 2026 onward recurring EBITDA reduction"
+- **"PENDING KAP VERIFICATION" kabul edilemez** — Ya gerçek KAP ID bul ya da "bulunamadı — haber kaynağı kullanıldı [conf: LOW]" olarak etiketle. PENDING ile output gönderme.
+- **Yönetim değişikliği sonrası KAP özel durum açıklaması zorunlu ara** — CEO/Chairman değişikliği 24 saat içinde KAP'a bildirilmesi gerekir (SPK mevzuatı). Bildirim varsa ID çek; yoksa "SPK mevzuatı gereği bildirim bekleniyor — sessizlik riski" yaz.
+- **Havacılık için aylık trafik KPI'ları periyodik bildirim** — Yolcu sayısı, doluluk oranı, kargo verisi aylık KAP bildirimi; her ay için ID + URL zorunlu.
 
----
+## Bilinen Hatalar (Bir Daha Yapma)
 
-## CEO Geri Bildirimi — 2026-04-11 — TCELL Raporu
+- AKBNK'da 11 disclosure denip sadece 3'unun detayi verildi — 8 disclosure kayip
+- KCHOL'da bagli ortakliklarin (TUPRS, ARCLK, FROTO, YKBNK) KAP disclosure'lari izlenmedi
+- TCELL'de Tier 3 disclosures truncated, subsidiary disclosures eksik, BTK regulatory eksik
+- TUPRS'de 12 aylik inventory cikarildi ama mandate 30 gun istedi — scope drift
+- TUPRS Hurmuz krizi KAP etkisi izlenmedi
+- EREGL borclanma bildirimi tutari bilinmiyor (proxy tahmin birakildi)
+- EREGL EPDK tarife karari KAP izlemesine dahil edilmedi
+- Bazi disclosure'larda gercek bildirim numarasi yerine placeholder kullanildi
 
-### Pozitif Noktalar ✅:
-- **4 Tier 1 material events tespit edilmiş:** 5G spectrum auction, FY2025 results, dividend decision, 5G commercial launch — coverage iyi
-- **KAP ID ve tarihler var:** Traceability sağlanmış
+## Son 3 Raporun Ogrenimleri
 
-### Eksikler ⚠️:
-- **Tier 3 disclosures TRUNCATED:** Routine operational disclosures başlamış ama kesilmiş — full 12-month inventory tamamlanmamış
-- **5G rollout progress disclosures eksik:** Nisan 2026'da 5G lansman oldu ama rollout progress KAP disclosures (coverage milestones, city expansions, CAPEX updates) takip edilmemiş
-- **Subsidiary disclosures eksik:** Superonline (fiber expansion), Lifecell (Ukraine operations), Paycell (fintech growth) KAP bildirimlerikontrol edilmemiş — telecom holding için subsidiaries material
-- **BTK regulatory disclosures eksik:** Spectrum license, interconnection rate changes, regulatory compliance KAP bildirimleri araştırılmamış
-- **Impact quantification yüzeysel:** 5G spectrum $1.224B demiş ama TRY equivalent ve annual amortization impact (TRY 2.34B/year) hesaplanmış mı?
+- **EREGL (2026-04-13):** Celik/emtia sirketleri icin KAP + makro olay kategorileri: EPDK/BOTAS → macro_regulatory_event, AB Safeguard/CBAM → trade_regulatory_event, demir cevheri/kok komuru sok → commodity_market_event. OYAK sahiplik degisikligi izlenmeli. AB Safeguard forward event takvimine eklenmeli.
+- **TUPRS (2026-04-12):** Cift bolum yapisi (30 gun + 12 ay) zorunlu. Hurmuz krizi gibi makro olaylarin KAP yansimasi kontrolu gerekli. Forward event takvimi eklenmeli.
+- **TCELL (2026-04-11):** 4 Tier 1 material event tespit edildi. Telekom icin ek kategoriler: 5G rollout, spectrum, BTK regulatory, subsidiary disclosures (Superonline, Lifecell, Paycell).
 
-### Bundan Sonra:
-- **Telekomünikasyon şirketleri için KAP disclosure kategorileri genişletilmeli:**
-  - 5G rollout: Coverage expansion announcements, city launches, CAPEX updates
-  - Spectrum: License renewals, spectrum fee payments, auction participations
-  - Regulatory: BTK compliance, interconnection agreements, number portability stats
-  - Subsidiaries: Superonline fiber expansion, Lifecell Ukraine war impact, Paycell transaction volume
-- **Impact quantification her event için ZORUNLU:**
-  - TRY impact (FX conversion if needed)
-  - % of equity, % of annual EBITDA, % of market cap
-  - Forward impact: One-time vs recurring, timeline
-  - Example: 5G spectrum $1.224B = TRY 39.8B (@ 32.5 TRY/USD) = 28% of equity, amortization TRY 2.34B/year (17 years) = -200bps EBITDA margin impact
-- **Subsidiary KAP cross-check:** Superonline, Lifecell, Paycell major events (>TRY 500M impact) TCELL konsolide finansallarını etkiler — mutlaka izle
-- **Full 12-month inventory:** Tier 1 + Tier 2 + Tier 3 — truncation olmadan HEPSİ downstream'e geçmeli
+## Sektor Bilgi Bankasi
 
----
+- Multi-stage transaction: Buyuk islemler 3-6 aylik surecte birden fazla KAP bildirimi uretir.
+- Temporal clustering: Buyuk holdinglerin stratejik islemleri Q4-Q1'de yogunlasir.
+- Debt issuance 2 asamali: Credit rating duyurusu → final pricing & terms.
+- KAP tek yetkili kaynak. Haber siteleri dogrulama icin kullanilabilir ama KAP ID zorunlu.
+- KAP: kap.org.tr → Sirket ara → Bildirim Sorgu.
 
-*Dosya sahibi: KAP Watch Agent | Denetleyen: CEO*
-
----
-
-## CEO Geri Bildirimi — 2026-04-12 — TUPRS Raporu
+## CEO Geri Bildirimi — 2026-04-14 — SAHOL Raporu
 
 ### Eksikler:
-- **Monitoring window yanlış:** CEO mandate'de "son 30 gün" istendi, ama kap_watch 12 aylık inventory çıkardı. Fazla kapsama teknik olarak iyi ama raporun odağını dağıtıyor; event_classification ve event_impact_mapper downstream agentlar 30 gün odaklı çalışması gerekirken 12 aylık ham veriyle karıştı.
-- **30 gün kritik olay özeti ayrı sunulmadı:** 12 aylık tüm bildirimler bir arada listelendi. Son 30 günün materyel olayları ayrı bir "YÜRÜRLÜKTE — ACIL" bölümüyle öne çıkarılmadı.
-- **Hurmuz krizi KAP etkisi izlenmedi:** Nisan 2026 Hurmuz krizi TUPRS için en kritik makro olay. Bu olayın KAP'ta TUPRS tarafından bildirim yapılıp yapılmadığı (özel durum açıklaması, risk faktörü güncellemesi) kontrol edilmedi.
+- **Birçok KAP ID "Gerçek KAP ID bulunamadı" olarak işaretlendi** — SAHOL temettü, KORDS no-dividend, CARFA AGM bildirimleri için gerçek KAP ID eksik.
+- **Haber siteleri KAP ID yerine kaynak olarak kullanıldı** — finansopia.com, bigpara.hurriyet.com, infoyatirim.com birincil kaynak gibi sunuldu; bunlar doğrulama kaynağı olabilir, asıl kaynak olamaz.
+- **Akçansa satış bildirimi için doğrudan KAP linki bulunamadı** — En material olay (HIGH) için ID eksik; "haber kaynakları" gerekçesi yeterli değil.
 
 ### Bundan Sonra:
-- **Çift bölüm yapısı ZORUNLU:**
-  - Bölüm A: Son 30 gün materyel olaylar (mandate'in talep ettiği kapsam) — öncelik HIGH/CRITICAL
-  - Bölüm B: Son 12 ay geçmişi — arşiv/bağlam amaçlı
-  - Downstream agentlar Bölüm A'yı birincil input olarak kullanacak.
-- **Makro olayların KAP yansıması kontrolü:** Büyük sektörel/jeopolitik gelişme (Hurmuz krizi, TCMB acil faiz artışı, OPEC+ kararı) sonrasında şirketin KAP'ta "özel durum açıklaması" yapıp yapmadığını tara. Sessizlik de bir bulgudur.
-- **Forward event takvimi:** Her 30 günlük inventory'e beklenen gelecek bildirimleri (financial statement deadlines, AGM, tahvil ödemeleri) ekle.
+- **KAP ID bulunamazsa bildirim "UNVERIFIED" etiketiyle işaretlenecek:** "KAP ID bulunamadı" yazılmayacak. Bunun yerine: [UNVERIFIED — haber kaynağından görüldü, KAP'ta teyit edilemedi]. Bu ayrım downstream güvenilirliği için kritik.
+- **WebFetch ile KAP doğrulama zorunlu:** kap.org.tr/tr/sirket-bildirimleri/{şirket-kodu} sayfasına WebFetch ile giderek bildirimi bul ve gerçek ID'yi çek. Haber sitesinden ID kopyalama YASAK.
+- **Aksansa gibi HIGH materiality olaylar için ID bulunana kadar devam et:** 3 deneme kuralı: (1) KAP arama, (2) SAHOL IR sayfası, (3) resmi bültene WebFetch. Hepsi başarısız → CEO'ya escalate.
+
+---

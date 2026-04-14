@@ -1,11 +1,12 @@
-import { spawn } from 'node:child_process';
 import { nanoid } from 'nanoid';
 import { db } from './db.js';
 import { resumeAllPausedSessions, resumeSession } from './orchestrator.js';
-import { CLAUDE_SPAWN_OPTIONS, STUCK_AGENT_THRESHOLD_MS } from './config.js';
+import { STUCK_AGENT_THRESHOLD_MS } from './config.js';
+import { createDefaultProviderRouter } from './llm/default-router.js';
 
 let watchdogTimer: NodeJS.Timeout | null = null;
 let isChecking = false;
+const providerRouter = createDefaultProviderRouter();
 
 /**
  * On backend startup, any agent_run with status='running' is a zombie —
@@ -76,49 +77,6 @@ export function cleanupZombiesOnStartup(): { zombieRuns: number; pausedSessions:
 }
 
 /**
- * Test if Claude CLI is currently responsive (rate limit not hit).
- * Uses a minimal 1-token prompt to probe availability without wasting quota.
- */
-async function probeClaudeAvailability(): Promise<boolean> {
-  return new Promise((resolve) => {
-    const child = spawn('claude', ['-p', 'ok', '--model', 'claude-haiku-4-5', '--output-format', 'json'], {
-      ...CLAUDE_SPAWN_OPTIONS,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-
-    let stderrBuf = '';
-    child.stderr.on('data', (c: Buffer) => { stderrBuf += c.toString('utf8'); });
-    child.stdout.on('data', () => {}); // drain
-
-    const timeout = setTimeout(() => {
-      child.kill('SIGTERM');
-      resolve(false);
-    }, 30000);
-
-    child.on('close', (code) => {
-      clearTimeout(timeout);
-      if (code === 0) {
-        resolve(true);
-        return;
-      }
-      const lower = stderrBuf.toLowerCase();
-      // If stderr still says rate limit → not available
-      if (lower.includes('limit') || lower.includes('quota') || lower.includes('429')) {
-        resolve(false);
-      } else {
-        // Some other error (e.g., auth) — don't try to auto-resume
-        resolve(false);
-      }
-    });
-
-    child.on('error', () => {
-      clearTimeout(timeout);
-      resolve(false);
-    });
-  });
-}
-
-/**
  * Detect and restart stuck agents that have been running too long.
  * Returns number of agents restarted.
  */
@@ -159,12 +117,14 @@ function detectAndRestartStuckAgents(): number {
         WHERE id = ?
       `).run(agent.id);
 
-      // Pause session temporarily
+      // Pause session temporarily — use 'paused_stuck_agent' to distinguish from rate limit pauses.
+      // This avoids the dashboard showing "kota bitti" (quota finished) for simple timeout restarts.
       db.prepare(`
         UPDATE analysis_sessions
-        SET status = 'paused_rate_limit'
+        SET status = 'paused_stuck_agent',
+            error_message = ?
         WHERE id = ?
-      `).run(agent.session_id);
+      `).run(`${agent.agent_display_name} timeout — otomatik yeniden başlatılıyor`, agent.session_id);
 
       // Log CEO activity (correct schema)
       try {
@@ -206,20 +166,34 @@ async function watchdogTick(): Promise<void> {
       console.log(`🔄 Watchdog: ${stuckRestarted} stuck agent(s) restarted`);
     }
 
-    // 2. Check for paused sessions (rate limit recovery)
-    const pausedCount = (db.prepare(`
+    // 2a. Resume stuck-agent sessions immediately (no probe needed — not a quota issue)
+    const stuckPaused = db.prepare(`
+      SELECT id FROM analysis_sessions WHERE status = 'paused_stuck_agent'
+    `).all() as Array<{ id: string }>;
+
+    if (stuckPaused.length > 0) {
+      console.log(`🔄 Watchdog: ${stuckPaused.length} stuck-agent session(s) — resuming immediately`);
+      for (const row of stuckPaused) {
+        if (resumeSession(row.id)) {
+          console.log(`▶️  Stuck-agent session ${row.id} resumed`);
+        }
+      }
+    }
+
+    // 2b. Check for rate-limit paused sessions (resume if current routing path is available)
+    const rateLimitPausedCount = (db.prepare(`
       SELECT COUNT(*) as c FROM analysis_sessions WHERE status = 'paused_rate_limit'
     `).get() as { c: number }).c;
 
-    if (pausedCount > 0) {
-      console.log(`🔍 Watchdog: ${pausedCount} paused session(s) — probing Claude availability...`);
-      const available = await probeClaudeAvailability();
-      if (available) {
-        console.log(`✅ Claude available — resuming paused sessions`);
+    if (rateLimitPausedCount > 0) {
+      console.log(`🔍 Watchdog: ${rateLimitPausedCount} rate-limited session(s) — probing provider availability...`);
+      const availability = await providerRouter.probeRoutedAvailability();
+      if (availability.available) {
+        console.log(`✅ Provider available (${availability.provider ?? 'unknown'}) — resuming rate-limited sessions`);
         const resumed = resumeAllPausedSessions();
         console.log(`▶️  Resumed ${resumed} session(s)`);
       } else {
-        console.log(`⏳ Claude still rate-limited, will retry in 5 minutes`);
+        console.log(`⏳ No provider currently available — 5 dakika sonra tekrar denenecek`);
       }
     }
   } catch (err) {
@@ -249,8 +223,8 @@ export function stopWatchdog() {
 }
 
 export async function manualResumeCheck(): Promise<{ available: boolean; resumed: number }> {
-  const available = await probeClaudeAvailability();
-  if (available) {
+  const availability = await providerRouter.probeRoutedAvailability();
+  if (availability.available) {
     const resumed = resumeAllPausedSessions();
     return { available: true, resumed };
   }

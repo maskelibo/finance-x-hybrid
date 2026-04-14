@@ -1,359 +1,111 @@
-# Parse Standardization Agent — Bilgi Defteri
-
-## Kimlik Kartı
-
-| Alan | Bilgi |
-|---|---|
-| Ajan Adı | Parse Standardization Agent |
-| Uzmanlık | Veri Standardizasyonu |
-| Oluşturma Tarihi | 2026-04-09 |
-| Bağlı Olduğu Ajan | META (CEO) |
-| Toplam Eğitim Gecesi | 1 |
-| Ortalama Öğrenme Puanı | 74/100 |
+# Parse Standardization Agent — Damitilmis Hafiza
 
 ---
 
-## Temel Yetenek Haritası
+## Kalici Kurallar
 
-| Konu | Seviye (1–10) | Not |
-|---|---|---|
-| Format dönüşümleri | 1 | Başlangıç seviyesi |
-| Şema uyumlama | 1 | Başlangıç seviyesi |
-| Veri temizleme | 1 | Başlangıç seviyesi |
-| Standardizasyon kuralları | 1 | Başlangıç seviyesi |
-| Kalite kontrol | 1 | Başlangıç seviyesi |
+- **PDF parse edilemedi = mazeret degil:** KAP XBRL → pdfplumber/Camelot → OCR → WebFetch gorsel. "Parse edilemedi, gap var" deyip gecmek YASAK.
+- **Discrepancy tespit = COZ:** Primary source'a git, dogru degeri bul, yanlis source'u isaretle. Downstream'e tek dogrulanmis deger gonder. Iki farkli deger gondermek YASAK.
+- **Full P&L extraction ZORUNLU:** Revenue, COGS, Gross Profit, OpEx (Sales/Marketing, Gen Admin ayri), EBITDA, D&A, EBIT, Finance Income/Costs, PBT, Tax, Net Income, NCI, NI Attributable to Parent — HEPSI.
+- **4 zorunlu tablo:** IS + BS + CF + Equity Movement — hepsi FULL extraction, truncation YASAK.
+- **Balance sheet FULL extraction:** Assets (Current/Non-current alt kalemler), Liabilities (Current/Non-current + Financial Debt + Trade Payables), Equity (Share Capital, Retained Earnings, NCI).
+- **5-year time-series ZORUNLU:** Deep dive modda FY-4 to FY0 full financial statements.
+- **"[pending]" / TBD YASAK:** Parse edilemiyorsa alternative method kullan; imkansizsa GAP olarak isaretle. 21 zorunlu kalemde TBD orani %10'u gecerse output otomatik REJECT.
+- **"~" (yaklasik) kurali:** XBRL'den → "~" YASAK. PDF OCR → "~" kullanilabilir, confidence ≤0.89. "~" orani %20'yi gecerse EXCESSIVE_APPROXIMATION flag.
+- **Tablo yarim birakma YASAK:** Basladigin tabloyu TAMAMLA.
+- **Input validation ZORUNLU:** Her parse job baslamadan once input verisinin guncelligini kontrol et. 1 yil gerideyse UPSTREAM'E ESCALATE, PARSING'I DURDUR, eski veriyi parse edip downstream'e gonderme.
+- **Holding = IFRS 8 ZORUNLU:** Multi-sector holdinglerde segment disclosure extraction mandatory.
+- **Olagan disi degisiklik = audit note ZORUNLU:** Margin collapse (>%50), OCF sign reversal, major revenue jump (>%100) → dipnotlardan aciklama extract et.
+- **Cash Flow Statement non-negotiable:** Parse edilmeden output GONDERMEK YASAK. OCF, ICF, FCF, Net Change, Ending Cash + Working Capital bilesenleri ZORUNLU.
+- **IAS 29 EBITDA ayristirmasi ZORUNLU (tum Turk sirketleri):** Raporlanan EBITDA/Net Kar icinden IAS 29 parasal kazanc/kayip ayristir. Ayristirma olmadan "excellent" sertifikasi verme.
+- **Otomatik matematiksel kontroller (4 adet):** Bilanco Dengesi A=L+E (±0.1%) FAIL=BLOCK | Gelir Tablosu Zinciri (±0.5%) FAIL=BLOCK | Nakit Akis Mutabakati (±0.5%) FAIL=BLOCK | Ozsermaye Mutabakati (±1%) FAIL=warning.
+- **Ic tutarlilik ≠ kaynak dogrulugu:** Kontroller gecse bile kritik metriklerde (EBITDA, Net Kar, Net Borc) web/KAP capraz kontrolu zorunlu. Her output'ta bu sinirlamayi belirt.
+- **mandatory_metrics_complete flag:** Yalnizca TUM metrikler hem DOLU hem FARKLI KAYNAKLARDAN DOGRULANMIS ise TRUE. Tahmini metrikler "conditional_pass" olarak ayri listele.
+- **source_document_id ZORUNLU:** Her standardize satira belge adi, sayfa ve orijinal satir aciklamasi ekle.
+- **Yil atama hatasina sifir tolerans:** Her metrikte donem alani zorunlu.
+- **Kritik fact conflict varsa kalite sertifikasi verme.**
 
----
+## CEO Geri Bildirimi — 2026-04-14 — THYAO
 
-## Standardizasyon Standartları
+**CEO 2026-04-14 THYAO eksikleri:** CF/SE yok ama output gonderildi. OpEx alt kalemleri "[Detail missing]". D&A EBITDA-EBIT farkinden turetildi. IAS 29 ayristirmasi yapilmadi.
+- **D&A DOGRUDAN kaynaktan cek** — KAP PDF Amortisman ve Itfa notundan. Turetme YASAK.
+- **IFRS 16 ROU amortismanini D&A'dan ayristir** — Havacilikta D&A icinde IFRS 16 ROU amortismani ayri goster; EBITDAR hesabina temel olustur.
 
-- Tarih formatı: ISO 8601 (YYYY-MM-DD)
-- Para birimi: 3-letter ISO kod (TRY, USD, EUR)
-- Veri formatı: KAP çıktılarını JSON standardına dönüştür
-- XBRL: SEC ve Türk regülatör uyumu için tercih edilen format
-
----
-
-## Kurallar — Öğrenilen Dersler
-
-**[2026-04-10] SISE Raporu — Kritik Eksikler:**
-
-**1. PDF parse edilemedi = mazeret değil:**
-- Alternatif sırasıyla: KAP XBRL formatını dene → farklı parser (pdfplumber, Camelot) → OCR (Tesseract / Google Vision) → WebFetch ile görsel extraction
-- "Parse edilemedi, gap var" deyip geçmek YASAK
-
-**2. Discrepancy tespit etmek yetmez — çözmek zorunlu:**
-- Data Collection discrepancy flaglerse: primary source'a git (KAP audited PDF), doğru değeri bul, yanlış source'u işaretle
-- Downstream'e tek, doğrulanmış değer gönder
-- İki farklı değeri downstream'e göndermek YASAK
-
-**3. Full P&L extraction zorunlu (top-line yetmez):**
-- COGS, Brüt Kar, Pazarlama Gid., Genel Yönetim Gid., FAVÖK, Amortisman, EBIT, Finansman Gid., Vergi, Net Kar
-- Hepsini extract et — eksik olursa financial analysis yapılamaz
-
-**4. Self-evaluation kalibrasyonu:**
-
-| Data Quality Score | Self-Eval |
-|---|---|
-| > 0.90 | 9–10/10 |
-| 0.70–0.90 | 7–8/10 |
-| 0.50–0.70 | 5–6/10 |
-| < 0.50 | 3–4/10 |
-
-**5. Gap filling protokolü:**
-- Gap tespit et → gap çöz (alternatif yöntem) → çözülemezse CEO'ya escalate
-- CEO onayı olmadan "gap var" diye downstream'e geçme
-
----
-
-## Güçlü Yönlerim (SISE'den)
-
-- Gap'leri açıkça flagledi (transparency)
-- Data quality score realist (0.45)
-- Reconciliation agent'a net öneriler sunuldu
-
----
-
-## Gelişim Alanlarım
-
-- PDF parsing: OCR ve alternatif araçlar kullanımı
-- Discrepancy flagging → resolution (çözme)
-- Top-line extraction → full P&L extraction
-- Gap reporting → gap filling
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — AKBNK Raporu
+## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
 
 ### Eksikler:
-- **Balance sheet tablosu YARIM KALMIŞ:** Tablo ortasında kesilmiş (Q3 2025'ten sonra yok) — tamamlanmamış tablo YASAK
-- **Equity movement statement eksik:** 4 zorunlu tablodan biri tamamen eksik
-- **Cash flow statement eksik:** Operating/Investing/Financing activities breakdown yok
-- **Banking-specific metrikler eksik:** Tier 1 capital, CET1, RWA, loan portfolio breakdown (retail/corporate/SME) time-series olarak extract edilmemiş
-- **NPL breakdown eksik:** Takipteki krediler detayı (Stage 1/2/3 breakdown, coverage ratio evolution) yok
+- **Doğru eskalasyon yapıldı ✓** — CF/SE eksik olduğunda "CANNOT PROCEED" kararı verildi ve upstream eskalasyon protokolü uygulandı. Bu doğruydu.
+- **IS + BS tam hazır ama beklemede tutuldu** — Mevcut IS ve BS tabloları standardize edilebilecek durumdayken "tüm tablolar gelene kadar bekle" yorumu benimsenildi. Kural: mevcut tabloları işle, eksik kısımları "PENDING_CF_SE" etiketiyle gönder.
+- **IAS 29 ayrıştırması IS üzerinde başlatılmadı** — IS mevcuttu; IAS 29 parasal kazanç ayrıştırması IS bazında yapılabilirdi ve downstream'e gönderilmeliydi.
 
 ### Bundan Sonra:
-- Tablo yarım bırakma — başladıysan TAMAMLA, bitirmeden output gönderme
-- Bankalar için 4 core statement: Income Statement + Balance Sheet + Cash Flow + Equity Movement + **Banking Supplement** (NPL, Capital, Segment breakdown)
-- Banking supplement olmadan banka analizi yapılamaz — bu 5. zorunlu tablo olarak ekle
-- Her metriğin 5 yıllık time-series'i olmalı (sadece son dönem değil)
+- **Kısmi output gönder, tam bloklama yapma** — IS + BS mevcut ise bunları standartlaştırıp çıkt; CF/SE için "PENDING_UPSTREAM" bölümü oluştur. "Tüm tablolar gelene kadar bekle" = pipeline'ı gereksiz durdurmak.
+- **Perakende sektörü ayrıştırma ekstrası** — Stoklardaki detaylar (emtia stoğu, hammadde, yarı mamul, mamul), ticari alacaklar, ticari borçlar satır bazlı mutlaka çıkarılmalı; WC hesabının temelidir.
+- **IFRS 16 kira borcu ayrıştırması** — Perakendecilerde (BIMAS: 14.000+ mağaza) IFRS 16 kira yükümlülükleri bilanço büyüklüğünü önemli ölçüde artırır. Net Borç hesabında finansal kiralama borcu ayrı satırda gösterilmeli.
 
----
-
-## CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu
+## CEO Geri Bildirimi — 2026-04-14 — KCHOL Delta Raporu
 
 ### Eksikler:
-- **Segment breakdown %0:** IFRS 8 segment disclosure tamamen extract edilmemiş — holding için her segment (Enerji, Otomotiv, Finans, vb.) ayrı finansalları parse etmek ZORUNLU
-- **2024 audit notes extract edilmemiş:** Net margin %13 → %1.15 çöküşü ve OCF +152B → -102B ters dönüşü açıklayan audit notes KAP PDF'ten çıkarılmamış
-- **Balance sheet liability detail eksik:** Total Assets ve Equity var ama Liabilities breakdown yok — reconciliation için Assets = Liabilities + Equity doğrulaması yapılamıyor
-- **2021 revenue restatement note eksik:** %395 revenue jump (346B → 1,716B) olağandışı — 2022 annual report'taki restatement note'u kontrol edilmemiş
+- **%76 [TBD] oranı eşiği aşmasına rağmen parse devam etti** — Kural: %10 üstü TBD → REJECT. KCHOL'da IS %76 TBD, BS %88 TBD ile output REJECT verildi ✓ (doğru). Ancak alternatif metodlar (XBRL, proxy) denemeden direkt REJECT ile eskalasyon yapıldı.
+- **IS + BS mevcut olmasına rağmen kısmi output gönderilmedi** — Önceki BIMAS dersinde "kısmi output gönder, tam bloklama yapma" kuralı eklenmişti. KCHOL'da aynı hata tekrarlandı: mevcut gelir tablosu ve kısmi bilanço standardize edilip "PENDING_CF_IFRS8" etiketiyle gönderilebilirdi.
+- **IAS 29 ayrıştırması hiç başlatılmadı** — IS mevcuttu (kısmen). IAS 29 parasal kazanç ayrıştırması mevcut IS üzerinde yapılabilirdi; "tüm tablolar gelene kadar bekle" yorumu benimsenildi.
+- **2023 finansal tabloları tamamen eksik** — 5 yıllık time-series zorunluluğu gereği 2021-2025 verisine ihtiyaç var. 2023 tablolarının neden eksik olduğu ve hangi yolların deneneceği belirtilmedi.
+- **Faaliyet raporu PDF sayfa referansı verilmedi** — "Segment Bilgileri bölümü genelde sayfa 20-35" denildi ama PDF çekilmedi; sayfa numaraları tahmini. Kaynak olmadan sayfa numarası yazmak güveni yanıltır.
 
 ### Bundan Sonra:
-- Holding şirketlerinde IFRS 8 segment disclosure extraction ZORUNLU — annual report → "Segment Bilgileri" bölümü → her segment için revenue, EBITDA, assets parse et
-- Olağandışı finansal hareketler (margin collapse, OCF reversal, major revenue jump) görürsen MUTLAKA audit notes'tan açıklama extract et — "Dipnotlar" veya "Açıklayıcı Notlar" bölümünden
-- Balance sheet'i parse ederken sadece Assets ve Equity değil TÜM bileşenleri çıkar — Liabilities eksikse downstream validation yapılamaz
-- Multi-year comparative figures değişmişse (restatement) → prior period adjustment note'u bul ve explain et
-- Holding discount analizi için bağlı ortaklık listesi + ownership % + listed ones için market cap ZORUNLU — annual report'tan bu tabloyu parse et
+- **Mevcut tabloları işle, eksikleri etiketle, gönder** — IS veya BS kısmen mevcutsa bunları standardize et; eksik bölümler için "PENDING_[REASON]" etiketi koy ve göndermek; downstream bekletme.
+- **KAP XBRL'den parse dene** — PDF parse başarısızsa XBRL endpoint'i direkt dene (kap.org.tr/tr/api/XBRL endpoints). Başarısızsa sonucu logla.
+- **2023 ve öncesi eksikliğinde KAP historical archive** — 5 yıllık data için KAP'ta "Yıllık Raporlar" bölümünden ilgili yılın raporunu ayrıca fetch et; "2023 mevcut değil" demeden KAP'ta ilgili FY raporunu ara.
 
----
+## Zorunlu Kontrol Listesi
 
----
+Her parse job oncesi:
+1. Input data freshness kontrolu (bugunun tarihi vs input'taki en guncel tablo tarihi)
+2. Beklenen son finansal tablo tarihi hesapla (mali yil bitimi + 75 gun)
+3. Fark 1 yil ise → ESCALATE, DURDUR
 
-## CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu (#2)
+Her output icin:
+- [ ] 4 zorunlu tablo tam mi? (IS, BS, CF, SE)
+- [ ] 21 zorunlu kalemde TBD var mi? (0 olmali)
+- [ ] 4 matematiksel kontrol gecti mi?
+- [ ] IAS 29 ayristirmasi yapildi mi? (Turk sirketleri)
+- [ ] data_freshness_check metadata eklendi mi?
+- [ ] source_document_id her satirda var mi?
+- [ ] Output truncation yok mu?
+
+Sektor ek islemler:
+- Holding: IFRS 8 segment verileri + bagli ortaklik detaylari + konsolidasyon kapsami
+- Telekom: Segment revenue breakdown, roaming, interconnection, spectrum amortization, CAPEX breakdown
+- Rafineri: Urun bazinda yield tablosu, birincil kaynak KAP konsolide SPK tablolari
+- Celik: EBITDA/ton, kapasite util%, urun mix, cografi kirilim
+- Banka: NPL breakdown (Stage 1/2/3), capital tables, segment breakdown
+
+## Bilinen Hatalar (Bir Daha Yapma)
+
+- TCELL'de 2024 verisi parse edilip downstream'e gonderildi, 2025 raporu KAP'ta varken → input validation yapilmamisti
+- KCHOL'da income statement %60 "[pending]", segment extraction %0 → KABUL EDILEMEZ
+- EREGL'de EBITDA %66 sapma (34B vs gercek 20.4B) ve net kar 27.5x sapma — IAS 29 ayristirmasi yapilmamis, yanlis veri uzerine "9.2/10 EXCELLENT" sertifikasi verilmis
+- AKBNK balance sheet tablosu ortada kesilmis
+- TCELL cash flow statement tamamen eksik birakild
+- Faaliyet raporu ozet tablosu SPK konsolide tablosu yerine kullanildi (TUPRS)
+- **KCHOL (2026-04-14):** Data_collection'dan 2025 "Satış 2.757B" gelmişti - 97% düşüş 2022'den, verified değil. Parent-only mi consolidated mi belirsiz. 2023 finansal tablosu tamamen eksik. Balance sheet %88 [TBD], cash flow 2024 FY eksik. IAS 29 ayristirmasi yapılmamis. IFRS 8 segment extraction %0. Parse REJECTED, TBD %76 (threshold %10). Upstream escalation gerekti.
+
+- **CBAM 2026 dipnot kalemleri:** 2026'dan itibaren celik sirketleri (EREGL) CBAM sertifika yukumlulukleri bilancoya kaydedilmeli. Parse sirasinda "Diger Karşılıklar" veya "Cevresel Yukumlulukler" altinda yeni kalem var mi kontrol et.
+- **TAS 29 vs IAS 29:** TAS 29 (yerel) 7571 sk ile 2025-2027 arasi askida. IAS 29 (IFRS/SPK) HALA GECERLI. SPK konsolide tablolari IAS 29'a gore; yerel muhasebe TAS 29 askida = parse sırasında IFRS tablosunu birincil al.
+
+## CEO Geri Bildirimi — 2026-04-14 — SAHOL Raporu
 
 ### Eksikler:
-- **Segment extraction %0:** IFRS 8 segment disclosure TAMAMEN parse edilmemiş — holding için her segment (Enerji, Otomotiv, Finans, Dayanıklı Tüketim, Diğer) ayrı revenue, EBITDA, assets, CAPEX ZORUNLU ama hiçbiri yok
-- **Income statement %60 "[pending]":** COGS, Gross Profit, Operating Expenses, EBIT, Finance Costs, Tax — TÜM satırlar "pending" olarak bırakılmış
-- **Balance sheet liability breakdown %0:** Total Assets ve Equity var ama Liabilities detayı yok — Current/Non-current Liabilities, Financial Debt (short/long), Trade Payables parse edilmemiş
-- **2024 audit notes extraction yok:** Net margin %13 → %1.15 collapse ve OCF +152B → -102B reversal açıklayan dipnotlar KAP PDF'ten çıkarılmamış
-- **2021 revenue restatement note eksik:** %395 revenue jump (346B → 1,716B) için 2022 annual report'taki prior period adjustment note'u parse edilmemiş
-- **Multi-year time-series incomplete:** FY2021, FY2022, FY2023, FY2024 detaylı satırlar "[pending]" — sadece FY2025 summary var
+- **Revenue: Segment kısmını (195B TRY) konsolide revenue olarak etiketledi** — Gerçek konsolide revenue 1,187B TRY. 5x fark tüm downstream hesapları bozdu.
+- **EBITDA: 9 aylık veriyi (50,577M) FY2024 etiketi ile sundu** — Q3 2024 kümülatif değeri, yıllık değer gibi raporlandı; CRITICAL etiket hatası.
+- **IS zincirinin 9/11 satırı PENDING** — COGS, Gross Profit, OPEX, D&A, EBIT, Finance Income, Finance Cost, PBT, Tax hiç tamamlanmadı.
+- **2020–2021 için "VERİ YOK" yazıldı** — CEO kuralı: "Veri yok" YASAK; alternatif yöntem dene veya escalate et.
+- **Balance Sheet nakit, alacak, stok satırları PENDING** — Toplamlar çekildi ama kritik alt satırlar bırakıldı.
 
 ### Bundan Sonra:
-- **Holding = IFRS 8 ZORUNLU:** Multi-sector holding şirketlerinde segment disclosure extraction mandatory — annual report → "Segment Bilgileri" → her segment için Revenue, FAVÖK, Assets, Liabilities, CAPEX parse et, tablo formatında sun
-- **Income statement FULL extraction:** Top-line revenue yetmez — COGS, Gross Profit, Operating Expenses (ayrı satırlar: Sales/Marketing, General Admin), FAVÖK, D&A, EBIT, Finance Income/Costs, Tax, Net Income, NCI, Net Income Attributable to Parent — HEPSİNİ parse et
-- **Balance sheet FULL extraction:** Assets (Current: Cash, Trade Receivables, Inventory, Other / Non-current: PP&E, Intangibles, Investments), Liabilities (Current: Financial Debt, Trade Payables, Other / Non-current: Long-term Debt, Provisions), Equity (Share Capital, Retained Earnings, NCI) — HEPSİNİ parse et
-- **Olağandışı değişiklik = audit note ZORUNLU:** Margin collapse (>%50 değişim), OCF sign reversal, major revenue jump (>%100) görürsen → annual report → Dipnotlar → ilgili notu bul ve extract et
-- **Multi-year comparative restatement check:** Önceki yıl comparative figures değişmişse (örn. 2022 raporu 2021 rakamlarını revise etmişse) → prior period adjustment note'u extract et ve açıkla
-- **"[pending]" YASAK:** Downstream agent'a "[pending]" göndermek yasak — parse edilemiyorsa alternative method kullan (OCR, manual table extraction, XBRL format), hâlâ imkansızsa gap olarak işaretle ama asla "[pending]" bırakma
-- **5-year time-series ZORUNLU:** Deep dive modda FY-4 to FY0 (son 5 yıl) FULL financial statements parse edilmeli — quarterly optional ama annual mandatory
+- **Konsolide revenue = tüm segmentlerin toplamı:** Holding analizinde segment kısmi veri ASLA konsolide revenue etiketi taşıyamaz. "Konsolide" yazmadan önce kapsam kontrolü yap.
+- **Dönem etiketi KAP başlığından birebir kopyalanacak:** "9M 2024" olan veri FY2024 satırına yazılamaz. Dönem uyuşmazlığı varsa [UYARI: 9A veri, FY extrapolation gerekiyor] flag'i ekle.
+- **IS zinciri bütünlük protokolü:** Revenue → COGS → Gross Profit → OPEX → EBITDA → D&A → EBIT → Finance → PBT → Tax → Net Income. Her satır ya dolu ya [PENDING+escalation] olmalı. Eksik satır olarak output GÖNDERİLEMEZ.
+- **"Veri yok" YASAK:** 5 alternatif kaynak (KAP PDF, KAP XBRL, IR sitesi, quarterly report, WebFetch) denenmeden eksik beyan edilemez.
 
 ---
-
-## CEO Geri Bildirimi — 2026-04-11 — TCELL Raporu
-
-### Eksikler:
-- **Balance Sheet detayları TRUNCATED:** Assets detail table başlamış ama kesilmiş — tamamlanmamış
-- **Cash Flow Statement TAMAMEN EKSİK:** Operating/Investing/Financing activities breakdown parse edilmemiş — 4 zorunlu tablodan biri eksik
-- **Statement of Changes in Equity EKSİK:** Equity movement statement parse edilmemiş — 4 zorunlu tablodan biri eksik
-- **Telecom-specific line items eksik:** Segment revenue breakdown (Turkey vs International vs Digital Services), roaming revenue, interconnection revenue, handset sales vs service revenue — telekomda kritik kalemlerin parse edilmemesi
-
-### Bundan Sonra:
-- **4 zorunlu tablo rule ENFORCE et:** Income Statement + Balance Sheet + Cash Flow + Equity Movement — hepsi FULL extraction, truncation YASAK
-- **Telekomünikasyon şirketleri için segment disclosure parsing ZORUNLU:**
-  - Revenue by segment (mobile, fixed, digital services, international)
-  - Revenue by type (service revenue vs equipment sales)
-  - Roaming revenue separate disclosure
-  - Interconnection revenue/expense
-  - Spectrum amortization (5G için yeni kalem — intangible amortization içinde ayrıştır)
-- **Cash Flow Statement telecom-specific items:**
-  - CAPEX breakdown (network infrastructure vs IT vs spectrum)
-  - Spectrum acquisition cash outflow (one-time large payment)
-  - Subscriber acquisition costs (SAC) if capitalized
-- **Output truncation çözümü:** Parse ettiğin tüm veriyi gönder, truncation olursa summary + detail olarak iki ayrı output oluştur
-
----
-
-## ❌ KRİTİK FEEDBACK — 2026-04-11 — TCELL RAPORU (#2) — 2025 VERİLERİ PARSE EDİLMEMİŞ
-
-### SORUN: EN GÜNCEL RAPOR PARSE EDİLMEDİ
-
-**Tespit:** Data_collection TCELL 2025 Entegre Faaliyet Raporu çekmemiş (5 Mart 2026 KAP yayını). Parse_standardization agent'a gelen input **2024 verileri** içeriyordu. Ama bu KABUL EDİLEMEZ — çünkü data_collection eski veri gönderse bile, sen DOĞRULAMA YAPMAN GEREKİYOR.
-
-**Sorumluluk:** Parse_standardization agent sadece gelen veriyi parse etmekle kalmaz, **verinin güncelliğini de doğrular**.
-
-### BUNDAN SONRA ZORUNLU ADIMLAR:
-
-**1. INPUT VALIDATION PROTOKOLÜ:**
-
-Her parse job'ı başlamadan önce şunu kontrol et:
-```
-1. Bugünün tarihi: [TARİH]
-2. Input'taki en güncel finansal tablo tarihi: [YIL]
-3. Beklenen en son finansal tablo: [TARİH - 1 yıl]
-4. Eğer input'taki tarih beklenenin 1 yıl gerisindeyse → **UPSTREAM'E ESCALATE**
-```
-
-**Örnek (TCELL):**
-```
-Bugün: 11 Nisan 2026
-Input'taki son tablo: 2024 (data_collection'dan gelen)
-Beklenen: 2025 (mali yıl bitiminden 3 ay sonra yayınlanır, yani Mart 2026)
-Fark: 1 yıl GERİ
-→ **ESCALATE TO DATA_COLLECTION:** "2025 annual report should be available (due March 2026). Current input contains 2024 data only. Please fetch 2025 report from KAP before parsing."
-```
-
-**2. ESCALATION FORMATLI:**
-
-```json
-{
-  "escalation_type": "outdated_input_data",
-  "severity": "CRITICAL",
-  "target_agent": "data_collection",
-  "issue": "Input contains FY2024 data but FY2025 annual report published on KAP (March 5, 2026)",
-  "expected_action": "Fetch TCELL 2025 annual report from KAP and re-submit",
-  "blocking": true,
-  "evidence": {
-    "current_input_year": 2024,
-    "expected_year": 2025,
-    "publication_date": "2026-03-05",
-    "source": "KAP Public Disclosure Platform"
-  }
-}
-```
-
-**3. DOWNSTREAM'E ESKİ VERİ GÖNDERME YASAĞI:**
-
-Eğer input verisi eski ise (1 yıl geride):
-- **❌ ESKİ VERİYİ PARSE EDIP DOWNSTREAM'E GÖNDERME**
-- **✅ UPSTREAM'E ESCALATE ET, DURDUR, BEKLE**
-- **✅ CEO'YA BILDIR:** "TCELL parsing blocked: awaiting 2025 data from data_collection"
-
-Bu şekilde **ESKİ VERİ İLE RAPOR OLUŞTURULMAZ**, kullanıcı yanıltılmaz.
-
-**4. DATA FRESHNESS METADATA:**
-
-Eğer input validation pass ederse, parsed output'a şunu ekle:
-```json
-{
-  "data_freshness_check": {
-    "input_latest_year": 2025,
-    "expected_latest_year": 2025,
-    "validation_pass": true,
-    "checked_at": "2026-04-11T13:15:00Z"
-  }
-}
-```
-
-Bu şekilde downstream agent'lar ve CEO verinin güncelliğini görebilir.
-
-### ÖLÇÜLEBİLİR HEDEFLER:
-
-- [ ] **Bugünden itibaren:** Her parse job başlamadan önce "input data freshness" kontrolü YAP
-- [ ] **Eğer input 1 yıl gerideyse:** UPSTREAM'E ESCALATE, parsing'i DURDUR
-- [ ] **Her parsed output'ta:** `data_freshness_check` metadata ekle
-
-### BAŞARISIZLIK KRİTERİ:
-
-Eğer kullanıcı "neden eski veri kullanmışsınız?" derse ve sen eski veriyi parse edip downstream'e göndermişsen = **PARSE_STANDARDIZATION FAILED**.
-
-Bu TCELL'de OLDU. Data_collection 2024 verisi göndermişti ama sen onu DOĞRULAMADAN parse ettin ve downstream'e gönderdin.
-
-**Bundan sonra:** Input validation ÖNCE, parsing SONRA. Eski veri = ESCALATE, DURDUR, PARSE ETME.
-
----
-
-## CEO Geri Bildirimi — 2026-04-11 — TCELL RAPORU FINAL REVIEW
-
-### Eksikler:
-- **Multi-year data %95 "[pending]" veya "—":** 2024, 2023, 2022, 2021 satırlarının neredeyse HEPSİ boş bırakılmış
-- **Income Statement satırlarının %60'ı eksik:** Finance Income, Finance Costs, Profit Before Tax, Income Tax Expense — hepsi "[pending]" veya extract edilmemiş
-- **Cash Flow Statement TAMAMEN YOK:** Operating/Investing/Financing activities breakdown hiç parse edilmemiş
-- **Reconciliation note'u kesilmiş:** Balance sheet reconciliation tablosu ortada kesilmiş
-- **"Pending XBRL access" MAZERET DEĞİL:** XBRL yoksa KAP PDF'ten manuel extraction yap, OCR kullan, alternatifleri dene
-
-### Bundan Sonra:
-- **"[pending]" downstream'e gönderme YASAK** — parse edilemiyorsa alternative method kullan, hâlâ imkansızsa GAP olarak işaretle ama asla "[pending]" bırakma
-- **5-year time-series ZORUNLU** — deep dive modda FY-4 to FY0 (son 5 yıl) FULL financial statements parse edilmeli
-- **Cash Flow Statement non-negotiable** — 4 zorunlu tablodan biri, eksik olamaz
-- **XBRL access sorunu çözüm protokolü:**
-  1. KAP XBRL format dene
-  2. KAP PDF manuel extraction (pdfplumber, Camelot)
-  3. OCR (Tesseract / Google Vision)
-  4. WebFetch ile görsel extraction
-  5. Hepsi başarısız ise GAP olarak işaretle, CEO'ya escalate et
-- **Output truncation önleme:** Summary tables + Detail JSON olarak iki ayrı output oluştur, her ikisini de tamamen gönder
-
----
-
-## CEO Direktifi — 2026-04-11 — SİSTEMİK İYİLEŞTİRME
-
-### YENİ ZORUNLU KURALLAR (system_prompt güncellendi):
-
-**1. TBD / "[pending]" YASAĞI:**
-- 21 zorunlu kalem için TBD/pending YASAK: Revenue, COGS, Gross Profit, EBITDA, EBIT, Net Income, Total Assets, Total Liabilities, Total Equity, OCF, ICF, FCF, Trade Receivables, Inventory, Trade Payables, Short-term Debt, Long-term Debt, Cash & Equivalents, CAPEX, Interest Expense, Tax Expense
-- TBD oranı %10'u geçerse → output otomatik REJECT
-- TBD varsa → upstream escalation ZORUNLU (data_collection'a structured request)
-
-**2. "~" (Yaklaşık) İşareti Kuralı:**
-- XBRL kaynağından çekilen veri → "~" YASAK (XBRL tam sayı verir)
-- PDF OCR kaynağından → "~" kullanılabilir AMA extraction_method="pdf_unstructured", confidence ≤0.89
-- "~" oranı %20'yi geçerse → EXCESSIVE_APPROXIMATION flag
-
-**3. OTOMATİK MATEMATİKSEL KONTROLLER (4 adet):**
-- Bilanço Dengesi: A = L + E (±0.1%) → FAIL = output BLOCK
-- Gelir Tablosu Zinciri: Revenue → COGS → GP → EBIT → PBT → Tax → NI (±0.5%) → FAIL = output BLOCK
-- Nakit Akış Mutabakatı: Opening + OCF + ICF + FCF = Closing (±0.5%) → FAIL = output BLOCK
-- Özsermaye Mutabakatı: Opening + NI - Div ± OCI = Closing (±1%) → FAIL = warning
-
-**4. HOLDİNG vs OPERASYONEL ŞİRKET ŞABLONU:**
-- Holding şirketi tespit edilirse (KCHOL, SAHOL, DOHOL) → EK çıkarımlar: IFRS 8 segment verileri, bağlı ortaklık detayları, parent-level bilanço, konsolidasyon kapsamı değişiklikleri
-
-**5. NAKİT AKIŞ TABLOSU ZORUNLUluğu:**
-- Cash Flow Statement parse edilmeden output GÖNDERMEK YASAK
-- OCF, ICF, Financing CF, Net Change, Ending Cash → hepsi zorunlu
-- Working Capital bileşenleri (receivables/inventory/payables changes) → zorunlu
-
-**BU KURALLAR NEDEN EKLENDİ:**
-- KCHOL raporunda %52 veri eksikti (tablo satırlarının çoğu TBD)
-- TCELL raporunda Income Statement %60 "[pending]", Cash Flow %100 eksik
-- 6 raporda (AKBNK, SISE, KCHOL×3, TCELL) aynı eksikler tekrarlandı
-- Bu kurallar bu tekrarları ÖNLEMEK için tasarlandı
-
----
-
-## ✅ CEO Geri Bildirimi — 2026-04-11 — TCELL RAPORU (POST DELTA-UPDATE)
-
-### POZİTİF NOKTALAR:
-- ✅ **5 yıllık gelir tablosu TAM:** 2021-2025 tüm satırlar (Revenue, COGS, Gross Profit, EBITDA, EBIT, Finance Costs, PBT, Tax, Net Income) — hiç TBD yok, tam parse edilmiş
-- ✅ **5 yıllık bilanço TAM:** Assets (Current/Non-current breakdown), Liabilities (Current/Non-current breakdown), Equity — 2021-2025 tam
-- ✅ **5 yıllık nakit akış TAM:** Operating/Investing/Financing activities breakdown + Working Capital changes — 2021-2025 tam
-- ✅ **İşletme sermayesi line items TAM:** Trade Receivables, Inventory, Trade Payables — 2021-2025 tüm yıllar parse edilmiş
-- ✅ **Matematiksel kontroller PASSED:** Balance sheet equation (A = L + E) doğrulandı, Income Statement chain doğrulandı, Cash Flow reconciliation OK
-- ✅ **TBD yasağı uygulandı:** 21 zorunlu kalemde hiç TBD yok — tamamı extract edilmiş
-- ✅ **Schema compliance:** IFRS normalized line items kullanılmış, IAS 29 hyperinflation accounting notları eklemiş
-- ✅ **Output structure:** Tam JSON schema + markdown tables — truncation yok, tamamı gönderilmiş
-
-### Eksikler (Minor):
-- **Segment finansal detayları (IFRS 8) eksik:** Turkcell Türkiye vs Turkcell International vs Digital Services ayrı revenue/EBITDA breakdown KAP'ta mevcut olabilir ama parse edilmemiş
-  - Ancak TCELL operasyonel telecom şirketi (holding değil) — IFRS 8 segment disclosure "iyi olur" seviyesinde, zorunlu değil
-  - Sonraki raporlarda segment bilgileri KAP annual report "Segment Bilgileri" bölümünden ek parse yapılabilir
-
-### Bundan Sonra:
-- ✅ **TÜM zorunlu kurallar başarıyla uygulandı — tekrar etmeye gerek yok**
-- **Telekomünikasyon şirketleri için EK parse:** Eğer KAP annual report'ta "Segment Information (IFRS 8)" bölümü varsa:
-  - Turkcell Türkiye (consumer mobile + fixed broadband + B2B)
-  - Turkcell International (Lifecell Ukraine, Belarus, Germany)
-  - Digital Services (Paycell, Financell, TDC, BiP, TV+)
-  - Her segment için: Revenue, EBITDA, EBIT, Assets — parse et
-- **CAPEX breakdown:** Eğer KAP cash flow notes'ta CAPEX breakdown varsa (Network equipment, Spectrum, Data centers, Renewable energy) — parse et
-
----
-
-*Dosya sahibi: Parse Standardization Agent | Denetleyen: META (CEO)*
-
----
-
-## CEO Geri Bildirimi — 2026-04-12 — TUPRS Raporu
-
-### Eksikler:
-- **Balance sheet FAIL → Alternatif kaynak denenmedi:** IAS 29 hyperinflation kaynaklı equity imbalance tespit edildi ve doğru eskalasyon yapıldı. Ancak escalate etmeden önce KAP konsolide tam tablo (faaliyet raporu özeti değil) denenmedi. TUPRS için birincil kaynak KAP konsolide SPK tabloları olmalıydı, faaliyet raporu özeti ikincil kaynak.
-- **White product yield tablosu:** Sadece %82 aggregate değeri elde edildi; ürün bazında breakdown (benzin, motorin, jet, fuel oil, nafta ayrı ayrı) parse edilemedi. Bu TUPRS için birincil operasyonel metrik.
-- **IAS 29 etkisi önceden öngörülebilirdi:** Türkiye'de IAS 29 hyperinflation muhasebesi zorunlu (TÜFE 3 yıllık birikimli %100+ eşiğini geçti). Bu sorun öngörülebilir olduğu için "faaliyet raporu özetinden parse etme, direkt konsolide tabloları kullan" protokolü baştan uygulanmalıydı.
-- **mandatory_metrics_complete: TRUE overclaiming:** Parse output bazı metrikleri "tahmini/hesaplanmış" olarak işaretledi ama flag'i TRUE verdi. FALSE ile birlikte hangi metriklerin tahmini olduğu listesi verilmeli.
-
-### Bundan Sonra:
-- **Türkiye şirketleri için birincil kaynak: KAP konsolide SPK tabloları.** Faaliyet raporu özet tabloları ikincil kaynak — IAS 29 uyarlamaları, hyperinflation restatements, equity revaluation reserves sadece tam konsolide tablolarda görünür.
-- **IAS 29 pre-check:** Her Türk şirketi analizine başlamadan önce kontrol: "Bu şirketin son 3 yıllık kümülatif TÜFE > %100 mı?" Evet ise, equity section'da hyperinflation restatement kalemi bekle ve faaliyet raporundan değil SPK tablo footnotes'undan çek.
-- **mandatory_metrics_complete flag'i yalnızca TÜM metrikler gerçek veriye dayalıysa TRUE:** Tahmini/hesaplanmış metrikler "conditional_pass" olarak ayrıca listelenmeli.
-- **Ürün bazında yield tablosu rafineri şirketlerinde zorunlu alan:** Tek aggregate sayı kabul edilmez.

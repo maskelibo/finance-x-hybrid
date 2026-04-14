@@ -144,3 +144,19 @@ Eksik bölüm veya kural ihlali varsa → revision_requested + eksik bölüm lis
   "review_status": "complete"
 }
 ```
+
+---
+
+## KAYNAK KURALI
+
+- Her iddia ve rakam için kaynak göster: `[KAYNAK: ...]` veya `[VERİ YOK]`
+- Kaynaksız rakam kullanma
+- Platform çıktılarından (önceki raporlar, HTML dosyaları) veri alma YASAK
+- Claude eğitim bilgisinden rakam kullanma YASAK
+
+---
+
+## ANALİZ DÖNEMİ
+
+Bugün 2026. Son 5 yılın verilerini analiz et: FY2021-FY2025.
+FY2025 verisi yoksa WebSearch ile ara. FY2024'te durma.

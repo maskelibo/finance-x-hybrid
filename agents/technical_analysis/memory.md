@@ -1,315 +1,132 @@
-# Technical Analysis Agent — Bilgi Defteri
-
-## Kimlik Kartı
-
-| Alan | Bilgi |
-|---|---|
-| Ajan Adı | Technical Analysis Agent |
-| Uzmanlık | Teknik Analiz |
-| Oluşturma Tarihi | 2026-04-09 |
-| Bağlı Olduğu Ajan | META (CEO) |
-| Toplam Eğitim Gecesi | 2 |
-| Ortalama Öğrenme Puanı | 80/100 |
+# Technical Analysis Agent — Damitilmis Hafiza
 
 ---
 
-## Temel Yetenek Haritası
+## Kalici Kurallar
 
-| Konu | Seviye (1–10) | Not |
-|---|---|---|
-| Chart patterns | 3 | Candlestick patterns (Engulfing, Doji, Hammer) öğrenildi |
-| İndikatörler | 3 | MACD, RSI, EMA formülleri ve sinyal üretimi |
-| Destek/Direnç seviyeleri | 3 | Pivot Point, psikolojik seviyeler, kırılım mantığı |
-| Hacim analizi | 2 | Volume confirmation stratejisi (%15-20 doğruluk artışı) |
-| Trend takibi | 3 | 12/26/50/200 EMA, Golden cross kavramı |
+- **Standart rapor sablonunu TAM UYGULA:** Volume + Fibonacci + Insider + RS time-series + VWAP + Bollinger — HER raporda ZORUNLU. Eksik bolum birakma.
+- **Guven seviyesi asla HIGH degil:** Teknik analiz protokolu geregi maksimum MEDIUM.
+- **Canli piyasa verisi yoksa teknik indikator hesaplama YAPMA;** yalniz dogrulanmis fiyat seviyelerini raporla.
+- **Memory veya onceki rapor hicbir zaman birincil piyasa kaynagi olamaz.**
+- **Her fiyat seviyesi icin: tarih, saat, veri kaynagi ve kapanis/gun ici ayrimi ver.**
+- **Hacim teyidi olmadan mum formasyonu uzerinden reversal karari verme.**
+- **Hacim teyidi zorunlu:** Her fiyat seviyesi (destek, direnc, kirilim) icin hacim verisi ekle. "X TL destegi tutuldu" -> "X TL destegi Y lot hacimle tutuldu" formati.
+- **MACD histogram bulgusu net yazilacak:** "Pozitif bolgede" veya "negatif bolgede, sifir cizgisine yaklasiyor" — belirsiz ifade YASAK.
+- **Yabanci flow buyukluk:** Net alim/satim miktari (en az "gunluk ortalama hacmin %X'i") verilmeli.
+- **Insider islem teknik analizi:** Satis miktari / ortalama gunluk hacim. <%5 NOTR, %5-10 ORTA, >%10 YUKSEK etkili.
+- **Coklu fiyat tutarsizligi:** Upstream pipeline = PRIMARY, son BIST seansi kapanisi = SECONDARY. Her ikisini belirt.
 
----
+## Zorunlu Kontrol Listesi
 
-## Temel İndikatör Kuralları
-
-**MACD:**
-- 12 ve 26 EMA farkı = MACD çizgisi; 9 periyod ortalaması = sinyal çizgisi
-- MACD sinyal çizgisini yukarı keserse AL, aşağı keserse SAT
-
-**RSI:**
-- 70 üstü: Aşırı alım | 30 altı: Aşırı satım | 50–60: Nötr, devam potansiyeli var
-- MACD ile birlikte kullanımda sinyal doğruluğu artar
-
-**Hareketli Ortalamalar:**
-- Kısa vade: 12/26 EMA | Uzun vade: 50/200 EMA
-- Fiyat > 20-day MA > 52-day MA = klasik boğa sıralaması
-- Golden Cross: 50 EMA'nın 200 EMA'yı yukarı kesmesi = güçlü yükseliş
-
-**Destek/Direnç:**
-- Pivot Point yöntemi: Gün içi işlemler için kritik seviyeler
-- Bir seviye ne kadar çok test edilirse gücü artar
-- Kırılan destek → yeni direnç olabilir
-- Psikolojik seviyeler: 10, 50, 100, 1000, 10000 gibi yuvarlak sayılar
-
-**Candlestick Patterns:**
-- En güvenilir: Bullish/Bearish Engulfing, Morning Star, Hammer
-- Doji = kararsızlık; volume spike veya RSI divergence ile güçlenir
-- Volume analizi ile birlikte kullanımda %15-20 doğruluk artışı
-
----
-
-## Birikimli Bilgi Bankası
-
-**Breakout Volume Confirmation:**
-- Kırılım sırasında hacim ortalamanın üstünde olmalı; düşük hacimli kırılımlar güvenilir değil
-
-**Higher Lows Pattern:**
-- Her düşüş önceki dipten daha yüksekte kalırsa yükseliş trendi sağlamdır
-
-**Güven Seviyesi Kuralı:**
-- Teknik analiz protokolü gereği güven seviyesi asla HIGH değil — maksimum MEDIUM
-
----
-
-## Güvenilir Veri Kaynakları
-
-| Kaynak | Kullanım Alanı |
-|---|---|
-| Investing.com | RSI, MACD, teknik özet sinyalleri |
-| TradingView | Fiyat grafikleri, performans metrikleri |
-| Mynet Finans | Türkçe teknik analiz raporları, destek/direnç |
-| Hisse.net | Hacim analizi, günlük yorumlar |
-| KAP | Insider bildirimler, resmi açıklamalar |
-
-**Güvenilirlik sırası:** KAP > Investing.com > TradingView > Mynet Finans > Diğer
-
----
-
-## Öğrenilen Dersler
-
-1. Gerçek piyasa verisi toplarken MACD ve 100/200 günlük MA gibi bazı veriler web'de direkt bulunamayabilir — "Strong Buy" gibi genel teknik özetlerden çıkarım yapılabilir ama bu LOW confidence olur; eksik veriyi açıkça belirtmek zorunludur.
-2. Her raporda 3 aylık ortalama hacim ve recent volume spikes karşılaştırması yapılmalı.
-3. Fibonacci retracement eklenecek: 52-haftalık high-low aralığından %23.6, %38.2, %50, %61.8 seviyeleri; TradingView'da otomatik hesaplanır.
-4. KAP'ta insider alım-satım bildirimleri takip edilmeli; net insider buying + bullish technicals = çok güçlü sinyal.
-5. Relative Strength (RS) = (Hisse fiyatı / BIST100) × 100 — RS yükseliyorsa hisse piyasayı geçiyor; mutlak performans yeterli değil.
-
----
-
-## Standart Rapor Şablonu (Her Analizde Zorunlu)
-
+**Standart Rapor Sablonu (her analizde doldurulmali):**
 ```
 Volume Analysis:
-- 3-month average: X M adet/gün
-- Current vs. average: +/- W%
-- Recent spikes: [Tarih] → outcome
+- 3-month avg: X M adet/gun | Current vs avg: +/- W% | Recent spikes: [Tarih] -> outcome
 
-Fibonacci Retracement (52-week: Low – High):
-- 0%: X TL | 23.6%: X TL | 38.2%: X TL | 50%: X TL | 61.8%: X TL | 100%: X TL
-- Current price position: [Between which levels]
+Fibonacci Retracement (52-week Low-High):
+- 0%/23.6%/38.2%/50%/61.8%/100% seviyeleri | Current price position
 
-Insider/Institutional:
-- KAP net insider: Buy / Sell / Neutral
-- Yabancı yatırımcı payı: [Trend]
-
-RS vs BIST100: [Outperforming / Underperforming]
-```
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — AKBNK Raporu
-
-### Eksikler:
-- **Volume analysis eksik:** 3 aylık ortalama hacim vs güncel hacim karşılaştırması yok — standart şablonda zorunlu olmasına rağmen yapılmamış
-- **Relative strength vs BIST 100 time-series yok:** Sadece 12 aylık toplam performans var (+57% vs +18.5%) ama aylık RS trend grafiği yok
-- **Institutional ownership flow eksik:** Yabancı yatırımcı pay değişimi, net alım/satım akışı analiz edilmemiş
-- **Short interest eksik:** Açığa satış pozisyonları takip edilmemiş
-- **Fibonacci levels eksik:** Standart şablonda zorunlu — 52-week high-low arası %23.6/%38.2/%50/%61.8 seviyeleri hesaplanmamış
-- **Insider trading eksik:** KAP'tan insider alım/satım bildirimleri kontrol edilmemiş
-
-### Bundan Sonra:
-- Standart rapor şablonunu TAM UYGULA — eksik bölüm bırakma
-- Volume analysis + Fibonacci + Insider/Institutional + RS vs BIST100 HER raporda ZORUNLU
-- Relative strength time-series grafiği ekle — sadece toplam performans değil, aylık trend
-- KAP'tan insider trading bildirimleri kontrol et — net insider buying/selling önemli sinyal
-- Yabancı yatırımcı pay değişimini TCMB/Merkezi Kayıt Kuruluşu'ndan takip et
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu
-
-### Eksikler:
-- **Volume analysis eksik:** 3 aylık ortalama hacim vs güncel hacim karşılaştırması yapılmamış — standart şablonda zorunlu
-- **Fibonacci retracement eksik:** 52-week high (229.10) vs low (133.70) arası %23.6/%38.2/%50/%61.8 seviyeleri hesaplanmamış
-- **Insider trading eksik:** KAP'tan insider alım/satım bildirimleri kontrol edilmemiş
-- **Relative strength time-series yok:** Sadece 12 aylık toplam performance var (+%34.3 vs BIST +%25.1) ama aylık RS trend grafiği yok
-- **Institutional ownership flow eksik:** Yabancı yatırımcı pay değişimi analiz edilmemiş
-
-### Bundan Sonra:
-- Standart rapor şablonunu TAM UYGULA — Volume + Fibonacci + Insider + RS time-series HER raporda ZORUNLU
-- Fibonacci retracement TradingView'dan otomatik hesaplanabilir — manuel hesaplama: Level = Low + (High - Low) × Fibonacci %
-- KAP insider trading: "İçeriden Öğrenenler" bildirimleri → net insider buying/selling son 3 ay — material signal
-- Relative strength time-series: (KCHOL / BIST100) × 100 her ay için — outperformance trendi mi underperformance mi?
-- Yabancı pay: TCMB/Merkezi Kayıt Kuruluşu'ndan foreign ownership % historical data — holding discount ile correlate et
-
----
-
-## [2026-04-11] Gece Eğitimi #2 — Advanced Volume & Institutional Flow 2026
-
-**Konu:** VWAP, institutional flow tracking, Smart Money Flow Index, advanced 2026 techniques  
-**Sorgular:** 1 web araştırma sorgusu kulanıldı  
-**Öğrenme Puanı:** 82/100
-
-**Öğrenilen Dersler:**
-
-1. **VWAP = Institutional Benchmark (2026):**
-   - **Volume-Weighted Average Price (VWAP):** Institutional traders'ın execution quality ölçmek için kullandığı benchmark
-   - Intraday bias gösterir — fiyat VWAP üstünde = bullish, altında = bearish
-   - Professional traders VWAP'ı volume moving averages ile birleştirerek large order volume analizi yapar
-   - Ders: VWAP artık standart rapor şablonuna eklenmeli (institutional activity tracking için kritik)
-
-2. **Smart Money Flow Index (SMFI):**
-   - "Smart money" flow'unu track eder (institutional activity)
-   - Price action relative to volume analiz eder → bullish mi bearish mi belirler
-   - Aggressive order execution sequences'ı takip eder
-   - Ders: SMFI, mevcut RSI/MACD'ye ek olarak institutional positioning için kullanılabilir
-
-3. **Point of Control (POC) & Value Area:**
-   - **POC:** Highest accumulated volume'lü fiyat seviyesi — price magnet görevi görür
-   - **Value Area (70%):** Total traded volume'ün %70'ini içeren aralık — "fair value" tanımlar
-   - Order flow analysis + volume profile + delta divergence = institutional accumulation tespiti
-   - Ders: POC ve Value Area, destek/direnç analizine ek katman olarak eklenebilir
-
-4. **Cumulative Volume Delta (CVD):**
-   - Tick-level directional volume tracking — institutional positioning'i fiyat hareketi ÖNCESINDE gösterir
-   - Intra-candle tracking algorithms ile buy vs sell pressure'ı ayırt eder
-   - Signal reliability artırır: volume profile high-volume nodes + delta divergence + order flow directional pressure = güçlü sinyal
-   - Ders: CVD, CEO feedback'te istenen "volume confirmation" için advanced tool
-
-5. **Institutional Flow Tracking "Continuity" & "Accumulation":**
-   - Large order tracking platforms: "institutional activity" filtresi ile büyük siparişleri aggregate eder
-   - **Anahtar:** Continuity (süreklilik) ve accumulation (birikim) gözlemlemek
-   - Large trader buying/selling strength'i otomatik filtreler
-   - Ders: KAP "İçeriden Öğrenenler" bildirimleri ile combine edilince (insider buying + institutional accumulation) çok güçlü sinyal
-
-**Standart Rapor Şablonu Güncelleme:**
-
-Mevcut şablona eklenecek:
-```
 VWAP Analysis:
-- Current price vs VWAP: [Above/Below] by X%
-- VWAP trend: [Rising/Falling/Flat]
-
-Smart Money Flow Index (SMFI):
-- Current reading: [Bullish/Bearish/Neutral]
-- Institutional positioning: [Accumulation/Distribution]
+- Price vs VWAP: [Above/Below] by X% | Trend: [Rising/Falling/Flat]
 
 Volume Profile:
-- Point of Control (POC): X TL
-- Value Area (70%): Y TL – Z TL
-- Current price position: [Inside/Outside] value area
+- POC: X TL | Value Area (70%): Y-Z TL | Price position: [Inside/Outside]
+
+Insider/Institutional:
+- KAP net insider: Buy/Sell/Neutral | Yabanci yatrimci payi: [Trend]
+
+RS vs BIST100: [Outperforming/Underperforming] — 12 ay VE YTD iki zaman dilimi
+
+Bollinger Bands:
+- Current position vs bands | Squeeze/expansion durumu
 ```
 
-**CEO Feedback'lerden Alınan Aksiyonlar:**
-- ✅ Volume analysis methodology artık gelişmiş (VWAP, POC, CVD)
-- ✅ Institutional flow tracking methods hazır (SMFI, large order continuity)
-- ✅ Volume confirmation protocol artık net (volume spike + POC + delta divergence)
+**Enerji sektoru ek:** Brent/WTI teknik durumu bolumu ekle
+**Celik sektoru ek:** HRC Avrupa spot fiyati + demir cevheri + hurda + Cin ihracat + tarife etkisi
+**Stochastic RSI 80+ ise** "overbought risk" uyarisi ekle
 
-**Eksik kalan:**
-- Fibonacci retracement, Insider trading (KAP), RS time-series hâlâ standart şablonda uygulanmıyor (bunlar metodolojik değil, execution eksikliği — gerçek görevlerde apply edilmeli)
-
----
-
----
-
-## [2026-04-12] TUPRS Analizi — Öğrenilen Dersler
-
-**Konu:** Rafineri hisseleri için teknik analiz; Brent korelasyonu; MA kümelenmesi
-
-**Öğrenilen Dersler:**
-
-1. **Rafineri Hissesi — Brent Korelasyonu Kritik:**
-   - TUPRS'ın Brent crude ile çok yüksek korelasyonu var: Her ikisi de Nisan 2026'da -%13.3 geriledi (aynı anda)
-   - Teknik analizde Brent'in teknik durumu daima kontrol edilmeli — "commodity-technical interface"
-   - Enerji sektörü hisseleri için standart teknik şablona Brent/WTI teknik durumu bölümü eklenmeli
-
-2. **MA Kümelenmesi (Convergence) Analizi:**
-   - MA-5, MA-20, MA-50, MA-100, MA-200'ün dar bir bantta yakınsaması → "fair value zone"
-   - Bu durum destek zemini oluşturur ama aynı zamanda karar eşiğinde olduğunu gösterir
-   - Bollinger Squeeze ile birlikte okunduğunda kırılım yaklaşıyor sinyali verir
-
-3. **Fibonacci %23.6 Test Edilmesi:**
-   - TUPRS'ta 8 Nisan 2026'da 240.20 TL ile Fibonacci %23.6 retracement (239.50 TL) test edildi
-   - Bu seviye yüksek hacimle test edilip tutundu → bullish yapısal sinyal
-   - "Test etti ama kıramadı" → klasik Fibonacci destek onayı
-
-4. **Koç Holding Blok Satışı — Kurumsal Yerleştirme Seviyesi:**
-   - Ana hissedar blok satışları bir "taban seviyesi" oluşturabilir: 233 TL Koç yerleştirme fiyatı güçlü psikolojik destek
-   - Kurumsal yerleştirme fiyatı, teknik destek analizinde reference level olarak kullanılabilir
-
-5. **Bollinger Band — Doğrudan Veri Genellikle Erişilemiyor:**
-   - BB seviyeleri Investing.com'un teknik sayfasından direkt alınamıyor
-   - ATR + MA-20 üzerinden tahmin yapılması gerekiyor → Low confidence ile not edilmeli
-
-6. **Standart Şablon Başarısı:**
-   - Volume, Fibonacci, Insider, VWAP, RS vs BIST100, Bollinger Bands, Sector macro (Brent) — TÜM bölümler dolduruldu
-   - TCELL ve KCHOL raporlarında yaşanan truncation/eksik bölüm sorunu bu raporda AŞILDI
-
-*Bu dosya her gece 05:30–06:00 arasında güncellenir.*
-*Dosya sahibi: Technical Analysis Agent | Denetleyen: META (CEO)*
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu
-
-### Pozitif Noktalar:
-- ✅ Tüm temel teknik göstergeler hesaplanmış — RSI, MACD, ADX, Stochastic
-- ✅ Support/resistance seviyeleri net — Fibonacci retracement levels doğru
-- ✅ Trend strength analysis solid — ADX 49.1 (very strong trend) yorumuyla
+## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
-- **Volume analizi eksik:** Price movements için volume confirmation yok — hacim ortalamanın üstünde mi?
-- **Institutional flow analizi yok:** Yabancı/yerli yatırımcı net alım/satım trendi eksik
-- **Insider trading eksik:** KAP'tan son 90 gün içinde board/executive alım/satım bildirimleri araştırılmamış
+- **Volume analysis eksik** — Hacim verisi sağlanamadığı için 3 aylık ortalama hacim ve hacim spike analizi yok. Kurala göre hacim teyidi olmadan destek/direnç seviyeleri "tutuldu" denilemez.
+- **Fibonacci retracement gösterilmedi** — 52 hafta Low-High aralığında Fibonacci seviyeleri (%23.6, %38.2, %50, %61.8) hesaplanıp mevcut fiyat pozisyonu belirtilmedi.
+- **VWAP analizi eksik** — Fiyat vs VWAP karşılaştırması, trend yönü raporlanmadı.
+- **Bollinger Bands eksik** — Fiyatın bantlar içindeki/dışındaki pozisyonu ve squeeze/expansion durumu belirtilmedi.
+- **Insider işlem analizi eksik** — KAP'tan insider alım/satım verisi çekilmedi; Şubat 2026 hisse geri alımı (85.9M TRY, KAP 1561611) teknik analize dahil edilmedi.
+- **Yabancı yatırımcı flow verisi eksik** — Net alım/satım miktarı (günlük ortalama hacmin %X'i) verilmedi.
+- **RSI 68.53 → "Near Overbought"** — Stochastic RSI 80+ durumu için "overbought risk" uyarısı eklenmeliydi (kurala göre).
 
 ### Bundan Sonra:
-- **Volume confirmation ZORUNLU:** Her major price movement (>%2 daily change) için volume analizi ekle — ortalamanın kaç katı, breakout confirm ediyor mu?
-- **Institutional flow (Yabancı/Yerli akış):** BIST veri servisinden veya Fintables'dan yabancı yatırımcı net pozisyonu çek — trend yönü ile uyumlu mu?
-- **Insider trading KAP check:** KAP'tan son 90 gün "İçeriden Öğrenenler Listesi" ve "Pay Alım/Satım Bildirimi" ara — board/executives alıyor mu satıyor mu?
+- **Standart şablonu eksiksiz uygula** — Volume + Fibonacci + VWAP + Bollinger + Insider + RS vs BIST100 + Volume Profile — hepsi mevcut olmadan output gönderme. Hacim verisi yoksa "veri yok — confidence LOW" yaz, bölümü atlama.
+- **Hisse geri alım bildirimleri teknik analize dahil et** — KAP'tan gelen buyback bildirimi (örn. 1561611) destek seviyesi analizi için proxy hacim sinyali verir.
+- **200-günlük MA kritik destekte** — 316.25 TRY fiyatı 312.10 MA'ya 4.15 TRY mesafede; bu yapı için "kırılma senaryosu ve sonraki destek" hesabı zorunlu (hesaplandı ✓ ama Fibonacci ile konfirme edilmedi).
+- **Havacılık sektörü teknik eki** — Brent/jet yakıt fiyatı teknik görünümü ile hisse fiyatı korelasyonu bölümü ekle.
 
----
-
-## CEO Geri Bildirimi — 2026-04-11 — TCELL Raporu
+## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
 
 ### Eksikler:
-- **Momentum indicators TRUNCATED:** RSI, MACD, Bollinger Bands başlamış ama detaylar kesilmiş — sadece başlıklar var, değerler ve yorumlar yok
-- **Volume analysis eksik:** 3 aylık ortalama hacim vs güncel hacim karşılaştırması yok — standart şablonda zorunlu olmasına rağmen yapılmamış
-- **Fibonacci retracement eksik:** 52-week high (129.60) vs low (~85-95) arası %23.6/%38.2/%50/%61.8 seviyeleri hesaplanmamış
-- **Insider trading eksik:** KAP'tan son 90 gün içinde board/executive alım/satım bildirimleri araştırılmamış
-- **Relative strength vs BIST 100 time-series yok:** Sadece genel performans var ama aylık RS trend grafiği yok
-- **5G launch price action analysis eksik:** 1 Nisan 2026 5G lansmanı fiyat/hacim reaksiyonu analiz edilmemiş — "buy the rumor, sell the news" pattern var mı?
+- **MACD verisi 33 gün eski** — Son güncelleme 12 Mart 2026; analiz tarihi 14 Nisan 2026. Bu boşluk flaglendi ✓ ("MACD DOĞRULANMALI") ancak güven LOW-MEDIUM'a düştü. Hisse 740 TRY seviyesinde; 33 günde trend değişmiş olabilir.
+- **Composite score 0.68 — P0 upstream sorunları yansıtıyor** — FAVÖK/IAS29 çelişkisi ve share count belirsizliği teknik analizin bağımsız kalitesini düşürdü; ancak bu upstream sorun, teknik analistin kontrolünde değil. Doğru teşhis yapıldı ✓.
+- **Volume analysis eksik/sınırlı** — 3 aylık ortalama hacim, hacim spike analizi ve hacim teyiti yapılamadı (web veri sınırı). "[VERI YOK — conf: LOW]" etiketiyle bölüm açık bırakılmalı.
+- **Bollinger Bands gösterilmedi** — Mevcut standart şablonda zorunlu; sıkışma/genişleme durumu belirtilmeli.
 
 ### Bundan Sonra:
-- **Standart rapor şablonunu TAM UYGULA:** Volume + Fibonacci + Insider + RS time-series + VWAP — HER raporda ZORUNLU
-- **5G launch event-driven technical analysis (telecom-specific):**
-  - 1 Nisan 2026 5G launch date → pre-launch rally (Feb peak 129.60) → post-launch pullback (-17%) — klasik "buy rumor, sell news" pattern
-  - Volume spike on launch day? Confirmation var mı?
-  - Post-launch consolidation: Support levels holding? (106-107 TRY level)
-  - Next catalyst: Q2 2026 earnings (May) → 5G subscriber uptake first disclosure
-- **Telecom stock seasonality:** Q4 (temettü beklentisi) + Q1 (genel kurul) genellikle positive seasonality — TCELL için geçerli mi? Historical pattern check
-- **Institutional flow (yabancı/yerli):** TCELL gibi BIST 100 blue chip için yabancı yatırımcı net pozisyonu kritik — trend yönü ile teknik uyumlu mu?
-- **Output truncation çözümü:** Teknik analiz truncate olacaksa summary indicators + detailed analysis olarak ikiye böl, her ikisini de gönder
+- **Perakende hissesi teknik eki zorunlu:** Ramazan sezonu fiyat hareketleri, yaz sezonu hacim anomalileri — mevsimselliğin teknik görünüme etkisi analiz edilmeli. BIMAS için Q1 sonuçları açıklanma dönemlerinde (Mayıs, Ağustos, Kasım) hacim spike tespiti.
+- **MACD güncelliği her analizde ilk kontrol** — Veri tarihi 14 günden eski ise "MACD STALE — [tarih]" olarak flagle ve güven seviyesi otomatik LOW-MEDIUM. 30+ günse LOW.
+- **Insider işlem teknik analizi — buyback etkisi** — BIMAS'ın 7.11M hisse geri alımı (Eylül-Aralık 2025, 528.86 TL ortalama) destek seviyesi için proxy; bu seviye teknik analizde destek zonu olarak işlenmeli.
+- **BIMAS teknik referans değerleri (Nisan 2026):** Mevcut fiyat 740 TRY, 52W low/high tahmini ~520/775, buyback ortalama 528.86 TL (güçlü destek), RSI ~65 momentum bölgesi. Gelecek analizlerde baz noktaları.
 
----
-
-*Dosya sahibi: Technical Analysis Agent | Denetleyen: CEO*
-
----
-
-## CEO Geri Bildirimi — 2026-04-12 — TUPRS Raporu
+## CEO Geri Bildirimi — 2026-04-14 — KCHOL Delta Raporu
 
 ### Eksikler:
-- **Hacim (volume) analizi yok:** Fiyat hareketleri RSI ve MA ile analiz edildi ama hacim teyidi verilmedi. 248 TL destek seviyesinin tutulup tutulmadığını hacim olmadan teyit etmek mümkün değil. "Güçlü destek" iddiası hacim verisinden bağımsız yapılamaz.
-- **MACD sinyal analizi kısıtlı:** RSI 53.89 nötr görünüyor ama MACD histogram (momentum) analizi yüzeysel geçildi. MACD signal line cross (bullish/bearish crossover) net ifade edilmedi.
-- **Yabancı yatırımcı flow detayı eksik:** "Net alıcı (1 Nisan)" notu var ama haftalık/aylık net alım miktarı (TRY veya lot bazında) verilmedi. Sadece yön değil, büyüklük de önemli.
-- **Koç hisse satışı -%2.1'nin teknik etkisi:** Insider satışı teknik kırılım riski olarak değerlendirildi ama bu satışın piyasaya etkisi (günlük hacmin kaçta kaçı?) hesaplanmadı.
+- **100-MA ve 200-MA yok** — Orta ve uzun vadeli trend belirsiz kaldı. Yalnızca 20-MA ve 50-MA ile "kısa vadeli bullish" değerlendirmesi yapıldı; ancak "orta vade belirtilmez" notu eklendi ✓.
+- **RSI, MACD, Stochastic RSI hepsi [VERİ YOK]** — TradingView web fetch'ten yüklenmedi. Önceki KCHOL raporları için de aynı sorun; tekrarlayan veri engeli. Alternatif kaynak (Investing.com KCHOL teknik göstergeler sayfası, bigpara.com teknik analiz) denenmedi.
+- **Hacim teyidi yok** — Fibonacci pivot zone (204-206 TL), destek/direnç seviyeleri hacim konfirmasyonu olmadan verildi. Destek/direnç için sadece bir tarihten (10 Nis, 5.02B TL) hacim var; 4 günlük trend yok.
+- **VWAP, Bollinger Bands, Volume Profile eksik** — Standart şablonun 5 bölümünden 4'ü eksik. Sadece Fibonacci ve MA seviyeleri mevcut.
+- **Insider/kurumsal flow analizi yok** — Delta penceresi (10-14 Nisan) için KCHOL insider işlem taraması yapılmadı.
+- **RS vs BIST100 eksik** — 12 aylık ve YTD relatif performans verilmedi. KCHOL'un BIST100'e göre outperform/underperform durumu bilinmiyor.
 
 ### Bundan Sonra:
-- **Hacim teyidi zorunlu:** Her fiyat seviyesi (destek, direnç, kırılım) için günlük/haftalık hacim verisi eklenecek. "X TL desteği tutuldu" → "X TL desteği Y lot hacimle tutuldu" formatı.
-- **MACD histogram bulgusu net yazılacak:** "Pozitif bölgede" veya "negatif bölgede, sıfır çizgisine yaklaşıyor" şeklinde — belirsiz ifade YASAK.
-- **Yabancı flow büyüklük:** Net alım/satım miktarı (en azından "günlük ortalama hacmin %X'i" formatında) verilmeli.
-- **Insider işlem teknik analizi:** Piyasaya etki = satış miktarı / ortalama günlük işlem hacmi. Bu oran %5 altıysa NÖTR, %5-10 arası ORTA, >%10 ise YÜKSEK etkili olarak sınıflandır.
+- **Standart şablonu "veri yok — conf: LOW" ile doldur** — Her bölüm için: "VWAP: [VERİ YOK — web veri sınırı, conf: N/A]" satırı bile olsa bölümü boş bırakma. Şablonun her satırı var olmalı.
+- **Investing.com KCHOL teknik analiz sayfasını dene** — TradingView screenshot çekilemiyorsa Investing.com teknik göstergeler (RSI, MACD, MA özeti) okunabilir HTML formatında sunuluyor; WebFetch ile çekilebilir.
+- **Delta-update'de 4 günlük mum analizi** — 10, 11, 12, 13, 14 Nisan kapanış fiyatları ve hacimlerini tablo olarak sun; yön ve momentum bunu gösteriyor. 4 gün için mevcut veri KAP veya Bigpara'dan çekilebilir.
+
+## Bilinen Hatalar (Bir Daha Yapma)
+
+- AKBNK: Volume analysis, RS time-series, institutional flow, short interest, Fibonacci, insider trading — TAMAMEN EKSIK
+- KCHOL: Ayni eksikler tekrarlandi
+- TCELL: Momentum indicators TRUNCATED, 5G launch price action analizi eksik
+- TUPRS: Hacim teyidi yok, MACD sinyal analizi kisitli, yabanci flow buyuklugu verilmedi, Koc satis etkisi hesaplanmadi
+- EREGL: Canli veri olmadigi soylenmesine ragmen RSI/MACD/MA yorumu uretildi (kural ihlali), hacim spike teyidi yok, VWAP belirtilmedi
+
+## Son 3 Raporun Ogrenimleri
+
+- **THYAO (2026-04-13):** Web search limitation kritik — volume/insider/VWAP datos unavailable public sources'dan. Fib 61.8% (313.05) current price (316.75) ile 1.2% zonda confluence teyit edildi. RSI 68.5 shows momentum near overbought. +4.3% YoY vs BIST-100 +25.05% gap (-20.75pp) fundamental/valuation anomaly sinyal — sector cyclicality (fuel inflation, labor CPI+3%, capacity headwinds). March traffic +16% YoY shows operational momentum, contrasts technical underperformance. Volume verification ZORUNLU breakout confirmation icin. Analyst consensus 12/12 Strong Buy 473 TL target (+74.6% upside) creates asymmetric risk/reward.
+- **EREGL (2026-04-13):** Coklu fiyat referansi protokolu gelistirildi (26.06 vs 31.30 vs 27.04). Stochastic RSI 97.674 -> -%13.6 dusus patterni teyit edildi. MA kumelenmesi direnc analizi dogru yorumlandi. Fibonacci %38.2-%50 kritik test zonu tanimlandi.
+- **TUPRS (2026-04-12):** Brent korelasyonu kritik. MA kumelenmesi (convergence) "fair value zone" analizi. Fibonacci %23.6 test teyidi. Koc blok satisi 233 TL psikolojik destek seviyesi. Bollinger Band direkt erisilemiyor — ATR+MA20 tahmini low confidence ile not et.
+- **TCELL (2026-04-11):** Truncation sorunu — teknik analiz kesildi. 5G "buy rumor sell news" pattern analiz edilmedi.
+
+## Sektor Bilgi Bankasi
+
+**Guvenilirlik sirasi:** KAP > Investing.com > TradingView > Mynet Finans > Diger
+**Breakout volume:** Kirilimda hacim ortalamanin ustunde olmali; dusuk hacimli kirilim guvenilir degil
+**Higher Lows:** Her dusus onceki dipten yuksekse yukselis trendi saglam
+**OYAK insider notu:** Askeri emekli fonu yapisi nedeniyle KAP insider bildirimi beklenmez — kurumsal sahiplik degisimi izlenmeli
+**Web Search Veri Siniri (2026 Temmuz Öğrenmesi):** Public web sources (TradingView screenshot, Yahoo Finance, Investing.com) volume/insider/VWAP detail sağlamıyor. Composite data quality score 0.62'ye düşürüyor. **Çözüm:** BIST direct API veya Bloomberg terminal required downstream reconciliation'da. Web search sadece price/MA/RSI summary'ye yeterli — granular technical analysis için institutional data feeds zorunlu.
+
+## CEO Geri Bildirimi — 2026-04-14 — SAHOL Raporu
+
+### Eksikler:
+- **Hacim verisi hiç yok** — Tüm destek/direnç seviyeleri hacim teyitsiz. "KRİTİK DESTEK" ve "TUTTU" iddiaları yapılamaz.
+- **MACD [VERİ YOK]** — Histogram yönü ve sinyal çizgisi eksik; momentum analizi eksik kaldı.
+- **Relative performance tablosu truncated** — "BI" ile kesildi; BIST100 kıyaslama tamamlanmadı.
+- **RSI değeri estimate range (62-68) — gerçek değil** — Tahmin verildi ama confidence 0.60; gerçek RSI değeri olmadan "Neutral/weakening" yorumu zayıf.
+- **Stochastic RSI tamamen tahmin** — "[EST. <80]" ile geçiştirildi.
+
+### Bundan Sonra:
+- **Hacim teyidi olmadan destek seviyesi "tuttu" iddiası YASAK** — (Bu kural önceki memory'de de vardı; SAHOL'da da ihlal edildi.) Hacim veri kaynağı yoksa "Hacim bilinmiyor — seviye güvenilirliği LOW" yaz.
+- **MACD ve Stochastic eksik kalırsa "INCOMPLETE" etiketle:** "VERİ YOK" yazmak yerine ne için gerektiğini açıkla ve confidence overall'ı buna göre düşür.
+- **Relative performance bölümü truncation YASAK:** Grafik/tablo yarıda bırakılamaz; sonraki mesajda tamamla veya "tablo devam ediyor" notu ekle.
+- **Tahmin vs gerçek ayrımı netleştirilecek:** Tüm tahmin değerleri "[TAHMİN]" tag'i taşımalı; gerçek piyasa verisi "[VERİ: kaynak]" formatında belirtilmeli.
+
+---

@@ -1,1002 +1,300 @@
-# CEO Meta-Agent — Bilgi Defteri
-
-## Kimlik
-
-| Alan | Bilgi |
-|---|---|
-| Ajan Adi | CEO Meta-Agent |
-| Uzmanlik | Yonetim, Kalite Kontrolu, Agent Denetimi |
-| Olusturma | 2026-04-09 |
-| Egitim Gecesi | 1 (10 Nisan 2026, 15 agent, 45 arastirma sorgusu) |
+# CEO Agent — Damitilmis Hafiza
 
 ---
 
-## Chairman Kalici Direktifleri
+## Kalici Kurallar (Chairman Direktifleri)
 
-### KURAL 1: RAPOR ONAY PROTOKOLU
+### Veri Kaynak Kurallari
+- **MUTLAK:** Veriler DOGRUDAN faaliyet raporu PDF, KAP SPK tablolari veya XBRL'den. Platform ciktilari (HTML/PDF/MD) ASLA kaynak olamaz. Kaynaksiz iddia YASAK, WebFetch zorunlu.
+- **"Veri yok" YASAK** — KAP'ta 5 yillik tablo mevcut. Agent: alternative method → upstream request → CEO escalate. Onayi olmadan "veri yok" denemez.
 
-Hicbir rapor Chairman'e sunulmadan once CEO QUALITY REVIEW gecmeli.
+### Rapor Onay & Kalite
+- **CEO APPROVAL GATE:** Rapor CEO onayi olmadan TESLIM EDILEMEZ. qa/synthesis/final: completed + min karakter + [DEGRADED] yok.
+- **QA GATE:** conditional_pass = BLOCK. Score < 0.75 → BLOCK. FAIL → downstream dur + remediation plan.
+- **Pre-QA Gate:** Events sonrasi completeness check, yetersiz agent re-run.
+- **Self-assessment YASAK** — kalite karari yalniz QA/CEO verir. **Fact Pack:** Catisma → CEO authoritative pack yayimlar, downstream kilitlenir.
 
-**Kontrol Listesi:**
-- [ ] Tum zorunlu metrikler hesaplanmis mi? (Asagidaki listeye bak)
-- [ ] Her rasyo yorumlanmis mi? (Sadece sayi degil, ne anlama geliyor?)
-- [ ] Belirsiz/eksik ifadeler var mi? ("Yuksek", "dusuk" gibi context'siz kelimeler)
-- [ ] Sonuc net mi? (Rapor bir yere variyor mu?)
-- [ ] Agent meta-text kalmis mi? ("Hafizami inceledim", "Session ID", "Isleme suresi" gibi)
-- [ ] Turkiye makro analizi var mi? (BIST sirketleri icin ZORUNLU)
-- [ ] Sektor-ozel analiz var mi? (Savunma → jeopolitik, Cam → enerji, Banka → faiz)
-- [ ] Kaynaklar dogrulanmis mi? (Kaynaksiz iddia YASAK)
+### Rapor Format Standardi
+- **12 bolumlu yapi** (Kapak→Yonetici Ozeti→...→Zorunlu Bildirimler). Her bulgu: Tespit→Aciklama→Risk→Oneri.
+- **Goldman yapisi:** S.1=hedef fiyat+tez+tablo, S.2-3=yatirim sutunlari, S.4-5=riskler (quantified).
+- **Skor karti** (1-10, 6 boyut+genel) + hedef fiyat (Bear/Baz/Bull) ZORUNLU.
+- **Metin sandvic:** Her tablo oncesi "neden bakiyoruz" + sonrasi "ne anliyor". 4-soru yorum: Ne kadar? Nasil degisti? Neden? TRY etkisi?
+- **Gorsel:** [CHART:PIE/BAR/LINE] tag'leri, %55/%45 metin/gorsel, layout yan yana 60/40 (alt alta YASAK).
+- **Sirket brand identity taklit et** (renkler, tipografi, layout). Her sayfada logo. Yonetim anlatisi (CEO mektubu, taahut takibi) zorunlu.
+- **Sayfa tasmasi YASAK** (orphans:4, widows:4, tablo ortasinda kesme YASAK). Emoji YASAK, meta-text YASAK. PDF zorunlu.
 
-**Tek bir HAYIR → REJECT. Agent'a geri gonder.**
+### Otonomi & Proaktif Yonetim
+- CEO proaktif dusunur. Rate limit/crash/format/eksik metrik → KENDIN COZ, Chairman'e YAZMA.
+- Chairman'e SADECE: sirket/sektor ekleme, mimari degisiklik, butce, stratejik yon.
+- Tekrarlayan hata YASAK — bir feedback tum analizlere uygulanir. Uygulanmasini KONTROL ET ("Checked memory: [rules]" zorunlu).
 
-### KURAL 1B: RAPOR FORMAT STANDARDI (Chairman Direktifi — 10 Nisan 2026)
-
-Tum raporlar Koc Holding ic denetim raporu kalitesinde olmali:
-- 12 bolumlu yapi (Kapak → Icindekiler → Yonetici Ozeti → ... → Zorunlu Bildirimler)
-- Her bulgu: Tespit → Aciklama → Risk → Oneri yapisiyla
-- Skor karti (1-10, 6 boyut + genel skor)
-- Grafik verisi [CHART:PIE/BAR/LINE] tag'leriyle
-- Emoji YASAK, agent meta-text YASAK
-- PDF cikti (markdown → HTML → PDF)
-- Hedef fiyat araligi (Bear/Baz/Bull) ZORUNLU
-
-### KURAL 2: PROAKTIF YONETIM
-
-- Chairman'i olabildigince az kullan
-- Hatalari KENDIN tespit et, agentlara KENDIN feedback ver
-- Chairman sadece stratejik kararlar icin
-- "Benim sana bu konusmayi yapmadan senin bu hatalari tespit edip ekibe bunlari soylüyor olman lazimdi" — Chairman, 10 Nisan 2026
-
-### KURAL 3: "VERI YOK" MAZERETI YASAK
-
-- KAP'ta 5 yillik finansal tablolar tam mevcut
-- Google'da tum formuller aranabilir
-- Agent "veri yok" demeden once: KAP'tan WebFetch ile cek, Google'dan ara
-- "Veri yok" diyen agent → REJECT, "bul" de
-
-### KURAL 4: WEB ARASTIRMA ZORUNLU
-
-- Claude egitim verisi Agustos 2025'te kesildi — 8+ ay bosluk var
-- Her iddia oncesi WebSearch/WebFetch ile kaynak dogrulama ZORUNLU
-- Kaynaksiz iddia → REJECT
-- BIST icin birincil kaynak: kap.org.tr
-- Etki: Maliyet 3-5x artar, kalite cok daha yuksek. Chairman kaliteyi maliyete tercih etti.
-
-### KURAL 5: TEKRARLAYAN HATA YASAK
-
-- Bir feedback BIR KEZ verilir, uygulanir
-- ASELS'te verilen feedback SISE'de uygulanmadi → KABUL EDILEMEZ
-- Her analiz oncesi: Agent memory'lerini kontrol et, onceki feedback uygulanmis mi?
-
-### KURAL 6: HEARTBEAT LOG YONETIMI
-
-- Heartbeat loglari → `heartbeat_archive.md` dosyasina yaz (bu dosyaya DEGIL)
-- Bu dosyada sadece son heartbeat OZETI tutulur (max 10 satir)
+### Teknik Kurallar
+- **IAS 29:** Turk sirketi → TUFE >%100 → IAS 29 aktif → KAP konsolide tablo, parasal kazanc ayristir.
+- **Net Borc = Finansal Borc - (Nakit + KV Finansal Yatirimlar).** Toplam yukumluluk YASAK.
+- **Reconciliation skoru:** Ic tutarlilik %50 + kaynak dogrulugu %50. Kaynak dogrulanmadan EXCELLENT verilemez.
+- **Emtia anomali:** Celik EBITDA marji >%15 → FLAG. Net kar/EBITDA >%35 → IAS 29 suphe.
+- **EPDK/BOTAS → event_impact_mapper IMMEDIATE.** Valuation 3 parcada calisir. Holding timeout 25dk + 2 retry.
+- **Truncation → CEO'ya escalate, yarim output GONDERME.** Summary + Detail JSON cift cikti.
+- **Upstream validation:** "[pending]" → downstream analiz YAPMA, talep et. 4 zorunlu tablo: IS, BS, CF, SE.
+- Heartbeat loglari → heartbeat_archive.md (burada sadece son ozet, max 10 satir).
 
 ---
 
-## Zorunlu Finansal Metrik Listesi
+## Operasyonel Kontrol Listesi
 
-Her sirket analizinde asagidaki metriklerin TAMAMI hesaplanmali. "Veri yok" kabul edilmez.
+### Pre-Flight
+- [ ] Sirket tipi (holding→segment+SOTP+NAV) + sektor framework (Telekom:ARPU/churn, Banka:NIM/CET1, Enerji:WTI-Brent/IEA)
+- [ ] Agent memory yuklenmis mi, onceki feedback uygulanmis mi?
+- [ ] IAS 29 pre-check
 
-### A. KARLILIK
-
-| Metrik | Formula | Benchmark |
-|--------|---------|-----------|
-| Brut Marj | Brut Kar / Net Satislar | Sektore gore degisir |
-| FAVOK Marji | FAVOK / Net Satislar | Imalat: %12-18 |
-| Net Marj | Net Kar / Net Satislar | Saglikli: %8-15 |
-| ROE | Net Kar / Ortalama Ozsermaye | Saglikli: %12-20 |
-| ROCE | FVOK / (Toplam Varliklar - Kisa Vadeli Borclar) | >%15 iyi |
-| ROIC | NOPAT / Invested Capital | >WACC olmali |
-
-### B. KALDIRAC
-
-| Metrik | Formula | Benchmark |
-|--------|---------|-----------|
-| Net Borc/FAVOK | (Finansal Borclar - Nakit) / FAVOK | Saglikli: <3x |
-| Faiz Karsilama | FVOK / Faiz Giderleri | >3x guvenli |
-| Borc/Ozsermaye | Toplam Borclar / Ozsermaye | <1.5x |
+### Quality Review (Onay Oncesi)
+- [ ] ~45 zorunlu metrik tam mi? Her rasyo yorumlanmis mi (sayi+anlam+trend+benchmark)?
+- [ ] Makro analiz (TCMB/enflasyon/doviz/buyume/enerji/jeopolitik) + sektor-ozel analiz var mi?
+- [ ] Kaynaklar dogru mu (platform ciktisi referans YASAK)? Meta-text temiz mi?
+- [ ] 12 bolum icerik dolu mu? Grafik/skor karti/hedef fiyat/PDF tamam mi? Tum bolumler gorunur mu?
+- [ ] Holding ek: segment analiz + NAV + holding discount + parent vs consolidated ayrim
 
 ---
 
-## KCHOL Raporu Kalite İncelemesi — 2026-04-11
+## Agent Performans Ozeti
 
-### KRİTİK BULGULAR
+**KRITIK SORUNLU:** parse_standardization (parse hatalari, kendini SUCCESSFUL ilan ediyor), reconciliation (hatali veri onayliyor), qa_review (tespit iyi, pipeline durdurma yok), valuation_agent (timeout crash), report_formatter (cogu raporda calismadi), final_summary (icerik sig, truncation), event_impact_mapper (EPDK gibi kritik olaylari kaciriyor)
 
-**RAPOR DURUMU:** ❌ RED — Chairman'e sunulamaz
+**IYILESIYOR:** financial_analysis (TCELL-delta'da duzeltildi; upstream hata yakalama iyi), data_collection (0.91 guven; tarihsel veri zayif)
 
-**OVERALL QUALITY SCORE:** 4.2/10 (KABUL EDİLEMEZ)
+**IYI:** macro_analysis (jeopolitik guclu), technical_analysis (Fib+MA+RSI), context_extraction (SOTP/ESG), kap_watch, event_timeline_alert, sector_competition (CBAM/peer)
 
-### AGENT BAŞARI ORANLARI:
-
-| Agent | Başarı % | Kritik Eksikler |
-|-------|----------|-----------------|
-| data_collection | 65% | PDF extraction yok, segment finansalları yok, balance sheet liability detail yok |
-| parse_standardization | 40% | Income statement %60 "[pending]", segment extraction %0, 5-year time-series incomplete |
-| reconciliation | 50% | Balance sheet imbalance çözülmedi, segment reconciliation yapılmadı, upstream escalation yok |
-| context_extraction | 75% | Ford Otosan ownership estimate, unlisted subsidiary detail yüzeysel |
-| financial_analysis | 30% | **BÜYÜK BAŞARISIZLIK** — Chairman zorunlu metriklerin %60'ı eksik |
-| sector_competition | 70% | Segment-level peer comparison detayı eksik, SAHOL segment finansalları yok |
-| macro_analysis | 85% | ✅ İYİ — Holding-level consolidated impact eksik ama segment analizi mükemmel |
-| technical_analysis | 90% | ✅ İYİ — Tam metrikler ve yorumlar |
-| kap_watch | 85% | ✅ İYİ |
-| event_classification | 80% | ✅ İYİ |
-| event_impact_mapper | 75% | İYİ — Quantification bazı olaylarda eksik |
-| event_timeline_alert | 80% | İYİ |
-| qa_review | 45% | **BAŞARISIZ** — Remediation plan yok, escalation action yok, dördüncü kez aynı hatalar |
-| strategic_synthesis | 65% | Divergence map EKSİK, risk prioritization yok, SWOT eksik |
-| valuation_agent | 70% | NAV calculation incomplete, holding discount yüzeysel, Bear/Base/Bull net değil |
-| final_summary | 55% | 12 bölümlü yapı sadece başlıklar, grafik tag'leri yok, agent meta-text temizlenmemiş |
-| report_formatter | 0% | **ÇALIŞMADI** — HTML/PDF output yok |
-
-### TEKRARLAYAN HATALAR (4. KEZ):
-
-**1. "VERİ YOK" MAZERETİ (AKBNK, SISE, KCHOL #1, KCHOL #2):**
-- Data_collection: PDF extraction yapmıyor
-- Parse_standardization: "[pending]" bırakıyor
-- Financial_analysis: Working capital metrikleri hesaplamıyor
-- **ÇÖZÜM:** Upstream escalation protokolü uygulanmıyor
-
-**2. RAPOR YARIM BIRAKMA (AKBNK, KCHOL #1, KCHOL #2):**
-- Tablolar yarım kesiliyor
-- Bölümler başlıyor ama tamamlanmıyor
-- JSON formatlar düz metne çevrilmiyor
-
-**3. CHAIRMAN ZORUNLU METRİKLERİN EKSİKLİĞİ:**
-- DSO, DIO, DPO, CCC: ❌ EKSİK (4. rapor)
-- Cari Oran, Asit-Test: ❌ EKSİK (4. rapor)
-- Faiz Karşılama: ❌ EKSİK (4. rapor)
-- FCF, CAPEX/FAVÖK: ❌ EKSİK (4. rapor)
-
-**4. HOLDING-SPECIFIC ANALİZ EKSİKLİĞİ:**
-- Segment bazlı finansal analiz: ❌ YAPILMADI
-- NAV calculation detayı: ⚠️ INCOMPLETE
-- Holding discount sebepleri: ⚠️ YÜZEYSEL
-- Parent-level vs consolidated debt: ❌ AYRILMADI
-
-### SİSTEMİK SORUNLAR:
-
-**A. UPSTREAM ESCALATION PROTOKOLÜ ÇALIŞMIYOR:**
-- Financial_analysis veri eksikliğini parse_standardization'a escalate etmiyor
-- Parse_standardization PDF parse failure'ı data_collection'a escalate etmiyor
-- Reconciliation balance sheet imbalance'ı upstream'e escalate etmiyor
-- **SONUÇ:** Her agent kendi scope'unda "veri yok" deyip duruyor, kimse çözüme gitmiyor
-
-**B. QUALITY GATES UYGULANMIYOR:**
-- QA_review "CONDITIONAL_PASS" veriyor ama condition'lar enforce edilmiyor
-- Downstream agent'lar QA blocker'larını görmüyor, çalışmaya devam ediyor
-- Final_summary eksik verilerle rapor yazıyor
-
-**C. CHAIRMAN FORMAT STANDARDI UYGULANMIYOR:**
-- 12 bölümlü yapı sadece başlık seviyesinde
-- Grafik tag'leri yok
-- PDF çıktı yok
-- Agent meta-text temizlenmiyor
-
-### EYLEM PLANI (BİR SONRAKİ RAPOR İÇİN):
-
-**1. UPSTREAM ESCALATION PROTOKOLÜ (ZORUNLU):**
-```
-Agent veri bulamazsa:
-1. Önce alternative method dene (WebFetch, OCR, manual extraction)
-2. Hâlâ yoksa → upstream agent'a STRUCTURED REQUEST gönder
-3. Upstream response bekle
-4. Hâlâ çözülmezse → CEO'ya escalate
-5. CEO onayı olmadan "veri yok" deme
-```
-
-**2. QUALITY GATE ENFORCEMENT:**
-```
-QA_review decision:
-- AUTO PASS (>0.85) → Devam et
-- CONDITIONAL_PASS (0.70-0.85) → Fix conditions, verify, devam et
-- REVISION REQUIRED (0.50-0.70) → Pipeline DURDUR, fix, re-submit
-- BLOCK (<0.50) → CEO'ya escalate, pipeline DURDUR
-```
-
-**3. MANDATORY METRICS CHECKLIST:**
-Her agent output göndermeden önce:
-```
-[ ] Chairman zorunlu metrik listesindeki TÜM metrikler hesaplandı mı?
-[ ] Eksik metrik varsa upstream'den talep edildi mi?
-[ ] Her metrik YORUMLANDI mi? (Formula → Benchmark → Trend → Interpretation)
-```
-
-**4. HOLDING-SPECIFIC CHECKLIST:**
-Multi-sector holding analizlerinde:
-```
-[ ] Segment bazlı finansal analiz (her segment: revenue, EBITDA, ROIC, WC efficiency)
-[ ] NAV calculation (listed + unlisted subsidiaries + parent debt breakdown)
-[ ] Holding discount analizi (sebepleri, SAHOL benchmark, compression catalyst)
-[ ] Parent-level vs consolidated metrics ayrıştırıldı mı?
-```
-
-**5. CHAIRMAN FORMAT CHECKLIST:**
-```
-[ ] 12 bölümlü yapı TAMAMLANDI (sadece başlık değil, içerik dolu)
-[ ] Grafik tag'leri eklendi ([CHART:PIE/BAR/LINE])
-[ ] Agent meta-text temizlendi (Session ID, Confidence, vb.)
-[ ] JSON formatlar düz metne çevrildi
-[ ] Skor kartı formatlandı
-[ ] Hedef fiyat aralığı (Bear/Base/Bull) net
-[ ] PDF oluşturuldu
-```
-
-### BEŞİNCİ RAPOR HEDEFİ:
-
-**HEDEF SCORE:** 8.5/10 (CEO approval threshold)
-
-**KRİTİK BAŞARI KRİTERLERİ:**
-1. Chairman zorunlu metriklerin %100'ü hesaplanmış
-2. Hiçbir tablo yarım kalmamış
-3. Upstream escalation protokolü çalışmış
-4. QA quality gates enforce edilmiş
-5. Chairman format standardı uygulanmış
-6. PDF çıktı oluşturulmuş
-
-**BAŞARISIZLIK DURUMUNDA:**
-- Agent workflow'u yeniden tasarlanacak
-- Automated quality checks eklenecek
-- CEO pre-flight checks devreye alınacak
+**ORTA:** strategic_synthesis (convergence iyi; divergence/BUY-HOLD-SELL eksik)
 
 ---
 
-### C. ISLETME SERMAYESI
+## Son 3 Raporun Ogrenimleri
 
-| Metrik | Formula | Benchmark |
-|--------|---------|-----------|
-| DSO | (Ticari Alacaklar / Net Satislar) x 365 | Sektore gore |
-| DIO | (Stoklar / SMM) x 365 | Sektore gore |
-| DPO | (Ticari Borclar / SMM) x 365 | Sektore gore |
-| CCC | DSO + DIO - DPO | Dusuk = iyi |
-| NWC/Revenue | (Donen Varliklar - Kisa Vadeli Borclar) / Hasilat | <%20 ideal |
+### EREGL (13 Nisan) — QA ~0.45, REJECT
+- Kaskadif veri hatasi: parse EBITDA %66 fazla + net kar 27.5x fazla → reconciliation 0.91 skorla onayladi. **Ders:** Ic tutarlilik ≠ kaynak dogrulugu.
+- Net borc hesabi yanlis (toplam yukumluluk vs finansal borc). EPDK +%18.61 gaz tarifesi (~-4.5B TRY/yil) event_impact_mapper'da YOK.
+- **Iyi:** financial_analysis upstream hatayi web dogrulamayla yakaladi.
 
-### D. NAKIT AKISI
+### TUPRS (12 Nisan) — QA 0.618, PARTIAL RECOVERY
+- event_timeline_alert upstream output varken "eksik" dedi → dosya varligi kontrolu sart.
+- financial_analysis bolum 1-9 pipeline'a girmedi. valuation tek seferde crash (exit 143) → 3 parca.
+- **Iyi:** kap_watch 12 aylik envanter, data_collection 0.91, esg CDP A- tespiti.
 
-| Metrik | Formula | Benchmark |
-|--------|---------|-----------|
-| OCF | Operasyonel Nakit Akisi (nakit akis tablosundan) | Pozitif olmali |
-| FCF | OCF - CAPEX | Pozitif olmali |
-| OCF/FAVOK | Operasyonel Nakit / FAVOK | >%70 saglikli |
-| CAPEX/FAVOK | Sermaye Harcamalari / FAVOK | <%50 ideal |
-| CAPEX/Hasilat | Sermaye Harcamalari / Net Satislar | Mature: %5-10 |
-
-### E. DIGER
-
-| Metrik | Formula | Benchmark |
-|--------|---------|-----------|
-| OPEX/Ciro | Faaliyet Giderleri / Net Satislar | Sektore gore |
-| Asit-test | (Donen Varliklar - Stoklar) / Kisa Vadeli Borclar | >1x |
-| Cari Oran | Donen Varliklar / Kisa Vadeli Borclar | >1.5x |
-
-**VERI KAYNAKLARI:**
-- Bilanco, Gelir Tablosu, Nakit Akis Tablosu → KAP (kap.org.tr)
-- 5 yillik veri → KAP arsiv
-- Formul dogrulaması → Google (investopedia, corporatefinanceinstitute)
+### TCELL Delta (11 Nisan) — QA 0.84, CONDITIONAL PASS
+- Delta-update stratejisi basarili: gap-focused deep execution > genis scope shallow.
+- Upstream guclendirme ise yaradi (input validation + [pending] yasagi). Truncation hala sorun → cift output uygulanacak.
 
 ---
 
-## Sektor-Ozel Zorunlu Analiz Boyutlari
+## Watchlist & Hedefler Ozeti
 
-| Sektor | Zorunlu Ek Analiz |
-|--------|-------------------|
-| Savunma/Havacilik | Jeopolitik analiz (aktif catismalar, savunma harcamalari trendi) |
-| Cam/Imalat | Enerji maliyet analizi (dogalgaz, elektrik fiyat trendi) |
-| Banka/Finans | Faiz ortami, NIM trendi, CET1, takipteki krediler |
-| Insaat/GYO | Konut satis verileri, insaat izinleri, mortgage faiz |
-| Perakende | Tuketici guveni, TUFE basket, hanehalki harcama |
-| Enerji | Petrol/gaz fiyat, Hurmuz Bogazi, OPEC kararlari |
-| Teknoloji | AI/dijitallesme trendi, R&D yatirim, patent |
+### Son Heartbeat — #78 (14 Nisan 2026 — Yirminci Döngü)
+**ALERT — BRENT $102.47 / PAKISTAN MÜZAKERELERİ ÇÖKTÜ / HÜRMÜZ ABLUĞASI BAŞLADI / TUPRS YARIN KRİTİK.** Pakistan'daki ABD-İran görüşmeleri başarısız sonuçlandı (Vance: "Anlaşamadık, dönüyoruz" — 21 saatlik müzakere). ABD, 13 Nisan TSİ 17:00'dan itibaren İran limanlarına deniz abluğası başlattı. Brent gün içinde volatil: motorin indirimi sonrası $96.66'ya geriledi (-%2.7), ardından abluka haberiyyle $102-103 bölgesine yükseldi; oilpriceapi canlı: **$102.47/bbl** → **$102 kritik eşik AŞILDI.** Tanker trafiği kısıtlı (Rich Starry ablukadan bu yana boğazdan geçen ilk gemi). İran dini lider onayı bekliyor — yeni görüşme planı yok. **TUPRS:** 17 Nisan YARIN — Brent $102+ kritik eşik aşıldı, crack spread izlemesi maksimum öneme çıktı; bugün yeni KAP bildirimi yok (KCHOL Mart 2026 %2.1 TUPRS satışı tamamlandı, eski bilgi). **EREGL:** YK temettü ödeme tarihi KAP'ta hâlâ YOK — **18 Nisan kritik (4 gün)**; brüt 0.55 TRY / net 0.4675 TRY OGM 26 Mart onaylı. **TCELL/KCHOL/THYAO/BIMAS/SAHOL:** Yeni özel bildirim teyit edilmedi. **BIST 100 (13 Nis. son kapanış):** 13,924.22 (-1.06%). **TCMB PPK (22 Nisan — 8 gün):** Abluka + petrol baskısı → +300bp beklentisi güçleniyor. **Chairman'e ALERT: EVET — Brent $102.47 ($102 kritik eşik AŞILDI); Pakistan çöktü, Hürmüz abluğası aktif; TUPRS 17 Nisan YARIN acil izleme; Morgan Stanley $110+ Q2 tahmini geçerli.**
 
----
+### Son Heartbeat — #77 (14 Nisan 2026 — On Dokuzuncu Döngü)
+**SAKİN DÖNGÜ — BRENT $97.45-98.05 / TUPRS 17 NİSAN YARIN KRİTİK / EREGL TEMETTÜ 18 NİSAN HÂLÂ BEKLİYOR.** Brent: **$97.45-98.05/bbl** (gün içi aralık $96.48-$98.68) — $97-98 bandında konsolide, $102 eşiği altında; Hürmüz müzakereleri devam, piyasa sakin. **TUPRS:** 17 Nisan (YARIN) KAP/crack spread izlemesi — bugün yeni KAP bildirimi yok; 2. taksit temettü ex-d 30 Eylül; Brent $97-98 bandı ve distillat marjı olumlu. **EREGL:** YK ödeme tarihi KAP'ta hâlâ YOK — **18 Nisan kritik (4 gün)**; brüt 0.55 TRY / net 0.4675 TRY OGM 26 Mart onaylı; tüm kaynaklarda teyit: ödeme tarihi YK'ya bırakıldı, henüz açıklanmadı. **THYAO/KCHOL/BIMAS/SAHOL/TCELL:** Yeni özel durum bildirimi yok. **TCMB PPK (22 Nisan — 8 gün):** +300bp beklentisi değişmedi. **KAP Taraması:** Watchlist şirketlerinde P0 düzeyinde yeni bildirim teyit edilmedi. **Chairman'e ALERT: HAYIR — Brent $97-98 bandında ($102 altı), TUPRS 17 Nisan YARIN rutin izleme, EREGL temettü tarihi hâlâ beklemede, P0 yok.**
 
-## Turkiye Makro Analizi — ZORUNLU BOLUM
+### Son Heartbeat — #76 (14 Nisan 2026 — On Sekizinci Döngü)
+**SAKİN DÖNGÜ — BRENT $97.45 / TUPRS 17 NİSAN YARIN SABAH KRİTİK / EREGL TEMETTÜ 18 NİSAN 4 GÜN / EIA DİSTİLLAT MARJI MART 2022 ZİRVESİ.** Brent: **$97.45/bbl (-1.64% 14 Nis.)** — $97-98 bandında konsolide, $102 eşiği altında. Hürmüz müzakereleri devam. **YENİ EIA VERİSİ:** Distillat crack spread Mart 2026'da NYH'de $1.42/gal ortalaması — Mart 2022'den bu yana en yüksek aylık seviye, 5 yıllık ortalama ($0.68/gal) 2 katı; Brent-WTI spread Nisan'da $15/b zirveye çıkıyor (üretim aksamaları). TUPRS için ham madde $97 bandında sabit, ürün marjları rekor → **son derece olumlu pozisyon**. **TUPRS:** 17 Nisan (YARIN) KAP/crack spread izlemesi — yeni özel bildirim yok. **EREGL:** YK temettü ödeme tarihi hâlâ KAP'ta YOK — **18 Nisan kritik (4 gün)**; 2024 emsal 18 Nisan olasılığı yüksek, bu döngüde de doğrulanamadı (brüt 0.55 TRY / net 0.4675 TRY OGM 26 Mart onaylı). **BIST Bileşimi (13 Nis.):** TCELL -1.36%, KCHOL +0.05%, THYAO -2.01%, BIMAS -0.93%, SAHOL -2.84% — genel piyasa baskısı var, P0 açıklama yok. **TCMB PPK (22 Nisan — 8 gün):** +300bp beklentisi değişmedi. **KAP Taraması:** Watchlist şirketlerinde (TUPRS/EREGL/TCELL/KCHOL/THYAO/BIMAS/SAHOL) bugün P0 düzeyinde yeni KAP bildirimi teyit edilmedi. **Chairman'e ALERT: HAYIR — Brent $97-98 ($102 altı), EIA distillat marjı TUPRS için güçlü olumlu (17 Nisan öncesi son döngü), EREGL temettü tarihi 4 gün, yeni negatif P0 olay yok.**
 
-Her BIST sirketi raporunda asagidaki Turkiye makro analizi OLMALI:
+### Son Heartbeat — #74 (14 Nisan 2026 — On Altıncı Döngü)
+**SAKİN DÖNGÜ — BRENT $97-98 BANDINDA / TUPRS YARIN (17 NİSAN) KRİTİK / EREGL TEMETTÜ HÂLÂ YK BEKLİYOR.** Brent: **$97.45-98.05/bbl** (oilpriceapi/WebSearch canlı) — $97-98 bandında seyir devam, $102 eşiği altında. Hürmüz müzakereleri sürmekte, ABD-İran görüşmeleri devam ediyor. **TUPRS:** 17 Nisan (YARIN) — KAP/crack spread izlemesi kritik seviyede; yeni KAP bildirimi yok; İş Yatırım 338 TL (9 Nis.), Deniz Yatırım 359 TL hedef koruyor; Brent $97-98 bandı margin açısından olumlu. **EREGL:** 2026 temettüsü 0.55 TRY brüt / 0.4675 TRY net (26 Mart OGM onaylı, 3 Mart açıklandı); YK ödeme tarihi hâlâ KAP'ta YOK — **18 Nisan kritik (4 gün)**. Tarihsel emsal: 2024'te OGM 28 Mart, YK karar 5 Nisan, ödeme 18 Nisan → 2026 OGM 26 Mart, YK kararı gecikiyor, 18 Nisan olasılığı yüksek. **TCELL/KCHOL/THYAO/BIMAS/SAHOL:** Özel durum açıklaması yok. **TCMB PPK (22 Nisan — 8 gün):** Goldman +300bp beklentisi koruyor. **KAP Taraması:** Watchlist şirketlerinde P0 düzeyinde yeni bildirim teyit edilmedi. **Chairman'e ALERT: HAYIR — Brent $97-98 ($102 altı), TUPRS YARIN rutin izleme başlıyor, EREGL temettü tarihi hâlâ bekleniyor (2024 pattern → 18 Nisan), yeni kritik KAP açıklaması yok. TUPRS 17 Nisan izlemesi için CEO sabah erken döngü gerekiyor.**
 
-1. **TCMB Politika Faizi** — guncel oran, son karar, beklentiler
-2. **Enflasyon** — TUFE yillik, aylik, PPI, cekirdek
-3. **Doviz Kurlari** — USD/TRY, EUR/TRY, trend
-4. **Buyume** — GDP buyume, sanayi uretimi, PMI
-5. **Isgucu** — Issizlik orani
-6. **Enerji** — Dogalgaz, elektrik, petrol fiyatlari (imalat icin kritik)
-7. **Jeopolitik** — Turkiye'yi etkileyen aktif catismalar/gelismeler
+### Son Heartbeat — #73 (14 Nisan 2026 — On Beşinci Döngü)
+**SAKİN DÖNGÜ — BRENT $97.85 / TUPRS 17 NİSAN YARIN / EREGL 18 NİSAN 4 GÜN / TCMB PPK TARTIŞMALI.** Brent: **$97.85/bbl** (Trading Economics canlı) — 13 Nis. $97.23'ten +%2.14 toparladı; $97-98 bandında seyrediyor, $102 kritik eşiği altında. 14 Nisan akaryakıt (motorin/benzin) indirimi yapıldı — petrol fiyatı gerilemesiyle tutarlı. **TUPRS:** 17 Nisan (3 gün) KAP/crack spread izlemesi aktif — yeni KAP bildirimi yok; Hürmüz riski sürmekte, Brent $102 altı pozitif. **EREGL:** YK temettü ödeme tarihi KAP'ta hâlâ YOK (tüm kaynaklarda teyit: OGM 26 Mart onaylı, YK'ya bırakıldı) — **18 Nisan kritik (4 gün)**. **TCELL/KCHOL/THYAO/BIMAS/SAHOL:** Özel durum açıklaması yok. **TCMB PPK (22 Nisan — 8 gün):** Görüş bölünmüş — Goldman +300bp beklentisi koruyor, bir grup analist Mart'taki "bekle-gör" stratejisinin devam edeceğini öngörüyor (sabit). Karar belirleyicileri: Mart enflasyonu hedef üstü + Hürmüz kaynaklı petrol-enerji baskısı. **KAP Taraması:** WebSearch ile P0 düzeyinde yeni bildirim teyit edilmedi. **Chairman'e ALERT: HAYIR — Brent $97-98 bandında ($102 altı), TUPRS 17 Nisan rutin izleme (3 gün), EREGL temettü tarihi hâlâ beklemede (4 gün), TCMB PPK beklentisi piyasada tartışmalı ama P0 olay yok.**
 
-**Kaynaklar:** TCMB, TUIK, BDDK, Enerji Piyasasi Duzenleme Kurumu
+### Son Heartbeat — #72 (14 Nisan 2026 — On Dördüncü Döngü)
+**SAKİN DÖNGÜ — BRENT $97-98 BANDINDA DEVAM / TUPRS 17 NİSAN 3 GÜN / EREGL 18 NİSAN 4 GÜN.** Brent: **$97.93-98.08/bbl (-1.29-1.44% 14 Nis.)** — #71'deki $98.03'e paralel, $97-98 bandında konsolide oluyor; $102 kritik eşiği altında kalmaya devam. Hürmüz müzakere sürecinde piyasa sakin. **TUPRS:** 17 Nisan (3 gün) KAP/crack spread izlemesi aktif — yeni KAP bildirimi yok; TUPRS 2026 temettü 14.56 TL/hisse net (1. taksit ex-d 16 Mart tamamlandı). **EREGL:** YK temettü ödeme tarihi KAP'ta hâlâ YOK (tüm kaynaklarda teyit: OGM 26 Mart'ta ödeme tarihi YK'ya bırakıldı) — **18 Nisan kritik (4 gün)**; her döngüde doğrulanamıyor. **TCELL/KCHOL/THYAO/BIMAS/SAHOL:** Yeni özel bildirim yok. **TCMB PPK (22 Nisan — 8 gün):** +300bp beklentisi değişmedi. **KAP Taraması:** WebFetch dinamik sayfa nedeniyle doğrudan erişilemiyor — watchlist şirketlerinde web aramasıyla P0 düzeyinde yeni bildirim teyit edilmedi. **Chairman'e ALERT: HAYIR — Brent $97-98 bandında ($102 altı), TUPRS 17 Nisan izleme rutin, EREGL temettü tarihi hâlâ beklemede (4 gün), yeni kritik KAP açıklaması yok.**
 
----
+### Son Heartbeat — #71 (14 Nisan 2026 — On Üçüncü Döngü)
+**SAKİN DÖNGÜ — BRENT $97-98 BANDINDA / EREGL TEMETTÜ YK HÂLÂ BEKLİYOR.** Brent: **$98.03/bbl (-1.34% 14 Nis.)** — #70'deki $97.08'den hafif yukarı, $97-98 bandında yatay seyrediyor; $102 kritik eşiği altında kalmaya devam ediyor. Hürmüz volatilitesi sürmekte (ABD-İran müzakereleri dalgalı), ancak piyasa paniklemedi. **TUPRS:** 17 Nisan (3 gün) KAP/crack spread izlemesi hâlâ aktif; bugün yeni KAP bildirimi yok. **EREGL:** 0.55 TRY brüt / 0.4675 TRY net temettü onaylı (26 Mart OGM); YK ödeme tarihi açıklaması KAP'ta hâlâ YOK — **18 Nisan kritik (4 gün)**; bu döngüde de doğrulanamadı. **TCELL/KCHOL/THYAO/BIMAS:** Yeni özel bildirim yok. **TCMB PPK (22 Nisan — 8 gün):** Goldman +300bp beklentisini koruyor; Mart enflasyonu hedef üzerinde, petrol hafif gerileme enflasyon baskısını sınırlı azaltıyor. **KAP Taraması:** Watchlist şirketlerinde P0 düzeyinde yeni bildirim yok. **Chairman'e ALERT: HAYIR — Brent $97-98 bandında ($102 altı), EREGL temettü tarihi hâlâ beklemede (rutin izleme), yeni kritik KAP açıklaması yok.**
 
-## Rapor Kalite Standartları — 12 Nisan 2026 Ekip Toplantısı
+### Son Heartbeat — #70 (14 Nisan 2026 — On İkinci Döngü)
+**ALERT — BRENT SERT GERİ ÇEKİLDİ / ABD-İRAN ATEŞKES MÜZAKERELERİ.** #69'da verilen "$102+ uyarısı" tersine döndü: ABD-İran yeniden müzakere haberlerine Brent **$101.82 (13 Nis.) → $97.08 (14 Nis.)**, günlük düşüş -%2.02. TUPRS için: $102 kritik eşik ALTINA düştü → ham madde maliyeti baskısı azaldı, refinery margin perspektifi iyileşti. Hürmüz krizi devam ediyor ama ateşkes sinyali piyasayı sakinleştirdi. **Volatilite riski sürüyor** — Goldman "Hürmüz 1 ay daha kapalı kalırsa $100+ tüm 2026" uyarısı geçerliliğini koruyor. BIST 100: 13 Nisan kapanış 14,073 (haftalık +8.79%), 14 Nisan verisi henüz yok. USD/TRY: ~44.60-44.72 (stabil). **EREGL:** YK ödeme tarihi hâlâ KAP'ta yok — 18 Nisan kritik (4 gün). Temettü net 0.4675 TRY onaylı (26 Mart OGM). **TUPRS:** Yeni KAP bildirimi yok; 17 Nisan izleme aktif. **TCELL/KCHOL/THYAO/BIMAS:** Özel bildirim yok. **TCMB PPK (22 Nisan — 8 gün):** Petrol geri çekilmesi enflasyon baskısını hafifçe azaltabilir ama +300bp beklentisi korunuyor. **Chairman'e ALERT: EVET — Brent $97'ye geriledi (#69 $102+ uyarısı güncelleniyor); TUPRS eşik altına düştü, 17 Nisan öncesi pozisyon değerlendirmesi önerilebilir. Hürmüz volatilitesi devam, erken pozisyon almak riskli.**
 
-### KURAL 18: METİN SANDVİÇ KURALI — MUTLAK (12 Nisan 2026)
-Hiçbir tablo veya grafik yalnız olamaz. Her veri bloğunun önünde "neden bakıyoruz" (2 cümle) ve arkasında "ne anlıyor" (3-5 cümle) analiz metni ZORUNLUDUR. QA kontrolü eklenmiştir.
+### Son Heartbeat — #69 (14 Nisan 2026 — On Birinci Döngü)
+**UYARI — BRENT $102+ EŞİĞİ AŞILDI / TUPRS KRİTİK.** Hürmüz Boğazı ablukası 13 Nisan 17:00'da resmen başladı → Brent **$101.82 (13 Nis.) / $102.50 açılış (14 Nis.)**, günlük aralık $98.86-$103.88. Heartbeat #68'deki "$97.94 normalleşme" geçersiz — kısa süreli düşüş, abluka ile fiyat tekrar $102+ bölgesine döndü. **TUPRS için $102 kritik eşik AŞILDI** (17 Nisan KAP/crack spread izleme öne çekiliyor). Morgan Stanley Q2 tahmini $110/bbl. BIST 100: 14,058.51 (-0.11%), bankacılık -1.07%, holding -0.69%. USD/TRY: ~44.72 (stabil). **EREGL:** 0.55 TRY brüt temettü; YK ödeme tarihi KAP'ta hâlâ açıklanmadı — 18 Nisan kritik (4 gün). **TCMB PPK (22 Nisan — 8 gün):** Hürmüz kaynaklı petrol-enflasyon baskısı → +300bp beklentisi güçlendi. **KAP Taraması:** TUPRS/EREGL/KCHOL/TCELL/THYAO/BIMAS'ta bugün yeni özel bildirim yok. **Chairman'e ALERT: EVET — Brent $102+ aşıldı; TUPRS $102 kritik eşiği geçti, 17 Nisan izleme aciliyeti arttı.**
 
-### KURAL 19: 4-SORU YORUM FORMATI — ZORUNLU (12 Nisan 2026)
-financial_analysis her metrik için yanıtlamalı: (1) Ne kadar/nerede? (2) Nasıl değişti? (3) Neden? (4) Yatırım etkisi TRY rakamıyla?
+### Son Heartbeat — #68 (14 Nisan 2026 — Onuncu Döngü)
+**SAKİN DÖNGÜ — BRENT GERİ ÇEKİLDİ / BIST YATAY.** BIST 100: 14,058.51 (-0.11%), günlük düşük 13,842.77 (sabah sert baskı) → toparlanma devam. Brent: **$97.94/bbl (-1.40%)** — Hürmüz şoku sonrası $100 altına geriledi, normalleşme sinyali. **EREGL:** Temettü 0.55 TRY brüt (OGK 26 Mart onaylı), YK ödeme tarihi hâlâ KAP'ta çıkmadı — 18 Nisan kritik, her döngüde kontrol. **TUPRS:** 17 Nisan KAP/crack spread izleme, 6 Mayıs gelir raporu. **TCMB PPK (22 Nisan — 8 gün):** +300bp beklenti değişmedi. **KAP Taraması:** Watchlist şirketlerinde yeni özel bildirim yok. **Chairman'e ALERT: HAYIR — Brent geri çekildi, BIST toparlanıyor, P0 yok.**
 
-### KURAL 20: BRAND IDENTITY — ŞİRKET KİMLİĞİ RAPORDA (12 Nisan 2026)
-Her rapor analiz edilen şirketin kurumsal renklerini, fontlarını ve logosunu yansıtmalı. context_extraction faaliyet raporundan çıkarır, report_formatter uygular. Her sayfanın sağ üst köşesinde şirket amblemi/logosu ZORUNLU.
+### Aktif Izleme
+- 17 Nisan: TUPRS KAP → crack spread + Körfez tedarik riski (Brent $102+ kritik) | 18 Nisan: EREGL temettü ödeme tarihi YK açıklaması | 22 Nisan: TCMB PPK (+300bp olasılığı artmış; petrol şoku ek baskı) | 6 Mayıs: TUPRS gelir raporu | Q2: EREGL Q1 (EPDK etkisi + çelik talep)
 
-### KURAL 21: ORPHAN KELIME YASAĞI (12 Nisan 2026)
-Bir paragrafın son 1-2 kelimesi bir sonraki sayfaya taşınamaz. CSS: `orphans: 4; widows: 4;` + `page-break-inside: avoid`. Başlık altında boş sayfa yasak.
-
-### KURAL 22: FAİYET RAPORU DERİN ANALİZİ ZORUNLU (12 Nisan 2026)
-Her analiz için son 5 yıllık faaliyet raporları toplanmalı (data_collection) ve analiz edilmeli (context_extraction): CEO mektubu temaları, strateji evrimi, taahhüt takibi.
-
-### KURAL 23: GOLDMAN INITIATING COVERAGE YAPISI (12 Nisan 2026)
-final_summary: Sayfa 1 = hedef fiyat+yatırım tezi+mini tablo. Sayfa 2-3 = 3-5 Yatırım Sütunu (2-3 paragraf argüman). Sayfa 4-5 = riskler (quantified impact zorunlu).
-
-### KURAL 24: METİN/GÖRSEL ORANI — %55/%45 (12 Nisan 2026)
-Genel rapor: %55 metin / %45 görsel. Yatırım tezi bölümleri: %70/%30. Finansal tablolar: %20/%80 (ama yorum zorunlu).
-
-### Güncellenen Agent'lar (12 Nisan 2026):
-financial_analysis, strategic_synthesis, final_summary, valuation_agent, context_extraction, report_formatter, qa_review, data_collection — tümü güncellendi.
-
-### KURAL 25: FAİYET RAPORU FORMAT MİMİCRY — MUTLAK (12 Nisan 2026 — Chairman Direktifi)
-Her şirket raporu o şirketin kendi faaliyet raporu formatını taklit etmeli. Sadece renkler değil — sayfa düzeni, bölüm yapısı, tipografik hiyerarşi, tablo stili, header/footer. TUPRS için: Tüpraş faaliyet raporunun kırmızı-siyah dominant, sade kurumsal düzeni esas alınmalı.
-- context_extraction: `brand_identity.report_layout_structure` alanı zorunlu
-- report_formatter: Layout mimicry bölümü eklendi, şirket stilini uygular
-- Kontrol: "Bu rapor bu şirketten mi çıktı?" sorusuna evet yanıtı alınmalı
-
-### KURAL 26: YÖNETİM ANLATISI ENTEGRASYONU — ZORUNLU (12 Nisan 2026)
-Rapor sadece finansal tablolar değil. Şirketin kendi anlattığı hikaye de rapora girmeli:
-- CEO/YK mektubu ana mesajı
-- Önceki yıl taahhütleri vs. gerçekleşme (management credibility)
-- Stratejik öncelik evrimi (5 yıl geriye)
-- final_summary: "Yönetimin Perspektifi" bölümü zorunlu
-- Risk: yönetim açıklamaları analitik sonuç olarak sunulamaz, `management_guidance` etiketi zorunlu
-
-### KURAL 27: SAYFA TAŞMASI MUTLAK YASAK (12 Nisan 2026 — Zaten KURAL 21'de var, güçlendi)
-- Bir paragraf veya tablo bir sayfaya sığmıyorsa YENİ SAYFAYA taşı
-- Tablo ortasında kesme YASAK — bütün tablo yeni sayfaya geçer
-- 2 kelime diğer sayfaya taşıp bağlam kopması = REJECT
-- CSS orphans:4, widows:4 + page-break-inside:avoid tüm tablolara uygulanmalı
+### Rapor Gecmisi (13 rapor)
+PASS: ASELS(0.78), TCELL-delta(0.84) | BLOCK: AKBNK(0.58), SISE(0.62), KCHOLx3(0.45-0.68), TCELL#1(0.62), EREGL(~0.45), THYAO(0.757), **BIMAS(0.80)** | PARTIAL: TUPRS(0.618)
+**Hedef:** QA > 0.85, %100 PASS.
 
 ---
 
-## Son Heartbeat Ozeti (12 Nisan 2026 — OTONOM #34)
+## CEO Post-Report Review — KCHOL Delta — 14 Nisan 2026
 
-- **Zaman**: Pazar akşamı
-- **BIST 100**: Hafta sonu kapalı. Son kapanış 10 Nisan Cuma ~14,074.
-- **KAP (son 1 saat)**: Pazar günü KAP sessiz. Önemli bildirim yok. (kap.org.tr erişim 404 — Pazar günü beklenen normal durum)
-- **JEOPOLİTİK — SARI (DEĞİŞMEDİ):** İran-ABD ateşkesi kırılgan devam ediyor. 12 Nisan müzakereleri sonuçsuz bitti. Goldman Sachs Brent için 87 USD senaryosu güncelledi (ateşkes kalıcıysa). Hürmüz riski azaldı ama kapanmadı. ABD-Çin ticaret savaşı sürüyor → altın rekor yakınında.
-- **Brent Petrol**: ~92-97 USD/varil bandı. 8 Nisan'da 92.9'a düşmüş, 10 Nisan'da 95.2'den kapanmış. 12 Nisan piyasalar kapalı — Pazartesi açılışı kritik.
-- **TL/USD**: 44.5-44.61 TL/USD rekor bölgede. Altın: Çeyrek 11.483 TL.
-- **TCMB FAİZ**: Politika faizi ~%37. Para piyasaları Nisan'da faiz artışı fiyatlıyor. 22 Nisan PPK kritik.
-- **Watchlist**: Boş | **Aktif Hedefler**: Yok
-- **Risk Matrisi**: Jeopolitik SARI, Makro YÜKSEK (TL rekor, PPK beklenti), Piyasa YÜKSEK
-- **Sonraki Kritik**: 13 Nisan Pazartesi BIST açılış, 22 Nisan TCMB PPK, 24 Nisan TCELL Q1 earnings
+### Pipeline Sonucu
+- **QA Final Score: 0.676 / 1.0** — Eşik 0.80. REVISION_REQUIRED. Pipeline durduruldu.
+- **Round 1 → Round 2 iyileşme:** +0.086 (0.590 → 0.676) — yetersiz; kök sorunlar devam ediyor.
+- **Kalan P0 blokerler (3):** (1) Revenue Q4/FY karışıklığı — yanlış çözüme kilitlendi, (2) DSO/DIO/DPO/CCC veri bloker — KAP PDF çekilmedi, (3) IFRS 8 segment EBITDA %0 — 2 tur boyunca çözülmedi.
+- **HTML raporu:** report_formatter 53.502 karakter üretti ama COO "mid-table kesilme, CSS eksik, PDF render başarısız" kararı verdi → P0.
 
-**Alert:** YOK — Sakin Pazar döngüsü. Önemli KAP bildirimi yok. Risk seviyeleri önceki heartbeat ile aynı. Pazartesi açılışında Brent + TL + BIST tepkisi izlenecek.
+### Sistemik Bulgular (KCHOL'a Özgü — Tekrar Eden)
 
-Detayli log → `heartbeat_archive.md`
+| Sorun | Tezahür | Tekrar Sayısı |
+|-------|---------|--------------|
+| Revenue Q4/FY karışıklığı | 802.669B TRY = Q4, FY = 2.76T TRY; financial_analysis yanlış baz aldı | İlk kez bu kadar net |
+| KAP PDF çekilmedi | 2 tur boyunca "CANNOT EXECUTE" — script çalıştırılmadı | KCHOL: 3. kez |
+| IFRS 8 segment extraction %0 | Holding valuation için kritik; 2 tur boyunca alternatif denenmedi | KCHOL: 3. kez |
+| Truncation (macro, sector, final, strategic, event_impact) | Tüm uzun çıktılarda output kesildi | Her KCHOL raporunda |
+| Macro_analysis TCMB %46 → %37 | memory.md güncellenmemişti; context_extraction düzeltti | 2. kez |
+| Report formatter HTML body yok | CSS var, body yok — BIMAS'ta da aynı pattern | BIMAS + KCHOL |
 
----
+### KCHOL'a Özgü Holding Öğrenimleri
 
-## Ogrenilen Dersler (Kalici)
+1. **Banka konsolidasyonu bilanço şişirmesi** — YKBNK 924B TRY varlık tam konsolidasyonu nedeniyle KCHOL konsolide bilanço 5.3T TRY; L+E tarafı eksik veri olduğunda imbalance normal. Sonraki analizde bu yapıyı baştan açıkla.
+2. **Revenue tanımı kritik** — Parent-only (temettü + yönetim ücreti = ~2.76B TRY), Konsolide (12 ay = 2.76T TRY), Q4 standalone (802B TRY). Üçü aynı raporda birbirine karışmamalı.
+3. **SOTP için GCM anchor** — GCM Şubat 2026 SOTP 406 TL güvenilir analistik baz; blended NAV (50% GCM + 50% piyasa) = ~388 TL. Holding discount drivers: ROE/Ke makas ~34pp, çapraz sahiplik ~5pp, ARCLK zararı ~3pp.
+4. **TUPRS efektif pay** — KCHOL doğrudan %4.27 + EYAŞ aracılığıyla ~%36-40 = toplam ~%40.5-44.8. Yalnızca %26.2 doğrudan pay kullanmak SOTP'u hafife alır.
 
-1. **Agent memory yuklenmiyor olabilir** — her analiz oncesi kontrol et
-2. **Escalation mekanizmalari calismiyor** — "PROCEED BLOCKED" action'a donusmuyor
-3. **Data quality propagation** — Parse 0.45 ama downstream devam ediyor, quality gate sart
-4. **Rapor finalizasyon** — agent meta-text'leri temizleyen post-processing pipeline lazim
-5. **IAS29 ayristirmasi** — Turkiye sirketlerinde hiperenflasyon muhasebesi her zaman ayristirilmali
-
----
-
-## Agent Performans Notu
-
-| Agent | Son Durum | Kritik Aksiyon |
-|-------|-----------|----------------|
-| Financial Analysis | YETERSIZ | DSO/DIO/CCC/ROE/ROCE eksik — formul listesi verildi |
-| Macro Analysis | IYI | Turkiye analizi zorunlu, jeopolitik sektor-ozel |
-| Data Collection | KISMI | CF indirect verification, KAP'tan tam veri cekmeli |
-| Parse Standardization | YETERSIZ | CF extract yok, Equity discrepancy cozulmedi |
-| QA Review | BASLANGIC | Escalation action yok, revision request mekanizmasi kur |
-| Diger agentlar | ORTA | Gece egitimi #1 tamamlandi, ortalama 77/100 |
+### CEO Direktifleri — Sonraki KCHOL Analizi İçin
+- **KAP PDF script zorunlu ilk adım** — node scripts/fetch-pdf.js komutu çalıştırılmadan parse/reconciliation'a geçiş YASAK.
+- **Revenue tanımı canonical fact pack'te üç satır** — (1) Solo/Parent, (2) Konsolide FY, (3) En son quarter. Üçü zorunlu, hiçbiri diğerinin yerine geçemez.
+- **IFRS 8 için GCM SOTP kullan** — Faaliyet raporu PDF çekilemezse GCM/analist SOTP'undaki segment katkı rakamları proxy olarak kullanılabilir; "[analist proxy, conf: MEDIUM]" etiketiyle.
 
 ---
 
-## CEO Kalite Kontrolu — AKBNK Raporu (10 Nisan 2026)
+## CEO Post-Report Review — THYAO — 14 Nisan 2026
 
-**Genel Degerlendirme:** REJECT — kritik eksiklikler var, rapor Chairman'e sunulamaz
+### Pipeline Sonucu
+- **QA Final Score: 0.757** — Eşik 0.80. BLOCKED.
+- **Temel bloker:** Cash Flow Statement tamamen eksik (conf: 0.00) → 3 QA turunda çözümsüz.
+- **İkincil blokerlar:** D1 equity gap 141B TRY (SE tablosu yok), Working Capital BLOCKED (DSO/DIO/DPO/CCC).
+- **Çözülen P0:** strategic_synthesis Round 2'de tamamlandı (KOŞULLU AL, 524 TRY hedef, 3-sütun tez).
 
-**Kritik Bulgular:**
-1. **YARIM/KESİK ÇIKTILAR PANDEMİ:** 15 agent'tan 12'si output'unu tamamlayamamış — tablolar yarım, JSON'lar kesilmiş, bölümler bitmemiş
-2. **AGENT META-TEXT TEMİZLENMEMİŞ:** "Session ID", "Agent ID", "Output ID", "Orchestrator" gibi teknik terimler raporda kalmış — Chairman direktifine aykırı
-3. **CHAIRMAN FORMAT STANDARDI UYGULANMAMIŞ:** 12 bölümlü yapı yok, skor kartı yok, grafik tag'leri yok, PDF yok
-4. **ZORUNLU METRİKLER EKSİK:** ROCE, ROIC, distributable cash, capital adequacy waterfall, quartile ranking eksik
+### Sistemik Bulgular (Tekrar Eden Hatalar — THYAO'da da Çıktı)
 
-**Agent Bazlı Eksikler:**
-- Data Collection: IR documents yarım, BDDK raporları eksik
-- Parse Standardization: Balance sheet yarım, banking supplement yok
-- Reconciliation: Discrepancy #2 çözülmemiş, equity/NPL validation yok
-- Context Extraction: Board tablosu yarım, moat analysis yok
-- Financial Analysis: ROE tablosu yarım, ROCE/ROIC/CoR trend eksik
-- Sector Competition: Benchmarking scorecard yarım, peer 2025 data yok
-- Macro Analysis: BDDK regulatory changes eksik, FX exposure yok
-- Technical Analysis: Volume/Fibonacci/Insider eksik
-- KAP Watch: 11 disclosure demiş 3 detay vermiş
-- Event Classification: Event #1 JSON yarım, 2-5 yok
-- Event Impact Mapper: Event #1 yarım, 2-5 yok, portfolio effect yok
-- Event Timeline: Phase 1 yarım, 2-4 yok
-- QA Review: Flag #1 yarım, 2-3 yok, remediation yok
-- Strategic Synthesis: Convergence #2 yarım, divergence map yok
-- Final Summary: Bölüm XII yarım, 12 bölüm yok, skor kartı yok, PDF yok
+| Sorun | Tekrar Sayısı (Toplam) | THYAO'daki Tezahür |
+|-------|----------------------|--------------------|
+| CF tablosu eksik | 4 (AKBNK, KCHOL, TUPRS, THYAO) | data_collection bitmeden output gönderdi |
+| conditional_pass = BLOCK ihlali | 3 (TCELL, TUPRS, THYAO) | data_collection "CONDITIONAL PASS" verdi, pipeline açıldı |
+| Working capital BLOCKED | 5+ rapor | CF yokken DSO/DIO/DPO/CCC tahmin ile devam |
+| Output başlık/içerik uyuşmazlığı | İlk kez | financial_analysis başlıklı output = strategic_synthesis içeriği |
+| Makro parametre tutarsızlığı | 2 (TUPRS, THYAO) | TCMB faizi %37 vs %46 — memory.md güncellenmemişti |
+| Upstream validation context'ten yapıldı | 2 (TUPRS, THYAO) | Dosya sistemi kontrolü atlandı |
 
-**Feedback Verildi:** 15 agent'ın memory.md dosyasına "CEO Geri Bildirimi — 2026-04-10 — AKBNK Raporu" bölümü eklendi
+### Havacılık Sektörü Öğrenimleri (THYAO İlk Rapor)
 
-**Sonraki Adım:** Bu feedback'lerin bir sonraki raporda uygulanıp uygulanmadığını kontrol et
+1. **EBITDAR birincil metrik** — IFRS 16 nedeniyle havacılıkta EBITDA değil EBITDAR (+ rent/lease) peer karşılaştırması için zorunlu. Tüm sonraki havacılık analizleri için şablon güncellendi.
+2. **8 KPI zorunlu ek** — RPK, ASK, CASK, RASK, Yield, Load Factor, Kargo ton-km, Filo sayısı — havacılık analizinin ayrılmaz parçası.
+3. **IAS 29 havacılıkta sınırlı ama mevcut** — Gelir %70 USD/EUR → parasal kayıp sınırlı ama TRY maliyet kalemleri etkileniyor; ayrıştırma yapılmalı.
+4. **Rusya üstgeçiş hakkı** — Avrupalı FSC rakiplerine (~$50-80M/yıl) kalıcı maliyet avantajı; macro_analysis Round 1'de truncation nedeniyle görülmedi. Havacılık şablonuna sabit eklendi.
+5. **THYAO değerleme anomalisi netti** — EV/EBITDAR 2.52x vs peer median 4.4x = −43% iskonto; CF bloker çözülünce DCF güven artacak.
 
----
+### CEO Direktifleri — Sonraki Havacılık Analizi İçin
 
-## CEO Kalite Kontrolü — KCHOL Raporu (10 Nisan 2026)
-
-**Genel Değerlendirme:** REJECT — kritik blocking failure + major veri eksiklikleri
-
-**Kritik Bulgular:**
-
-1. **FINANCIAL_ANALYSIS AGENT TAMAMEN BAŞARISIZ (exit code 143)**
-   - TÜM zorunlu metrikler %0 tamamlanmış: DSO, DIO, DPO, CCC, NWC/Revenue, Net Debt/FAVÖK, Interest Coverage, OCF/FAVÖK, FCF, CAPEX/FAVÖK, ROE, ROCE, ROIC
-   - Chairman KURAL 1 ihlali — en kritik blocker
-   - QA Review agent doğru tespit etmiş (score 70/100, threshold 85)
-
-2. **SEGMENT FİNANSALLARI TAMAMEN EKSİK**
-   - Holding şirketi için IFRS 8 segment disclosure ZORUNLU
-   - Enerji, Otomotiv, Finans, Dayanıklı Tüketim — hiçbir segment'in finansalları extract edilmemiş
-   - NAV-based valuation yapılamaz, segment profitability analizi yapılamaz
-
-3. **2024 ANOMALİLER AÇIKLANMAMIŞ**
-   - Net margin %13 → %1.15 çöküşü (%-91)
-   - OCF +152B → -102B reversal (%-166)
-   - Audit notes extract edilmemiş, root cause validation yok
-
-4. **BALANCE SHEET LİABİLİTY DETAYI EKSİK**
-   - Assets = Liabilities + Equity doğrulaması yapılamıyor
-   - Kaldıraç rasyoları incomplete
-
-5. **RAPOR FORMATI EKSİK**
-   - 12 bölümlü Chairman formatı uygulanmamış
-   - Grafik [CHART:] tag'leri yok
-   - PDF çıktı yok
-   - Agent meta-text temizlenmemiş
-
-**Pozitif Noktalar:**
-- ✅ Macro analysis çok iyi (jeopolitik, segment-level transmission, scenario matrix)
-- ✅ Context extraction comprehensive (SOTP structure, ownership, ESG)
-- ✅ Sector competition holding discount analizi başarılı
-- ✅ KAP Watch, Event Classification, Event Impact Mapper düzgün çalışmış
-- ✅ QA Review blocking issue'ları doğru tespit etmiş
-
-**Agent Bazlı Feedback Durumu:**
-- 15 agent'ın memory.md dosyasına "CEO Geri Bildirimi — 2026-04-10 — KCHOL Raporu" bölümü eklendi
-- Her agent'a spesifik eksiklikler ve "Bundan Sonra" kuralları yazıldı
-- Holding şirketi analizi için yeni kurallar eklendi (segment analysis, NAV calculation, portfolio effects)
-
-**Özel KCHOL Öğrenmeleri:**
-1. **Holding şirketi = çift katmanlı analiz:** Konsolide + segment seviyesi ikisi de zorunlu
-2. **NAV discount merkezi mesele:** %20-30 discount = 150-200B TRY kayıp değer
-3. **IFRS 8 segment disclosure kritik:** Multi-sector holdings için extraction zorunlu
-4. **Bağlı ortaklık işlemleri tracking:** Ana şirket + major subsidiaries KAP bildirimleri birlikte izlenmeli
-5. **Mature holding event density düşük:** 3-5 material events/year normal (operating companies 8-12)
-
-**Sonraki Aksiyon:**
-- KCHOL raporu tekrar çalıştırılırsa önce financial_analysis agent debug edilmeli
-- Segment data extraction pipeline kurulmalı (KAP annual report → IFRS 8 section parsing)
-- HTML → PDF pipeline tamamlanmalı
-- Agent meta-text post-processing filter eklenmeli
+- **THYAO veya herhangi bir havacılık şirketi** için CEO pre-flight direktifine havacılık KPI checklistini ekle: EBITDAR, RPK, ASK, CASK, RASK, LF, Hedging, Rusya üstgeçiş, EU ETS/CORSIA.
+- **CF tablosu bloker kriterini sıkılaştır** — CF yokken parse_standardization ve reconciliation "BLOCKED" verecek; financial_analysis working capital bölümünü "BLOCKED" olarak bırakacak; tahmin üretmeyecek.
+- **THYAO bir sonraki analizde** CF + SE tabloları ilk 30 dakikada çekilmeli; bu tamamlanmadan pipeline ilerleyemez.
 
 ---
 
----
+## CEO Post-Report Review — BIMAS — 14 Nisan 2026
 
-## Chairman Direktifi — 11 Nisan 2026 (KRİTİK)
+### Pipeline Sonucu
+- **QA Final Score: 0.80** — Eşik 0.80. BLOCKED (REVISION_REQUIRED Tour 3).
+- **Ana başarılar (Tour 1 → Tour 2):** FAVÖK 34,541 → 22,515 TRY mn düzeltildi ✓ | IAS29 59,845 → 21,622 düzeltildi ✓ | Share count 610M teyit edildi ✓ | Private label %54 hizalandı ✓ | ROE/ROCE/CAPEX-EBITDA eklendi ✓
+- **Ana bloker (çözülmedi):** CF/SE tabloları 2 tur boyunca upstream'den gelmedi → Working capital (DSO/DIO/DPO/CCC), OCF, FCF, CF Check 3-5 BLOCKED.
+- **Report formatter P0:** HTML yalnızca CSS içeriyor, body yok → 12 bölümden 1.5 bölüm teslim edildi.
 
-### KURAL 7: RATE LIMIT OTOMATIK RECOVERY — SEN YÖNET, CHAIRMAN'E YAZMA
+### Sistematik Bulgular (BIMAS'a Özgü)
 
-**Durum:** 10 Nisan 2026'da KCHOL analizinde rate limit geldi. Sistem session'ı "completed" olarak kapatıp failed agent'ları bıraktı. Chairman gece 1'de bunu fark edip elle müdahale etmek zorunda kaldı.
+| Sorun | BIMAS'taki Tezahür |
+|-------|-------------------|
+| CF tablosu upstream bloker | 2 tur çözülmedi; data_collection KAP PDF script çalıştırmadı |
+| Truncation | strategic_synthesis, macro_analysis, financial_analysis, context_extraction, event_classification, analyst_consensus, esg — hepsi kesildi |
+| IAS29 optik-gerçeklik uçurumu | ROE %21.3 raporlanan vs %3.6 operasyonel — kritik divergence tespit edildi ✓ |
+| HTML report formatter failure | Body content hiç üretilmedi (P0) |
+| Share count çelişkisi | event_impact_mapper'da "1.2B shares" hatası Tour 2'de de kaldı |
 
-**Chairman'ın sözleri:** "2'de bunu neden sana yazmak zorundayım? CEO'nun bunu görüp otomatize yapması lazımdı."
+### Perakende Sektörü — Kalıcı Öğrenim
 
-**YENİ KURAL:**
-1. Rate limit = session DURAKLATILIR ("paused_rate_limit"), KAPATILMAZ ("completed")
-2. Failed agent'lar "pending"e çekilir, session kapanmaz
-3. Watchdog 2 dakikada bir Claude'u probe eder, limit kalktığında otomatik devam eder
-4. Chairman'a BİR KEZ bile yazılmaz — bu tamamen senin yönetimin altında
-5. Sabah Chairman masasına oturduğunda rapor hazır olmalı
+1. **IAS29 perakendede kritik optik risk:** Yüksek enflasyon döneminde perakende-TÜFE endeksli gelir, IAS29 parasal kazancı şişirir. TÜFE %30→%16 normalizasyonunda net kâr dramatik düşer; bu dezenflasyon riski artık BIMAS şablonuna sabit eklendi.
+2. **CF bloker perakendede çözüm yolu:** KAP'ta perakende firmaları için CF tablosu OCF = Net Kâr + D&A ± WC değişimleri formatında. BS bazlı WC tahmini (AR/AP/Stok değişimi) + income statement D&A → tahmini OCF. "[Tahmini, conf: MEDIUM]" etiketiyle verilebilir.
+3. **SSSG CEO direktifine eklendi:** Perakende analizlerinde SSSG (aynı mağaza satış büyümesi) zorunlu metrik listesine dahil edildi. Her perakende analizinde bu metrik eksikse pipeline BLOCK.
+4. **Özel marka oranı time-series:** Perakendeciler için özel marka oranı erozyon trendi (BIMAS: %65 → %54) brüt marj kalkanının proxy'si; 5 yıllık trend zorunlu.
 
-**Teknik düzeltme yapıldı (orchestrator.ts):**
-- `detectErrorType`'a "hit your limit" pattern eklendi
-- Session kapanmadan önce failed agent kontrolü eklendi — rate limit ise pause yapılıyor
-- Watchdog otomatik resume ediyor
+### CEO Direktifleri — Sonraki Perakende Analizi İçin
 
-### KURAL 8: RAPOR KALİTESİ — SISE SEVİYESİ MİNİMUM STANDART
+- **Herhangi bir perakende şirketi (BIMAS, SOKM vb.) için CEO pre-flight ek kontrolleri:**
+  - SSSG, Revenue per Store, Özel Marka Oranı, IFRS 16 normalize EBITDA
+  - IAS29 etkisi: reported ROE vs operasyonel ROE ayrımı
+  - Uluslararası segment (Fas/Mısır gibi) ayrı raporlama
+  - CEO/GM dualitesi governance riski değerlendirmesi
+- **CF tablosu bloker kriterini bir kez daha sıkılaştır:** KAP PDF'ten CF çekilemiyorsa data_collection BS+IS kombinasyonundan tahmini OCF üretecek; "[Tahmini, conf: MEDIUM]" etiketli. "BLOCKED" deyip pipeline durdurmak YASAK.
+- **BIMAS bir sonraki analizde:** Q1 2026 sonuçları (~15 Mayıs) ve CEO kalıcı atama açıklaması iki kritik katalizör. Bu açıklamalar gelince delta-update analizi yapılacak.
 
-**Durum:** AKBNK raporu 10K karakter çöp çıktı. SISE raporu 16 sayfa kurumsal kalitede çıktı. Aynı pipeline, farklı sonuç.
+## CEO Post-Report Review — 2026-04-14 — SAHOL Raporu
 
-**Chairman'ın sözleri:** "En detaylı raporumuz inanılmaz kısa olmuş. Finansal analiz 1 sayfa rapor mu olur?"
+### Pipeline Sonucu
+- **QA Skoru:** 0.738 (eşik 0.85) — REVISION_REQUIRED
+- **Delivery:** BLOCKED (reconciliation CONDITIONAL_PASS + QA eşik altı)
+- **Tur Sayısı:** 2 revizyon turu; Tur 3 için CEO direktifi bekleniyor
 
-**Nedeni tespit edildi:**
-1. `strategic_synthesis_output` CRITICAL_OUTPUTS listesinde yoktu — final_summary sentez verisini görmeden yazdı
-2. `report_formatter` BACKBONE_AGENTS'ta değildi — hiç çalışmadı
-3. Final summary agent 300K char input'u 10K char'a sıkıştırdı, agent meta-text'leri temizlemedi
+### Kritik Sistem Sorunları (Tekrarlanmamalı)
 
-**Teknik düzeltme yapıldı:**
-- CRITICAL_OUTPUTS'a strategic_synthesis + qa_review + event_timeline + reconciliation eklendi
-- report_formatter BACKBONE_AGENTS'a eklendi
-- report_formatter system prompt HTML+Chart.js çıktısı üretecek şekilde yeniden yazıldı
-- orchestrator'a Puppeteer PDF üretimi eklendi
+1. **CONDITIONAL_PASS sızıntısı:** Reconciliation CONDITIONAL_PASS verdi; QA bunu FAIL'e çevirmedi; COO yakaladı ama teknik direktif CEO'ya eskalasyon yerine kendisi yazdı. **Fix:** QA otomatik kuralı — reconciliation=CONDITIONAL_PASS → QA skoru ne olursa FAIL.
 
-**Bundan sonra her rapor:**
-- Minimum 12 sayfa
-- Chart.js grafikleri (5+ grafik)
-- Styled HTML tablolar
-- KPI kartları
-- Risk dashboard (skorlu)
-- Senaryo analizi (bear/base/bull)
-- Sıfır agent meta-text
-- Otomatik PDF çıktı
+2. **Holding analizi için IS zinciri boş teslim edildi:** Parse_standardization revenue 195B (segment kısmı) ve EBITDA 50,577M (9A veri) ile yanlış etiketle teslim etti. Cascade hata tüm downstream'i sarstı. **Fix:** Holding analizi pre-flight'ta parse'dan "revenue coverage %100 mı?" kontrol adımı eklenmeli.
 
-### KURAL 9: FINANCIAL ANALYSIS TIMEOUT CRASH — PROAKTIF YÖNET
+3. **Chairman metrikleri eksik:** DSO, DIO, DPO, CCC, NWC, ROCE, ROIC, Cash FAVÖK hiçbiri financial_analysis çıktısında yoktu. **Fix:** financial_analysis için zorunlu metrik kontrol listesi QA gate'e eklenecek; herhangi bir eksik = P0 FAIL.
 
-**Durum:** KCHOL financial_analysis exit code 143 (SIGTERM/timeout) ile crash oldu. 15dk timeout holding şirketi için yetmedi.
+4. **Truncation salgını:** Bölüm 4.2 (context_extraction), SWOT (sector_competition), DIV-2 (strategic_synthesis), skor kartı (final_summary), Parça 2 (valuation), timeline bölüm 1 (event_timeline_alert) — 6+ agent çıktısı kesildi. **Fix:** Her agent "output tamamlandı / truncation riski" kontrolü yapacak; kesme yerine 2 mesaj protokolü.
 
-**Düzeltme:**
-- Timeout 15dk → 25dk'ya çıkarıldı
-- financial_analysis, context_extraction, report_formatter'a otomatik retry eklendi (2 deneme)
-- Crash olursa session kapanmaz, agent retry edilir
+5. **Veri kalitesi 0.46 ile başladı** — upstream verification yetersiz. Holding analizi için data_collection'a ek süre ve "segment CAPEX gerçek veriden" direktifi verilmeli.
 
-**CEO Sorumluluğu:**
-- Analiz başlamadan önce şirket tipini değerlendir (holding = ağır analiz)
-- Holding şirketleri için agent'lara özel talimat ver (segment breakdown, SOTP, NAV)
-- Crash tespit edilirse hemen retry tetikle, Chairman'e bırakma
+### Sonraki SAHOL / Holding Analizi İçin CEO Direktifleri
 
-### KURAL 10: HER ŞEY OTONOM — CHAIRMAN SADECE STRATEJİK KARARLAR İÇİN
-
-**Genel prensip:** Aşağıdaki durumların HİÇBİRİNDE Chairman'e yazılmaz:
-- Rate limit → otomatik recovery
-- Agent crash → otomatik retry
-- Rapor formatı bozuk → report_formatter'a geri gönder
-- Eksik metrik → financial_analysis'e reject + retry
-- Agent meta-text raporda kalmış → report_formatter'a reject
-
-**Chairman'e SADECE şunlar için yazılır:**
-- Yeni şirket/sektör ekleme kararı
-- Pipeline mimarisi değişikliği
-- Bütçe/maliyet onayı
-- Stratejik yön değişikliği
+- **Holding pre-flight zorunlu ek kontroller:** SOTP için her iştirak stake %, son kapanış fiyatı, piyasa değeri tablosu — başlamadan önce.
+- **CONDITIONAL_PASS = otomatik FAIL:** QA kuralına işlenecek; istisna yok.
+- **Chairman'ın 25 metrik listesi QA kontrol listesine eklendi:** Eksik metrik → P0 → FAIL.
+- **Truncation protokolü:** >3000 token çıktı riski olan bölümler bölünecek; kesme YASAK.
 
 ---
 
-### KURAL 11: PDF GENERATION — BOŞSAYFA SORUNU ÇÖZÜLMELİ (11 Nisan 2026 Akşam)
+## CEO Feedback Loop Özeti — KCHOL Delta — 14 Nisan 2026
 
-**Sorun:** TCELL PDF'inde "1 sayfa veri, 1 sayfa boşluk" — kullanıcı deneyimi BOZUK.
+### Tüm Agent Memory'leri Güncellendi
+Bu feedback loop tamamlandı. Aşağıdaki sistemik sorunlar 22 agent memory'sine yazıldı:
 
-**Kök Neden:**
-1. Cover page div'i `class="page cover-page"` şeklinde DOUBLE CLASS'a sahipti
-2. İçinde nested `class="cover-page meta"` div'i vardı — CSS inheritance conflict
-3. `.page` class'ı `min-height: 297mm` ile tüm sayfaları A4 tam boy yapıyordu
-4. `page-break-after: always` her `.page` sonrası yeni sayfa açıyordu ama içerik yoksa boşluk kalıyordu
+### Pipeline Geneli Kök Nedenler (Çözülmeden Kapanmamalı)
 
-**Çözüm (UYGULANMIŞ):**
-1. ✅ Cover page'den `.page` class'ını kaldır → sadece `.cover-page` olsun
-2. ✅ Nested div'i `class="meta"` yap (cover-page kaldır)
-3. ✅ `.cover-page` için `page-break-after: always` ekle
-4. ✅ `.page` class'ından `min-height: 297mm` kaldır (content-based height)
-5. ✅ Puppeteer wait time 5 saniye (Chart.js render için)
+| # | Kök Neden | Etkilenen Agent Sayısı | Cascaded Etki |
+|---|-----------|----------------------|--------------|
+| 1 | **Revenue Q4/FY karışıklığı** — 802.669B = Q4, FY = 2.76T | data_collection → financial_analysis → reconciliation → valuation → final | FAVÖK marjı, ROE, net kar marjı hepsi yanlış hesaplandı |
+| 2 | **KAP PDF script çalıştırılmadı** | data_collection (3. kez) | IFRS 8, ticari alacak, tam bilanço elde edilemedi |
+| 3 | **IFRS 8 segment EBITDA %0** | data_collection, parse_standardization | Holding valuation analist SOTP'a mecbur kaldı |
+| 4 | **Truncation salgını** | macro_analysis, sector_competition, strategic_synthesis, final_summary, event_impact_mapper, event_timeline_alert | Kritik bölümler (DIV-3, FROTO makro, BUY/SELL trigger) görünemedi |
+| 5 | **Report formatter HTML body eksik** | report_formatter (BIMAS + KCHOL = 2. kez) | PDF render başarısız; COO REVISION_NEEDED |
 
-**Sonuç:** TCELL PDF 795 KB, 13 sayfa, boş sayfa YOK ✅
+### Yeni Holding-Spesifik Kurallar (Sonraki KCHOL / Holding Analizi İçin)
 
-**Report_formatter agent'a feedback gerekli:** HTML template'lerde class naming convention düzelt.
+1. **Revenue üç katmanlı doğrulama ZORUNLU** — Canonical fact pack'e girmeden önce: (a) Solo/Parent geliri kaynağı nedir? (b) Konsolide FY 12 aylık mı? (c) En son quarter kaç aylık? Üçü ayrı satır, kaynak referanslı.
+2. **Banka konsolidasyonu balance sheet imbalance açıklaması** — YKBNK tam konsolidasyon → bilanço aktif 5.3T TRY; liabilties +equity eksik veri durumunda imbalance yapısaldır. Her KCHOL analizinin başında bu açıklamayı koy.
+3. **TUPRS efektif pay ~%40.5** (KCHOL %4.27 + EYAŞ dolaylı ~%36) her analizde; yalnızca doğrudan %26.2 kullanmak SOTP'u hafife alır.
+4. **GCM SOTP anchor** (406 TL, Şubat 2026) — faaliyet raporu PDF yokken en güvenilir NAV tahmini; "[analist proxy, conf: MEDIUM]" etiketiyle kullanılabilir.
 
----
+### QA İstatistikleri — KCHOL Pipeline Genel Bakış
 
-## CEO REVIEW — 2026-04-11 — TCELL RAPORU
+| Tur | QA Skoru | Ana İlerleme | Açık P0 |
+|-----|----------|-------------|---------|
+| Round 1 | 0.590 | İlk tarama | 4 bloker |
+| Round 2 | 0.676 | Revenue Q4/FY tanımlandı ama yanlış çözüldü | 3 bloker |
+| **Hedef (Round 3)** | **≥ 0.80** | **KAP PDF + Revenue FY + IFRS 8 proxy** | **0 bloker** |
 
-### GENEL DEĞERLENDİRME: **MAJOR FAILURE — ALTINCI RAPOR, AYNI HATALAR**
-
-**Rapor Durumu:** **REJECT — REVISION REQUIRED**  
-**Overall Quality Score:** 0.65/1.00 (MEDIUM-LOW)  
-**Critical Issues:** 15 (Blocker), 8 (High), 12 (Medium)
-
-### KRİTİK TESPİTLER:
-
-**1. CHAIRMAN ZORUNLU METRİKLER — %70 EKSİK (BEŞİNCİ KEZ):**
-- ROE, ROCE, ROIC, Asit-Test, DSO, DIO, DPO, CCC, Cash FAVÖK, NWC Gün Sayısı, OCF/FAVÖK — TÜM eksik
-- Bu **BEŞİNCİ RAPOR** (AKBNK, SISE, KCHOL ×3, TCELL) — aynı eksikler tekrar ediyor
-- Financial_analysis agent memory'sinde BEŞ kez yazıldı, hâlâ uygulanmıyor
-
-**2. OUTPUT TRUNCATION PANDEMIC:**
-- 16 agent'tan 14'ü TRUNCATED (kesilmiş) output vermiş
-- Bu teknik sorun MU yoksa agent execution failure mı? — investigation gerekli
-- Truncation oluyor diye yarım analiz göndermek YASAK — önce CEO'ya escalate etmeliler
-
-**3. TELEKOMÜNIKASYON SEKTÖRÜ ÖZELLEŞTİRMESİ SIFIR:**
-- 5G spectrum amortization impact (TRY 2.34B/year, -200bps EBITDA margin) — quantified değil
-- ARPU trend, churn rate, SAC vs LTV, CAPEX intensity — telecom-kritik metrikler yüzeysel
-- BTK verileri (market share, subscriber data) — hiç kullanılmamış
-- Spectrum advantage (160 MHz vs 140/120) — competitive moat analizi eksik
-
-**4. VALUATION AGENT TAMAMEN YOK:**
-- DCF, multiples (EV/EBITDA, P/E), sum-of-parts — hiçbiri hesaplanmamış
-- Hedef fiyat (Bear/Baz/Bull) — başlamış ama truncated
-- Investment recommendation (BUY/HOLD/SELL) — net değil
-
-**5. RAPOR FORMATLAMASI BAŞARISIZ (İKİNCİ KEZ):**
-- HTML raporu yarım (KCHOL'da da yarım kalmıştı)
-- PDF output YOK
-- Chairman 12-bölümlü format UYGULANMAMIŞ
-- Chart.js grafikleri YOK
-
-### AGENT PERFORMANS PUANLARI (TCELL):
-
-| Agent | Puan | Durum | Kritik Eksik |
-|-------|------|-------|--------------|
-| financial_analysis | 35/100 | ❌ FAIL | %70 mandatory metrics missing |
-| data_collection | 60/100 | ⚠️ PARTIAL | Truncated, telecom KPIs incomplete |
-| parse_standardization | 55/100 | ⚠️ PARTIAL | Cash flow + equity statement missing |
-| reconciliation | 60/100 | ⚠️ PARTIAL | Truncated reconciliation |
-| context_extraction | 65/100 | ⚠️ PARTIAL | 5G strategy, segment detail shallow |
-| sector_competition | 50/100 | ⚠️ PARTIAL | Truncated, peer benchmarking incomplete |
-| macro_analysis | 75/100 | ✅ CONDITIONAL | Jeopolitik good, FX truncated |
-| technical_analysis | 45/100 | ❌ FAIL | Momentum indicators, volume, Fibonacci all missing |
-| kap_watch | 70/100 | ✅ CONDITIONAL | Tier 3 truncated |
-| event_classification | 50/100 | ⚠️ PARTIAL | Events 3-5 missing |
-| event_impact_mapper | 45/100 | ❌ FAIL | Events 2-5 mapping missing |
-| event_timeline_alert | 50/100 | ⚠️ PARTIAL | Phases 3-4 missing |
-| qa_review | 55/100 | ⚠️ PARTIAL | Remediation plan + escalation action missing |
-| strategic_synthesis | 60/100 | ⚠️ PARTIAL | Risk matrix, scenarios truncated |
-| final_summary | 50/100 | ⚠️ PARTIAL | Target price, skor kartı, conclusion incomplete |
-| report_formatter | 20/100 | ❌ FAIL | HTML partial, PDF none (second failure) |
-
-**Ortalama: 54.1/100 — BAŞARISIZ**
-
-### KALICI ÖNLEMLER (UYGULANMALI):
-
-**1. TRUNCATION PROTOCOL:**
-- Her agent output göndermeden ÖNCE truncation check yapmalı
-- Truncation tespit ederse → CEO'ya escalate et, output GÖNDERME
-- Uzun analizleri summary + detail olarak ikiye böl, her ikisini de gönder
-
-**2. MANDATORY METRICS CHECKLIST (Financial_analysis için):**
-- Output göndermeden önce Chairman listesindeki 45 metriği kontrol et
-- Bir metrik bile eksikse → upstream'e veri talep et, bulana kadar output GÖNDERME
-- "Veri yok" mazeret DEĞİL — KAP, BTK, alternative sources hepsini dene
-
-**3. SECTOR-SPECIFIC FRAMEWORKS (Yeni şirket tipi = yeni framework):**
-- Telekomünikasyon: Spectrum, ARPU, churn, CAPEX intensity, 5G monetization
-- Banka: NPL, NIM, CET1, cost-to-income, real credit growth
-- Holding: SOTP NAV, holding discount, segment-level analysis, diversification benefit
-
-**4. QUALITY THRESHOLD ENFORCEMENT (QA_review için):**
-- Score >0.85 + minor gaps → AUTO PASS
-- Score >0.85 + major gaps (>%40 metrics missing) → REVISION REQUIRED
-- TCELL durumu: 0.86 score + %70 missing → **REVISION REQUIRED** (conditional pass YANLIŞ)
-
-**5. AGENT ACCOUNTABILITY:**
-- Her agent kendi memory'sinde "Bundan Sonra" kurallarını UYGULA
-- Altıncı raporda aynı hata = agent redesign gerekli
-- CEO feedback loop çalışmıyor → new enforcement mechanism investigate et
-
-### SONRAKI RAPOR BEKLENTİSİ:
-
-**TCELL raporu REJECT. Revision gerekli:**
-1. Financial_analysis: TÜM mandatory metrics hesapla
-2. Valuation_agent: DCF + multiples + SOTP → target price
-3. Report_formatter: FULL HTML + PDF, Chairman 12-section format
-4. Truncation: Sıfır truncation tolerance — truncation varsa CEO'ya escalate
-
-**Sonraki şirket (her ne olursa):**
-- Bu feedback'lerin %100 uygulanması bekleniyor
-- Tekrar eden hatalar = agent capability sorunu, CEO intervention gerekli
-- Target: 90/100 average agent performance, <3 critical issues
+### Feedback Loop Tamamlama Kaydı
+- **Tarih:** 14 Nisan 2026
+- **Güncellenen memory sayısı:** 22 (data_collection, parse_standardization, reconciliation, context_extraction, financial_analysis, sector_competition, macro_analysis, technical_analysis, kap_watch, event_classification, event_impact_mapper, event_timeline_alert, qa_review, strategic_synthesis, final_summary, valuation_agent, sentiment_news_agent, analyst_consensus_agent, esg_agent, report_formatter, coo, ceo)
+- **Yeni kural sayısı eklendi:** ~65 kural (22 agent × ortalama ~3 kural)
+- **Bir sonraki analiz:** Round 3 için KAP PDF script zorunlu ilk adım; revenue canonical doğrulama pre-flight'ta
 
 ---
 
----
-
-## ✅ SİSTEMİK DÜZELTMELER — 11 Nisan 2026 Öğleden Sonra
-
-### CHAIRMAN FEEDBACK: TCELL RAPORU — 4 KRİTİK SORUN
-
-**Kullanıcı (Chairman) bildirdi:**
-1. **"2025 raporu yayınlamışken neden hiç bir yerde 2025 verileri yok?"**
-2. **"PDF'te 1 sayfa veri 1 sayfa boşluk var"**
-3. **"Raporlarda wording az, sürekli tablo basıyorsunuz, Ata Yatırım gibi olsun"**
-4. **"TCELL KAP raporundaki gibi layout olsun, grafik sağda metin solda"**
-
-### VERİLEN FEEDBACK'LER (6 AGENT):
-
-**✅ Data_Collection:** 2025 veri kontrolü + Ata Yatırım eksik metrikler  
-**✅ Parse_Standardization:** Input validation + freshness check  
-**✅ Report_Formatter:** PDF QA + TCELL KAP layout (60/40 asimetrik)  
-**✅ Financial_Analysis:** Wording enforcement (her tablo sonrası yorum)  
-**✅ Strategic_Synthesis:** Wording + Önemli Noktalar bölümü  
-**✅ CEO Memory:** Bu düzeltmeler kaydedildi
-
-### YENİ KURALLAR — TÜM RAPORLAR İÇİN GEÇERLİ:
-
-**KURAL 11: HER TABLO SONRASI YORUM zorunlu**  
-**KURAL 12: LAYOUT = YAN YANA (60/40), ALT ALTA YASAK**  
-**KURAL 13: PDF QA ZORUNLU (boş sayfa kontrolü)**
-
-**Sonraki rapor:** TCELL (yeniden) — Target score: 90/100
-
----
-
----
-
-## TCELL RAPORU POST-MORTEM — 11 Nisan 2026 Akşam
-
-### Genel Durum: MAJOR GAPS — Rapor RED (Chairman onayına GİTMEZ)
-
-**Kritik Sorunlar:**
-1. **Working Capital Metrics %100 EKSİK** — DSO, DIO, DPO, CCC, NWC/Revenue — Chairman zorunlu listesinin %40'ı yok (QA agent tespit etti ✅)
-2. **5-Year Historical Data %90 EKSİK** — 2021-2024 tüm satırlar "—" veya "[pending]" (Data Collection + Parse Standardization başarısız)
-3. **Cash Flow Statement TAMAMEN YOK** — 4 zorunlu tablodan biri eksik (4. rapor, aynı sorun: AKBNK, KCHOL×2, TCELL)
-4. **Output Truncation Yaygın** — Çoğu agent çıktısı yarım kalmış (sector_competition, macro_analysis, technical_analysis, valuation, sentiment, ESG)
-5. **ROE, ROCE, ROIC EKSİK** — Financial analysis agent Chairman zorunlu metriklerini hesaplamamış
-
-### Agent Bazlı Eksik Özeti:
-
-| Agent | Eksikler | Severity | Memory Updated? |
-|-------|----------|----------|-----------------|
-| **data_collection** | Historical data (2021-2024) toplamamış, CF statement yok, output truncated | KRİTİK | ✅ |
-| **parse_standardization** | Multi-year data "[pending]", Income Statement %60 eksik, CF yok | KRİTİK | ✅ |
-| **reconciliation** | CF validation impossible, 2024 balance sheet yok, IAS 29 restatement check yok | YÜKSEK | ✅ |
-| **financial_analysis** | DSO/DIO/DPO/CCC/ROE/ROCE/ROIC/Cash FAVÖK/OCF/FAVÖK hepsi EKSİK | KRİTİK | Zaten var (5. feedback) |
-| **sector_competition** | Benchmarking tablosu truncated | ORTA | — |
-| **macro_analysis** | Enflasyon, FX kısımları truncated | ORTA | — |
-| **technical_analysis** | Support/resistance truncated | ORTA | — |
-| **valuation_agent** | DCF tablosu truncated | ORTA | — |
-| **sentiment_news_agent** | Haber tablosu truncated | DÜŞÜK | — |
-| **esg_agent** | ESG tabloları truncated | ORTA | — |
-| **qa_review** | İYİ — working capital eksikliğini tespit etti ✅ | YOK | — |
-| **strategic_synthesis** | Risk matrix truncated | ORTA | Zaten var |
-| **final_summary** | Truncation nedeniyle incomplete | YÜKSEK | Zaten var |
-
-### Kök Neden Analizi:
-
-**1. DATA COLLECTION BAŞARISIZLIĞI:**
-- 2025 annual report var (KAP 5 Mart 2026) ama sadece summary toplamış, detay yok
-- 2021-2024 historical data hiç toplanmamış
-- Cash Flow Statement extract edilmemiş ("bulamadım" mazereti)
-
-**2. PARSE STANDARDIZATION BAŞARISIZLIĞI:**
-- Gelen input eski/eksik olmasına rağmen DOĞRULAMA YAPMADAN parse etmiş
-- "[pending]" olarak downstream'e göndermiş (YASAK)
-- Multi-year extraction yapmamış
-
-**3. FINANCIAL ANALYSIS TEKRARLAYAN BAŞARISIZLIK:**
-- 5. rapor (AKBNK, SISE, KCHOL×2, TCELL) — aynı eksikler
-- Chairman zorunlu metrik listesi uygulanmıyor
-- "Veri yok" deyip geçiyor, upstream'den talep etmiyor
-
-**4. OUTPUT TRUNCATION SYSTEM SORUNU:**
-- Çoğu agent output limit'e takılıyor
-- Summary + Detail çift output oluşturulmuyor
-- CEO escalation yapılmıyor
-
-### YENİ PROTOKOL — BUNDAN SONRA:
-
-**KURAL 14: UPSTREAM VALIDATION ZORUNLU**
-- Data_collection eksik veri gönderdiyse → Parse_standardization DOĞRULA ve ESCALATE et, parse etme
-- Parse_standardization "[pending]" gönderdiyse → Financial_analysis UPSTREAM'DEN TALEP et, analiz yapma
-
-**KURAL 15: OUTPUT TRUNCATION ÖNLEME**
-- Agent output yaklaşık limit'e gelirse → Summary (key findings only) + Detail JSON olarak iki ayrı çıktı oluştur
-- İkisini de tamamen gönder
-- Truncation olursa → CEO'ya ESCALATE et, yarım output gönderme
-
-**KURAL 16: CHAIRMAN ZORUNLU METRİK LİSTESİ CHECK**
-- Financial_analysis output göndermeden ÖNCE → 45 metrikten kaçı hesaplandı say
-- TEK bir metrik bile eksikse → OUTPUT GÖNDERME, upstream'den veri talep et
-
-**KURAL 17: CASH FLOW STATEMENT = NON-NEGOTIABLE**
-- 4 zorunlu tablodan biri: IS, BS, CF, SE
-- CF yoksa → Data_collection'a ESCALATE, "KAP PDF manuel extraction yap"
-- Hâlâ yoksa → CEO'ya escalate, pipeline DURDUR
-
-### Düzeltilecek Agent'lar (Priority Order):
-
-1. **data_collection** → 5-year historical + CF extraction protocol
-2. **parse_standardization** → Input validation + "[pending]" yasağı
-3. **financial_analysis** → Chairman metrik enforcement (5. kez)
-4. **reconciliation** → CF validation + comparative BS check
-5. **TÜM agent'lar** → Output truncation prevention
-
-### Sonraki Aksiyonlar:
-
-- [ ] TCELL raporu YENİDEN ÇALIŞTIR (tüm feedback uygulanmış versiyonla)
-- [ ] Target score: 90/100 (QA overall quality)
-- [ ] Chairman'e sunum ÖNCESINDE CEO approval al
-- [ ] Bu feedback döngüsü 6. raporda tekrarlanmamalı
-
-### Öğrenilen Ders:
-
-**"Feedback vermek yetmez, uygulanmasını KONTROL ET"** — 5 raporda aynı eksikler tekrarlandı çünkü:
-- Agent memory'ler güncellendi ✅
-- Ama agent'lar output oluştururken memory'lerini OKUMADI ❌
-- Sonraki iterasyonda: **Memory enforcement check** — agent output'unda "Checked memory: [list of applicable rules]" zorunlu kıl
-
----
-
-## ✅ TCELL DELTA-UPDATE FINAL REVIEW — 11 Nisan 2026 Gece
-
-### GENEL DURUM: MAJOR IMPROVEMENT — Rapor CONDITIONAL PASS (Chairman'e sunulabilir)
-
-**Önceki Durum (İlk Deneme):** RED — %90 eksiklik, 5 KRİTİK sorun  
-**Yeni Durum (Delta-Update):** CONDITIONAL PASS — Tüm critical gaps kapatıldı, minor truncation issues kaldı
-
-### BAŞARILAN İYİLEŞTİRMELER:
-
-✅ **1. Working Capital Metrics %100 TAMAMLANDI:**
-- DSO, DIO, DPO, CCC, NWC/Revenue — hepsi hesaplandı ve yorumlandı
-- CCC -11 days exceptional performance flagged
-- Chairman zorunlu metriklerinin %100'ü mevcut
-
-✅ **2. 5-Year Historical Data TAMAMEN TOPLAN DI:**
-- 2021-2025 tüm finansal tablolar (IS, BS, CF) tam
-- Her satır için 5 yıllık veri mevcut, "[pending]" veya "—" yok
-- CAGR hesaplamaları yapıldı, trend analizi tam
-
-✅ **3. Cash Flow Statement TAMAMEN ÇIKARILDI:**
-- Operating/Investing/Financing activities breakdown — 2021-2025 tam
-- Working capital changes breakdown mevcut
-- CF → Balance Sheet cash reconciliation yapıldı
-
-✅ **4. ROE, ROCE, ROIC HESAPLANDI:**
-- Financial analysis agent tüm Chairman zorunlu metrikleri hesapladı
-- Her metric için trend + yorum + benchmark karşılaştırması var
-
-✅ **5. 5G Abone Tutarsızlığı (15M vs 2M) FLAGGED:**
-- Tüm downstream agents'a iletildi
-- Q1 2026 earnings (24 Nisan) validation trigger'ı belirlendi
-- Risk dashboard'a eklendi
-
-✅ **6. Jeopolitik Analiz MÜKEMMEL:**
-- İran-ABD savaşı → Enerji şoku → TCELL OPEX impact quantified
-- Tourism collapse → Roaming revenue impact modeled
-- Transmission mechanism detaylı
-
-✅ **7. Kaynak Doğrulaması TAM:**
-- 25+ primary sources cite edilmiş
-- Critical claims 2+ source ile doğrulanmış
-- Evidence quality 0.88/1.0 (Excellent)
-
-✅ **8. Chairman KURAL 1B Format Uyumu:**
-- 12 bölümlü rapor yapısı tam
-- Skor kartı (7.1/10, 6 boyut + genel)
-- Hedef fiyat aralıkları (Bear: 85-95, Baz: 110-125, Bull: 145-165)
-- PDF output oluşturuldu (HTML → PDF)
-
-✅ **9. Telecom-Specific KPIs Toplandı:**
-- 39.1M subscribers, 81% postpaid, ARPU trend, churn rates
-- Spectrum holdings (160 MHz), 5G strategy deep dive
-- BTK verileri toplandı
-
-### KALAN MINOR İSSUES (Truncation — Non-blocking):
-
-⚠️ **Output Truncation (Multiple Agents):**
-- Financial_analysis: Gelir tablosu metrikleri sonrası kesilmiş (ama tüm metrikler hesaplanmış, QA confirmed)
-- Sector_competition, macro_analysis, technical_analysis, valuation, sentiment, ESG: Çıktı kesilmiş
-- **Impact:** Minor — core analysis tam, truncation "nice-to-have" detaylarda olmuş
-- **Sonraki rapor için:** Summary + Detail JSON çift output stratejisi uygulanacak
-
-⚠️ **Moody's Kredi Notu Bulunamadı:**
-- Fitch ve S&P mevcut, Moody's yok
-- Agent açıkça "Not Found" demiş (honest gap reporting)
-- **Impact:** Minimal — 2 credit rating mevcut, yeterli
-
-### QUALITY SCORE COMPARISON:
-
-| Metric | İlk Deneme | Delta-Update | Değişim |
-|--------|-----------|--------------|---------|
-| **Evidence Sufficiency** | 0.65 | 0.88 | **+0.23** ✅ |
-| **Confidence Calibration** | 0.72 | 0.82 | **+0.10** ✅ |
-| **Claim Support** | 0.68 | 0.86 | **+0.18** ✅ |
-| **Completeness** | 0.42 | 0.78 | **+0.36** ✅ |
-| **Scope Compliance** | 0.81 | 0.90 | **+0.09** ✅ |
-| **OVERALL QA SCORE** | **0.62** (BLOCK) | **0.84** (VERY GOOD) | **+0.22** ✅ |
-
-### CHAIRMAN APPROVAL DECİSİON:
-
-**CONDITIONAL PASS** — Rapor Chairman'e sunulabilir
-
-**Conditions:**
-1. ✅ Tüm zorunlu metrikler mevcut — PASSED
-2. ✅ 5 yıllık historical data tam — PASSED
-3. ✅ Cash Flow Statement extract edilmiş — PASSED
-4. ⚠️ Truncation issues — **TOLERABLE** (core analysis tam, detay truncated)
-
-**Chairman'e sunulacak rapor:** TCELL_Kapsamli_Analiz_Raporu_2026.html + PDF
-
-**Next Steps:**
-- [ ] Truncation prevention strategy gelecek raporlarda uygulanacak (Summary + Detail JSON)
-- [ ] TCELL Q1 2026 earnings (24 Nisan) sonrası 5G abone sayısı validation update
-- [ ] Sonraki rapor hedefi: QA Score > 0.90 (truncation çözülürse)
-
-### ÖĞRENİLEN DERSLER:
-
-**1. Delta-Update Stratejisi Başarılı:**
-- İlk deneme: Geniş scope, shallow execution → FAIL
-- Delta-update: Gap-filling focused, deep execution → PASS
-- **Sonraki raporlarda:** Önceki rapor feedback'lerini MUTLAKA oku ve uygula
-
-**2. Upstream Pipeline Güçlendirmesi İşe Yaradı:**
-- Data_collection → Parse_standardization → Reconciliation → Financial_analysis zinciri düzgün çalıştı
-- Input validation + [pending] yasağı + matematiksel kontroller = %0 kritik gap
-
-**3. Truncation Hâlâ Problem:**
-- Çok uzun agent outputs limit'e takılıyor
-- **Çözüm:** Summary (key findings, tüm mandatory metrics) + Detail (full tables, appendix) — iki ayrı output
-- Sonraki raporlarda uygulanacak
-
-**4. QA Agent Kuralları Hâlâ Uygulanmıyor:**
-- Remediation action plan eksik (7. rapor)
-- Escalation sadece rapor, aksiyon yok
-- **Root cause:** QA agent memory okumuyor veya output oluştururken unutuyor
-- **Çözüm:** Agent system prompt'a "Memory enforcement check" eklenecek
-
-### RAPOR DURUMU ÖZETİ:
-
-| Rapor # | Şirket | İlk QA Score | Final QA Score | Chairman Kararı |
-|---------|--------|--------------|----------------|-----------------|
-| 1 | ASELS | 0.78 | — | PASS (minor gaps) |
-| 2 | AKBNK | 0.58 | — | BLOCK (working capital eksik) |
-| 3 | SISE | 0.62 | — | BLOCK (critical data gaps) |
-| 4 | KCHOL (#1) | 0.45 | — | BLOCK (segment data %90 eksik) |
-| 5 | KCHOL (#2) | 0.68 | — | REVISION REQUIRED (financial analysis fail) |
-| 6 | KCHOL (#3) | 0.68 | — | REVISION REQUIRED (aynı eksikler) |
-| **7** | **TCELL (#1)** | **0.62** | **—** | **BLOCK (working capital, CF, historical data)** |
-| **8** | **TCELL (#2 - Delta)** | **—** | **0.84** | **✅ CONDITIONAL PASS** |
-
-**İlerleme:** 7 rapordan 2'si PASS (ASELS, TCELL-delta), 4'ü BLOCK/REVISION, 1'i CONDITIONAL PASS
-
-**Hedef:** Sonraki 3 raporda %100 PASS rate (QA Score > 0.85)
-
----
-
-*Bu dosya güncellendi: 12 Nisan 2026 (TUPRS Deep Dive Post-Report Feedback)*
-*Heartbeat logları → heartbeat_archive.md*
+*Arsiv: memory_archive.md | Heartbeat loglari: heartbeat_archive.md*
 *Dosya sahibi: CEO Meta-Agent | Denetleyen: Chairman*
-
----
-
-## CEO Review Özeti — 2026-04-12 — TUPRS Raporu
-
-### Genel Değerlendirme
-**Pipeline Durumu:** CONDITIONALLY COMPLETE | **QA Skoru:** 0.618 (FAIL → Kısmi kurtarma) | **Rapor Kalitesi:** MEDIUM
-
-### En Kritik Sistemik Sorunlar (Tüm Analizlerde Geçerli)
-
-**1. Koordinasyon Failure — event_timeline_alert:**
-event_impact_mapper output dosyaya yazılmış olmasına rağmen event_timeline_alert "upstream eksik" diyerek BLOCKED verdi. Upstream doğrulaması hafıza/context'ten değil, dosya varlığı kontrolüyle yapılmalı. Bu hatanın tekrarı kabul edilemez.
-
-**2. financial_analysis Bölüm 1-9 iletilmedi:**
-mandatory_metrics_complete: TRUE verip Bölüm 1-9'u pipeline'a iletmemek yapısal bir hata. CEO Quality Review checklist'te "TÜM bölümler görünür çıktıda mı?" sorusu eklendi — bundan sonra bu kontrol mandatory.
-
-**3. Valuation agent yük yönetimi:**
-DCF + peer + sensitivity matrix tek seferde → exit code 143 crash. Bundan sonra valuation_agent'a "modeli 3 parçada çalıştır" direktifi CEO mandate'e eklenmeli.
-
-**4. IAS 29 pre-check Türk şirketlerinde standard olmalı:**
-Balance sheet imbalance sorunu öngörülebilirdi. Bundan sonra her Türk şirketi analizinde: "Kümülatif TÜFE > %100 → IAS 29 aktif → faaliyet özeti değil KAP konsolide tablo kullan." Bu kural CEO mandate'e eklenecek.
-
-**5. Makro analiz enerji şirketleri eksik kalemleri:**
-WTI-Brent spread, IEA talebi, zorunlu stok maliyeti, Türkiye enerji altyapısı — TUPRS analizinde eksikti. Enerji şirketleri için bu 5 makro kalemi CEO mandate'e eklendi.
-
-### Başarılı Agentlar (Tekrarlanacak Davranışlar)
-- **kap_watch:** 12 aylık kapsamlı inventory (mandate 30 gün istedi ama ek kapsam değer yarattı)
-- **data_collection:** 0.91 güven skoru, verifiabke URL'ler, clear manifest
-- **analyst_consensus:** 12 analist, detaylı fiyat/gerekçe tablosu (SELL gerekçesi eksik)
-- **esg_agent:** CDP A- tespiti kritik bulgu; YK bağımsızlık riski doğru tespit
-- **technical_analysis:** Fibonacci + MA + RSI bütünleşik analiz iyi; hacim eksikti
-- **event_impact_mapper:** 62.3B TRY temettü etkisi + FCF-temettü açığı senaryoları güçlü
-
-### Bir Sonraki Analize Taşınacak CEO Direktifleri
-1. CEO mandate'e "IAS 29 pre-check" bölümü eklenmeli
-2. CEO mandate'e "valuation_agent 3 parça çalıştır" direktifi eklenmeli
-3. CEO mandate'e "enerji şirketi makro zorunlu 5 başlık" listesi eklenmeli
-4. QA'ya "mid-pipeline kontrol noktaları" direktifi verilmeli
-5. event_timeline_alert'e "upstream output dosya kontrolü" protokolü yazılmalı
-6. 17 Nisan 2026 — TUPRS 2025 tam yıl KAP açıklaması: Otomatik yeniden analiz tetikleyici

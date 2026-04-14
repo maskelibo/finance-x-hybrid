@@ -15,12 +15,14 @@ db.exec(`
     ticker TEXT NOT NULL,
     company_name TEXT,
     runtime_mode TEXT NOT NULL,
+    selected_layers TEXT,
     status TEXT NOT NULL DEFAULT 'pending',
     current_phase TEXT,
     started_at TEXT NOT NULL,
     completed_at TEXT,
     total_cost_usd REAL DEFAULT 0,
     total_tokens INTEGER DEFAULT 0,
+    overall_score REAL,
     error_message TEXT
   );
 
@@ -30,6 +32,7 @@ db.exec(`
     agent_id TEXT NOT NULL,
     agent_display_name TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending',
+    provider_used TEXT,
     started_at TEXT,
     completed_at TEXT,
     duration_ms INTEGER,
@@ -130,17 +133,31 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_kap_events_type ON kap_events(event_type);
 `);
 
+function ensureColumn(tableName: string, columnName: string, columnDefinition: string) {
+  const columns = db.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>;
+  const exists = columns.some((column) => column.name === columnName);
+  if (!exists) {
+    db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition}`);
+  }
+}
+
+ensureColumn('analysis_sessions', 'selected_layers', 'TEXT');
+ensureColumn('analysis_sessions', 'overall_score', 'REAL');
+ensureColumn('agent_runs', 'provider_used', 'TEXT');
+
 export type AnalysisSession = {
   id: string;
   ticker: string;
   company_name: string | null;
   runtime_mode: string;
-  status: 'pending' | 'running' | 'paused_rate_limit' | 'completed' | 'failed';
+  selected_layers: string | null;
+  status: 'pending' | 'running' | 'paused_rate_limit' | 'paused_stuck_agent' | 'blocked_for_review' | 'completed' | 'failed';
   current_phase: string | null;
   started_at: string;
   completed_at: string | null;
   total_cost_usd: number;
   total_tokens: number;
+  overall_score: number | null;
   error_message: string | null;
 };
 
@@ -150,6 +167,7 @@ export type AgentRun = {
   agent_id: string;
   agent_display_name: string;
   status: 'pending' | 'running' | 'completed' | 'failed';
+  provider_used: string | null;
   started_at: string | null;
   completed_at: string | null;
   duration_ms: number | null;

@@ -1,9 +1,9 @@
-import { spawn } from 'node:child_process';
 import { nanoid } from 'nanoid';
 import { db } from './db.js';
 import { loadAgent } from './agents.js';
 import { readAgentMemory } from './memory.js';
-import { CLAUDE_SPAWN_OPTIONS, CLAUDE_MODEL } from './config.js';
+import { getModelForAgent } from './config.js';
+import { createDefaultProviderRouter, resolveFallbackProviderId } from './llm/default-router.js';
 
 /**
  * CEO Feedback Loop — Post-Report Agent Review
@@ -12,6 +12,8 @@ import { CLAUDE_SPAWN_OPTIONS, CLAUDE_MODEL } from './config.js';
  * identifies gaps, and writes feedback directly into each agent's memory.
  * This creates a learning cycle: each agent improves over time.
  */
+
+const providerRouter = createDefaultProviderRouter();
 
 export async function runFeedbackLoop(sessionId: string): Promise<string> {
   const session = db.prepare(`SELECT * FROM analysis_sessions WHERE id = ?`).get(sessionId) as any;
@@ -93,60 +95,32 @@ export async function runFeedbackLoop(sessionId: string): Promise<string> {
     `- Türkçe yaz`,
   ].join('\n');
 
-  return new Promise((resolve, reject) => {
-    const args = [
-      '-p', prompt,
-      '--model', CLAUDE_MODEL,
-      '--permission-mode', 'bypassPermissions',
-      '--output-format', 'json',
-    ];
-
-    const child = spawn('claude', args, {
-      ...CLAUDE_SPAWN_OPTIONS,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-
-    let stdoutBuf = '';
-    let stderrBuf = '';
-    child.stdout.on('data', (c: Buffer) => { stdoutBuf += c.toString('utf8'); });
-    child.stderr.on('data', (c: Buffer) => { stderrBuf += c.toString('utf8'); });
-
-    const timeout = setTimeout(() => child.kill('SIGTERM'), 15 * 60 * 1000); // 15 min
-
-    child.on('error', (err) => {
-      clearTimeout(timeout);
-      reject(err);
-    });
-
-    child.on('close', (code) => {
-      clearTimeout(timeout);
-
-      let result = stdoutBuf;
-      try {
-        const parsed = JSON.parse(stdoutBuf);
-        if (parsed.result) result = parsed.result;
-      } catch {}
-
-      if (code !== 0) {
-        reject(new Error(stderrBuf || `Feedback loop exited with ${code}`));
-        return;
-      }
-
-      // Log this as CEO activity
-      try {
-        db.prepare(`
-          INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, output_text, created_at)
-          VALUES (?, 'feedback_loop', ?, ?, 'autonomous', 'completed', ?, ?)
-        `).run(
-          nanoid(),
-          `${session.ticker} rapor geri bildirim döngüsü`,
-          `CEO tüm agent çıktılarını gözden geçirdi ve eksikleri agent memory'lerine yazdı.`,
-          result.slice(0, 5000),
-          new Date().toISOString()
-        );
-      } catch {}
-
-      resolve(result);
-    });
+  const primaryProvider = providerRouter.getPrimaryProvider().id;
+  const result = await providerRouter.run({
+    prompt,
+    model: getModelForAgent('ceo', primaryProvider),
+    fallbackModel: resolveFallbackProviderId()
+      ? getModelForAgent('ceo', resolveFallbackProviderId()!)
+      : undefined,
+    timeoutMs: 15 * 60 * 1000,
   });
+
+  if (!result.success) {
+    throw new Error(result.error || 'Feedback loop failed');
+  }
+
+  try {
+    db.prepare(`
+      INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, output_text, created_at)
+      VALUES (?, 'feedback_loop', ?, ?, 'autonomous', 'completed', ?, ?)
+    `).run(
+      nanoid(),
+      `${session.ticker} rapor geri bildirim döngüsü`,
+      `CEO tüm agent çıktılarını gözden geçirdi ve eksikleri agent memory'lerine yazdı.`,
+      result.output.slice(0, 5000),
+      new Date().toISOString()
+    );
+  } catch {}
+
+  return result.output;
 }

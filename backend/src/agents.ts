@@ -12,6 +12,7 @@ export type AgentDef = {
 
 const AGENT_REGISTRY: Array<Pick<AgentDef, 'id' | 'displayName' | 'group'>> = [
   { id: 'ceo', displayName: 'CEO Meta-Ajan', group: 'management' },
+  { id: 'coo', displayName: 'COO Operasyonel Kontrol', group: 'management' },
   { id: 'orchestrator', displayName: 'Orkestratör', group: 'management' },
   { id: 'qa_review', displayName: 'Kalite Kontrol', group: 'management' },
   { id: 'data_collection', displayName: 'Veri Toplama', group: 'specialist' },

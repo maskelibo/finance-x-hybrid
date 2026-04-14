@@ -1,18 +1,19 @@
-import { spawn, ChildProcess } from 'node:child_process';
+import type { ChildProcess } from 'node:child_process';
 import { nanoid } from 'nanoid';
 import { loadAgent } from './agents.js';
 import { readCEOMemory } from './memory.js';
 import { db } from './db.js';
-import { CLAUDE_SPAWN_OPTIONS, CLAUDE_MODEL } from './config.js';
+import { PORT } from './config.js';
 import type { Response } from 'express';
+import { ClaudeChatProvider } from './llm/claude-chat-provider.js';
+import { CodexChatProvider } from './llm/codex-chat-provider.js';
+import { resolveFallbackProviderId, resolvePrimaryProviderId } from './llm/default-router.js';
+import { ChatProviderError, type ChatMessage, type ChatProviderId, type ChatSessionState } from './llm/chat-types.js';
+import type { ChatProvider } from './llm/chat-provider-interface.js';
 
-export type ChatMessage = {
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: string;
-};
-
-const sessionStore = new Map<string, { history: ChatMessage[]; claudeSessionId?: string }>();
+const sessionStore = new Map<string, ChatSessionState>();
+const claudeChatProvider = new ClaudeChatProvider();
+const codexChatProvider = new CodexChatProvider();
 
 // Track in-flight Claude processes per session so we can abort them
 const activeProcesses = new Map<string, ChildProcess>();
@@ -27,7 +28,7 @@ export function abortCEOChat(sessionId: string): boolean {
 
 export function getOrCreateSession(sessionId: string) {
   if (!sessionStore.has(sessionId)) {
-    sessionStore.set(sessionId, { history: [] });
+    sessionStore.set(sessionId, { history: [], providerSessions: {} });
   }
   return sessionStore.get(sessionId)!;
 }
@@ -82,13 +83,125 @@ function buildContextSnapshot(): string {
   return context;
 }
 
+function buildCEOChatPrompt(userMessage: string, isFirstMessage: boolean, systemPrompt: string, memory: string, liveContext: string): string {
+  if (!isFirstMessage) {
+    return userMessage;
+  }
+
+  return [
+    `# Sen Finance X platformunun CEO Meta-Ajanısın.`,
+    ``,
+    `## System Instructions`,
+    systemPrompt,
+    ``,
+    `## Kalıcı Hafızan (agents/ceo/memory.md)`,
+    memory,
+    ``,
+    liveContext,
+    ``,
+    `## Önemli Talimatlar`,
+    `- Türkçe konuş`,
+    `- Sen yatırımcı sahibi (Chairman/CEO İbrahim Peyman) ile konuşuyorsun`,
+    `- Sen pasif bir asistan değilsin — şirketin yönetim ajanısın, kararlar alırsın`,
+    `- Canlı veri için WebFetch ve WebSearch kullan (KAP.gov.tr, isyatirim.com.tr)`,
+    `- Hafızanı güncellemen gerektiğinde Edit tool ile agents/ceo/memory.md dosyasını düzenle`,
+    `- System prompt'unu güncellemen gerektiğinde agents/ceo/system_prompt.md dosyasını düzenle`,
+    `- Yeni hedef tanımlanırsa goals tablosuna ekle (önce goals tablosu için backend API'yi öğren)`,
+    `- Watchlist'e şirket eklemek için watchlist API'sini kullan`,
+    `- Diğer agentlara görev atayabilirsin (orchestrator, financial_analysis, kap_watch, vb.)`,
+    `- Cevaplarını net, profesyonel, evidence-backed tut`,
+    `- Sıklıkla DB'ye yazabilmen için: backend API http://localhost:${PORT}`,
+    ``,
+    `## Kullanıcı Mesajı`,
+    userMessage,
+  ].join('\n');
+}
+
+function buildTranscriptReplay(history: ChatMessage[]): string {
+  const transcript = history
+    .slice(-12)
+    .map((message) => `${message.role === 'user' ? 'Chairman' : 'CEO'} [${message.timestamp}]:\n${message.content}`)
+    .join('\n\n');
+
+  return transcript || '(önceki mesaj yok)';
+}
+
+function buildProviderPrompt(
+  providerId: ChatProviderId,
+  userMessage: string,
+  session: ChatSessionState,
+  systemPrompt: string,
+  memory: string,
+  liveContext: string,
+): string {
+  if (providerId === 'claude' && session.providerSessions.claude) {
+    return userMessage;
+  }
+
+  const transcript = buildTranscriptReplay(session.history);
+  return [
+    `# Sen Finance X platformunun CEO Meta-Ajanısın.`,
+    ``,
+    `## System Instructions`,
+    systemPrompt,
+    ``,
+    `## Kalıcı Hafızan (agents/ceo/memory.md)`,
+    memory,
+    ``,
+    liveContext,
+    ``,
+    `## Sohbet Geçmişi`,
+    transcript,
+    ``,
+    `## Son Talimat`,
+    `Sohbeti yukarıdaki bağlamı koruyarak devam ettir. Son kullanıcı mesajını doğrudan yanıtla.`,
+  ].join('\n');
+}
+
+function rememberProviderSession(session: ChatSessionState, providerId: ChatProviderId, providerSessionId?: string) {
+  session.lastProvider = providerId;
+  if (!providerSessionId) return;
+  session.providerSessions[providerId] = providerSessionId;
+}
+
+function logChatActivity(userMessage: string, assistantContent: string, durationMs: number, provider: ChatProviderId) {
+  try {
+    db.prepare(`
+      INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, output_text, duration_ms, created_at)
+      VALUES (?, 'chat', ?, ?, 'chairman', 'completed', ?, ?, ?)
+    `).run(
+      nanoid(),
+      userMessage.slice(0, 100),
+      `Chairman sohbeti [provider: ${provider}]`,
+      assistantContent.slice(0, 2000),
+      durationMs,
+      new Date().toISOString()
+    );
+  } catch {}
+}
+
+function getProvider(providerId: ChatProviderId): ChatProvider {
+  return providerId === 'codex' ? codexChatProvider : claudeChatProvider;
+}
+
+function getProviderOrder(): ChatProviderId[] {
+  const primary = resolvePrimaryProviderId();
+  const fallback = resolveFallbackProviderId();
+  return fallback && fallback !== primary ? [primary, fallback] : [primary];
+}
+
+function shouldRetryWithFallback(error: unknown, _providerId: ChatProviderId): boolean {
+  if (!(error instanceof ChatProviderError)) return false;
+  // Retry with fallback on rate limit, auth, or unknown errors — works both directions
+  return error.errorType === 'rate_limit' || error.errorType === 'auth' || error.errorType === 'unknown';
+}
+
 /**
  * Send a message to the CEO agent and get a response.
  */
 export async function chatWithCEO(sessionId: string, userMessage: string): Promise<{ content: string; durationMs: number }> {
   const session = getOrCreateSession(sessionId);
   const ceo = loadAgent('ceo');
-  const startedAt = Date.now();
 
   session.history.push({
     role: 'user',
@@ -100,120 +213,45 @@ export async function chatWithCEO(sessionId: string, userMessage: string): Promi
   const memory = readCEOMemory();
   const liveContext = buildContextSnapshot();
 
-  const fullPrompt = isFirstMessage
-    ? [
-        `# Sen Finance X platformunun CEO Meta-Ajanısın.`,
-        ``,
-        `## System Instructions`,
-        ceo.systemPrompt,
-        ``,
-        `## Kalıcı Hafızan (agents/ceo/memory.md)`,
-        memory,
-        ``,
-        liveContext,
-        ``,
-        `## Önemli Talimatlar`,
-        `- Türkçe konuş`,
-        `- Sen yatırımcı sahibi (Chairman/CEO İbrahim Peyman) ile konuşuyorsun`,
-        `- Sen pasif bir asistan değilsin — şirketin yönetim ajanısın, kararlar alırsın`,
-        `- Canlı veri için WebFetch ve WebSearch kullan (KAP.gov.tr, isyatirim.com.tr)`,
-        `- Hafızanı güncellemen gerektiğinde Edit tool ile agents/ceo/memory.md dosyasını düzenle`,
-        `- System prompt'unu güncellemen gerektiğinde agents/ceo/system_prompt.md dosyasını düzenle`,
-        `- Yeni hedef tanımlanırsa goals tablosuna ekle (önce goals tablosu için backend API'yi öğren)`,
-        `- Watchlist'e şirket eklemek için watchlist API'sini kullan`,
-        `- Diğer agentlara görev atayabilirsin (orchestrator, financial_analysis, kap_watch, vb.)`,
-        `- Cevaplarını net, profesyonel, evidence-backed tut`,
-        `- Sıklıkla DB'ye yazabilmen için: backend API http://localhost:4000`,
-        ``,
-        `## Kullanıcı Mesajı`,
-        userMessage,
-      ].join('\n')
-    : userMessage;
+  const providerOrder = getProviderOrder();
+  console.log(`[CEO CHAT] Provider order: ${providerOrder.join(' → ')}`);
 
-  return new Promise((resolve, reject) => {
-    const args = [
-      '-p', fullPrompt,
-      '--model', CLAUDE_MODEL,
-      '--permission-mode', 'bypassPermissions',
-      '--output-format', 'json',
-    ];
-
-    if (session.claudeSessionId) {
-      args.push('--resume', session.claudeSessionId);
-    }
-
-    const child = spawn('claude', args, {
-      ...CLAUDE_SPAWN_OPTIONS,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-
-    // Register for cancellation
-    activeProcesses.set(sessionId, child);
-
-    let stdoutBuf = '';
-    let stderrBuf = '';
-    let wasAborted = false;
-
-    child.stdout.on('data', (chunk: Buffer) => { stdoutBuf += chunk.toString('utf8'); });
-    child.stderr.on('data', (chunk: Buffer) => { stderrBuf += chunk.toString('utf8'); });
-
-    child.on('error', (err) => {
-      activeProcesses.delete(sessionId);
-      reject(new Error(`Claude process error: ${err.message}`));
-    });
-
-    child.on('close', (code, signal) => {
+  let lastError: unknown;
+  for (const providerId of providerOrder) {
+    const provider = getProvider(providerId);
+    try {
+      const prompt = isFirstMessage
+        ? buildCEOChatPrompt(userMessage, isFirstMessage, ceo.systemPrompt, memory, liveContext)
+        : buildProviderPrompt(providerId, userMessage, session, ceo.systemPrompt, memory, liveContext);
+      const run = await provider.chat({
+        prompt,
+        session,
+        onProcess: (process) => {
+          activeProcesses.set(sessionId, process);
+        },
+      });
       activeProcesses.delete(sessionId);
 
-      if (signal === 'SIGTERM' || wasAborted) {
-        // User cancelled — add a system message and resolve gracefully
-        session.history.push({
-          role: 'assistant',
-          content: '⏹ Sohbet kullanıcı tarafından durduruldu.',
-          timestamp: new Date().toISOString(),
-        });
-        resolve({ content: '⏹ Sohbet kullanıcı tarafından durduruldu.', durationMs: Date.now() - startedAt });
-        return;
-      }
-
-      if (code !== 0) {
-        reject(new Error(stderrBuf || `Claude exited with code ${code}`));
-        return;
-      }
-
-      let assistantContent = stdoutBuf;
-      try {
-        const parsed = JSON.parse(stdoutBuf);
-        if (parsed.result) assistantContent = parsed.result;
-        if (parsed.session_id) session.claudeSessionId = parsed.session_id;
-      } catch {}
+      rememberProviderSession(session, providerId, run.providerSessionId);
 
       session.history.push({
         role: 'assistant',
-        content: assistantContent,
+        content: run.content,
         timestamp: new Date().toISOString(),
       });
 
-      const durationMs = Date.now() - startedAt;
+      logChatActivity(userMessage, run.content, run.durationMs, providerId);
+      return { content: run.content, durationMs: run.durationMs };
+    } catch (error) {
+      activeProcesses.delete(sessionId);
+      lastError = error;
+      if (!shouldRetryWithFallback(error, providerId) || providerId === getProviderOrder().at(-1)) {
+        throw error;
+      }
+    }
+  }
 
-      // Log this conversation as a CEO activity
-      try {
-        db.prepare(`
-          INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, output_text, duration_ms, created_at)
-          VALUES (?, 'chat', ?, ?, 'chairman', 'completed', ?, ?, ?)
-        `).run(
-          nanoid(),
-          userMessage.slice(0, 100),
-          'Chairman sohbeti',
-          assistantContent.slice(0, 2000),
-          durationMs,
-          new Date().toISOString()
-        );
-      } catch {}
-
-      resolve({ content: assistantContent, durationMs });
-    });
-  });
+  throw lastError instanceof Error ? lastError : new Error('CEO chat failed');
 }
 
 /**
@@ -222,7 +260,6 @@ export async function chatWithCEO(sessionId: string, userMessage: string): Promi
 export function streamChatWithCEO(sessionId: string, userMessage: string, res: Response): void {
   const session = getOrCreateSession(sessionId);
   const ceo = loadAgent('ceo');
-  const startedAt = Date.now();
 
   session.history.push({
     role: 'user',
@@ -233,36 +270,6 @@ export function streamChatWithCEO(sessionId: string, userMessage: string, res: R
   const isFirstMessage = session.history.length === 1;
   const memory = readCEOMemory();
   const liveContext = buildContextSnapshot();
-
-  const fullPrompt = isFirstMessage
-    ? [
-        `# Sen Finance X platformunun CEO Meta-Ajanısın.`,
-        ``,
-        `## System Instructions`,
-        ceo.systemPrompt,
-        ``,
-        `## Kalıcı Hafızan (agents/ceo/memory.md)`,
-        memory,
-        ``,
-        liveContext,
-        ``,
-        `## Önemli Talimatlar`,
-        `- Türkçe konuş`,
-        `- Sen yatırımcı sahibi (Chairman/CEO İbrahim Peyman) ile konuşuyorsun`,
-        `- Sen pasif bir asistan değilsin — şirketin yönetim ajanısın, kararlar alırsın`,
-        `- Canlı veri için WebFetch ve WebSearch kullan (KAP.gov.tr, isyatirim.com.tr)`,
-        `- Hafızanı güncellemen gerektiğinde Edit tool ile agents/ceo/memory.md dosyasını düzenle`,
-        `- System prompt'unu güncellemen gerektiğinde agents/ceo/system_prompt.md dosyasını düzenle`,
-        `- Yeni hedef tanımlanırsa goals tablosuna ekle (önce goals tablosu için backend API'yi öğren)`,
-        `- Watchlist'e şirket eklemek için watchlist API'sini kullan`,
-        `- Diğer agentlara görev atayabilirsin (orchestrator, financial_analysis, kap_watch, vb.)`,
-        `- Cevaplarını net, profesyonel, evidence-backed tut`,
-        `- Sıklıkla DB'ye yazabilmen için: backend API http://localhost:4000`,
-        ``,
-        `## Kullanıcı Mesajı`,
-        userMessage,
-      ].join('\n')
-    : userMessage;
 
   // SSE headers
   res.writeHead(200, {
@@ -272,131 +279,78 @@ export function streamChatWithCEO(sessionId: string, userMessage: string, res: R
     'X-Accel-Buffering': 'no',
   });
 
-  const args = [
-    '--print',
-    '-p', fullPrompt,
-    '--model', CLAUDE_MODEL,
-    '--permission-mode', 'bypassPermissions',
-    '--output-format', 'stream-json',
-    '--verbose',
-  ];
+  const providerOrder = getProviderOrder();
+  let currentAttempt = 0;
+  let emittedText = false;
+  let currentAbort: (() => void) | null = null;
 
-  if (session.claudeSessionId) {
-    args.push('--resume', session.claudeSessionId);
-  }
+  const startAttempt = () => {
+    const providerId = providerOrder[currentAttempt];
+    const provider = getProvider(providerId);
+    const prompt = isFirstMessage
+      ? buildCEOChatPrompt(userMessage, isFirstMessage, ceo.systemPrompt, memory, liveContext)
+      : buildProviderPrompt(providerId, userMessage, session, ceo.systemPrompt, memory, liveContext);
 
-  const child = spawn('claude', args, {
-    ...CLAUDE_SPAWN_OPTIONS,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
-
-  activeProcesses.set(sessionId, child);
-
-  let fullContent = '';
-  let stderrBuf = '';
-  let lineBuf = '';
-
-  child.stdout.on('data', (chunk: Buffer) => {
-    lineBuf += chunk.toString('utf8');
-    const lines = lineBuf.split('\n');
-    lineBuf = lines.pop() || ''; // keep incomplete line in buffer
-
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      try {
-        const event = JSON.parse(line);
-
-        if (event.type === 'assistant' && event.message?.content) {
-          // Claude stream-json: assistant message with content array
-          for (const block of event.message.content) {
-            if (block.type === 'text' && block.text) {
-              // Only send new text (Claude re-emits full content each time)
-              const newText = block.text.slice(fullContent.length);
-              if (newText) {
-                fullContent = block.text;
-                res.write(`data: ${JSON.stringify({ type: 'text', content: newText })}\n\n`);
-              }
-            }
+    const stream = provider.streamChat(
+      {
+        prompt,
+        session,
+        onProcess: (process) => {
+          activeProcesses.set(sessionId, process);
+        },
+      },
+      {
+        onText: (text) => {
+          emittedText = emittedText || text.length > 0;
+          res.write(`data: ${JSON.stringify({ type: 'text', content: text })}\n\n`);
+        },
+        onDone: ({ aborted, durationMs, providerSessionId }) => {
+          activeProcesses.delete(sessionId);
+          rememberProviderSession(session, providerId, providerSessionId);
+          if (aborted) {
+            try { res.write(`data: ${JSON.stringify({ type: 'done', aborted: true })}\n\n`); } catch {}
+          } else {
+            try { res.write(`data: ${JSON.stringify({ type: 'done', durationMs })}\n\n`); } catch {}
           }
-          if (event.session_id) session.claudeSessionId = event.session_id;
-        } else if (event.type === 'result') {
-          // Final result event
-          if (event.session_id) session.claudeSessionId = event.session_id;
-          if (event.result && !fullContent) {
-            fullContent = event.result;
-            res.write(`data: ${JSON.stringify({ type: 'text', content: event.result })}\n\n`);
+          res.end();
+        },
+        onError: ({ message, errorType }) => {
+          activeProcesses.delete(sessionId);
+          const hasFallback = currentAttempt < providerOrder.length - 1;
+          if (hasFallback && !emittedText && (errorType === 'rate_limit' || errorType === 'auth' || errorType === 'unknown')) {
+            currentAttempt += 1;
+            startAttempt();
+            return;
           }
-        }
-        // Skip system, rate_limit_event, and other non-content events
-      } catch {
-        // Not valid JSON — skip
-      }
-    }
-  });
+          res.write(`data: ${JSON.stringify({ type: 'error', message })}\n\n`);
+          res.end();
+        },
+        onComplete: (result) => {
+          rememberProviderSession(session, providerId, result.providerSessionId);
+          if (result.content) {
+            session.history.push({
+              role: 'assistant',
+              content: result.content,
+              timestamp: new Date().toISOString(),
+            });
+          }
+          logChatActivity(userMessage, result.content || '', result.durationMs, providerId);
+        },
+      },
+    );
 
-  child.stderr.on('data', (chunk: Buffer) => { stderrBuf += chunk.toString('utf8'); });
+    activeProcesses.set(sessionId, stream.process);
+    currentAbort = stream.abort;
+  };
+
+  startAttempt();
 
   // Client disconnect — kill the process
   res.on('close', () => {
     if (activeProcesses.has(sessionId)) {
-      child.kill('SIGTERM');
+      currentAbort?.();
       activeProcesses.delete(sessionId);
     }
-  });
-
-  child.on('close', (code, signal) => {
-    activeProcesses.delete(sessionId);
-
-    // Process remaining buffer
-    if (lineBuf.trim()) {
-      try {
-        const event = JSON.parse(lineBuf);
-        if (event.type === 'result') {
-          if (!fullContent) fullContent = event.result || '';
-          session.claudeSessionId = event.session_id || session.claudeSessionId;
-        }
-      } catch {}
-    }
-
-    const durationMs = Date.now() - startedAt;
-
-    if (signal === 'SIGTERM') {
-      try { res.write(`data: ${JSON.stringify({ type: 'done', aborted: true })}\n\n`); } catch {}
-    } else {
-      try { res.write(`data: ${JSON.stringify({ type: 'done', durationMs })}\n\n`); } catch {}
-    }
-
-    // Save to history
-    if (fullContent) {
-      session.history.push({
-        role: 'assistant',
-        content: fullContent,
-        timestamp: new Date().toISOString(),
-      });
-    }
-
-    // Log activity
-    try {
-      db.prepare(`
-        INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, output_text, duration_ms, created_at)
-        VALUES (?, 'chat', ?, ?, 'chairman', 'completed', ?, ?, ?)
-      `).run(
-        nanoid(),
-        userMessage.slice(0, 100),
-        'Chairman sohbeti',
-        (fullContent || '').slice(0, 2000),
-        durationMs,
-        new Date().toISOString()
-      );
-    } catch {}
-
-    res.end();
-  });
-
-  child.on('error', (err) => {
-    activeProcesses.delete(sessionId);
-    res.write(`data: ${JSON.stringify({ type: 'error', message: err.message })}\n\n`);
-    res.end();
   });
 }
 

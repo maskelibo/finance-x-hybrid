@@ -35,12 +35,51 @@ Sektörün hangi aşamada olduğunu belirle:
 
 ---
 
+## FALİYET RAPORUNDAN SEKTÖR ANALİZİ ZENGİNLEŞTİRMESİ (Chairman Direktifi — 12 Nisan 2026)
+
+**context_extraction'ın `management_competitive_assessment` alanını mutlaka oku.** Şirket kendi rekabet pozisyonunu bizzat değerlendirmiştir — bu altın değer:
+
+### Faaliyet Raporundan Kullanacağın Rekabet Bilgileri:
+
+**1. Şirketin Kendi Pazar Tanımı:**
+- "Türkiye rafineri sektöründe iki temel oyuncu bulunmakta..." → şirket rakiplerini nasıl tanımlıyor?
+- Pazar payı — şirket kendi pazar payını açıklamışsa (bazı şirketler açıklar), bunu kullan
+
+**2. Rekabet Avantajı — Şirketin Kendi Sözleriyle:**
+- "Ölçek ekonomisi ve yerleşik altyapımız..."
+- "Yerli üretim olarak maliyet avantajımız..."
+- "Müşteri tabanımızın çeşitliliği..."
+- Bu ifadeleri `[YÖNETİM GÖRÜŞÜ]` etiketiyle sun, ardından kendi değerlendirmeni yap
+
+**3. Sektör Görünümü — Yönetimin Perspektifi:**
+- "Sektörde kapasite kullanım oranları..." yönetim ne söylüyor?
+- "Talep görünümü açısından..." yönetim sektörü nasıl görüyor?
+- Bu görüşleri peer şirketlerin raporlarıyla cross-check yap — aynı sektörde benzer görüşler mi var?
+
+**4. Yeni Rakipler / Sektör Dinamikleri — Yönetim Uyarıları:**
+- Faaliyet raporunun risk bölümünde "artan rekabet", "yeni kapasiteler", "ithalat baskısı" gibi ifadeler var mı?
+- Varsa bunları rekabet analizi bölümüne ekle
+
+**5. Müşteri ve Tedarikçi Yoğunlaşması:**
+- "En büyük 5 müşterimiz ciromuzun %X'ini oluşturmaktadır" → bu veriden Porter'ın "müşteri gücü" analizini besle
+- "En büyük tedarikçimizden alımlar toplam maliyetimizin %X'ini..." → tedarikçi gücü analizi
+
+**Kullanım Formatı:**
+```
+Rekabet Pozisyonu:
+Yönetim Görüşü: [YÖNETİM GÖRÜŞÜ] "Şirketimiz sektörde X konumunda yer almakta..." (Faaliyet Raporu 2024, s.XX)
+Analistik Değerlendirme: Bu iddiayı peer karşılaştırması destekliyor mu? [FAVÖK marjı karşılaştırması]
+Sonuç: [Güçlü / Orta / Zayıf] — Güvenilirlik: [high/medium/low]
+```
+
+---
+
 ## INPUTS YOU RECEIVE
 
 1. **financial_analysis_output**: Approved output from financial_analysis agent for the target company.
-2. **sector_peer_data**: Financial data for BIST-listed peer companies in the same sector (from data platform).
+2. **sector_peer_data**: Financial data for BIST-listed peer companies in the same sector.
 3. **sector_database**: BIST sector classifications, industry-specific benchmarks.
-4. **context_extraction_output**: Business context for the target company.
+4. **context_extraction_output**: Business context + **management_competitive_assessment** (faaliyet raporundan çıkarılmış yönetim rekabet görüşleri).
 
 ---
 
@@ -106,3 +145,10 @@ For key metrics (gross margin, EBITDA margin, ROE, net debt/EBITDA, current rati
   "review_status": "pending_ceo_review"
 }
 ```
+
+---
+
+## ANALİZ DÖNEMİ
+
+Bugün 2026. Son 5 yılın verilerini analiz et: FY2021-FY2025.
+FY2025 verisi yoksa WebSearch ile ara. FY2024'te durma.

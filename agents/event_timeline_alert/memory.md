@@ -1,278 +1,115 @@
-# Event Timeline Alert — Bilgi Defteri
-
-## Kimlik Kartı
-
-| Alan | Bilgi |
-|---|---|
-| Ajan Adı | Event Timeline Alert |
-| Uzmanlık | Zaman Çizelgesi ve Uyarı Sistemi |
-| Oluşturma Tarihi | 2026-04-09 |
-| Bağlı Olduğu Ajan | META (CEO) |
-| Toplam Eğitim Gecesi | 1 |
-| Ortalama Öğrenme Puanı | 76/100 |
+# Event Timeline Alert — Damitilmis Hafiza
 
 ---
 
-## Temel Yetenek Haritası
+## Kalici Kurallar
 
-| Konu | Seviye (1–10) | Not |
-|---|---|---|
-| Zaman çizelgesi yönetimi | 5 | Orta seviye — 4-phase (Immediate/Near/Medium/Long) yapısı başarılı |
-| Uyarı önceliklendirme | 5 | Orta seviye — Urgency + probability + business impact matrixi geliştirildi |
-| Kritik tarihlerin takibi | 6 | Orta-yüksek — Regulatory calendar + event forecast dating başarılı |
-| Gecikmeli etkilerin tespiti | 4 | Başlangıç-orta — Lag cycles (YKBNK NPL, TUPRS margin), reversion patterns tanındı |
-| Alert dağıtımı | 5 | Orta seviye — 6 priority alert sistemi kuruldu; threshold-based triggers implementasyonu başladı |
+- **4-Phase timeline FULL execution ZORUNLU:**
+  - Immediate (0-30 gun): Aktif krizi ve yururlukteki duzenliyici kararlari takip et
+  - Near-term (30-90 gun): Earnings + AGM + temettu = inflection points
+  - Medium-term (90-180 gun): Normalization veri noktalari + regulator degisiklikler
+  - Long-term (180-365 gun): Structural re-rating signals
+- **Truncation YASAK** — 4 fazin hepsi tamamlanmali. Gerekirse Phase 1-2 + Phase 3-4 ayri output olarak gonder
+- **BLOCKED → Partial Complete:** Upstream eksikse bilinen verilerle olustur, eksik kisimlari "PENDING_IMPACT_DATA" etiketiyle isaretle. Tam BLOCKED YASAK
+- **Upstream dogrulamasi dosya sistemi uzerinden:** output JSON dosyasinin varligini kontrol et, context/hafizadan degil
+- **Sirket ici olay zamanlcizelgesi ile dis makro takvimi IKI AYRI BOLUMDE tut**
+- **Her timeline girdisinde: gercek kaynak ID/URL + teyit seviyesi ver.** Beklenen pencere/tahmin → `estimated` etiketle
+- **Senaryo anlatisini olay gibi yazma; timeline yalniz izleme onceligi kurmali**
+- Her trigger icin: metric + threshold + alert urgency + responsible agent
+- Regulatory calendar ekle — BDDK/SPK/KAP/EPDK zorunlu bildirim tarihleri
+- Forward-looking 12 aylik event takvimi olustur
+- "must-happen" events (firm dates) vs "expected-but-uncertain" events ayri tut
+- Confidence labels: HIGH (kesin tarih, matematiksel), MEDIUM (projeksiyon bazli), LOW (belirsiz)
+- **Jeopolitik trigger takvimi zorunlu (enerji sirketleri):** OPEC+, IEA rapor tarihleri, EPDK kararlari, TCMB PPK tarihleri
+- Immediate vs Scheduled ayrimi net olmali: yururlukteki karar → immediate; tarihli gelecek olay → near/medium/long
+- Priority alert sadece yuksek kesinlik + maddi etki icin kullanilmali
 
----
+## Zorunlu Kontrol Listesi
 
-## Öğrenme Geçmişi
+- [ ] 4 faz (Immediate/Near/Medium/Long) tamami dolu mu?
+- [ ] Sirket olaylari ve dis makro takvim ayri bolumde mi?
+- [ ] Her girdi icin kaynak ID/URL ve teyit seviyesi var mi?
+- [ ] Tahminler `estimated` etiketli mi?
+- [ ] Regulatory calendar eklendi mi?
+- [ ] Monitoring triggers (metric + threshold + urgency) tanimli mi?
+- [ ] 12 aylik forward event takvimi var mi?
+- [ ] Upstream output kontrolu (dosya sistemi) yapildi mi?
 
-### [2026-04-10] KCHOL Analizi — Gündüz Uygulaması #1
-
-**Araştırma Konusu:** Geopolitik Event Timeline ve Multi-Segment Holding Şirketi Impact Modeling
-
-**Temel Bulgular:**
-
-1. **Geopolitical Events Override Everything:** Iran-US savaşı (Feb 28) + Hormuz kapanma riski, tüm diğer events'ı (dividend, board appointments, tariff) gölgesinde bıraktı. TUPRS refining margin $14.8/bbl windfall, KCHOL'ün tüm 2026 earnings narrative'ını kontrol ediyor. (CEO'nun "hiçbir şeyi yeniden değerlendirme" kuralı tam doğru — bu windfall geçicidir; ben organize & alert işlemine sadık kaldım.)
-
-2. **4-Phase Timeline Yapısı Çalışıyor:** 
-   - Immediate (0-7 gün): Aktif krizi takip et
-   - Near-term (1-4 hafta): Earnings + AGM = inflection points
-   - Medium-term (1-3 ay): Normalization veri noktaları
-   - Long-term (3-12 ay): Structural re-rating signals
-   Bu yapı CEO'nun feedback'ine mükemmel fit yaptı; "4 phase'in hepsini kapsa" talebi karşılandı.
-
-3. **Holding Company Specifics:** Multi-segment holding (5 sektör) = her event'ın segmentler arası differensiyel impact'ı var:
-   - Geopolitik + tariff = TUPRS (+), ARCLK (-), YKBNK (mixed)
-   - Bir segmentin gains'i diğerinin loss'u ile offset edebilir
-   - Consolidated view yeterli değil; segment attribution zorunlu
-   - NAV discount = bu complexity'nin market penalty'si
-
-4. **Windfall Misprice Risk Kaynağı:** Market, $14.8 refining margin'i "structural improvement" olarak görebilir Q1 earnings'te (+15% EBITDA beats). Gerçek: Temporary. Margin normalizes to $6-7 by Q3 (-50% reversal). Bu timing mismatch = stock rally 8-12% (Q1), revert -10-15% (Q3) = volatility whipsaw.
-   - **Mitigation:** Pre-emptive market communication ("temporary geopolitical premium") Q1 earnings'te.
-
-5. **Monitoring Triggers Framework:**
-   - Condition: "Military action resumes in Hormuz" → Urgency: IMMEDIATE → Action: CEO brief
-   - Condition: "CRK spread <$10/bbl for 5 days" → Urgency: HIGH → Action: Margin normalization confirmed
-   - Condition: "ARCLK gross margin <23%" → Urgency: HIGH → Action: Tariff pass-through failure
-   - Bu structure'ı AKBNK'dan feedback almadan kendim kurdum; treshold-based, actionable, probabilistic.
-
-6. **Regulatory Calendar Discipline:** KAP disclosure deadlines, dividend dates, AGM timing — bunlar hard constraints, forecast'lerin aksine probabilistic. Timeline'da "must-happen" events with firm dates vs. "expected-but-uncertain" events'i ayrı tutmak kritik.
-
-7. **Confidence Calibration Error Avoidance:** financial_analysis failed → output yok → ben macro + historical patterns from context_extraction'dan inferred. Bunu explicitly UYARI olarak flagged. CEO'ya "Medium confidence, validate before external use" dedim. Bu transparency önemli.
-
-**Neden Başarılı:**
-- 4-phase structure'ı CEO feedback'e tam fit
-- Geopolitik event'ın materiality'sini doğru ölçümledi (IMMEDIATE urgency)
-- Segment-level impacts açıkça articulated
-- Misprice risk'i proaktif identify etti (pre-emptive market comm stratejisi)
-- Regulatory calendar'ı hard constraints olarak işledi
-- Confidence limitations'ı transparent tarandı
-
-**Sonuç:** KCHOL timeline #1 tamamlandı. 4-phase, 6 alerts, regulatory calendar, 12-month forward forecast, confidence caveats. JSON + Markdown outputs. CEO review hazır.
-
----
-
-### [2026-04-09] Gece Eğitimi #1
-
-**Araştırma Konusu:** Alert Sistemleri ve Zaman Serisi Anomali Tespiti
-
----
-
-## CEO Geri Bildirimi — 2026-04-11 — TCELL Raporu
+## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
-- **Timeline TRUNCATED:** Phase 2 (Near-term) başlamış ama kesilmiş — Phases 3-4 (Medium-term, Long-term) TAMAMEN EKSİK
-- **5G rollout timeline detayı yok:** Coverage milestones (2026: %60 population, 2028: %95), city expansion schedule, CAPEX phasing — hiçbiri organize edilmemiş
-- **Forward-looking catalysts eksik:** Q2 2026 earnings (May), General Assembly (May 7), Q3 2026 energy cost normalization, 2027 margin recovery — event sequence eksik
-- **Monitoring triggers incomplete:** 5G subscriber uptake milestones (10M, 20M), ARPU premium realization, churn rate thresholds — alert conditions tanımlanmamış
+- **Upstream validation dosya sistemi yerine context'ten yapıldı** — "✅ Upstream verified" ifadeleri kullanıldı ama kural: dosya sistemi üzerinden JSON çıktısının varlığını kontrol et. event_impact_mapper çıktısı eksikti; context'ten "confirmed" denmesi hatalı.
+- **Regulatory calendar eksik** — 22 Nisan 2026 TCMB PPK, Mayıs 2026 Q1 2026 sonuçları, 2026 AGM tarihi, Temmuz 2026 CORSIA raporlama — bunlar takvimde yok.
+- **Şirket olayları ve dış makro takvim tek bölümde karıştı** — CEO değişikliği (şirket olayı) ile İran krizi (makro) aynı tabloda karışık sunuldu; ayrı bölüm kuralı uygulanmadı.
+- **Phase 3-4 timeline kısa** — Medium-term ve long-term fazları yeterince detaylandırılmadı; IST slot tavanı 2028 etkisine Phase 4'te yer verilmedi.
 
 ### Bundan Sonra:
-- **4-Phase timeline FULL execution:**
-  - **Immediate (Next 30 days):** Q2 earnings (May 15-20), General Assembly (May 7), 5G subscriber uptake first disclosure
-  - **Near-term (30-90 days):** Dividend payment (June), 5G coverage 60% milestone (Q2 end), Energy cost impact full visibility
-  - **Medium-term (90-180 days):** Q3 earnings (Aug), Margin normalization tracking, Competitive 5G benchmarking (TTKOM/Vodafone launch status)
-  - **Long-term (180-365 days):** FY2026 results (Mar 2027), 5G penetration 15-20% target, CAPEX intensity normalization (back to 22% from 25%)
-- **Telecom-specific monitoring triggers:**
-  ```
-  Trigger: "5G subscriber penetration <10% by Q3 2026" → Urgency: HIGH → Action: Bear case activates
-  Trigger: "Churn rate >3% monthly (vs 2% baseline)" → Urgency: HIGH → Action: Competitive pressure
-  Trigger: "ARPU growth <inflation (30.87%)" → Urgency: CRITICAL → Action: Real ARPU declining
-  Trigger: "Net Debt/EBITDA >1.0×" → Urgency: MEDIUM → Action: Leverage creep
-  Trigger: "Q2 EBITDA margin <40%" → Urgency: HIGH → Action: Below guidance execution risk
-  ```
-- **Regulatory calendar:** BTK quarterly reports, Spectrum fee payments, Interconnection rate reviews
-- **Output truncation çözümü:** Phase 1-2 + Phase 3-4 ayrı output olarak gönder, her ikisini de tamamla
+- **Upstream validation her zaman dosya sistemi ile** — "upstream output JSON'ı var mı?" kontrolü context'ten değil dosya path üzerinden yapılmalı. Dosya yoksa "PENDING_UPSTREAM_DATA" etiketle, "✅ verified" yazma.
+- **Havacılık regulatory calendar zorunlu:** TCMB PPK tarihleri + Hazine/SPK finansal rapor deadlines + IATA/EASA operasyonel bildirimler + Q earnings dates — bunları Phase 1-2'ye sabit ekle.
+- **Şirket vs makro takvim her zaman ayrı bölümde** — İç olaylar (AGM, earnings, filo teslimatı) = "Şirket Takvimi"; dış makro (TCMB, Brent, İran müzakereleri) = "Makro Takvim". Aynı tabloda karıştırma.
 
----
-
-**Kullanılan Arama Sorguları:**
-- "finansal alert sistemleri tasarımı real-time monitoring"
-- "zaman serisi anomali tespiti time series anomaly detection financial"
-- "event timeline tracking systems critical date monitoring 2026"
-
-**Öğrenilen Temel Bilgiler:**
-
-1. **Alert Sistemleri** (Kaynak: [Matriks Prime](https://www.matriksdata.com/website/urunlerimiz/kullanici-platformlari/matriks-prime-veri-terminali))
-   - AL-SAT sistemleri, algoritmik trade, real-time indicator builder
-   - Fiyat alarmı: Belirli seviyeye gelince bildirim
-
-2. **Time Series Anomaly Detection** (Kaynak: [arXiv](https://arxiv.org/abs/2412.20512))
-   - Point anomalies: Bireysel sapan değerler
-   - Collective anomalies: Kolektif anormal davranış (örn: trend değişimi)
-   - STL decomposition: Trend, seasonal, residual ayırımı
-   - Deep learning: CNN, GNN, LSTM ile kredi kartı fraud detection
-
-3. **Critical Date Tracking** (Kaynak: [Work Management](https://work-management.org/project-management/event-planning-timelines/))
-   - Lease management software: Alert sistemi ile kritik tarihler
-   - Best practice: Kritik görevleri event'tan 10-14 gün önce push etme
-
-**Kendi Alanıma Uygulaması:**
-- Real-time price alert sistemi kuracağım
-- LSTM ile zaman serisi anomali tespiti yapacağım
-- Kritik tarih takibi: Finansal raporlar, genel kurullar, temettü ödemeleri
-
-**KPI:** ✅ 3/3 sorgu | **Öğrenme Puanı:** 76/100
-
-**Sonraki Adım:** Apache Kafka/Flink ile real-time stream processing mimarisi
-
----
-
-## Birikimli Bilgi Bankası
-
-### Anahtar Kavramlar
-
-1. **Conglomerate Discount:** Multi-segment holding şirketleri, segmentlerinin toplamı (NAV) -20-40% discount'ta trade olur. Nedenleri:
-   - Market complexity (analiz zor, coverage az)
-   - Inefficient capital allocation perception
-   - Diversification paradox (strength görünmesine rağmen penalty)
-   - KCHOL: 30% discount (vs NAV), SAHOL: 15% ('new economy' pivot sonrası)
-   - **Narrative importante:** Discount daraldığında (+5pp = 50-70B TRY value unlock)
-
-2. **Segment-Level Impact Differentials:** Makro event'lar segment'lara farklı flow'lanır:
-   - TUPRS (enerji): Oil shock = +60% margin benefit (temporary)
-   - ARCLK (dayanıklı tüketim): Tariff shock = -2-3pp margin (structural)
-   - YKBNK (finans): Rate environment + credit cycle lag (2-3 quarter)
-   - FROTO (otomotiv): FX impact (TL weakness = export boost, but structural risk)
-   - **Timeline Design:** Her segment için separate tracking + aggregation
-
-3. **Temporary vs Structural Impact Distinction:**
-   - Temporary: Oil margin windfall ($14.8 normalization to $6 by Q3) — reversion expected
-   - Structural: Energy tariff +25% — permanent cost base (unless policy reversal)
-   - Timing of impact realization critical: Q2 windfall peak ≠ normalized run-rate
-   - **Alert Design:** Differentiate monitoring frequency by impact type
-
-4. **Windfall Misprice Risk Pattern:**
-   - Q1 earnings beat on windfall → Market assumes structural improvement
-   - Q3 windfall reverses → Stock corrects
-   - If unmanaged: -10-15% whipsaw; if communicated: neutral-to-positive narrative
-   - **Prevention:** Pre-emptive disclosure ("temporary geopolitical premium")
-
-5. **Holding Company Event Timeline Special Features:**
-   - Multiple overlapping cycles (dividend, earnings, AGM, regulatory) = complexity
-   - Geopolitical events can dominate corporate calendar
-   - CEO tone in guidance/AGM = equity catalyst (±3-5% single day move)
-   - Conglomerate discount recompression = structural catalyst (50-70B TRY value)
-
-### Kaynak Arşivi
-
-- [KCHOL Context Extraction](context_extraction_kchol_output.json) — Holding structure, ownership, segments
-- [Macro Analysis Output](KCHOL_MACRO_ANALYSIS_OUTPUT.md) — Iran-US war, oil impact, tariff shock
-- [Event Classification Output](event_classification_kchol_output.json) — Material events 2025-2026
-- [KAP Watch Output](kap_watch_output) — Regulatory disclosure timeline
-
-### Uygulama Örnekleri
-
-**Örnek 1: Geopolitik Event Impact Modeling**
-- Event: Iran-US savaş (Feb 28)
-- Immediate effect: Oil +60% (70→144)
-- Segment transmission: TUPRS margin $14.8 (vs norm. $6) = +150% swing
-- Other segments offset: ARCLK cost +25%, YKBNK NPL risk +1pp
-- Timeline: Windfall Q2 peak → normalization Q3 → structural 2H impact
-- Alert: Market may misprice Q1 earnings beat as structural
-
-**Örnek 2: Holding Discount Compression as Strategic Catalyst**
-- Current: 30% discount (KCHOL vs SAHOL 15%)
-- If KCHOL demonstrates crisis resilience 6 months → discount narrows to 22-25%
-- Value unlock: 50-70B TRY market cap
-- Timeline: Q2-Q3 earnings show segment resilience → narrative shift Q4 → re-rating by year-end
-- Alert: Position this as "undervalued holding, not conglomerate penalty" story
-
----
-
-## KPI Takip Tablosu
-
-| Tarih | Hedef | Sonuç | Puan |
-|---|---|---|---|
-| — | — | — | — |
-
----
-
-## Güçlü Yönlerim
-
-*(Henüz belirlenmedi — gece eğitimleriyle ortaya çıkacak)*
-
-## Gelişim Alanlarım
-
-*(Henüz belirlenmedi — gece eğitimleriyle ortaya çıkacak)*
-
----
-
-## CEO Geri Bildirimi — 2026-04-10 — AKBNK Raporu
+## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
 
 ### Eksikler:
-- **Event 1.B detayları YARIM KALMIŞ:** Covered Bond impact timeline tamamlanmamış
-- **Phases 2-4 TAMAMEN EKSİK:** Sadece "Immediate Impact" phase'i var — Near-term, Medium-term, Long-term phase'ler yok
-- **Regulatory deadline calendar eksik:** BDDK filing deadlines, dividend ex-dates, earnings announcement dates gibi kritik tarihler takip edilmemiş
-- **Monitoring triggers yetersiz:** Hangi metrik hangi seviyeye gelince alert tetiklenir? Threshold'lar net değil
+- **Tablo format bozulması** — Bazı tablo satırlarında `\n` karakterleri ham olarak göründü ("|------|-------|------|---|---|\n|" gibi). Bu markdown render sorununu işaret ediyor; tabloları düzgün HTML veya markdown table formatında üret.
+- **4 faz tam tamamlandı ✓** — Immediate + Near-term + Medium-term + Long-term hepsi mevcut. THYAO dersinden öğrenildi.
+- **CEO interim URGENT flag iyi konumlandırıldı ✓** — En acil risk olarak tablonun başında yer aldı.
+- **Şirket takvimi ve makro takvim ayrı bölümde değil** — CEO interim (şirket) ve TCMB PPK (makro) aynı tabloda yan yana listelenmiş; kurala göre ayrı bölümler olmalı.
+- **Q1 2026 ara hesap (~15 Mayıs 2026) CRITICAL olarak Phase 2'de doğru tespit ✓**
 
 ### Bundan Sonra:
-- Timeline'ı TAMAMLA — 4 phase'in hepsini kapsayacak şekilde (Immediate/Near/Medium/Long)
-- Regulatory calendar ekle — BDDK/SPK/KAP zorunlu bildirim tarihleri
-- Her trigger için: metric + threshold + alert urgency + responsible agent
-- Forward-looking 12 aylık event takvimi oluştur — ne zaman ne izlenecek?
-- Gece eğitiminde öğrendiğin alert sistemleri best practices'i UYGULA
+- **Perakende sektörü zorunlu takvim öğeleri:**
+  - Temettü ex-date'leri (BIMAS: 17 Haziran, 16 Eylül, 16 Aralık 2026) — nakit akışı planlaması
+  - Ramazan sezonu etkisi: Nisan-Mayıs 2026 döneminde Q1 satış verisi beklentisi
+  - Asgari ücret revizyonu: Temmuz 2026 (her yıl Ocak + Temmuz)
+  - CEO kalıcı atama: KAP'ta açıklama bekleniyor — "imminently bekleniyor" doğru tespit ✓
+- **Tablo formatı standartlaştır** — Ham `\n` çıktısı kabul edilemez. Markdown tablo kullan: her satır `|` ile başlayıp `|` ile bitsin; başlık sonrası `|---|---|` ayırıcı satırı.
+- **BIMAS 2026 kritik tarih takvimi (referans):** 22 Nisan TCMB PPK | ~15 Mayıs Q1 2026 | 17 Haziran Temettü #1 Ex-date | Temmuz Asgari ücret revizyonu | 16 Eylül Temettü #2 Ex-date | ~15 Ağustos Q2 2026 | 16 Aralık Temettü #3 Ex-date | ~15 Kasım Q3 2026.
 
----
-
-## Gelişim Alanlarım (Post-KCHOL Analysis)
-
-1. **Financial Impact Quantification:** financial_analysis agent failed; impacts inferred from macro analysis + historical patterns. Next time: insist on primary agent output before timeline finalization. If unavailable, clearly label estimates as "range estimates" not point forecasts.
-
-2. **Segment Attribution Depth:** KCHOL 5 segments; impacts assigned based on macro transmission logic. But granular segment P&L data not available. Next time: specifically request segment revenue/COGS/EBITDA breakdowns from context_extraction agent.
-
-3. **Probability Calibration:** Geopolitical forecasts (ceasefire collapse 25%, extends 35%, holds 40%) are inherently uncertain. Developed probability matrix but tested only on single case. More validation needed as sample size grows.
-
-4. **Valuation Impact Bridging:** I can identify impact (margin -3pp), quantify it (ARCLK EBITDA -5%), but market reaction (stock -3% to -8%) has broader factors (technicals, sentiment, peer moves). Flag this dependency in timeline.
-
-5. **Long-term Phase Definition:** 6-12 month forward events are harder to pinpoint (AGM dates move, guidance windows shift). Develop better "scheduled event" vs "forecast event" distinction.
-
-## Güçlü Yönlerim (Validated)
-
-1. **4-Phase Timeline Structure:** CEO feedback validated this works; clean categorization reduces ambiguity
-2. **Monitoring Triggers with Thresholds:** Actionable, measurable, probability-weighted
-3. **Regulatory Calendar Discipline:** Hard dates integrated with forecast events
-4. **Confidence Transparency:** Explicitly label Medium/High/Low confidence per component
-5. **Segment-Level Impact Attribution:** Multi-sector holding analysis avoided oversimplification
-6. **Windfall Misprice Risk Identification:** Anticipatory market communication strategy
-
----
-
-*Bu dosya her gece 05:30–06:00 arasında güncellenir.*  
-*Dosya sahibi: Event Timeline Alert | Denetleyen: META (CEO)*  
-*Son Güncelleme: 2026-04-12 (TUPRS Deep Dive Review)*
-
----
-
-## CEO Geri Bildirimi — 2026-04-12 — TUPRS Raporu
+## CEO Geri Bildirimi — 2026-04-14 — KCHOL Delta Raporu
 
 ### Eksikler:
-- **KRİTİK HATA — Coordination failure:** event_impact_mapper output tamamlanmış (`event_impact_mapper_tuprs_output.json` dosyaya yazıldı) ama event_timeline_alert "event_impact_mapper output mevcut değil" diyerek BLOCKED statüsü verdi. Pipeline koordinasyon hatası. Output dosyası var mı yok mu kontrol etmeden "upstream eksik" diyemezsin.
-- **Timeline tamamlanmadı:** BLOCKED gerekçesiyle 17 Nisan 2026 KAP tam yıllık tablo, Q2 2026 ara dönem, temettü 2. taksit (30 Eylül) gibi kritik tarihlerin uyarı profili oluşturulmadı. Bu bilgiler event_impact_mapper olmadan da biliniyordu.
-- **Jeopolitik trigger tarihleri eklenmedi:** Hurmuz müzakere süreci, OPEC+ toplantıları, TCMB PPK kararları — bunlar KAP bildirimi değil ama TUPRS için materyel. Timeline'a eklenmedi.
+- **Şirket olayları ve makro takvim ayrı bölümde değil** — 4 faz timeline tamamlandı ✓; ancak TCMB PPK, İran ateşkes (makro) ile YKBNK Q1, TUPRS KAP (şirket) aynı tabloda karışık. Kural: "Şirket Takvimi" ve "Makro Takvim" ayrı bölümler.
+- **5 priority alert çıktı truncated** — Son satırda "B" harfinde kesildi (tam içerik görünmüyor). Alert 5 ve gerekçesi kayıp.
+- **Upstream validation dosya sistemi üzerinden değil** — THYAO dersinde "dosya sistemi kontrolü" kuralı eklenmişti; bu turda da context veya hafızadan "output confirmed" yazılmış olabilir.
+- **Regulatory calendar eksik** — BDDK/SPK/EPDK zorunlu bildirim tarihleri eklenmedi. Yalnızca piyasa takvimi (TCMB PPK, earnings) var.
+- **"Must-happen" vs "expected-but-uncertain" ayrımı net değil** — 22 Nisan TCMB PPK (kesin tarih) ile "günler içinde İran müzakeresi" (belirsiz) aynı format.
 
 ### Bundan Sonra:
-- **Upstream doğrulaması dosya sistemi üzerinden yapılacak:** Upstream agent output'unun mevcut olup olmadığını context/hafıza'dan değil, output JSON dosyasının varlığını kontrol ederek doğrula (`output_id` + timestamp ile). Dosya varsa devam et.
-- **BLOCKED → Partial Complete:** Upstream eksikse timeline'ı bilinen verilerle oluştur, eksik kısımları "PENDING_IMPACT_DATA" etiketiyle işaretle. Tam BLOCKED YASAK — elimde ne varsa üret.
-- **Jeopolitik trigger takvimi zorunlu:** Enerji şirketleri için timeline'a şu kategoriler eklenmeli: (a) KAP bildirimleri, (b) şirket finansal takvimi, (c) sektörel makro tetikleyiciler (OPEC+, IEA rapor tarihleri, EPDK kararları, TCMB PPK tarihleri).
-- **17 Nisan 2026 her TUPRS raporunda en önce gelen uyarı:** Bu tarih (2025 tam yıl KAP açıklaması) tüm belirsizlikleri çözecek. "KRITIK — 5 GÜN" uyarısı mandatory.
+- **Holding için 12 aylık forward takvim zorunlu** — Her segment için beklenen earnings tarihleri (YKBNK, AKBNK, FROTO, ARCLK, TCELL, EREGL, TUPRS) + KCHOL konsolide holding sonuçları — bunları "Subsidiary Earnings Calendar" başlığıyla ayrı tablo olarak sun.
+- **Şirket vs Makro takvim her zaman ayrı header** — "## Şirket Takvimi" ve "## Makro Takvim" başlıkları altında ayır; karışık tablo YASAK.
+- **Alert truncation önlemi** — Priority alert'lerin hepsi output'un ilk yarısında olmalı (çünkü en önemli bölüm). Son yarıya bırakılırsa truncation riski. Bu turda alert'ler çıktının son bölümünde; başa taşı.
+
+## Bilinen Hatalar (Bir Daha Yapma)
+
+- AKBNK: Phases 2-4 TAMAMEN EKSIK, regulatory deadline calendar eksik
+- TCELL: Phase 2 baslamis ama kesilmis, Phases 3-4 tamamen eksik, 5G rollout timeline detayi yok
+- TUPRS: **Koordinasyon hatasi** — event_impact_mapper output dosyasi vardi ama "mevcut degil" diyerek BLOCKED verildi. Dosya kontrolu yapilmadan "upstream eksik" denilemez. Jeopolitik trigger tarihleri eklenmedi.
+- EREGL: Makro soklar sirket disclosure timeline'indan ayrilmaliydi. Bazi tahminler yuksek kesinlik tonuyla verildi.
+
+## Son 3 Raporun Ogrenimleri
+
+- **KCHOL (2026-04-10):** Jeopolitik events override everything. Windfall misprice risk: Q1 beat → market structural improvement zanneder → Q3 reversal. Segment-level impact differentials zorunlu (5 sektor farkli etkilenir). Conglomerate discount recompression = structural catalyst.
+- **TUPRS (2026-04-12):** 17 Nisan 2026 (2025 tam yil KAP aciklamasi) tum belirsizlikleri cozecek — "KRITIK — X GUN" uyarisi mandatory.
+- **EREGL (2026-04-13):** EPDK tarife soku IMMEDIATE fazina dogru konumlandirildi. AB Safeguard 1 Temmuz kritik tarih. Kaldirac feedback dongusu: Tarife → EBITDA dusus → Net Borc/EBITDA 2.1x → 3.0x+ → rating riski. Compound shock modeli gerekli (enerji + safeguard + CBAM birlikte).
+
+## Sektor Bilgi Bankasi
+
+- **Celik IMMEDIATE faz kontrol listesi:** (1) EPDK tarifeleri, (2) KAP onceki 7 gun, (3) AB Safeguard kota durumu, (4) HRC spot fiyati (haftalik degisim ≥%5 ise uyari)
+- **Temporary vs Structural:** Oil margin windfall = temporary (reversion expected). Energy tariff +25% = structural (unless policy reversal). Farkli monitoring frekansinda izle.
+- **Holding sirketleri:** Multiple overlapping cycles. CEO tone in guidance/AGM = equity catalyst (+-3-5% tek gun hareketi).
+- **Ermaden protokolu:** Madencilik istiraki sondaj/kaynak guncellemesi MEDIUM-TERM'e varsayilan olarak dahil et. Possible → Probable → Proven gecis tarihleri izle.
+
+## CEO Geri Bildirimi — 2026-04-14 — SAHOL Raporu
+
+### Eksikler:
+- **IMMEDIATE FAZI bölümü truncated** — "Kritik Gözlem:" ile kesildi; izleme trigger'ları ve aksiyon önerileri tamamlanmadı.
+- **NEAR-TERM ve FORWARD bölümleri görünmüyor** — Bölüm 2 ve 3 çıktıda yok; sadece Bölüm 1 kısmen var.
+- **Monitoring trigger'ları için eşik değerleri eksik** — "TCMB PPK 22 Nisan — izle" yazıldı ama "faiz +50bp → Akbank NIM −X TRY" gibi nicel eşikler verilmedi.
+
+### Bundan Sonra:
+- **Her timeline bölümü tam teslim edilecek:** IMMEDIATE + NEAR-TERM + FORWARD — üçü de tam. Kesilirse bölüm bölüm gönder.
+- **Monitoring trigger'ları nicel olacak:** "TCMB faiz değişimi izle" yetmez. "Faiz +100bp → Akbank NIM −2–3B TRY → SAHOL değerlemesi −X TL" zinciri kurulacak.
+- **Her event için aksiyon önerisi ZORUNLU:** Olay gerçekleşirse CEO ne yapmalı? "İzle" değil, "Q2 sonuçlarında EBITDA revize et / pozisyon yeniden değerlendir / upstream update tetikle" gibi somut öneriler.
+
+---

@@ -1,63 +1,47 @@
-import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import { loadAgent } from './agents.js';
-import { CLAUDE_SPAWN_OPTIONS, getModelForAgent } from './config.js';
+import { getModelForAgent } from './config.js';
+import { createDefaultProviderRouter, resolveFallbackProviderId } from './llm/default-router.js';
+import type { ProviderRunResult } from './llm/types.js';
 
 /**
- * Extracts the summary card (Kimlik Kartı + Yetenek Haritası) from a memory.md file.
- * This is the top section before the second "---" separator.
- * Returns only ~300 tokens instead of the full memory (which can be 5-50K tokens).
+ * 3 KATMANLI HAFIZA MİMARİSİ
+ * ===========================
+ * Katman 1: memory.md (max 6KB) — Her çalışmada yüklenir. Kurallar, kontrol listeleri.
+ * Katman 2: knowledge.md (max 8KB) — Agent ihtiyaç duyduğunda Read ile açar. Domain bilgisi.
+ * Katman 3: memory_archive.md (sınırsız) — Sadece gece eğitiminde okunur. Ham kayıtlar.
  */
+const MAX_MEMORY_BYTES = 6 * 1024; // 6KB — Katman 1
+
 function extractMemorySummary(memoryPath: string): string {
   try {
     const content = fs.readFileSync(memoryPath, 'utf8');
-    // Split by "---" separator — sections are: [header, kimlik+yetenek, rest...]
-    const sections = content.split(/^---$/m);
-    // First section = title + kimlik kartı, Second section = yetenek haritası
-    // Take everything before the second "---"
-    if (sections.length >= 2) {
-      return (sections[0] + '---\n' + sections[1]).trim();
+    if (content.length <= MAX_MEMORY_BYTES) {
+      return content.trim();
     }
-    // Fallback: first 500 chars
-    return content.slice(0, 500).trim();
+    return content.slice(0, MAX_MEMORY_BYTES).trim() + '\n\n[...hafıza kırpıldı — tam versiyon dosyada]';
   } catch {
     return '(hafıza dosyası henüz oluşturulmamış)';
   }
 }
 
-export type AgentRunResult = {
-  success: boolean;
-  output: string;
-  error?: string;
-  errorType?: 'rate_limit' | 'auth' | 'timeout' | 'unknown';
-  durationMs: number;
-  tokensUsed: number;
-  costUsd: number;
-};
-
-function detectErrorType(stderr: string, stdout: string): 'rate_limit' | 'auth' | 'timeout' | 'unknown' {
-  const combined = (stderr + ' ' + stdout).toLowerCase();
-  if (
-    combined.includes('usage limit') ||
-    combined.includes('rate limit') ||
-    combined.includes('5-hour limit') ||
-    combined.includes('weekly limit') ||
-    combined.includes('quota') ||
-    combined.includes('too many requests') ||
-    combined.includes('429') ||
-    combined.includes('hit your limit') ||
-    combined.includes("you've hit your limit") ||
-    combined.includes('resets 2am') ||
-    combined.includes('resets at')
-  ) {
-    return 'rate_limit';
-  }
-  if (combined.includes('not logged in') || combined.includes('authentication') || combined.includes('401')) {
-    return 'auth';
-  }
-  if (combined.includes('timeout')) return 'timeout';
-  return 'unknown';
+function getKnowledgePath(memoryPath: string): string {
+  return memoryPath.replace('memory.md', 'knowledge.md');
 }
+
+function getArchivePath(memoryPath: string): string {
+  return memoryPath.replace('memory.md', 'memory_archive.md');
+}
+
+function hasKnowledgeFile(memoryPath: string): boolean {
+  return fs.existsSync(getKnowledgePath(memoryPath));
+}
+
+function hasArchiveFile(memoryPath: string): boolean {
+  return fs.existsSync(getArchivePath(memoryPath));
+}
+
+export type AgentRunResult = Omit<ProviderRunResult, 'rawOutput'>;
 
 export type RunAgentOptions = {
   agentId: string;
@@ -67,6 +51,8 @@ export type RunAgentOptions = {
   onStderr?: (chunk: string) => void;
   timeoutMs?: number;
 };
+
+const providerRouter = createDefaultProviderRouter();
 
 /**
  * Runs a single agent by spawning the Claude Code CLI in headless mode.
@@ -89,13 +75,25 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     `## System Instructions`,
     agent.systemPrompt,
     ``,
-    `## Kalıcı Hafıza (Özet)`,
+    `## Hafıza — Katman 1: Kurallar (otomatik yüklendi)`,
     ``,
     extractMemorySummary(agent.memoryPath),
     ``,
-    `**Detaylı bilgi defterin:** \`${agent.memoryPath}\``,
-    `Bu dosyayı \`Read\` tool'u ile aç — öğrenme geçmişin, bilgi bankan, uygulama örneklerin orada. Analiz yaparken bu birikimi kullan.`,
-    `Görev sonunda önemli bir şey öğrendiysen \`Write\` veya \`Edit\` tool'u ile aynı dosyayı güncelle.`,
+    `## Hafıza Sistemi`,
+    ``,
+    `Senin 3 katmanlı hafızan var:`,
+    `- **Katman 1** (yukarıda yüklendi): \`${agent.memoryPath}\` — Kurallar ve kontrol listeleri. Max 6KB.`,
+    hasKnowledgeFile(agent.memoryPath)
+      ? `- **Katman 2** (ihtiyaç duyduğunda aç): \`${getKnowledgePath(agent.memoryPath)}\` — Domain bilgisi, formüller, benchmark'lar, best practice. Karmaşık bir konuyla karşılaşırsan \`Read\` ile aç.`
+      : `- **Katman 2**: knowledge.md henüz oluşturulmamış.`,
+    hasArchiveFile(agent.memoryPath)
+      ? `- **Katman 3** (sadece eğitimde): \`${getArchivePath(agent.memoryPath)}\` — Tüm eğitim geçmişi ve ham kayıtlar. Normal görevde AÇMA.`
+      : `- **Katman 3**: Arşiv henüz oluşturulmamış.`,
+    ``,
+    `**Görev sonunda önemli bir şey öğrendiysen:**`,
+    `- Kalıcı kural → \`Edit\` ile \`memory.md\`'ye ekle`,
+    `- Domain bilgisi → \`Edit\` ile \`knowledge.md\`'ye ekle`,
+    `- memory.md 6KB'yi aşarsa → en eski öğrenmeyi knowledge.md'ye taşı`,
     ``,
     requiresWebResearch ? `## ZORUNLU: Web Araştırma Politikası (Chairman Direktifi — 2026-04-09)` : '',
     requiresWebResearch ? `` : '',
@@ -112,8 +110,12 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     requiresWebResearch ? `` : '',
     requiresWebResearch ? `### Kullanabileceğin Araçlar` : '',
     requiresWebResearch ? `- **WebSearch**: Google tarzı arama ("TUPRS 2026 Q1 net kar")` : '',
-    requiresWebResearch ? `- **WebFetch**: Belirli URL'yi oku (kap.org.tr bildirim sayfası, şirket PDF'i, haber sitesi)` : '',
-    requiresWebResearch ? `- **Read**: Yerel dosyaları oku (memory.md, önceki çıktılar)` : '',
+    requiresWebResearch ? `- **WebFetch**: Belirli URL'yi oku (kap.org.tr bildirim sayfası, haber sitesi)` : '',
+    requiresWebResearch ? `- **PDF İndirme (KAP faaliyet/finansal raporları)**: Bash tool ile \`node scripts/fetch-pdf.js "<pdf-url>" "output/<TICKER>_<rapor_adi>.txt"\` komutu çalıştır. Bu komut PDF'i indirir, text'e çevirir ve dosyaya kaydeder. Sonra \`Read\` ile oku.` : '',
+    requiresWebResearch ? `  - KAP PDF URL formatı: \`https://www.kap.org.tr/tr/api/BildirimPdf/<bildirim-id>\`` : '',
+    requiresWebResearch ? `  - Örnek: \`node scripts/fetch-pdf.js "https://www.kap.org.tr/tr/api/BildirimPdf/1543822" "output/SISE_faaliyet_2025.txt"\`` : '',
+    requiresWebResearch ? `  - Şirket IR sayfasındaki PDF'ler için de kullanılabilir: \`node scripts/fetch-pdf.js "https://sirket.com/rapor.pdf" "output/TICKER_rapor.txt"\`` : '',
+    requiresWebResearch ? `- **Read**: Yerel dosyaları oku (memory.md, önceki çıktılar, fetch-pdf çıktıları)` : '',
     requiresWebResearch ? `- **Write/Edit**: memory.md güncelle` : '',
     requiresWebResearch ? `` : '',
     requiresWebResearch ? `Bu direktif CEO Meta-Ajan tarafından onaylandı. Uygulamazsan raporun reddedilir.` : '',
@@ -127,110 +129,38 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     ``,
     `## Output Instructions`,
     `Respond with your agent output in plain text or markdown. Stay focused on the task above. Do not ask clarifying questions — make reasonable assumptions and proceed. Keep the output structured and evidence-backed.`,
+    ``,
+    `## TRUNCATION ÖNLEME (KRİTİK)`,
+    `Çıktın kesilme riski var. Bu yüzden:`,
+    `1. **Önce en kritik bulguları yaz** — skor, hedef fiyat, ana metrikler İLK paragrafta`,
+    `2. **Sonra detayları ekle** — yorum, benchmark, trend analizi`,
+    `3. **Verbose olma** — aynı şeyi farklı kelimelerle tekrarlama`,
+    `4. **Tablo tercih et** — 5 satır tablo = 15 satır metin, daha kompakt`,
+    opts.context?.qa_revision_instruction ? `\n## QA REVİZYON TALİMATI\n${opts.context.qa_revision_instruction}` : '',
   ].filter(line => line !== '').join('\n');
 
-  return new Promise((resolve) => {
-    const args = [
-      '-p', fullPrompt,
-      '--model', getModelForAgent(opts.agentId),
-      '--permission-mode', 'bypassPermissions',
-      '--output-format', 'json',
-    ];
-
-    const child = spawn('claude', args, {
-      ...CLAUDE_SPAWN_OPTIONS,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-
-    let stdoutBuf = '';
-    let stderrBuf = '';
-    const MAX_OUTPUT_BYTES = 10 * 1024 * 1024; // 10MB — agent çıktısı için güvenli sınır
-    const MAX_STDERR_BYTES = 512 * 1024; // 512KB
-
-    child.stdout.on('data', (chunk: Buffer) => {
-      const text = chunk.toString('utf8');
-      if (stdoutBuf.length < MAX_OUTPUT_BYTES) {
-        stdoutBuf += text.slice(0, MAX_OUTPUT_BYTES - stdoutBuf.length);
-      }
-      opts.onStdout?.(text);
-    });
-
-    child.stderr.on('data', (chunk: Buffer) => {
-      const text = chunk.toString('utf8');
-      if (stderrBuf.length < MAX_STDERR_BYTES) {
-        stderrBuf += text.slice(0, MAX_STDERR_BYTES - stderrBuf.length);
-      }
-      opts.onStderr?.(text);
-    });
-
-    let timedOut = false;
-    const timeoutHandle = opts.timeoutMs
-      ? setTimeout(() => {
-          timedOut = true;
-          child.kill('SIGTERM');
-        }, opts.timeoutMs)
-      : null;
-
-    child.on('error', (err) => {
-      if (timeoutHandle) clearTimeout(timeoutHandle);
-      resolve({
-        success: false,
-        output: '',
-        error: `Process error: ${err.message}`,
-        durationMs: Date.now() - startedAt,
-        tokensUsed: 0,
-        costUsd: 0,
-      });
-    });
-
-    child.on('close', (code) => {
-      if (timeoutHandle) clearTimeout(timeoutHandle);
-      const durationMs = Date.now() - startedAt;
-
-      if (code !== 0) {
-        // Exit code 143 = SIGTERM (128 + 15). If we sent it, it's our timeout.
-        const errorType = (timedOut || code === 143)
-          ? 'timeout'
-          : detectErrorType(stderrBuf, stdoutBuf);
-        const timeoutSecs = opts.timeoutMs ? Math.round(opts.timeoutMs / 1000) : 0;
-        const errorMsg = timedOut
-          ? `Agent timeout after ${timeoutSecs}s (exit code 143) — increase timeout or optimize agent`
-          : (stderrBuf || stdoutBuf || `Claude exited with code ${code}`);
-        resolve({
-          success: false,
-          output: stdoutBuf,
-          error: errorMsg,
-          errorType,
-          durationMs,
-          tokensUsed: 0,
-          costUsd: 0,
-        });
-        return;
-      }
-
-      // Parse Claude's JSON output
-      let parsedOutput = stdoutBuf;
-      let tokensUsed = 0;
-      let costUsd = 0;
-
-      try {
-        const parsed = JSON.parse(stdoutBuf);
-        if (parsed.result) parsedOutput = parsed.result;
-        if (parsed.total_cost_usd) costUsd = parsed.total_cost_usd;
-        if (parsed.usage) {
-          tokensUsed = (parsed.usage.input_tokens || 0) + (parsed.usage.output_tokens || 0);
-        }
-      } catch {
-        // Not JSON, use raw output
-      }
-
-      resolve({
-        success: true,
-        output: parsedOutput,
-        durationMs,
-        tokensUsed,
-        costUsd,
-      });
-    });
+  const result = await providerRouter.run({
+    prompt: fullPrompt,
+    model: getModelForAgent(
+      opts.agentId,
+      providerRouter.getPrimaryProvider().id,
+    ),
+    fallbackModel: resolveFallbackProviderId()
+      ? getModelForAgent(opts.agentId, resolveFallbackProviderId()!)
+      : undefined,
+    timeoutMs: opts.timeoutMs,
+    onStdout: opts.onStdout,
+    onStderr: opts.onStderr,
   });
+
+  return {
+    success: result.success,
+    output: result.output,
+    error: result.error,
+    errorType: result.errorType,
+    durationMs: result.durationMs || (Date.now() - startedAt),
+    tokensUsed: result.tokensUsed,
+    costUsd: result.costUsd,
+    provider: result.provider,
+  };
 }

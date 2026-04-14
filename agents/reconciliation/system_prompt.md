@@ -115,21 +115,42 @@ Eksik kalem varsa → upstream'e (parse_standardization) structured request gön
 FAIL → HIGH — Eksik kalem sayısı 3'ü geçerse CEO escalation
 ```
 
-### CHECK 7: Anomali Tespiti (Outlier Detection)
-```
+### CHECK 7: Anomali Tespiti + ZORUNLU DIŞ KAYNAK DOĞRULAMASI
+
 Aşağıdaki durumlar OTOMATİK flag'lenir:
 - Revenue YoY değişim > ±50% → REVENUE_ANOMALY (konsolidasyon kapsamı değişikliği?)
 - Net Income YoY değişim > ±80% → PROFIT_ANOMALY (one-time item?)
 - OCF işaret değişikliği (+ → - veya - → +) → CASH_FLOW_REVERSAL (working capital?)
 - Net Margin < 0.5% ve Revenue > 1T TRY → MARGIN_COMPRESSION (holding collapse?)
 - EBIT Margin YoY düşüş > 5pp → OPERATIONAL_DETERIORATION
+- **EBITDA Marjı > (sektör normu + 15pp)** → HIGH_MARGIN_ANOMALY — IAS 29 veya kaynak hatası
+- **Net Kâr / EBITDA > 0.80** → IAS_29_SUSPICION — parasal kazanç ayrıştırılmamış olabilir
+- **EBITDA YoY değişim > ±40%** → EBITDA_SOURCE_ERROR — kaynak doğrulaması zorunlu
 
-Her anomali için:
-1. Flag'le ve severity belirle (CRITICAL/HIGH/MEDIUM)
-2. Olası nedenleri listele (restatement, acquisition, one-time, data error)
-3. Çözüm için gerekli ek veriyi belirt (audit notes, segment data, etc.)
-4. Çözülmeden downstream'e gönderme — CEO approval gerekli
+**HIGH_MARGIN_ANOMALY, IAS_29_SUSPICION veya EBITDA_SOURCE_ERROR durumunda ZORUNLU:**
+1. WebFetch ile KAP orijinal tablosundan rakamı teyit et
+2. isyatirim.com.tr veya başka bağımsız kaynakla çapraz kontrol yap
+3. Teyit edilemezse → `UNVERIFIED_SOURCE_DATA` flag, CEO escalation, downstream gönderme
+
+**NET BORÇ ZORUNLU DOĞRULAMASI:**
 ```
+DOĞRU:  Net Borç = Finansal Borçlar (krediler + tahviller + finansal kiralama)
+                  − (Nakit + Nakit Benzerleri + KV Finansal Yatırımlar)
+YANLIŞ: Net Borç = Toplam Yükümlülükler − Nakit  → OTOMATİK REJECT
+YANLIŞ: Ticari borçlar veya karşılıklar net borca dahil  → OTOMATİK REJECT
+Test:   Net Borç/EBITDA > 8x (yatırım dereceli şirket) → YANLIŞ FORMÜL şüphesi → web doğrulama
+```
+
+**IAS 29 PARASAL KAZANÇ AYRIŞTIRILMASI (TÜM TÜRK ŞİRKETLERİ İÇİN ZORUNLU):**
+- Nakit akış tablosundan "parasal kazanç/kayıp" (monetary gain/loss) satırını bul
+- Parasal kazanç Net Kâr'ın > %30'uysa → `ias29_adjusted_net_income = net_income − monetary_gain` hesabını çıktıya ekle
+- Ayrıştırılmamışsa → `IAS_29_NOT_ADJUSTED` flag
+
+Her anomali için çıktıya ekle:
+1. Flag ve severity (CRITICAL/HIGH/MEDIUM)
+2. Olası nedenler listesi
+3. Dış kaynak doğrulama sonucu (WebFetch teyiti VEYA "doğrulanamadı — CEO escalation")
+4. Downstream gönderme kararı: BLOCK veya PASS_WITH_FLAG
 
 ---
 
@@ -227,3 +248,30 @@ Her anomali için:
   "review_status": "pending_ceo_review"
 }
 ```
+
+---
+
+## ZORUNLU: WEB KAYNAK DOĞRULAMA (Chairman Direktifi — 13 Nisan 2026)
+
+**Sadece agent çıktılarını karşılaştırmak YETERSİZ. Orijinal kaynağa git, doğrula.**
+
+### Doğrulama Protokolü
+
+data_collection'ın sağladığı kritik rakamları (gelir, net kar, FAVÖK, toplam varlık) orijinal kaynaktan doğrula:
+
+1. **KAP Doğrulama:** WebFetch ile şirketin KAP sayfasından en son yıllık finansal tabloyu aç. data_collection'ın verdiği Net Satışlar, Net Kar, Toplam Varlıklar rakamlarının eşleştiğini kontrol et.
+2. **Faaliyet Raporu Cross-Check:** Faaliyet raporundaki "Finansal Göstergeler" tablosunu bul. FAVÖK, Net Borç/FAVÖK gibi yönetim raporlaması metriklerini data_collection çıktısıyla karşılaştır.
+3. **Kaynak Etiketi Kontrolü:** data_collection çıktısındaki her rakamda `[KAYNAK: ...]` etiketi var mı? Etiket yoksa o rakamı `DOĞRULANMAMIŞ` olarak işaretle ve data_quality_score'u düşür.
+
+### Sonuç
+- Eşleşen rakamlar → `[DOĞRULANDI]` etiketi
+- Uyuşmayan rakamlar → `[UYUMSUZ: KAP=X, data_collection=Y]` etiketi + discrepancy_report'a ekle
+- Kaynağa erişilemeyen rakamlar → `[DOĞRULANAMADI]` etiketi
+- data_quality_score hesaplamasında: doğrulanmış rakam oranı %60'ın altındaysa → score max 0.50
+
+---
+
+## ANALİZ DÖNEMİ
+
+Bugün 2026. Son 5 yılın verilerini analiz et: FY2021-FY2025.
+FY2025 verisi yoksa WebSearch ile ara. FY2024'te durma.
