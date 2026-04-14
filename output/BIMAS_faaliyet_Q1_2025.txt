@@ -1,0 +1,323 @@
+# PDF Text Extraction
+# Kaynak: https://www.bim.com.tr/FaaliyetRaporlari/2025/2025%201.%20%C3%87eyrek%20Faaliyet%20Raporu.pdf
+# Tarih: 2026-04-13T22:30:50.675Z
+# Sayfa Sayisi: 9
+# PDF Dosya: /Users/ibrahimpeyman/Documents/Finance X/output/pdfs/2025%201.%20%C3%87eyrek%20Faaliyet%20Raporu.pdf
+---
+--- Sayfa 1 ---
+BİM BİRLEŞİK MAĞAZALAR A.Ş.
+SPK SERİ: II NO:14.1 SAYILI TEBLİĞE İSTİNADEN
+HAZIRLANMIŞ
+31 MART 2025 TARİHİNDE SONA EREN ARA
+HESAP DÖNEMİNE AİT
+KONSOLİDE FAALİYET RAPORU
+
+--- Sayfa 2 ---
+İÇİNDEKİLER
+BÖLÜM 1 BİM BİRLEŞİK MAĞAZALAR A.Ş. HAKKINDA 1
+BÖLÜM 2 KURUMSAL BİLGİLER 2
+BÖLÜM 3 SEKTÖREL BİLGİLER 3
+BÖLÜM 4 FAALİYETLERLE İLGİLİ EK BİLGİLER 3
+BÖLÜM 5 FİNANSAL BİLGİLER 6
+
+--- Sayfa 3 ---
+1
+BÖLÜM 1- BİM BİRLEŞİK MAĞAZALAR A.Ş. HAKKINDA
+BİM Birleşik Mağazalar Anonim Şirketi 31 Mayıs 1995’te kurulmuş olup Eylül 1995’te
+faaliyetlerine başlamıştır.
+Şirket, yüksek indirimli gıda perakendecilik sektöründe faaliyet göstermekte olup,
+içerisinde özel markaların da bulunduğu yaklaşık 900 üründen oluşan ürün yelpazesini
+Türkiye, Fas ve Mısır’da faaliyet gösteren perakende mağazaları aracılığıyla
+satmaktadır. 31 Mart 2025 tarihi itibariyle Şirket’in yurt içi ve yurt dışında konsolide
+bazda 79 bölge genel müdürlüğü ve 13.809 (31.12.2024 – 13.583) mağazası
+bulunmaktadır.
+FİLE Satış Modeli
+Şirket, 2015 yılında FİLE adı ile tüketicilerini yeni ve farklı bir satış modeli ile
+buluşturmuştur. Yeni satış modelinin temel amacı tüketicilerin gıda, kişisel bakım ve
+genel temizlik ihtiyaçlarını, iyi veya en iyi kalitede, yüksek standartlarda üretilmiş,
+sağlıklı ve taze olmak şartıyla, sürekli düşük fiyatlardan karşılamaktır. FİLE mağazaları
+yaklaşık 1.000 m² satış alanına sahip olup satış yelpazesinde yaklaşık 4.500 ürün
+bulunmaktadır. Bu ürünlerden %32’si özel markalardan oluşmaktadır.
+31 Mart 2025 itibariyle FİLE formatında 295 mağaza bulunmaktadır.
+Yurt Dışı Operasyonları
+Fas Krallığı’nda Mayıs 2008 tarihinde kurulan Bim Maroc S.A., 31 Mart 2025 tarihi
+itibariyle 4 bölge müdürlüğü ve 828 (31.12.2024 – 789) mağaza ile faaliyetlerini
+sürdürmektedir. Bim Maroc, Fas’ta yüksek indirimli gıda perakendecilik sektöründe
+faaliyet göstermekte olup ürün yelpazesi yaklaşık 1.000 adet üründen oluşmaktadır. 4
+Mayıs 2021 tarihinde, Bim Maroc’un %35’ini temsil eden hisseleri Helios Investment
+Partners LLP’nin fonlarını yönettiği Blue Investment Holdings’e (özel amaçlı şirket)
+satılmıştır.
+Şirketin %100 iştiraki ile Mısır’da aynı iş kolunda faaliyet göstermek üzere kurulu
+bulunan Bim Stores L.L.C. Şirketi, 31 Mart 2025 itibariyle 2 bölge müdürlüğü 425
+(31.12.2024 – 418) mağazası ile Mısır’da faaliyetlerini sürdürmektedir.
+Şirket gerek Fas gerek Mısır’da faaliyetlerde bulunan söz konusu iştiraklerin mali
+sonuçlarını 31 Mart 2025 tarihli mali tablolarında tam konsolidasyon yöntemi
+uygulayarak yansıtmıştır. Söz konusu bağlı ortaklıkların ana ortaklık sermayesinde
+payları (karşılıklı iştirak) bulunmamaktadır.
+Mağaza Sayıları Özet Tablo
+Mart 25 Aralık 24 Mart 24
+BİM Türkiye 12.261 12.089 11.471
+FİLE Türkiye 295 287 244
+BİM Fas 828 789 711
+BİM Mısır 425 418 365
+TOPLAM 13.809 13.583 12.791
+
+--- Sayfa 4 ---
+2
+BÖLÜM 2 - KURUMSAL BİLGİLER
+Ortaklık Yapısı
+31 Mart 2025 itibariyle Şirket ortaklık yapısı aşağıda gibi şekillenmiştir.
+Ortak Mart 2025 Aralık 2024
+Merkez Bereket Gıda Sanayi ve Ticaret A.Ş. 15,15% 15,15%
+Naspak Gıda Sanayi ve Ticaret A.Ş. 11,53% 11,53%
+Diğer (Halka Açık Olmayan Kısım) 1,52% 1,52%
+Diğer (Halka Açık Olan Kısım) 71,80% 71,80%
+100% 100%
+Şirket Yönetim Kurulu Üyeleri ve Denetçiler
+29 Nisan 2025 tarihinde gerçekleştirilen 2024 yılı Olağan Genel Kurul Toplantısı’nda 6
+kişilik yönetim kurulu üyeleri bir yıllığına seçilmişlerdir. Sermaye Piyasası Kurulu
+Kurumsal Yönetim İlkeleri’ne uygun olarak 6 üyeli Yönetim Kurulu’nun 2’si bağımsız
+üye olarak görev yapmaktadır.
+Yönetim Kurulu Üyeleri
+Mahmud Muhammed TOPBAŞ Üye - Yönetim Kurulu Başkanı
+Galip AYKAÇ Üye - Yönetim Kurulu Başkan Yardımcısı
+Ömer Hulusi TOPBAŞ Üye
+Paul Michael FOLEY Üye
+Bekir PAKDEMİRLİ Bağımsız Üye
+Karl-Heinz HOLLAND Bağımsız Üye
+Üst Yönetim
+31 Mart 2025 tarihi itibariyle üst yönetim kadrosu aşağıdaki gibidir.
+Üst Yönetim
+Haluk DORTLUOĞLU İcra Başkanı (CEO)
+Fatih MERİÇ Mali İşler Başkanı (CFO)
+Tolga ŞAHİN Operasyon Başkanı (COO)
+Hasan KAYA İnsan Kaynakları Başkanı (CHRO)
+Umut BABA Ticaret Başkanı (CCO)
+Ali CAN Teknoloji Başkanı (CTO)
+
+--- Sayfa 5 ---
+3
+BÖLÜM 3 - SEKTÖREL BİLGİLER
+İndirim mağazacılığı perakende sektöründe önemli bir yer edinerek son yıllarda ciddi
+bir büyüme ivmesi yakalamıştır. BİM, en önemli oyuncuları indirim marketlerinden
+oluşan Türkiye perakendecilik sektörünün lideri konumundadır. Şirket, düşük kâr
+marjları, etkin maliyet yönetimi ve kararlıkla uyguladığı özgün mağaza formatıyla
+istikrarlı büyümesini sürdürmektedir.
+Perakendecilik sektörü, üretimin nihai tüketiciye ulaşmasını sağlamak için başta
+mağazalar olmak üzere oluşturduğu birçok kanal aracılığıyla lojistik, depolama,
+paketleme gibi süreçlerde en az üretici kadar iş ve istihdam üretmektedir. Tedarik
+zincirinde yer alan her bir halkanın geliştirilmesi ve sistemin doğru bir şekilde işlemesi,
+halkaların her birinin ayrı ayrı katma değer üretmesini sağlamaktadır. Perakendecilik
+sektörü, üretime ve dolayısıyla ülkemiz ekonomisinin büyümesine doğrudan katkı
+sağlayarak önemli bir rol oynamaktadır.
+2024 yılının ilk çeyreğinde gıda ve alkolsüz içecekler grubunda yıllık enflasyon oranları
+yüksek seyretmiş, Ocak ayında %69,7, Şubat ayında %71,1 ve Mart ayında %70,4
+olarak gerçekleşmiştir. 2025 yılının aynı döneminde ise bu oranlar sırasıyla %41,8,
+%35,1 ve %37,1 olarak kaydedilmiştir. 2025 yılının ilk çeyreğinde gıda enflasyonunu
+bir önceki yılın aynı dönemine göre belirgin bir şekilde azalmıştır ancak gıda
+fiyatlarındaki artış oranları hâlâ yüksek seviyelerde seyretmekte ve tüketici harcamaları
+üzerinde baskı oluşturmaya devam etmektedir.
+Perakende sektörü açısından bakıldığında, artan üretici fiyatları ile 2025 yılı başında
+yapılan yüksek oranlı asgari ücret artışı, işletme maliyetlerini yukarı yönlü baskılayan
+başlıca unsurlar arasında yer almıştır. Üretici fiyat endeksinde gözlenen yükseliş,
+tedarik zincirinin farklı aşamalarındaki maliyetleri artırırken; iş gücü maliyetlerindeki
+artış, özellikle mağaza operasyonları ve lojistik gibi doğrudan istihdam yoğun alanlarda
+belirgin şekilde hissedilmiştir. Bu gelişmeler, perakende sektöründe fiyatlama
+stratejilerinin ve operasyonel verimliliğin yeniden değerlendirilmesini gerektirmiştir.
+Perakendecilik sektörü, şirketlerin kendi markalarına ait (private label) ürünlerin
+yaygınlaşarak raflarda yerini alması için birçok fırsat barındırmaktadır. Kendi markalı
+ürünleri ile sektörün bu kapsamda da öncüsü olan BİM’in yurt içi mağazalarında satılan
+kendi markalarına ait ürünlerin net satışlara oranı 2025 yılının ilk çeyreğinde %57
+olarak gerçekleşmiştir. FİLE’nin kendi markalarına ait ürünlerin satışlarına oranı aynı
+dönemde %32 olarak gerçekleşmiştir. Yüksek kalite uygun fiyat şiarıyla halka sunulan
+BİM’in ve FİLE’nin kendi markalarından oluşan ürünleri, Türkiye’nin enflasyonla
+mücadelesinde önemli bir rol oynamaktadır. Şirket, hem BİM hem de FİLE
+mağazalarında kendi markaları üzerine çalışmalarına yoğunlaşarak devam etmektedir.
+BÖLÜM 4 - FAALİYETLERLE İLGİLİ EK BİLGİLER
+Finansman Kaynakları ve Risk Yönetim Politikaları
+Faaliyetlerini eksi net işletme sermayesiyle sürdüren BİM, nakit toplama gücü
+sayesinde kendi finansmanını sağlamaktadır. Operasyonel nakit çıkışlarının yanı sıra
+TMS 29 enflasyon muhasebesi uygulanmış finansal tablolara göre 2025 yılının ilk
+çeyreğinde konsolide bazda 4,6 milyar TL yatırım gerçekleştirilmiştir.
+BİM, gerek yurt içi gerekse yurt dışı operasyonlarının finansmanını iç kaynaklar
+vasıtasıyla sağlaması sebebiyle banka kredisi kullanmamaktadır. Ayrıca Şirket’in
+operasyonlarının büyük çoğunluğunu Türk lirası üzerinden gerçekleştirmesi sebebiyle
+
+--- Sayfa 6 ---
+4
+önemli tutarda yabancı para açık pozisyonu bulunmamaktadır. Bu sebeple gerek faiz
+hadlerinde gerekse yabancı para kurlarında meydana gelebilecek değişimler Şirket için
+önemli risk unsuru oluşturmamaktadır. Şirket’in varlığını, gelişmesini ve devamını
+tehlikeye düşürebilecek risklerin erken teşhisi ve tespit edilen risklerle ilgili gerekli
+önlemlerin uygulanması ve riskin yönetilmesi, Riskin Erken Saptanması Komitesi’nin
+görev alanında yer almaktadır. Komite her iki ayda bir riskler ve alınabilecek tedbirlerle
+alakalı Yönetim Kurulu’na rapor sunmaktadır.
+Yatırımcı İlişkileri ve Bilgilendirme Politikası
+BİM Yatırımcı İlişkileri Birimi, Şirket yönetimi ile pay sahipleri arasındaki iletişimi
+sağlamak ve pay sahipleri dahil tüm menfaat sahiplerini doğru, eksiksiz, hızlı ve etkin
+olarak bilgilendirmek amacıyla 2005 yılından bu yana aktif olarak çalışmalarını
+sürdürmektedir. Şirketimiz hakkında bilgi almak isteyen pay sahipleri
+ircontact@bim.com.tr adresine e-posta göndererek sorularını iletebilmektedir.
+Şirket’in bilgilendirme politikası, Şirket internet sitesi
+(www.bim.com.tr/yatırımcı_ilişkileri) ve Kamuyu Aydınlatma Platformu (KAP)
+vasıtasıyla kamuya duyurulmuştur.
+Oluşturulan politikaya göre, Şirket’in mali durumunda ve/veya faaliyetlerinde önemli bir
+değişikliğin meydana gelmesiyle sonuçlanabilecek bütün gelişmeler ve ayrıca SPK
+Mevzuatı uyarınca gerekli olan bütün diğer konular hakkındaki bilgiler kamuya derhal
+açıklanmaktadır. BİM Yönetimi ayrıca zaman zaman medya temsilcileri ile toplantılar
+düzenleyerek kamuya açık bilgileri paylaşıp soruları cevaplandırmaktadırlar.
+Yazılı basında yayımlanmış olan güncel açıklamaların bir kopyasına ve Borsa
+İstanbul’a yapılan özel durum açıklamalarına Şirket web sitesinde (www.bim.com.tr)
+yer verilmektedir.
+Kurumsal Yönetim İlkeleri’ne Uyum Beyanı
+Şirketimiz Sermaye Piyasası Kurulu tarafından 03.01.2014 tarihinde yayımlanan II-
+17.1 sayılı Kurumsal Yönetim Tebliği’nde yer alan prensiplerden uygulanması zorunlu
+olanlara uyum sağlanmıştır. Uygulanması zorunlu olmayan prensiplerin uygulanması
+için gerekli özen ve dikkat gösterilmekte olup, uyum sağlanamayan konularda
+eksikliklerin giderilmesi ve uyum seviyesinin artırılması hususunda gelişen koşullara
+bağlı olarak çalışmalara devam edilmektedir.
+Kurumsal Yönetim İlkeleri Uyum Raporunun tamamına Şirket web sitesinden
+(www.bim.com.tr/yatırımcı_ilişkileri) ulaşılabilmektedir.
+Sürdürülebilirlik
+Türkiye’deki yüksek indirim modelinin ilk temsilcisi olan BİM, daima sürdürülebilirlik
+anlayışı ile ilerlemeyi ve paydaşları için ortak değer üretmeyi taahhüt eder. “Her gün
+düşük fiyat” politikası, maliyetlerden elde edilen tasarrufları ürün fiyatlarına yansıtma
+prensibi ve yalın iş modeli ile önemli bir toplumsal misyon üstlenen BİM’in bu felsefesi,
+aynı zamanda sürdürülebilirlik yaklaşımının temelini yansıtmaktadır.
+BİM olarak faaliyetlerimizden kaynaklanan ekonomik, sosyal ve çevresel etkiyi ölçmek
+ve değerlendirmek üzere yürütmekte olduğumuz sürdürülebilirlik çalışmalarımızı 2020
+yılından beri yayımladığımız yıllık sürdürülebilirlik raporlarımız ile paydaşlarımızın
+bilgisine sunmaktayız. 2024 yılı itibarıyla entegre düşünce yaklaşımıyla ekonomiden
+
+--- Sayfa 7 ---
+5
+çevreye, kurumsal yönetimden toplumsal yatırımlara kadar farklı alanlardaki finansal
+ve finansal olmayan faaliyetlerimiz neticesinde ürettiğimiz değeri tüm paydaşlarımıza
+şeffaf, güvenilir, tutarlı ve önceki raporlama dönemiyle karşılaştırılabilir bir şekilde
+sunmak üzere ikinci entegre faaliyet raporumuzu yayınladık. BİM Sürdürülebilirlik
+Anlayışı ve Entegre Faaliyet Raporuna Şirket web sitesinden
+(https://www.bim.com.tr/Categories/691/surdurulebilirlik.aspx) ulaşılabilir.
+Sürdürülebilirlik alanında gerçekleştirdiğimiz başarılı çalışmalarla, BIST
+Sürdürülebilirlik Endeksi’nde, ayrıca FTSE4Good Emerging ve FTSE Emerging ESG
+Endekslerinde yer almaktayız.
+Dönem İçindeki Önemli Gelişmeler
+Emek Yatırım Proje Geliştirme A.Ş. ile Devralma Şeklinde Birleşme
+2024 yılı içerisinde, %100 bağlı ortaklığımız Emek Yatırım Proje Geliştirme A.Ş.'nin
+kayıtlı değeri üzerinden devralınarak Şirketimiz bünyesinde birleşmesine yönelik süreç
+başlatılmış; gerekli izinlerin alınması ardından birleşme işleminin 11.02.2025 tarihinde
+İstanbul Ticaret Sicil Müdürlüğü tarafından tescil edilmesiyle süreç tamamlanmıştır.
+Rekabet Kurumu Soruşturmaları
+20.02.2025 tarihinde kamuya açıklamış olduğumuz özel durum duyurusunda belirtildiği
+üzere, Rekabet Kurumu tarafından 4054 sayılı Rekabetin Korunması Hakkında
+Kanun’un 16. maddesinin birinci fıkrasının (d) bendi kapsamında Şirketimize
+1.295.902.606,94 TL tutarında idari para cezası verilmiştir. Bu karara ilişkin olarak,
+03.03.2025 tarihinde İdari Yargılama Usulü Kanunu’nun 11. maddesi uyarınca para
+cezasının iptali talebiyle Rekabet Kurumu Başkanlığı’na itiraz başvurusunda
+bulunulmuştur. Süreç yasal çerçevede devam etmekte olup, gelişmeler oldukça
+kamuoyu, sermaye piyasası mevzuatı kapsamında bilgilendirilecektir.
+Ayrıca, 10.03.2025 tarihinde Rekabet Kurumu tarafından, Şirketimizin de aralarında
+bulunduğu bazı perakende şirketleri ve tedarikçilerine yönelik iki ayrı soruşturma
+başlatıldığı tarafımıza bildirilmiştir. Soruşturma açılması, ilgili şirketlerin mevzuatı ihlal
+ettiğine veya cezai yaptırımla karşı karşıya kaldığına dair bir tespit anlamına
+gelmemektedir. Sürece ilişkin herhangi bir gelişme olması durumunda, yasal
+yükümlülüklerimiz doğrultusunda gerekli açıklamalar yapılacaktır.
+Bağlı Ortaklık Kuruluşu ve Kısmi Bölünme
+12 Mart 2025 tarihli özel durum açıklamamızda, Şirketimizin gıda perakendeciliği
+alanında ayrı bir organizasyon yapısıyla faaliyet gösteren markası FİLE'nin, ayrı bir
+şirket yapısıyla faaliyetlerine devam edebilmesi amacıyla, sermayesinin tamamı
+Şirketimize ait olacak şekilde 250.000 TL sermayeli bir anonim şirket kurulmasına
+karar verildiği kamuoyu ile paylaşılmıştır. Bu kapsamda, kuruluş işlemleri 20 Mart 2025
+tarihinde tamamlanmış ve yeni şirket “FİLE Market Mağazacılık Anonim Şirketi”
+unvanıyla tescil edilmiştir.
+Devam eden süreçte, 8 Nisan 2025 tarihinde Yönetim Kurulumuz, %100 bağlı
+ortaklığımız olan FİLE Market Mağazacılık A.Ş.’nin, iştirak modeliyle kısmi bölünmesi
+yönünde karar almıştır. Bu doğrultuda, 9 Nisan 2025 tarihinde Sermaye Piyasası
+Kurulu’na duyuru metni onayı için başvuru yapılmıştır. Sürece ilişkin gelişmeler,
+sermaye piyasası mevzuatı kapsamında kamuoyu ile şeffaf bir şekilde paylaşılacaktır.
+
+--- Sayfa 8 ---
+6
+Pay Geri Alım Programı
+Şirketimiz, pay fiyatının faaliyetlerinin gerçek performansını yansıtmadığı gerekçesiyle
+20 Mart 2025 tarihinde yeni bir pay geri alım programı başlatmıştır. Program
+kapsamında, azami 4 milyon adet payın 2 milyar TL’ye kadar bir fon ile geri
+alınabileceği duyurulmuştur. Genel kurul tarihine kadar ortalama 429,82 TL fiyatla 1
+milyon adet pay geri alınmış; geçmiş yıllardaki programlarla birlikte Şirketin sahip
+olduğu BIMAS pay sayısı 13,2 milyona, sermayeye oranı ise %2,17’ye ulaşmıştır.
+Sermaye Piyasası Kurulu düzenlemeleri uyarınca bu program, 29 Nisan 2025 tarihinde
+yapılan Olağan Genel Kurul ile birlikte sona ermiştir.
+Dönem Sonrası Önemli Gelişmeler
+Genel Kurul
+29 Nisan 2025 tarihinde Şirketimizin 2024 yılına ait Olağan Genel Kurul Toplantısı
+gerçekleştirilmiştir. Toplantı sonuçları aynı gün KAP aracılığıyla kamuoyu ile
+paylaşılmış olup, kararların tesciline yönelik süreç devam etmektedir.
+BÖLÜM 5- FİNANSAL BİLGİLER
+Şirketin aşağıda belirtilen iştiraklerinin mali sonuçları 31 Mart 2025 tarihli şirket mali
+tablolarına tam konsolidasyon yöntemi uygulanarak yansıtılmıştır.
+Ticaret Unvanı Şirketin Faaliyet Konusu
+Şirketin
+Sermayedeki
+Payı (%)
+FİLE Market Mağazacılık A.Ş. Türkiye'de Gıda Perakendeciliği
+Faaliyetleri 100
+BİM Maroc SA Fas Krallığı'nda Gıda
+Perakendeciliği Faaliyetleri 65
+BİM Stores LLC Mısır Arap Cumhuriyeti'nde Gıda
+Perakendeciliği Faaliyetleri 100
+Dost Global Danışmanlık A.Ş. Danışmanlık ve İşletme 100
+GDP Gıda Paketleme Sanayi ve
+Ticaret A.Ş.
+Yiyecek ve İçecek Paketleme 100
+Es Global Gıda Sanayi ve Ticaret A.Ş. Bisküvi ve Şekerleme Üretimi 100
+Bircan Fide Tohum Tarım Nakliyecilik
+Sanayi ve Ticaret A.Ş.
+Jeotermal Seralarda Topraksız
+Tarım Faaliyetleri 100
+İdeal Standart İşletmecilik ve
+Mümessillik San. ve Tic. A.Ş. Diş Fırçası Üretimi ve Satışı 100
+Desto Atık Yönetimi A.Ş. Atık Yönetimi 100
+
+--- Sayfa 9 ---
+7
+Şirket’in 2025 yılı ilk çeyreğine ait özet finansal tablolar aşağıda sunulmaktadır;
+Özet Konsolide Gelir Tablosu (Milyon TL) 01 Ocak – 31 Mart
+2025 2024 Değişim
+Satışlar 147.723 143.308 3%
+Brüt Kar 25.859 24.660 5%
+Brüt Kar Marjı % 17,5% 17,2%
+FVAÖK 5.282 6.145 -14%
+FVAÖK Marjı % 3,6% 4,3%
+FVÖK -899 1.624 -155%
+FVÖK Marjı % -0,6% 1,1%
+Net Kar 2.710 5.356 -49%
+Kontrol Gücü Olmayan Paylar 5 1 787%
+Ana Ortaklık Payları 2.705 5.355 -49%
+Net Kar Marjı % 1,8% 3,7%
+Özet Konsolide Bilanço (Milyon TL) 31 Mart 2025 31 Aralık 2024 Değişim
+Dönen Varlıklar 105.204 81.492 29%
+Nakit ve Nakit Benzerleri 7.954 3.098 157%
+Finansal Yatırımlar 15.535 5.970 160%
+Ticari Alacaklar 27.026 26.120 3%
+Stoklar 48.081 40.818 18%
+Peşin Ödenmiş Giderler 4.019 3.353 20%
+Diğer 2.589 2.133 21%
+Duran Varlıklar 181.513 178.090 2%
+Finansal Yatırımlar 5.994 5.994 0%
+Maddi Duran Varlıklar 99.997 99.143 1%
+Kullanım Hakkı Varlıkları 73.544 70.439 4%
+Diğer 1.978 2.514 -21%
+Toplam Varlıklar 286.717 259.582 10%
+Kısa Vadeli Yükümlülükler 104.497 82.187 27%
+Kiralama İşlemlerinden Borçlar 9.602 8.966 7%
+Ticari Borçlar 83.721 66.712 25%
+Diğer Borçlar 2 2 -3%
+Dönem Karı Vergi Yükümlülüğü 2.885 1.431 102%
+Diğer 8.287 5.076 63%
+Uzun Vadeli Yükümlülükler 49.244 46.927 5%
+Kiralama İşlemlerinden Borçlar 32.488 31.731 2%
+Uzun Vadeli Karşılıklar 1.760 1.840 -4%
+Ertelenmiş Vergi Yükümlülüğü 14.996 13.357 12%
+Özkaynaklar 132.976 130.467 2%
+Ana Ortaklığa Ait Özkaynaklar 131.949 129.478 2%
+Azınlık Payları 1.027 989 4%
+Toplam Özsermaye ve Yükümlülükler 286.717 259.582 10%

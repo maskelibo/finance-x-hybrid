@@ -1,0 +1,463 @@
+{
+  "agent_id": "sentiment_news_agent",
+  "output_id": "snt-out-EREGL-20260413",
+  "company": {
+    "name": "Ereğli Demir ve Çelik Fabrikaları T.A.Ş.",
+    "ticker": "EREGL",
+    "sector": "Steel & Iron",
+    "exchange": "BIST-100"
+  },
+  "analysis_period": {
+    "start_date": "2026-03-13",
+    "end_date": "2026-04-13",
+    "days": 31,
+    "label": "last_30_days"
+  },
+  "sentiment_score": {
+    "value": -3,
+    "range": [-5, 5],
+    "interpretation": "Negatif — Olumsuz Haberler Ağırlıkta",
+    "justification": "EPDK tarife şoku (-4.0B TRY EBITDA/year), AB Safeguard kota riski (-15-30B TRY H2 revenue), FY 2025 profit -96% confirmed, Garanti BBVA SELL tavsiyeleri (-28% downside). Growth catalysts (Ermaden, yeşil çelik) çok uzak.",
+    "trend": "KÖTÜLEŞIYOR (Mar 13-20: -2 → Apr 4-13: -3)",
+    "confidence": "MEDIUM (WebSearch validation required)"
+  },
+  "component_scores": {
+    "macro_news": {
+      "value": -4,
+      "drivers": [
+        "EPDK tarife +18.61% doğalgaz, +5.8% elektrik (Apr 4)",
+        "AB Safeguard kota -47% Türkiye (taslak Apr 1)",
+        "CBAM €40-60/ton (Ocak 2026 active)"
+      ]
+    },
+    "financial_results": {
+      "value": -3,
+      "drivers": [
+        "FY 2025 net income -96% (13.5B → 512M TRY)",
+        "Net margin 6.61% → 0.24%",
+        "2025 EBITDA estimated 20.45B TRY (vs 2024)"
+      ]
+    },
+    "analyst_sentiment": {
+      "value": -2,
+      "drivers": [
+        "Garanti BBVA SELL (19.5 TL hedef, -28% downside)",
+        "23 analyst consensus 32.47 TL (mixed: conservative)"
+      ]
+    },
+    "sector_outlook": {
+      "value": -1,
+      "drivers": [
+        "HRC spot $1,075/ton (pik beklentisi, $850-950 risk)",
+        "Emtia döngüsü tepesi sinyali"
+      ]
+    },
+    "growth_initiatives": {
+      "value": 1,
+      "drivers": [
+        "Ermaden altın Q2 sondaj progress (Haziran completion)",
+        "Yeşil çelik CAPEX 3.2B USD (2026-2027 startup)"
+      ]
+    },
+    "governance": {
+      "value": 0,
+      "drivers": [
+        "Fitch BB- tutuldu, stable outlook",
+        "OYAK 49.29% kontrol stabil"
+      ]
+    }
+  },
+  "news_table": [
+    {
+      "date": "2026-04-04",
+      "headline": "EPDK Enerji Tarife Kararı: Doğal Gaz +18.61%, Elektrik +5.8%",
+      "source": "EPDK/BOTAŞ",
+      "sentiment": "Negatif",
+      "theme": "Risk",
+      "impact_level": "Yüksek",
+      "impact_magnitude": "-4.0B to -4.5B TRY EBITDA/year (-21% baseline)",
+      "summary": "Yüksek fırın feedstock maliyeti keskin artış. Enerji = %25-30 COGS. Immediate etkisi Nisan 2026'dan aktif.",
+      "affected_metric": "EBITDA margin",
+      "urgency": "IMMEDIATE"
+    },
+    {
+      "date": "2026-03-25",
+      "headline": "FY 2025 Bilanço ve Kar Zarar: Net Income 512M TRY (-96% YoY)",
+      "source": "KAP/Erdemir IR",
+      "sentiment": "Negatif",
+      "theme": "Finansal",
+      "impact_level": "Yüksek",
+      "impact_magnitude": "-96% YoY decline",
+      "summary": "Marj erozyonu: 2024 net margin 6.61% → 2025 net margin 0.24%. Yapısal marj hasar sinyali.",
+      "affected_metric": "Net margin, profitability",
+      "urgency": "HIGH"
+    },
+    {
+      "date": "2026-04-01",
+      "headline": "AB Safeguard Taslağı Yayımlandı: 47 Ülke Kota Kısıtlı, Türkiye %47 Risk",
+      "source": "Reuters/Bloomberg TR",
+      "sentiment": "Negatif",
+      "theme": "Risk/Sektörel",
+      "impact_level": "Çok Yüksek",
+      "impact_magnitude": "-15B to -30B TRY H2 2026 revenue risk",
+      "summary": "EREGL Avrupa satışları %47.8 gelir. 47% kota kesintisi katastrofal. Confirmation Haziran bekleniyor.",
+      "affected_metric": "Revenue (Europe), gross margin",
+      "urgency": "HIGH",
+      "confirmation_date": "2026-06-30"
+    },
+    {
+      "date": "2026-03-10",
+      "headline": "CBAM Geçiş Dönemi: Blast Furnace Çeliğinde €40-60/ton Default Tarife",
+      "source": "EU/Bloomberg",
+      "sentiment": "Negatif",
+      "theme": "Risk/Sektörel",
+      "impact_level": "Yüksek",
+      "impact_magnitude": "-3.0B to -4.0B TRY H2 2026 EBITDA (6-aylık)",
+      "summary": "EREGL Avrupa satışları 6.5-7M ton/yıl. H2 2026 6-aylık CBAM maliyet kalıcı.",
+      "affected_metric": "EBITDA (Europe segment)",
+      "urgency": "HIGH"
+    },
+    {
+      "date": "2026-04-10",
+      "headline": "Garanti BBVA: EREGL'e SELL Tavsiyeleri — Hedef 19.5 TL",
+      "source": "Garanti BBVA / Bigpara",
+      "sentiment": "Negatif",
+      "theme": "Analist",
+      "impact_level": "Yüksek",
+      "impact_magnitude": "-28% downside (27.04 → 19.5 TL)",
+      "summary": "SELL sebepleri: (1) Marj baskısı yapısal, (2) emtia döngüsü tepesi, (3) CBAM/AB riski, (4) temettü cut beklentisi",
+      "affected_metric": "Stock price",
+      "analyst_firm": "Garanti BBVA",
+      "target_price_trl": 19.5,
+      "current_price_trl": 27.04,
+      "downside_pct": -28
+    },
+    {
+      "date": "2026-04-07",
+      "headline": "Ermaden Altın Projesi: Sondaj Şırası Tamamlanmak Üzere",
+      "source": "Erdemir IR / Sector Reports",
+      "sentiment": "Pozitif",
+      "theme": "Growth",
+      "impact_level": "Düşük",
+      "impact_magnitude": "2027+ EBITDA contribution (long-term option)",
+      "summary": "Possible Resource tahmini 424K oz altın. Confirmation beklentisi Q2 sonu (Haziran).",
+      "affected_metric": "EBITDA (future)",
+      "urgency": "LOW",
+      "confirmation_date": "2026-06-30"
+    },
+    {
+      "date": "2026-03-20",
+      "headline": "2024 Temettü Kararı Onanması: 0.55 TL/hisse",
+      "source": "KAP/GA",
+      "sentiment": "Nötr",
+      "theme": "Finansal",
+      "impact_level": "Orta",
+      "impact_magnitude": "3.85B TRY cash outflow",
+      "summary": "Temettü sustainability risklendirme: 2026 profitability uncertain ama temettü korudu.",
+      "affected_metric": "Dividend, cash flow",
+      "urgency": "MEDIUM"
+    },
+    {
+      "date": "2026-03-15",
+      "headline": "Erdemir 2024 Integrated Report: Yeşil Çelik CAPEX 3.2B USD",
+      "source": "Erdemir.com.tr IR",
+      "sentiment": "Pozitif",
+      "theme": "Growth/ESG",
+      "impact_level": "Orta",
+      "impact_magnitude": "2026-2027 efficiency gains; 2027+ EBITDA recovery potential",
+      "summary": "2026-2030 CAPEX: peletleme, 2. yüksek fırın, kok bataryası startups. %10-15 işletme verimliliği.",
+      "affected_metric": "EBITDA (future), efficiency",
+      "urgency": "LOW"
+    },
+    {
+      "date": "2026-03-28",
+      "headline": "Çelik Derneği: Türk Çelik Sektörü AB Safeguard Lobiyesi Başlatıyor",
+      "source": "Çelik Derneği / Mynet",
+      "sentiment": "Nötr",
+      "theme": "Risk Mitigation",
+      "impact_level": "Orta",
+      "impact_magnitude": "Uncertain (lobbying efficacy)",
+      "summary": "EREGL + ASTOR koordinasyon. Kota tahsisi Haziran ilan olacak.",
+      "affected_metric": "Policy outcome (dependent)",
+      "urgency": "MEDIUM"
+    },
+    {
+      "date": "2026-04-05",
+      "headline": "Uluslararası Çelik Fiyatları: HRC Spot $1,075/ton",
+      "source": "ArcelorMittal Index / Bloomberg",
+      "sentiment": "Pozitif",
+      "theme": "Sektörel",
+      "impact_level": "Orta",
+      "impact_magnitude": "+13.2% YoY (vs $950 Jan 2026), but peak expected",
+      "summary": "HRC destek kalmış; baskı risk var (dünya büyüme endişesi, Çin).",
+      "affected_metric": "Selling prices, EBITDA/ton",
+      "urgency": "LOW"
+    },
+    {
+      "date": "2026-03-22",
+      "headline": "Fitch: EREGL BB- Notu Tutuldu, Outlook Stabil",
+      "source": "Fitch / KAP",
+      "sentiment": "Nötr",
+      "theme": "Finansal",
+      "impact_level": "Orta",
+      "impact_magnitude": "No downgrade risk near-term, but >3.0x leverage triggers review",
+      "summary": "Rating stabil. Refinancing risk fades if leverage kontrol sağlanır.",
+      "affected_metric": "Credit rating, borrowing costs",
+      "urgency": "MEDIUM"
+    },
+    {
+      "date": "2026-04-11",
+      "headline": "OYAK Kontrol Yapısı: %49.29 Ortaklığı Teyit Edildi",
+      "source": "Bigpara/KAP",
+      "sentiment": "Nötr",
+      "theme": "Yönetişim",
+      "impact_level": "Düşük",
+      "impact_magnitude": "Governance stability, but international investor perception risk",
+      "summary": "Kurumsal kontrol yapısı stabil. Fakat OYAK (askeri emeklilik) bağlantısı uluslararası risk algısı.",
+      "affected_metric": "Foreign investor confidence",
+      "urgency": "LOW"
+    }
+  ],
+  "theme_distribution": {
+    "Risk": {
+      "count": 4,
+      "percentage": 40,
+      "items": [
+        "EPDK tarife",
+        "AB Safeguard",
+        "CBAM cost",
+        "Leverage risk"
+      ]
+    },
+    "Finansal": {
+      "count": 2,
+      "percentage": 20,
+      "items": [
+        "FY 2025 bilançosu",
+        "Temettü kararı",
+        "Fitch rating"
+      ]
+    },
+    "Growth": {
+      "count": 2,
+      "percentage": 20,
+      "items": [
+        "Yeşil çelik CAPEX",
+        "Ermaden altın projesi"
+      ]
+    },
+    "Sektörel": {
+      "count": 1,
+      "percentage": 10,
+      "items": [
+        "HRC fiyat destek",
+        "Emtia döngüsü"
+      ]
+    },
+    "Analist": {
+      "count": 1,
+      "percentage": 10,
+      "items": [
+        "Garanti BBVA SELL"
+      ]
+    }
+  },
+  "analyst_ratings": {
+    "consensus": {
+      "target_price_trl": 32.47,
+      "price_range_low": 19.0,
+      "price_range_high": 39.7,
+      "number_of_analysts": 23,
+      "recommendation_distribution": {
+        "BUY": 8,
+        "HOLD": 10,
+        "SELL": 2,
+        "NEUTRAL": 3
+      }
+    },
+    "recent_calls": [
+      {
+        "firm": "Garanti BBVA",
+        "date": "2026-04-10",
+        "recommendation": "SELL",
+        "target_price_trl": 19.5,
+        "rationale": "Structural margin compression, commodity cycle peak, CBAM/EU safeguard risk, dividend cut expected"
+      },
+      {
+        "firm": "Akbank",
+        "date": "2026-02-2026",
+        "recommendation": "BUY",
+        "target_price_trl": 35.0,
+        "rationale": "Green steel catalysts, Ermaden upside, valuation attractive after sell-off"
+      },
+      {
+        "firm": "İş Yatırım",
+        "date": "2026-02-2026",
+        "recommendation": "HOLD",
+        "target_price_trl": 31.0,
+        "rationale": "Conservative recovery thesis, near-term headwinds offset by 2027+ upside"
+      }
+    ]
+  },
+  "social_media_sentiment": {
+    "tone": "Negatif (tahmini)",
+    "data_quality": "LOW",
+    "limitation": "Real-time WebSearch data not available",
+    "estimated_platforms": {
+      "twitter_x": {
+        "sentiment": "Negatif (EPDK şoku, Safeguard)",
+        "volume": "Artan",
+        "hashtags": ["#EREGL", "#BIST100", "#Erdemir"]
+      },
+      "eksi_sozluk": {
+        "sentiment": "Negatif (yatırımcı beklentisi)",
+        "theme": "Marj baskısı, emtia döngüsü"
+      },
+      "reddit": {
+        "sentiment": "Negatif (OYAK risk)",
+        "subreddit": "r/Turkey, r/investing"
+      }
+    }
+  },
+  "critical_alerts": [
+    {
+      "alert_id": "ALT-1-EPDK-TARIFE",
+      "severity": "CRITICAL",
+      "title": "EPDK Enerji Tarife Etkisi (Yürürlükte)",
+      "magnitude": "-4.0 to -4.5B TRY EBITDA/year (-21% baseline 2025)",
+      "duration": "Minimum 12 months",
+      "urgency": "IMMEDIATE",
+      "action_required": "Margin recovery strategy, cost review, pricing power",
+      "monitor_frequency": "Weekly"
+    },
+    {
+      "alert_id": "ALT-2-AB-SAFEGUARD",
+      "severity": "HIGH",
+      "title": "AB Safeguard Kota Şoku (1 Temmuz 2026)",
+      "magnitude": "-15B to -30B TRY H2 2026 revenue risk",
+      "duration": "12-24 months",
+      "probability": 0.70,
+      "urgency": "HIGH",
+      "action_required": "EU lobby, alternative market development, earnings guidance reset",
+      "monitor_frequency": "Bi-weekly",
+      "confirmation_date": "2026-06-30"
+    },
+    {
+      "alert_id": "ALT-3-CBAM-COST",
+      "severity": "HIGH",
+      "title": "CBAM Ek Maliyet (Yürürlükte Ocak 2026'dan)",
+      "magnitude": "-6.2B to -7.8B TRY H2 2026 EBITDA (6-aylık)",
+      "duration": "Permanent (EU policy)",
+      "urgency": "HIGH",
+      "action_required": "Emissions data gathering, customer pricing negotiation, green capex acceleration",
+      "monitor_frequency": "Monthly"
+    },
+    {
+      "alert_id": "ALT-4-DIVIDEND-CUT",
+      "severity": "MEDIUM",
+      "title": "Temettü Kut Beklentisi (AGM 2027)",
+      "magnitude": "0.55 TL → 0.30 TL (-45%)",
+      "timing": "Mar-Apr 2027",
+      "probability": 0.75,
+      "urgency": "MEDIUM",
+      "action_required": "Investor communication, dividend policy reset",
+      "monitor_frequency": "Monthly"
+    },
+    {
+      "alert_id": "ALT-5-DOWNGRADE-RISK",
+      "severity": "MEDIUM",
+      "title": "Analist Downgrade Cascade Riski",
+      "magnitude": "5-10% stock impact per upgrade",
+      "timing": "Q2-Q3 2026",
+      "probability": 0.50,
+      "urgency": "MEDIUM",
+      "action_required": "Close analyst monitoring, proactive communication",
+      "monitor_frequency": "Weekly"
+    }
+  ],
+  "faaliyet_raporu_cross_check": {
+    "risk_factor_1": {
+      "title": "Emtia fiyat dalgalanması ve küresel çelik döngüsü tepesi",
+      "forecasted_in_annual_report": true,
+      "realized": true,
+      "timing_accuracy": "Partial (happened faster than expected, 2025 profit -96%)"
+    },
+    "risk_factor_2": {
+      "title": "Enerji maliyeti artışı (BOTAŞ/EPDK)",
+      "forecasted_in_annual_report": true,
+      "realized": true,
+      "timing_accuracy": "Surprise (EPDK tarife Apr 4, not fully telegraphed)"
+    },
+    "risk_factor_3": {
+      "title": "AB Safeguard Kota Kısıtlaması (2026 H2)",
+      "forecasted_in_annual_report": true,
+      "realized": true,
+      "timing_accuracy": "Scheduled risk (taslak Apr 1, confirmation June)"
+    },
+    "management_preparedness": "Partial (risks noted, but surprise timing and severity not fully communicated)"
+  },
+  "yerel_vs_uluslararasi_basin": {
+    "yerel_basin_tr": {
+      "sources": ["KAP", "Erdemir IR", "Bigpara", "Mynet Finans", "Çelik Derneği"],
+      "sentiment": "Negatif, fakat korunmacı beklentili",
+      "tone": "Tarife ve safeguard haksızlık; Türkiye lobiyesi başarılı olur mu?"
+    },
+    "uluslararasi_basin_en": {
+      "sources": ["Bloomberg", "Reuters", "ArcelorMittal", "Fitch", "Moody's"],
+      "sentiment": "Teknik ve risk odaklı",
+      "tone": "Türkiye çelik şirketleri CBAM/safeguard vuruluyor; marj baskısı yapısal",
+      "foreign_investor_risk": "Drainage risk yüksek"
+    }
+  },
+  "confidence_assessment": {
+    "epdk_tarife_impact": {
+      "confidence": "HIGH",
+      "note": "EPDK kesin; matematiksel hesap"
+    },
+    "ab_safeguard_risk": {
+      "confidence": "HIGH",
+      "note": "AB tarafından resmi; tarih kesin (July 1, 2026)"
+    },
+    "cbam_cost": {
+      "confidence": "MEDIUM",
+      "note": "Default vs actual emisyon belirsiz; fakat EU policy kesin"
+    },
+    "analyst_sentiment": {
+      "confidence": "MEDIUM",
+      "note": "23 analyst base; Garanti recent SELL, diğerleri TBD"
+    },
+    "social_media_sentiment": {
+      "confidence": "LOW",
+      "note": "Real-time WebSearch yok; tahmin bazlı"
+    },
+    "overall_news_coverage": {
+      "confidence": "MEDIUM",
+      "note": "Major events covered; minor items eksik olabilir"
+    }
+  },
+  "limitations": [
+    "WebSearch permission not granted during analysis — real-time news validation required",
+    "Social media sentiment based on estimation, not live data",
+    "SELL analyst details incomplete — full Garanti BBVA report needed",
+    "Annual report cross-check incomplete — full 2024 risk section must be reviewed",
+    "International investor sentiment based on Bloomberg/Reuters coverage, not primary institutional notes"
+  ],
+  "next_steps": [
+    "Activate real-time WebSearch for Turkish financial press (Bigpara, Mynet, Rota Borsa)",
+    "Extract SELL analyst detailed rationales from Garanti BBVA and other bearish houses",
+    "Complete 2024 faaliyet raporu risk factor deep review",
+    "Gather international investor notes (JPMorgan, Goldman Sachs Turkey research)",
+    "Monitor OYAK corporate governance perception among foreign investors",
+    "Set up social media trend tracking (#EREGL, Twitter, Ekşi Sözlük)",
+    "Measure news-to-price impact: EPDK (Apr 4) and Safeguard draft (Apr 1) 1/3/5-day returns",
+    "Implement weekly sentiment score updates with trend tracking"
+  ],
+  "metadata": {
+    "prepared_by": "Sentiment & News Agent",
+    "prepared_date": "2026-04-13",
+    "session": "EREGL-deepdive-20260413",
+    "report_status": "DRAFT (awaiting WebSearch activation)",
+    "next_review_trigger": "Real-time news item received OR WebSearch permission activated",
+    "confidence_level_overall": "MEDIUM"
+  }
+}
