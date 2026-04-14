@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   PlayCircle,
@@ -75,6 +75,45 @@ const modeConfig: Record<
   },
 }
 
+const layerMeta: Record<string, Pick<LayerConfig, 'description' | 'icon'>> = {
+  fundamental: {
+    description: 'Bilanço, gelir tablosu, nakit akışı ve değerleme',
+    icon: BarChart2,
+  },
+  technical: {
+    description: 'Fiyat trendi, hacim, RSI, MACD ve formasyonlar',
+    icon: TrendingUp,
+  },
+  events: {
+    description: 'KAP duyuru analizi ve olay etkisi değerlendirme',
+    icon: Activity,
+  },
+  sector: {
+    description: 'Sektör karşılaştırması ve rekabetçi konum analizi',
+    icon: Building2,
+  },
+  macro: {
+    description: 'Türkiye makroekonomik ortamı ve şirket duyarlılığı',
+    icon: Globe,
+  },
+  valuation: {
+    description: 'DCF, P/E, EV/EBITDA ve karşılaştırmalı değerleme modelleri',
+    icon: DollarSign,
+  },
+  sentiment: {
+    description: 'Haber, sosyal medya ve piyasa duyarlılığı analizi',
+    icon: Heart,
+  },
+  consensus: {
+    description: 'Analist konsensüsü ve hedef fiyat derlemesi',
+    icon: Users,
+  },
+  esg: {
+    description: 'Çevresel, sosyal ve yönetişim değerlendirmesi',
+    icon: Leaf,
+  },
+}
+
 const AnalizBaslat: React.FC = () => {
   const navigate = useNavigate()
   const [ticker, setTicker] = useState('')
@@ -84,70 +123,39 @@ const AnalizBaslat: React.FC = () => {
   const [multiMode, setMultiMode] = useState(false)
   const [multiTickers, setMultiTickers] = useState('')
   const [layers, setLayers] = useState<LayerConfig[]>([
-    {
-      id: 'fundamental',
-      label: 'Temel Analiz',
-      description: 'Bilanço, gelir tablosu, nakit akışı ve değerleme',
-      icon: BarChart2,
-      checked: true,
-    },
-    {
-      id: 'technical',
-      label: 'Teknik Analiz',
-      description: 'Fiyat trendi, hacim, RSI, MACD ve formasyonlar',
-      icon: TrendingUp,
-      checked: true,
-    },
-    {
-      id: 'events',
-      label: 'KAP Olay İstihbaratı',
-      description: 'KAP duyuru analizi ve olay etkisi değerlendirme',
-      icon: Activity,
-      checked: true,
-    },
-    {
-      id: 'sector',
-      label: 'Sektör & Rekabet',
-      description: 'Sektör karşılaştırması ve rekabetçi konum analizi',
-      icon: Building2,
-      checked: true,
-    },
-    {
-      id: 'macro',
-      label: 'Makro Analiz',
-      description: 'Türkiye makroekonomik ortamı ve şirket duyarlılığı',
-      icon: Globe,
-      checked: true,
-    },
-    {
-      id: 'valuation',
-      label: 'Değerleme',
-      description: 'DCF, P/E, EV/EBITDA ve karşılaştırmalı değerleme modelleri',
-      icon: DollarSign,
-      checked: false,
-    },
-    {
-      id: 'sentiment',
-      label: 'Duygu Analizi',
-      description: 'Haber, sosyal medya ve piyasa duyarlılığı analizi',
-      icon: Heart,
-      checked: false,
-    },
-    {
-      id: 'esg',
-      label: 'ESG Analizi',
-      description: 'Çevresel, sosyal ve yönetişim değerlendirmesi',
-      icon: Leaf,
-      checked: false,
-    },
-    {
-      id: 'consensus',
-      label: 'Konsensüs',
-      description: 'Analist konsensüsü ve hedef fiyat derlemesi',
-      icon: Users,
-      checked: false,
-    },
+    { id: 'fundamental', label: 'Temel Analiz', ...layerMeta.fundamental, checked: true },
+    { id: 'technical', label: 'Teknik Analiz', ...layerMeta.technical, checked: true },
+    { id: 'events', label: 'KAP Olay İstihbaratı', ...layerMeta.events, checked: true },
+    { id: 'sector', label: 'Sektör & Rekabet', ...layerMeta.sector, checked: true },
+    { id: 'macro', label: 'Makro Analiz', ...layerMeta.macro, checked: true },
+    { id: 'valuation', label: 'Değerleme', ...layerMeta.valuation, checked: false },
+    { id: 'sentiment', label: 'Duygu Analizi', ...layerMeta.sentiment, checked: false },
+    { id: 'consensus', label: 'Konsensüs', ...layerMeta.consensus, checked: false },
+    { id: 'esg', label: 'ESG Analizi', ...layerMeta.esg, checked: false },
   ])
+
+  useEffect(() => {
+    let cancelled = false
+    api.analysisConfig()
+      .then((config) => {
+        if (cancelled) return
+        setLayers((prev) => {
+          const checkedMap = new Map(prev.map((layer) => [layer.id, layer.checked]))
+          return config.layers.map((layer) => ({
+            id: layer.id,
+            label: layer.label,
+            description: layerMeta[layer.id]?.description || layer.label,
+            icon: layerMeta[layer.id]?.icon || Layers,
+            checked: checkedMap.get(layer.id) ?? ['fundamental', 'technical', 'events', 'sector', 'macro'].includes(layer.id),
+          }))
+        })
+      })
+      .catch(() => {})
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const toggleLayer = (id: string) => {
     setLayers((prev) =>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FileText, Search, Download, X, Copy, Check, Calendar, Building2, Trash2 } from 'lucide-react'
-import { api } from '../api'
+import { api, getApiBaseUrl, getApiHeaders } from '../api'
 import { formatDate, formatDateTime } from '../lib/dateUtils'
 
 const Raporlar: React.FC = () => {
@@ -67,7 +67,9 @@ const Raporlar: React.FC = () => {
     const ticker = selected.ticker || selected.title?.split(' ')[0] || 'RAPOR'
     try {
       // Try to download the pre-generated PDF from the server
-      const response = await fetch(`http://localhost:4000/api/reports/${ticker}/pdf`)
+      const response = await fetch(`${getApiBaseUrl()}/reports/${ticker}/pdf`, {
+        headers: getApiHeaders(),
+      })
       if (response.ok) {
         const blob = await response.blob()
         const url = URL.createObjectURL(blob)
