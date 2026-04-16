@@ -1,5 +1,6 @@
 import typer
 
+from financex.cli.analyze import analyze_app
 from financex.cli.data import data_app
 from financex.cli.db import db_app
 from financex.cli.kap import kap_app
@@ -23,6 +24,7 @@ app.add_typer(kap_app, name="kap")
 app.add_typer(data_app, name="data")
 app.add_typer(parse_app, name="parse")
 app.add_typer(reconcile_app, name="reconcile")
+app.add_typer(analyze_app, name="analyze")
 
 
 @app.command()
