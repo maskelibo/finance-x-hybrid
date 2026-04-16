@@ -73,12 +73,12 @@ export interface LineSeries {
 export function lineChart(xLabels: string[], series: LineSeries[], title = ''): string {
   if (xLabels.length === 0 || series.every(s => s.values.every(v => v == null))) return '';
 
-  const width = 860;
-  const height = 360;
-  const padL = 80;
-  const padR = 30;
-  const padT = title ? 50 : 25;
-  const padB = 75;
+  const width = 900;
+  const height = 420;
+  const padL = 90;
+  const padR = 40;
+  const padT = title ? 60 : 30;
+  const padB = 90;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
 
@@ -97,13 +97,26 @@ export function lineChart(xLabels: string[], series: LineSeries[], title = ''): 
   const yScale = (v: number) => padT + plotH - ((v - yLo) / (yHi - yLo)) * plotH;
 
   const svgParts: string[] = [];
-  svgParts.push(`<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:${width}px;height:auto;background:${COLORS.bgAlt};border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;">`);
+  svgParts.push(`<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:${width}px;height:auto;background:${COLORS.bg};border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);font-family:-apple-system,'Segoe UI',sans-serif;">`);
 
-  // Background panel
-  svgParts.push(`<rect x="0" y="0" width="${width}" height="${height}" fill="${COLORS.bg}" rx="8"/>`);
-  svgParts.push(`<rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" fill="${COLORS.bgAlt}" stroke="${COLORS.grid}" stroke-width="1"/>`);
+  // Defs: gradient + drop shadow filter
+  svgParts.push(`<defs>
+    <linearGradient id="chartBgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="${COLORS.bgAlt}"/>
+    </linearGradient>
+    <filter id="chartShadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`);
 
-  if (title) svgParts.push(`<text x="${width/2}" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="${COLORS.text}">${escapeSvg(title)}</text>`);
+  // Background panel with subtle gradient
+  svgParts.push(`<rect x="0" y="0" width="${width}" height="${height}" fill="url(#chartBgGrad)" rx="12"/>`);
+  svgParts.push(`<rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" fill="${COLORS.bg}" stroke="${COLORS.grid}" stroke-width="1" rx="4"/>`);
+
+  if (title) svgParts.push(`<text x="${width/2}" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="${COLORS.text}" letter-spacing="-0.3">${escapeSvg(title)}</text>`);
 
   // Y gridlines + labels with enhanced styling
   const yTicks = 6;
@@ -137,10 +150,11 @@ export function lineChart(xLabels: string[], series: LineSeries[], title = ''): 
       pen = true;
     });
     // Line with subtle drop shadow
-    svgParts.push(`<path d="${path.trim()}" stroke="${color}" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round" opacity="0.92"/>`);
+    svgParts.push(`<path d="${path.trim()}" stroke="${color}" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round" filter="url(#chartShadow)"/>`);
     pts.forEach(p => {
       if (p) {
-        svgParts.push(`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="5" fill="${COLORS.bg}" stroke="${color}" stroke-width="2.5"/>`);
+        svgParts.push(`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="6" fill="${COLORS.bg}" stroke="${color}" stroke-width="3" filter="url(#chartShadow)"/>`);
+        svgParts.push(`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.5" fill="${color}"/>`);
       }
     });
   });

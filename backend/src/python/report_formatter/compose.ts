@@ -121,9 +121,9 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
   const metrics = arrayFrom(fa?.highlights ?? fa?.metrics ?? []);
   const highlights = metrics.slice(0, 10).map(h => ({
-    label: String(h.label ?? h.code ?? ''),
+    label: translateMetricLabel(String(h.label ?? h.code ?? '')),
     value_formatted: formatValueByCode(String(h.code ?? ''), h.value),
-    narrative_hint: String(h.narrative_hint ?? ''),
+    narrative_hint: translateMetricHint(String(h.code ?? ''), String(h.narrative_hint ?? '')),
   }));
 
   // Extract scoring metrics for dedicated score cards
@@ -280,14 +280,23 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
   // ----- VI. Makro -----
 
+  // macro_analysis JSON is nested (rates.policy_rate, fx.usd_try vs.).
+  // Previous flat-key lookup (macro?.usd_try) returned undefined and the
+  // table rendered em-dashes across the board.
+  const macroFx = (macro?.fx as Record<string, unknown> | null) ?? {};
+  const macroRates = (macro?.rates as Record<string, unknown> | null) ?? {};
+  const macroInflation = (macro?.inflation as Record<string, unknown> | null) ?? {};
+  const macroGrowth = (macro?.growth as Record<string, unknown> | null) ?? {};
+  const macroEquity = (macro?.equity as Record<string, unknown> | null) ?? {};
   const macroContext = {
-    usd_try: formatNumber(macro?.usd_try, 4, ' TL'),
-    eur_try: formatNumber(macro?.eur_try, 4, ' TL'),
-    policy_rate: formatPctFromMacro(macro?.tcmb_policy_rate),
-    tcmb_10y: formatPctFromMacro(macro?.tcmb_10y_bond_yield),
-    cpi_yoy: formatPctFromMacro(macro?.cpi_yoy),
-    gdp_yoy: formatPctFromMacro(macro?.gdp_yoy),
-    bist100_ytd_return: formatPctFromMacro(macro?.bist100_ytd_return),
+    usd_try: formatNumber(macroFx.usd_try ?? macro?.usd_try, 4, ' TL'),
+    eur_try: formatNumber(macroFx.eur_try ?? macro?.eur_try, 4, ' TL'),
+    policy_rate: formatPctFromMacro(macroRates.policy_rate ?? macro?.tcmb_policy_rate),
+    tcmb_10y: formatPctFromMacro(macroRates.tcmb_10y ?? macro?.tcmb_10y_bond_yield),
+    cpi_yoy: formatPctFromMacro(macroInflation.cpi_yoy ?? macro?.cpi_yoy),
+    gdp_yoy: formatPctFromMacro(macroGrowth.gdp_yoy ?? macro?.gdp_yoy),
+    bist100_ytd_return: formatPctFromMacro(macroEquity.bist100_ytd_return ?? macro?.bist100_ytd_return),
+    bist100_level: formatNumber(macroEquity.bist100_level, 0),
   };
 
   // ----- VII. Teknik -----
@@ -1006,17 +1015,63 @@ function mdToHtml(md: string): string {
     text = text.replace(re, replacement);
   }
 
-  // Convert markdown tables to HTML tables.
-  text = text.replace(/(?:^|\n)((?:\|[^\n]+\|\n)+\|[\s|:-]+\|(?:\n\|[^\n]+\|)+)/g, (_, block) => {
-    const rows = block.trim().split('\n').map((r: string) => r.trim());
-    if (rows.length < 2) return block;
-    const sep = rows[1];
-    if (!/^\|[\s|:-]+\|$/.test(sep)) return block;
-    const headerCells = rows[0].slice(1, -1).split('|').map((c: string) => c.trim());
-    const bodyRows = rows.slice(2).map((r: string) => r.slice(1, -1).split('|').map((c: string) => c.trim()));
-    const thead = `<thead><tr>${headerCells.map((c: string) => `<th>${escapeHtmlLight(c)}</th>`).join('')}</tr></thead>`;
-    const tbody = `<tbody>${bodyRows.map((cells: string[]) => `<tr>${cells.map(c => `<td>${escapeHtmlLight(c)}</td>`).join('')}</tr>`).join('')}</tbody>`;
-    return `\n<table>${thead}${tbody}</table>\n`;
+  // Convert markdown tables to HTML tables — tolerant parser that
+  // handles both line-broken tables and Claude's inline squished
+  // tables (| cell | cell | cell |\n| --- | --- | --- |\n | ... |).
+  // Split into lines and collect consecutive lines that start with |.
+  {
+    const lines = text.split('\n');
+    const out: string[] = [];
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+        // Start of potential table: scan ahead
+        const block: string[] = [];
+        while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+          block.push(lines[i].trim());
+          i++;
+        }
+        // Need at least header + separator + 1 body row
+        if (block.length >= 3 && /^\|[\s|:\-]+\|$/.test(block[1])) {
+          const headerCells = block[0].slice(1, -1).split('|').map(c => c.trim());
+          const bodyRows = block.slice(2).map(r => r.slice(1, -1).split('|').map(c => c.trim()));
+          const thead = `<thead><tr>${headerCells.map(c => `<th>${escapeHtmlLight(c)}</th>`).join('')}</tr></thead>`;
+          const tbody = `<tbody>${bodyRows.map(cells => `<tr>${cells.map(c => `<td>${escapeHtmlLight(c)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+          out.push(`<table>${thead}${tbody}</table>`);
+        } else {
+          // Fallback: emit verbatim (preserves original content)
+          out.push(...block);
+        }
+      } else {
+        out.push(line);
+        i++;
+      }
+    }
+    text = out.join('\n');
+  }
+
+  // Some Claude outputs squeeze the whole table onto one paragraph
+  // with \n\n instead of \n between rows. Split and retry: look for
+  // "| ... | ... |" patterns inside a single paragraph.
+  text = text.replace(/(\|[^|\n]+\|(?:\s*\|[^|\n]+\|)+)\s*(\|[\s|:\-]+\|)\s*(\|[^|\n]+\|(?:\s*\|[^|\n]+\|)*)/g, (_, header, sep, body) => {
+    void sep;
+    // header may itself contain multiple |...| cells separated by inline spaces.
+    // Split the body into row groups: each sequence of "| ... |" becomes a row.
+    const allRows = [header, body].join(' ');
+    const rows = allRows.match(/\|[^|\n]+\|(?:\s*\|[^|\n]+\|)+/g) ?? [];
+    if (rows.length < 2) return _;
+    const splitRow = (r: string): string[] => {
+      // Split where a column boundary happens: "|cell1|cell2|"
+      const cells = r.split('|').map(c => c.trim()).filter(c => c.length > 0);
+      return cells;
+    };
+    const headerCells = splitRow(rows[0] ?? '');
+    const bodyRowCells = rows.slice(1).map(r => splitRow(r ?? ''));
+    if (headerCells.length === 0 || !bodyRowCells.every(r => r.length === headerCells.length)) return _;
+    const thead = `<thead><tr>${headerCells.map(c => `<th>${escapeHtmlLight(c)}</th>`).join('')}</tr></thead>`;
+    const tbody = `<tbody>${bodyRowCells.map(cells => `<tr>${cells.map(c => `<td>${escapeHtmlLight(c)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    return `<table>${thead}${tbody}</table>`;
   });
 
   // Convert H1-H4 headings.
@@ -1755,15 +1810,14 @@ function formatValueByCode(code: string, value: unknown): string {
 
 function formatNumber(v: unknown, decimals: number, suffix = ''): string {
   const n = numOrNull(v);
-  return n != null ? n.toLocaleString('tr-TR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + suffix : '—';
+  return n != null ? n.toLocaleString('tr-TR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + suffix : 'Raporlanmadı';
 }
 
 
 function formatPctFromMacro(v: unknown): string {
-  if (v == null || v === '') return '—';
+  if (v == null || v === '') return 'Raporlanmadı';
   const n = numOrNull(v);
-  if (n == null) return String(v);
-  // Macro values sometimes come as 0.055 (decimal), sometimes 5.5 (percent).
+  if (n == null) return 'Raporlanmadı';
   const adj = n < 1 ? n * 100 : n;
   return formatPct(adj, 2);
 }
@@ -1814,4 +1868,60 @@ function translateSentiment(v: unknown): string {
   if (s === 'negative') return 'Negatif';
   if (s === 'neutral') return 'Nötr';
   return s || '—';
+}
+
+
+const METRIC_LABEL_TR: Record<string, string> = {
+  'Gross margin': 'Brüt Marj',
+  'EBITDA margin': 'FAVÖK Marjı',
+  'Net margin': 'Net Marj',
+  'Return on equity': 'Özsermaye Kârlılığı (ROE)',
+  'Return on assets': 'Aktif Kârlılığı (ROA)',
+  'Return on capital employed': 'Kullanılan Sermaye Kârlılığı (ROCE)',
+  'Net debt': 'Net Borç',
+  'Net debt / EBITDA': 'Net Borç / FAVÖK',
+  'Cash conversion cycle': 'Nakit Dönüşüm Süresi',
+  'Current ratio': 'Cari Oran',
+  'Altman Z-score': 'Altman Z Skoru',
+  'Piotroski F-score': 'Piotroski F Skoru',
+  'Net Interest Margin': 'Net Faiz Marjı (NIM)',
+  'Banking ROE': 'Bankacılık ROE',
+  'Banking ROA': 'Bankacılık ROA',
+  'Cost/Income': 'Maliyet / Gelir',
+  'Loan-loss provisions / NII': 'Kredi Kaybı Karşılıkları / NII',
+};
+
+
+function translateMetricLabel(label: string): string {
+  return METRIC_LABEL_TR[label] ?? label;
+}
+
+
+/** Convert engine-generated English narrative hint into Turkish.
+ *  The engine seeds highlights with a generic interpretation line;
+ *  we provide a metric-specific Turkish replacement. */
+function translateMetricHint(code: string, originalHint: string): string {
+  const tr: Record<string, string> = {
+    GROSS_MARGIN: 'Sektör eşiği: sanayi için %20 altı düşük, %30 üstü güçlü. Ürün karması ve maliyet yönetiminin birleşik göstergesi.',
+    EBITDA_MARGIN: 'Operasyonel verimliliğin temel göstergesi. Sanayi için %12-15 makul, %20 üstü güçlü.',
+    NET_MARGIN: 'Finansman giderleri ve vergi etkisini de içeren nihai kârlılık. Negatif işaret P&L sıkıntısı.',
+    ROE: 'Türk lirası bazında sermaye maliyeti ~%30; üzeri değer yaratımı, altı değer erozyonu işareti.',
+    ROA: 'Aktiflerin nakit üretme verimliliği. %5 üzeri iyi, %2 altı verimsiz aktif kullanımına işaret.',
+    ROCE: 'Kullanılan toplam sermayenin getirisi; WACC karşılaştırması için en doğru metrik.',
+    CCC: 'Pozitif CCC operasyonel sermaye bağlanması, negatif CCC tedarikçi-finanslı büyüme (nadir ve güçlü).',
+    CURRENT_RATIO: '1.5x üzeri sağlıklı likidite tamponu, 1.0 altı kısa vadeli baskı.',
+    NET_DEBT: 'Finansal borç − nakit; özsermayeye göre oran yatırımcı için ek okuma sağlar.',
+    NET_DEBT_TO_EBITDA: '<2x sağlıklı, 2-3.5x orta, 3.5-5x yakın izleme, >5x distress eşiği.',
+    ALTMAN_Z: '>3 güvenli, 1.8-3 gri bölge, <1.8 iflas riski eşiği (sanayi için).',
+    PIOTROSKI_F: '7-9 güçlü finansal sağlık, 4-6 orta, 0-3 zayıf (0-9 skalası).',
+    NIM: 'Bankacılıkta net faiz geliri / faiz getirili aktifler. TCMB sıkılaşması genelde yükseltir.',
+    BANK_ROE: 'Bankacılıkta %15+ güçlü, %20+ liderlik seviyesi (Türk bankaları yüksek enflasyon ortamında %25+).',
+    BANK_ROA: '%1.5+ güçlü bankacılık verimliliği, %1 altı zayıf aktif kullanımı.',
+    COST_TO_INCOME: '<%40 verimli, %40-50 normal, >%50 maliyet baskısı altında bir banka.',
+  };
+  const codeUpper = code.toUpperCase();
+  if (tr[codeUpper]) return tr[codeUpper];
+  // If the original hint is English and we have no translation, suppress it.
+  if (/^[A-Za-z\s.\-()<>%0-9,/]+$/.test(originalHint.trim())) return '';
+  return originalHint;
 }
