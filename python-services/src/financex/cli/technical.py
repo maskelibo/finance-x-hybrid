@@ -38,3 +38,42 @@ def analyze(
     bars = [OhlcvBar.model_validate(item) for item in payload]
     indicators = compute_technical(bars)
     typer.echo(indicators.model_dump_json())
+
+
+@technical_app.command("fetch")
+def fetch(
+    ticker: str = typer.Argument(..., help="BIST ticker, e.g. KCHOL."),
+    exchange: str = typer.Option("BIST", "--exchange", "-e"),
+    interval: str = typer.Option(
+        "daily", "--interval", "-i", help="1m | 5m | 15m | 30m | 1h | daily | weekly | monthly"
+    ),
+    n_bars: int = typer.Option(365, "--bars", "-n", min=20, max=5000),
+    output: str = typer.Option(
+        "indicators",
+        "--output",
+        "-o",
+        help="'indicators' → emit TechnicalIndicators (default). "
+        "'bars' → emit raw OHLCV list.",
+    ),
+) -> None:
+    """Fetch bars from TradingView and emit either raw bars or indicators."""
+    from financex.crawlers.tradingview import TradingViewClient, TradingViewFetchParams
+
+    client = TradingViewClient()
+    bars = client.fetch(
+        TradingViewFetchParams(
+            symbol=ticker.upper(), exchange=exchange, interval=interval, n_bars=n_bars
+        )
+    )
+    if not bars:
+        typer.echo(f"error: no data returned for {exchange}:{ticker}", err=True)
+        raise typer.Exit(code=3)
+
+    if output == "bars":
+        typer.echo(json.dumps([b.model_dump(mode="json") for b in bars], default=str))
+    elif output == "indicators":
+        indicators = compute_technical(bars)
+        typer.echo(indicators.model_dump_json())
+    else:
+        typer.echo(f"error: unknown --output {output!r} (expected 'bars' or 'indicators')", err=True)
+        raise typer.Exit(code=2)
