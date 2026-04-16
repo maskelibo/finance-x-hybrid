@@ -172,6 +172,11 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     ['net_change_in_cash', 'Nakit Değişimi (Net)'],
   ]);
 
+  // ----- III-B. 5 Yıllık Trend Tablosu (parse_standardization) -----
+
+  const standardizedStatements = arrayFrom(parsed?.standardized_statements ?? []);
+  const multiYear = buildMultiYearTrend(standardizedStatements);
+
   // ----- IV. Değerleme -----
 
   const dcfFromEngine = ((val?.engine_snapshot as Record<string, unknown> | null)?.dcf) as Record<string, unknown> | null | undefined;
@@ -349,6 +354,12 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     canonical_balance_sheet: canonicalBalanceSheet,
     canonical_income_statement: canonicalIncomeStatement,
     canonical_cash_flow: canonicalCashFlow,
+    multi_year_years: multiYear.years,
+    multi_year_revenue: multiYear.revenue_row as unknown as TemplateValue,
+    multi_year_balance: multiYear.balance_row as unknown as TemplateValue,
+    multi_year_cashflow: multiYear.cashflow_row as unknown as TemplateValue,
+    multi_year_has_data: multiYear.has_data,
+    multi_year_count: multiYear.years.length,
 
     // Section IV
     valuation_warnings: valuationWarnings,
@@ -409,6 +420,8 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     narrative_risks: narrativeBlocks.risks ?? '',
     narrative_closing: narrativeBlocks.closing ?? '',
     narrative_investment_thesis: narrativeBlocks.investment_thesis ?? narrativeBlocks.closing ?? '',
+    narrative_investments: narrativeBlocks.investments ?? '',
+    narrative_dividend: narrativeBlocks.dividend ?? '',
   };
 }
 
@@ -417,6 +430,87 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
 function arrayFrom(v: unknown): Array<Record<string, unknown>> {
   return Array.isArray(v) ? (v as Array<Record<string, unknown>>) : [];
+}
+
+
+interface MultiYearRow {
+  label: string;
+  values: string[];           // aligned with years[]
+  trend_hint?: string;
+}
+
+interface MultiYearTrend {
+  years: string[];            // ['2021','2022','2023','2024','2025']
+  revenue_row: MultiYearRow[];
+  balance_row: MultiYearRow[];
+  cashflow_row: MultiYearRow[];
+  has_data: boolean;
+}
+
+
+/** Build a 5-year pivot from parse_standardization.standardized_statements.
+ *  Annual rows pivoted by metric so the template can render
+ *  Metric | 2021 | 2022 | 2023 | 2024 | 2025 tables. */
+function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiYearTrend {
+  // Pick annual periods only (FY-YYYY) and sort ascending.
+  const annual = statements
+    .filter(s => {
+      const lbl = String(s.period_label ?? '');
+      return /^FY-\d{4}$/.test(lbl);
+    })
+    .sort((a, b) => Number(a.year ?? 0) - Number(b.year ?? 0));
+
+  if (annual.length === 0) return { years: [], revenue_row: [], balance_row: [], cashflow_row: [], has_data: false };
+
+  // Take last 5 years.
+  const recent = annual.slice(-5);
+  const years = recent.map(s => String(s.year ?? s.period_label ?? ''));
+
+  function pivotRow(
+    section: 'balance_sheet' | 'income_statement' | 'cash_flow',
+    key: string,
+    label: string,
+  ): MultiYearRow {
+    const values = recent.map(s => {
+      const block = (s[section] as Record<string, unknown> | null | undefined) ?? {};
+      const v = block[key];
+      return v != null ? formatTRY(v as number | string, 0) : '—';
+    });
+    return { label, values };
+  }
+
+  const revenueRow: MultiYearRow[] = [
+    pivotRow('income_statement', 'revenue', 'Hasılat'),
+    pivotRow('income_statement', 'gross_profit', 'Brüt Kar'),
+    pivotRow('income_statement', 'operating_income', 'Faaliyet Karı'),
+    pivotRow('income_statement', 'ebitda', 'FAVÖK'),
+    pivotRow('income_statement', 'net_income', 'Net Kar'),
+  ].filter(r => r.values.some(v => v !== '—'));
+
+  const balanceRow: MultiYearRow[] = [
+    pivotRow('balance_sheet', 'total_assets', 'Toplam Varlıklar'),
+    pivotRow('balance_sheet', 'cash_and_equivalents', 'Nakit ve Benzerleri'),
+    pivotRow('balance_sheet', 'inventories', 'Stoklar'),
+    pivotRow('balance_sheet', 'ppe_net', 'Maddi Duran Varlıklar'),
+    pivotRow('balance_sheet', 'short_term_debt', 'KV Finansal Borç'),
+    pivotRow('balance_sheet', 'long_term_debt', 'UV Finansal Borç'),
+    pivotRow('balance_sheet', 'total_equity', 'Toplam Özsermaye'),
+  ].filter(r => r.values.some(v => v !== '—'));
+
+  const cashflowRow: MultiYearRow[] = [
+    pivotRow('cash_flow', 'operating_cash_flow', 'Operasyonel Nakit'),
+    pivotRow('cash_flow', 'capex', 'CAPEX'),
+    pivotRow('cash_flow', 'free_cash_flow', 'Serbest Nakit'),
+    pivotRow('cash_flow', 'dividends_paid', 'Temettü Ödemesi'),
+  ].filter(r => r.values.some(v => v !== '—'));
+
+  return {
+    years,
+    revenue_row: revenueRow,
+    balance_row: balanceRow,
+    cashflow_row: cashflowRow,
+    has_data: revenueRow.length + balanceRow.length + cashflowRow.length > 0,
+  };
 }
 
 
