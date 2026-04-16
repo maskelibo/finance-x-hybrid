@@ -1,0 +1,177 @@
+{
+  "$defs": {
+    "Confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low",
+        "unknown"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    }
+  },
+  "$id": "https://finance-x.local/schemas/KapEvent.json",
+  "description": "One KAP disclosure. Minimal required fields; rich optional ones.\n\nRequired: disclosure_id, ticker, announced_at, title, url.",
+  "properties": {
+    "announced_at": {
+      "format": "date-time",
+      "title": "Announced At",
+      "type": "string"
+    },
+    "category": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "KAP category, e.g. 'Özel Durum Açıklaması'.",
+      "title": "Category"
+    },
+    "classification_confidence": {
+      "$ref": "#/$defs/Confidence",
+      "default": "unknown"
+    },
+    "disclosure_id": {
+      "description": "KAP's canonical ID for the disclosure.",
+      "title": "Disclosure Id",
+      "type": "string"
+    },
+    "event_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "One of 15: debt_issuance, capex_decision, management_change, ...",
+      "title": "Event Type"
+    },
+    "full_text": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Full Text"
+    },
+    "impact_pct_equity": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Impact Pct Equity"
+    },
+    "impact_pct_revenue": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Impact Pct Revenue"
+    },
+    "is_material": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Is Material"
+    },
+    "quantitative_impact_try": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quantitative Impact Try"
+    },
+    "subcategory": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Subcategory"
+    },
+    "summary": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Summary"
+    },
+    "ticker": {
+      "title": "Ticker",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "url": {
+      "title": "Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "disclosure_id",
+    "ticker",
+    "announced_at",
+    "title",
+    "url"
+  ],
+  "title": "KapEvent",
+  "type": "object",
+  "x-financex-version": "1.0.0"
+}

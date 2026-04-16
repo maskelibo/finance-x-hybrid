@@ -1,0 +1,3809 @@
+{
+  "$defs": {
+    "AnalystConsensus": {
+      "description": "Aggregated broker view. Python computes means/medians; LLM later\nsummarizes SELL rationales.",
+      "properties": {
+        "count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Count"
+        },
+        "distribution_buy": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distribution Buy"
+        },
+        "distribution_hold": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distribution Hold"
+        },
+        "distribution_sell": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distribution Sell"
+        },
+        "reports": {
+          "items": {
+            "$ref": "#/$defs/AnalystReport"
+          },
+          "title": "Reports",
+          "type": "array"
+        },
+        "revision_trend": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "'rising' | 'falling' | 'stable'",
+          "title": "Revision Trend"
+        },
+        "target_price_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Price High"
+        },
+        "target_price_low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Price Low"
+        },
+        "target_price_mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Price Mean"
+        },
+        "target_price_median": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Price Median"
+        },
+        "target_price_stddev": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Price Stddev"
+        },
+        "upside_vs_last_close_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upside Vs Last Close Pct"
+        }
+      },
+      "title": "AnalystConsensus",
+      "type": "object"
+    },
+    "AnalystReport": {
+      "description": "One broker's note.",
+      "properties": {
+        "analyst_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Analyst Name"
+        },
+        "broker": {
+          "title": "Broker",
+          "type": "string"
+        },
+        "currency": {
+          "default": "TRY",
+          "title": "Currency",
+          "type": "string"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "recommendation": {
+          "$ref": "#/$defs/Recommendation"
+        },
+        "report_date": {
+          "format": "date",
+          "title": "Report Date",
+          "type": "string"
+        },
+        "target_price": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Price"
+        },
+        "upside_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upside Pct"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "broker",
+        "report_date",
+        "recommendation"
+      ],
+      "title": "AnalystReport",
+      "type": "object"
+    },
+    "BalanceSheet": {
+      "description": "Single-period balance sheet in reporting currency.",
+      "properties": {
+        "cash_and_equivalents": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cash And Equivalents"
+        },
+        "current_assets": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current Assets"
+        },
+        "current_liabilities": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current Liabilities"
+        },
+        "goodwill": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Goodwill"
+        },
+        "intangibles": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Intangibles"
+        },
+        "inventories": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inventories"
+        },
+        "investments": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Investments"
+        },
+        "long_term_debt": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Long Term Debt"
+        },
+        "minority_interest": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minority Interest"
+        },
+        "non_current_assets": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Non Current Assets"
+        },
+        "non_current_liabilities": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Non Current Liabilities"
+        },
+        "other_current_assets": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Other Current Assets"
+        },
+        "parent_equity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Equity"
+        },
+        "ppe_net": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Property, plant & equipment, net of depreciation.",
+          "title": "Ppe Net"
+        },
+        "short_term_debt": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Short Term Debt"
+        },
+        "total_assets": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Monetary amount, full precision.",
+          "title": "Total Assets"
+        },
+        "total_equity": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Monetary amount, full precision.",
+          "title": "Total Equity"
+        },
+        "total_liabilities": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Monetary amount, full precision.",
+          "title": "Total Liabilities"
+        },
+        "trade_payables": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trade Payables"
+        },
+        "trade_receivables": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trade Receivables"
+        }
+      },
+      "required": [
+        "total_assets",
+        "total_liabilities",
+        "total_equity"
+      ],
+      "title": "BalanceSheet",
+      "type": "object"
+    },
+    "BrandIdentity": {
+      "description": "Visual identity extracted from the company's annual report cover.\n\nAll optional — report_formatter falls back to a neutral Finance X palette\nif nothing is supplied.",
+      "properties": {
+        "accent_color_hex": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Accent Color Hex"
+        },
+        "font_family": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Font Family"
+        },
+        "logo_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Logo Url"
+        },
+        "primary_color_hex": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Primary Color Hex"
+        },
+        "secondary_color_hex": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Secondary Color Hex"
+        },
+        "source_page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Page in the annual report the identity was lifted from.",
+          "title": "Source Page"
+        },
+        "tagline": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tagline"
+        }
+      },
+      "title": "BrandIdentity",
+      "type": "object"
+    },
+    "CashFlowStatement": {
+      "description": "Single-period cash flow statement in reporting currency.",
+      "properties": {
+        "capex": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Capex"
+        },
+        "dividends_paid": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dividends Paid"
+        },
+        "financing_cash_flow": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Financing Cash Flow"
+        },
+        "free_cash_flow": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Free Cash Flow"
+        },
+        "fx_impact": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fx Impact"
+        },
+        "investing_cash_flow": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Investing Cash Flow"
+        },
+        "net_borrowing": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Net Borrowing"
+        },
+        "net_change_in_cash": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Net Change In Cash"
+        },
+        "operating_cash_flow": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Monetary amount, full precision.",
+          "title": "Operating Cash Flow"
+        }
+      },
+      "required": [
+        "operating_cash_flow"
+      ],
+      "title": "CashFlowStatement",
+      "type": "object"
+    },
+    "CbamExposure": {
+      "description": "CBAM / ETS carbon cost exposure — material for steel, refinery, cement filers.",
+      "properties": {
+        "annual_cbam_cost_eur_base": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Python-computed base-case cost assuming current certificate price.",
+          "title": "Annual Cbam Cost Eur Base"
+        },
+        "annual_ets_cost_eur_base": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Annual Ets Cost Eur Base"
+        },
+        "cbam_default_intensity": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Default tCO2/ton product assumed by EU if unverified.",
+          "title": "Cbam Default Intensity"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "scope_1_tco2": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scope 1 Tco2"
+        },
+        "scope_2_tco2": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scope 2 Tco2"
+        },
+        "scope_3_tco2": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scope 3 Tco2"
+        }
+      },
+      "title": "CbamExposure",
+      "type": "object"
+    },
+    "CompanyInfo": {
+      "description": "Identity block. Required fields must be known before a package is valid.",
+      "properties": {
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "employees": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Employees"
+        },
+        "founded_year": {
+          "anyOf": [
+            {
+              "maximum": 2100,
+              "minimum": 1800,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Founded Year"
+        },
+        "industry_detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Finer sub-sector, e.g. 'integrated steel'.",
+          "title": "Industry Detail"
+        },
+        "is_holding": {
+          "default": false,
+          "description": "If True, SOTP valuation is mandatory downstream.",
+          "title": "Is Holding",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "Legal name, e.g. 'Koç Holding A.Ş.'.",
+          "title": "Name",
+          "type": "string"
+        },
+        "sector": {
+          "description": "One of: holding, steel, refinery, banking, telecom, aviation, retail, defense, energy, other.",
+          "title": "Sector",
+          "type": "string"
+        },
+        "subsidiaries": {
+          "items": {
+            "$ref": "#/$defs/Subsidiary"
+          },
+          "title": "Subsidiaries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "sector"
+      ],
+      "title": "CompanyInfo",
+      "type": "object"
+    },
+    "Confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low",
+        "unknown"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "Currency": {
+      "enum": [
+        "TRY",
+        "USD",
+        "EUR"
+      ],
+      "title": "Currency",
+      "type": "string"
+    },
+    "DcfResult": {
+      "properties": {
+        "enterprise_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Enterprise Value"
+        },
+        "fair_value_per_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fair Value Per Share"
+        },
+        "pv_fcf": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Pv Fcf",
+          "type": "array"
+        },
+        "sensitivity": {
+          "items": {
+            "$ref": "#/$defs/DcfSensitivityCell"
+          },
+          "title": "Sensitivity",
+          "type": "array"
+        },
+        "terminal_growth": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Terminal Growth"
+        },
+        "terminal_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Terminal Value"
+        },
+        "wacc": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wacc"
+        }
+      },
+      "title": "DcfResult",
+      "type": "object"
+    },
+    "DcfSensitivityCell": {
+      "properties": {
+        "fair_value_per_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Fair Value Per Share"
+        },
+        "terminal_growth": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Terminal Growth"
+        },
+        "wacc": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Wacc"
+        }
+      },
+      "required": [
+        "wacc",
+        "terminal_growth",
+        "fair_value_per_share"
+      ],
+      "title": "DcfSensitivityCell",
+      "type": "object"
+    },
+    "EngineOutput": {
+      "description": "Canonical engine output — consumed by valuation_agent, strategic_synthesis,\nfinal_summary, report_formatter.",
+      "properties": {
+        "computed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Computed At"
+        },
+        "dcf": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcfResult"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ratios": {
+          "$ref": "#/$defs/EngineRatios"
+        },
+        "scores": {
+          "$ref": "#/$defs/EngineScores"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "title": "EngineOutput",
+      "type": "object"
+    },
+    "EngineRatios": {
+      "description": "All derived ratios. None means not computable with the given inputs.",
+      "properties": {
+        "acid_test": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "capex_to_ebitda": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ccc": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "current_ratio": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dio": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dpo": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dso": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ebitda_margin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "fcf": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "gross_margin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "interest_burden": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "interest_coverage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "net_debt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "net_debt_to_ebitda": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "net_margin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "nwc_to_revenue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ocf_to_ebitda": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "opex_to_revenue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roa": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roce": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roe": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roic": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "EngineRatios",
+      "type": "object"
+    },
+    "EngineScores": {
+      "properties": {
+        "altman_z": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "piotroski_f": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "EngineScores",
+      "type": "object"
+    },
+    "EquityChange": {
+      "description": "Statement of changes in equity — summary, not full rollforward.",
+      "properties": {
+        "capital_increase": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Capital Increase"
+        },
+        "closing_equity": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Monetary amount, full precision.",
+          "title": "Closing Equity"
+        },
+        "dividends_distributed": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dividends Distributed"
+        },
+        "net_income_to_equity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Net Income To Equity"
+        },
+        "opening_equity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Opening Equity"
+        },
+        "other_comprehensive_income": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Other Comprehensive Income"
+        }
+      },
+      "required": [
+        "closing_equity"
+      ],
+      "title": "EquityChange",
+      "type": "object"
+    },
+    "EsgData": {
+      "description": "All-optional block. LLM later adds E/S/G scores (1-10) and greenwashing judgment.",
+      "properties": {
+        "cbam": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CbamExposure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "external_ratings": {
+          "items": {
+            "$ref": "#/$defs/ExternalEsgRating"
+          },
+          "title": "External Ratings",
+          "type": "array"
+        },
+        "greenwashing_flag": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Greenwashing Flag"
+        },
+        "score_e": {
+          "anyOf": [
+            {
+              "maximum": 10.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score E"
+        },
+        "score_g": {
+          "anyOf": [
+            {
+              "maximum": 10.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score G"
+        },
+        "score_overall": {
+          "anyOf": [
+            {
+              "maximum": 10.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score Overall"
+        },
+        "score_s": {
+          "anyOf": [
+            {
+              "maximum": 10.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score S"
+        }
+      },
+      "title": "EsgData",
+      "type": "object"
+    },
+    "ExternalEsgRating": {
+      "properties": {
+        "agency": {
+          "$ref": "#/$defs/RatingAgency"
+        },
+        "as_of_year": {
+          "anyOf": [
+            {
+              "maximum": 2100,
+              "minimum": 2000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "As Of Year"
+        },
+        "rating": {
+          "title": "Rating",
+          "type": "string"
+        },
+        "score_numeric": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score Numeric"
+        }
+      },
+      "required": [
+        "agency",
+        "rating"
+      ],
+      "title": "ExternalEsgRating",
+      "type": "object"
+    },
+    "Financials": {
+      "description": "Historical financials — typically 5 yearly periods + most recent quarterly.",
+      "properties": {
+        "periods": {
+          "description": "At least the most recent full year must be present.",
+          "items": {
+            "$ref": "#/$defs/PeriodFinancials"
+          },
+          "minItems": 1,
+          "title": "Periods",
+          "type": "array"
+        }
+      },
+      "required": [
+        "periods"
+      ],
+      "title": "Financials",
+      "type": "object"
+    },
+    "IncomeStatement": {
+      "description": "Single-period income statement in reporting currency.",
+      "properties": {
+        "cost_of_sales": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Of Sales"
+        },
+        "depreciation_amortization": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Depreciation Amortization"
+        },
+        "ebitda": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ebitda"
+        },
+        "financial_expense": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Financial Expense"
+        },
+        "financial_income": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Financial Income"
+        },
+        "gross_profit": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gross Profit"
+        },
+        "minority_net_income": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minority Net Income"
+        },
+        "monetary_gain_loss": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "IAS 29 monetary gain/(loss) line — material for Turkish filers.",
+          "title": "Monetary Gain Loss"
+        },
+        "net_income": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Monetary amount, full precision.",
+          "title": "Net Income"
+        },
+        "operating_income": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operating Income"
+        },
+        "opex": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Operating expenses (SG&A + R&D, etc).",
+          "title": "Opex"
+        },
+        "parent_net_income": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Net Income"
+        },
+        "revenue": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Monetary amount, full precision.",
+          "title": "Revenue"
+        },
+        "tax_expense": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                }
+              ],
+              "description": "Monetary amount, full precision."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tax Expense"
+        }
+      },
+      "required": [
+        "revenue",
+        "net_income"
+      ],
+      "title": "IncomeStatement",
+      "type": "object"
+    },
+    "KapEvent": {
+      "description": "One KAP disclosure. Minimal required fields; rich optional ones.\n\nRequired: disclosure_id, ticker, announced_at, title, url.",
+      "properties": {
+        "announced_at": {
+          "format": "date-time",
+          "title": "Announced At",
+          "type": "string"
+        },
+        "category": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "KAP category, e.g. 'Özel Durum Açıklaması'.",
+          "title": "Category"
+        },
+        "classification_confidence": {
+          "$ref": "#/$defs/Confidence",
+          "default": "unknown"
+        },
+        "disclosure_id": {
+          "description": "KAP's canonical ID for the disclosure.",
+          "title": "Disclosure Id",
+          "type": "string"
+        },
+        "event_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "One of 15: debt_issuance, capex_decision, management_change, ...",
+          "title": "Event Type"
+        },
+        "full_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Full Text"
+        },
+        "impact_pct_equity": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Impact Pct Equity"
+        },
+        "impact_pct_revenue": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Impact Pct Revenue"
+        },
+        "is_material": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Is Material"
+        },
+        "quantitative_impact_try": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quantitative Impact Try"
+        },
+        "subcategory": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Subcategory"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Summary"
+        },
+        "ticker": {
+          "title": "Ticker",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "disclosure_id",
+        "ticker",
+        "announced_at",
+        "title",
+        "url"
+      ],
+      "title": "KapEvent",
+      "type": "object"
+    },
+    "KapEvents": {
+      "properties": {
+        "events": {
+          "items": {
+            "$ref": "#/$defs/KapEvent"
+          },
+          "title": "Events",
+          "type": "array"
+        },
+        "window_end": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Window End"
+        },
+        "window_start": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Window Start"
+        }
+      },
+      "title": "KapEvents",
+      "type": "object"
+    },
+    "MacroSnapshot": {
+      "description": "Macro variables on a given date. All optional — macro is a supplement,\nnot a blocker.",
+      "properties": {
+        "as_of": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "As Of"
+        },
+        "bist100_level": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bist100 Level"
+        },
+        "bist100_ytd_return": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bist100 Ytd Return"
+        },
+        "core_cpi_yoy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Core Cpi Yoy"
+        },
+        "cpi_yoy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "TÜFE yıllık %.",
+          "title": "Cpi Yoy"
+        },
+        "eur_try": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Eur Try"
+        },
+        "gdp_yoy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gdp Yoy"
+        },
+        "ppi_yoy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "ÜFE yıllık %.",
+          "title": "Ppi Yoy"
+        },
+        "sector_index_level": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sector Index Level"
+        },
+        "sector_index_ytd_return": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sector Index Ytd Return"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "tcmb_10y_bond_yield": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tcmb 10Y Bond Yield"
+        },
+        "tcmb_policy_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tcmb Policy Rate"
+        },
+        "usd_try": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Usd Try"
+        }
+      },
+      "title": "MacroSnapshot",
+      "type": "object"
+    },
+    "MarketData": {
+      "description": "Snapshot plus (optional) recent history.",
+      "properties": {
+        "history": {
+          "description": "Most-recent-first or ordered; technical_analysis handles sort.",
+          "items": {
+            "$ref": "#/$defs/OhlcvBar"
+          },
+          "title": "History",
+          "type": "array"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/MarketSnapshot"
+        }
+      },
+      "required": [
+        "snapshot"
+      ],
+      "title": "MarketData",
+      "type": "object"
+    },
+    "MarketSnapshot": {
+      "description": "Current-state market view.",
+      "properties": {
+        "avg_daily_volume_3m": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Avg Daily Volume 3M"
+        },
+        "currency": {
+          "$ref": "#/$defs/Currency",
+          "default": "TRY"
+        },
+        "dividend_yield": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dividend Yield"
+        },
+        "float_shares": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Float Shares"
+        },
+        "free_float_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Free Float Pct"
+        },
+        "high_52w": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "High 52W"
+        },
+        "last_price": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Last Price"
+        },
+        "last_price_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Price Date"
+        },
+        "low_52w": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Low 52W"
+        },
+        "market_cap": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Market Cap"
+        },
+        "shares_outstanding": {
+          "exclusiveMinimum": 0,
+          "title": "Shares Outstanding",
+          "type": "integer"
+        },
+        "ytd_return_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ytd Return Pct"
+        }
+      },
+      "required": [
+        "last_price",
+        "shares_outstanding",
+        "market_cap"
+      ],
+      "title": "MarketSnapshot",
+      "type": "object"
+    },
+    "MetaInfo": {
+      "description": "Identifies a TickerPackage and tracks its provenance.\n\nRequired: ticker, package_date, schema_version, producer.\nOptional: sources list, producer_version, notes.",
+      "properties": {
+        "built_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "When the producer finished.",
+          "title": "Built At"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Free-form producer notes.",
+          "title": "Notes"
+        },
+        "package_date": {
+          "description": "Reporting date the package represents (not build time).",
+          "format": "date",
+          "title": "Package Date",
+          "type": "string"
+        },
+        "producer": {
+          "description": "Python module that built this package, e.g. 'financex.crawlers.kchol'.",
+          "title": "Producer",
+          "type": "string"
+        },
+        "producer_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Producer Version"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sources": {
+          "description": "Canonical sources consulted (not exhaustive — line-level SourceRef lives on the data).",
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "ticker": {
+          "description": "BIST ticker in uppercase, e.g. 'KCHOL', 'THYAO'. Minimum 3 characters.",
+          "maxLength": 10,
+          "minLength": 3,
+          "pattern": "^[A-Z][A-Z0-9]{2,}$",
+          "title": "Ticker",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ticker",
+        "package_date",
+        "producer"
+      ],
+      "title": "MetaInfo",
+      "type": "object"
+    },
+    "OhlcvBar": {
+      "description": "One trading day.",
+      "properties": {
+        "adjusted_close": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Adjusted Close"
+        },
+        "close": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Close"
+        },
+        "date": {
+          "format": "date",
+          "title": "Date",
+          "type": "string"
+        },
+        "high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "High"
+        },
+        "low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Low"
+        },
+        "open": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Open"
+        },
+        "volume": {
+          "minimum": 0,
+          "title": "Volume",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "title": "OhlcvBar",
+      "type": "object"
+    },
+    "PeriodFinancials": {
+      "description": "Four statements bundled for one reporting period.",
+      "properties": {
+        "balance_sheet": {
+          "$ref": "#/$defs/BalanceSheet"
+        },
+        "cash_flow": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CashFlowStatement"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "currency": {
+          "$ref": "#/$defs/Currency",
+          "default": "TRY"
+        },
+        "equity_change": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EquityChange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ias29_restated": {
+          "default": false,
+          "description": "True if figures are inflation-adjusted under IAS 29 (Turkish high-inflation accounting).",
+          "title": "Ias29 Restated",
+          "type": "boolean"
+        },
+        "income_statement": {
+          "$ref": "#/$defs/IncomeStatement"
+        },
+        "period": {
+          "$ref": "#/$defs/ReportingPeriod"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "year": {
+          "maximum": 2100,
+          "minimum": 2000,
+          "title": "Year",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "period",
+        "year",
+        "balance_sheet",
+        "income_statement"
+      ],
+      "title": "PeriodFinancials",
+      "type": "object"
+    },
+    "QualityControl": {
+      "description": "Aggregated health of a TickerPackage.\n\n- `missing_fields` lists optional-but-critical fields that came back null.\n- `flags` lists producer-surfaced issues.\n- `overall_score` is a 0-1 heuristic (1 = perfect, <0.5 = downstream may downgrade).",
+      "properties": {
+        "degraded": {
+          "default": false,
+          "description": "Set True when a soft-block trip occurs — downstream should know the pipeline is limping.",
+          "title": "Degraded",
+          "type": "boolean"
+        },
+        "flags": {
+          "items": {
+            "$ref": "#/$defs/QualityFlag"
+          },
+          "title": "Flags",
+          "type": "array"
+        },
+        "missing_fields": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Fields",
+          "type": "array"
+        },
+        "overall_score": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Overall Score"
+        }
+      },
+      "title": "QualityControl",
+      "type": "object"
+    },
+    "QualityFlag": {
+      "description": "A single non-fatal issue flagged by a producer.",
+      "properties": {
+        "affected_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Dot-path into TickerPackage, e.g. 'financials.periods[0].cash_flow'.",
+          "title": "Affected Path"
+        },
+        "code": {
+          "description": "Stable machine id, e.g. 'MISSING_CF_STATEMENT'.",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity",
+          "default": "warn"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "QualityFlag",
+      "type": "object"
+    },
+    "RatingAgency": {
+      "enum": [
+        "msci",
+        "sustainalytics",
+        "sp_global",
+        "bist_sustain",
+        "cdp",
+        "other"
+      ],
+      "title": "RatingAgency",
+      "type": "string"
+    },
+    "RatioValue": {
+      "description": "One ratio with value and optional warning (mirrors TS engine pattern).",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "warning": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Warning"
+        }
+      },
+      "title": "RatioValue",
+      "type": "object"
+    },
+    "Recommendation": {
+      "enum": [
+        "buy",
+        "outperform",
+        "hold",
+        "underperform",
+        "sell",
+        "not_rated"
+      ],
+      "title": "Recommendation",
+      "type": "string"
+    },
+    "ReportingPeriod": {
+      "description": "BIST reporting cadence.",
+      "enum": [
+        "FY",
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "H1"
+      ],
+      "title": "ReportingPeriod",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "info",
+        "warn",
+        "block"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SourceRef": {
+      "description": "Provenance pointer — every material datum must cite at least one.",
+      "properties": {
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. KAP disclosure ID, PDF page number, API endpoint.",
+          "title": "Detail"
+        },
+        "fetched_at": {
+          "format": "date-time",
+          "title": "Fetched At",
+          "type": "string"
+        },
+        "source_id": {
+          "description": "e.g. 'kap', 'is_yatirim', 'tcmb', 'bigpara'.",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "source_id",
+        "fetched_at"
+      ],
+      "title": "SourceRef",
+      "type": "object"
+    },
+    "Subsidiary": {
+      "description": "Holding-company subsidiary / participation.",
+      "properties": {
+        "market_value_try": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Fair value of the stake in TRY, if computable.",
+          "title": "Market Value Try"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "ownership_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "0.40 means 40% stake.",
+          "title": "Ownership Pct"
+        },
+        "segment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Segment"
+        },
+        "ticker": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "If listed; null for private subsidiaries.",
+          "title": "Ticker"
+        }
+      },
+      "required": [
+        "name",
+        "ownership_pct"
+      ],
+      "title": "Subsidiary",
+      "type": "object"
+    },
+    "TechnicalIndicators": {
+      "description": "All fields Optional — a package is valid even without technicals.\n\nThis mirrors the output shape calculators/technical.py will produce\nfrom `MarketData.history` using the `ta` library.",
+      "properties": {
+        "as_of_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "As Of Date"
+        },
+        "atr_14": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Atr 14"
+        },
+        "bollinger_lower": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bollinger Lower"
+        },
+        "bollinger_middle": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bollinger Middle"
+        },
+        "bollinger_upper": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bollinger Upper"
+        },
+        "ma_20": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ma 20"
+        },
+        "ma_200": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ma 200"
+        },
+        "ma_50": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ma 50"
+        },
+        "macd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Macd"
+        },
+        "macd_histogram": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Macd Histogram"
+        },
+        "macd_signal": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Macd Signal"
+        },
+        "relative_to_bist100_ytd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Relative To Bist100 Ytd"
+        },
+        "rsi_14": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rsi 14"
+        },
+        "trend": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "'bullish' | 'bearish' | 'neutral'",
+          "title": "Trend"
+        }
+      },
+      "title": "TechnicalIndicators",
+      "type": "object"
+    },
+    "TransmissionImpact": {
+      "description": "Company-specific sensitivity translated from macro moves.\n\nPython computes the arithmetic; the LLM later adds narrative.",
+      "properties": {
+        "commodity_sensitivity_annual_try": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Commodity Sensitivity Annual Try"
+        },
+        "energy_cost_sensitivity_annual_try": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Energy Cost Sensitivity Annual Try"
+        },
+        "fx_sensitivity_annual_try": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "TRY impact on net financial expense per 10% TRY depreciation.",
+          "title": "Fx Sensitivity Annual Try"
+        },
+        "interest_rate_sensitivity_annual_try": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Interest Rate Sensitivity Annual Try"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "title": "TransmissionImpact",
+      "type": "object"
+    }
+  },
+  "$id": "https://finance-x.local/schemas/TickerPackage.json",
+  "description": "The full bundle produced by the Python data layer.\n\nRequired vs Optional here encodes the hybrid doctrine:\n  Required = without this, the LLM reasoning layer has no floor to stand on.\n  Optional = missing is annoying, not fatal — flagged in `quality.missing_fields`.",
+  "properties": {
+    "analyst": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AnalystConsensus"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "brand": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BrandIdentity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "company": {
+      "$ref": "#/$defs/CompanyInfo"
+    },
+    "engine_results": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EngineOutput"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "esg": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EsgData"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "financials": {
+      "$ref": "#/$defs/Financials"
+    },
+    "kap_events": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/KapEvents"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "macro": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MacroSnapshot"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "market": {
+      "$ref": "#/$defs/MarketData"
+    },
+    "meta": {
+      "$ref": "#/$defs/MetaInfo"
+    },
+    "quality": {
+      "$ref": "#/$defs/QualityControl"
+    },
+    "technical": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TechnicalIndicators"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "transmission": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TransmissionImpact"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "meta",
+    "company",
+    "financials",
+    "market"
+  ],
+  "title": "TickerPackage",
+  "type": "object",
+  "x-financex-version": "1.0.0"
+}

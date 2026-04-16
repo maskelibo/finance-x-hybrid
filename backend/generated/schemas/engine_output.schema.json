@@ -1,0 +1,514 @@
+{
+  "$defs": {
+    "DcfResult": {
+      "properties": {
+        "enterprise_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Enterprise Value"
+        },
+        "fair_value_per_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fair Value Per Share"
+        },
+        "pv_fcf": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Pv Fcf",
+          "type": "array"
+        },
+        "sensitivity": {
+          "items": {
+            "$ref": "#/$defs/DcfSensitivityCell"
+          },
+          "title": "Sensitivity",
+          "type": "array"
+        },
+        "terminal_growth": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Terminal Growth"
+        },
+        "terminal_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Terminal Value"
+        },
+        "wacc": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wacc"
+        }
+      },
+      "title": "DcfResult",
+      "type": "object"
+    },
+    "DcfSensitivityCell": {
+      "properties": {
+        "fair_value_per_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Fair Value Per Share"
+        },
+        "terminal_growth": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Terminal Growth"
+        },
+        "wacc": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Wacc"
+        }
+      },
+      "required": [
+        "wacc",
+        "terminal_growth",
+        "fair_value_per_share"
+      ],
+      "title": "DcfSensitivityCell",
+      "type": "object"
+    },
+    "EngineRatios": {
+      "description": "All derived ratios. None means not computable with the given inputs.",
+      "properties": {
+        "acid_test": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "capex_to_ebitda": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ccc": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "current_ratio": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dio": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dpo": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dso": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ebitda_margin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "fcf": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "gross_margin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "interest_burden": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "interest_coverage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "net_debt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "net_debt_to_ebitda": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "net_margin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "nwc_to_revenue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ocf_to_ebitda": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "opex_to_revenue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roa": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roce": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roe": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roic": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "EngineRatios",
+      "type": "object"
+    },
+    "EngineScores": {
+      "properties": {
+        "altman_z": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "piotroski_f": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RatioValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "EngineScores",
+      "type": "object"
+    },
+    "RatioValue": {
+      "description": "One ratio with value and optional warning (mirrors TS engine pattern).",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "warning": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Warning"
+        }
+      },
+      "title": "RatioValue",
+      "type": "object"
+    }
+  },
+  "$id": "https://finance-x.local/schemas/EngineOutput.json",
+  "description": "Canonical engine output — consumed by valuation_agent, strategic_synthesis,\nfinal_summary, report_formatter.",
+  "properties": {
+    "computed_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Computed At"
+    },
+    "dcf": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DcfResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "ratios": {
+      "$ref": "#/$defs/EngineRatios"
+    },
+    "scores": {
+      "$ref": "#/$defs/EngineScores"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "title": "EngineOutput",
+  "type": "object",
+  "x-financex-version": "1.0.0"
+}
