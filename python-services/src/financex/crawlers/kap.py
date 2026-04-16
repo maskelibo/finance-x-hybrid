@@ -36,9 +36,15 @@ DEFAULT_TIMEOUT_S = 30.0
 # Transient status codes we retry on. 500/502/503/504 are server-side
 # transients; 429 is rate-limit. Anything else (401, 403, 404) is a
 # real error — don't waste attempts.
+#
+# Backoff tuned to KAP's rate-limit window, which empirically seems to
+# sit around 20-30s when two ticker-scoped requests land back-to-back
+# from the same IP. 5/10/20/40 gives us 75s of cumulative waiting —
+# enough to slide past the rate-limit, but not so long that we block
+# the orchestrator more than necessary.
 _RETRYABLE_STATUS = frozenset({429, 500, 502, 503, 504})
-_RETRY_ATTEMPTS = 3
-_RETRY_BACKOFF_BASE_S = 2.0  # 2s, 4s, 8s
+_RETRY_ATTEMPTS = 4
+_RETRY_BACKOFF_BASE_S = 5.0  # 5s, 10s, 20s, 40s
 
 
 def _retry(fn: Callable[[], httpx.Response], *, op_name: str = "KAP request") -> httpx.Response:

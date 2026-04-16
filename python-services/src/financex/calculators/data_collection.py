@@ -23,13 +23,23 @@ Design notes:
 from __future__ import annotations
 
 import hashlib
+import os
 import re
+import time
 from datetime import UTC, date, datetime
 from pathlib import Path
 
 from financex.crawlers.kap import HttpKapClient, KapClient, RawDisclosure
 from financex.schemas.base import SourceRef
 from financex.schemas.data_collection import CollectedDocument, DataCollectionManifest
+
+# kap_watch + data_collection land in the same orchestrator phase and
+# both hit KAP byCriteria within a second of each other. KAP rate-limits
+# that pattern for ~20s. This cold-start delay is a belt-and-suspenders
+# pair to the retry backoff in crawlers/kap.py — the orchestrator calls
+# us right after kap_watch, so we yield for a few seconds before touching
+# KAP. Override via FINANCEX_KAP_COOLDOWN_S=0 in tests / fixture runs.
+_KAP_COOLDOWN_S = float(os.environ.get("FINANCEX_KAP_COOLDOWN_S", "4"))
 
 
 # ---------- Coarse classification --------------------------------------
@@ -138,6 +148,11 @@ def run_data_collection(
     documents: list[CollectedDocument] = []
     errors: list[str] = []
     warnings: list[str] = []
+
+    # Cool-down in case the orchestrator just ran kap_watch against the
+    # same ticker — KAP rate-limits back-to-back byCriteria calls.
+    if _KAP_COOLDOWN_S > 0:
+        time.sleep(_KAP_COOLDOWN_S)
 
     try:
         raw_list: list[RawDisclosure] = http_client.fetch_disclosures(
