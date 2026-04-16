@@ -117,11 +117,29 @@ class HttpKapClient(KapClient):
     date window.
     """
 
+    # KAP's private API rejects "bare" clients with 500 — browsers pass a
+    # full header set (Referer + Origin + realistic UA + Sec-Fetch-*).
+    # Replicating the Chrome desktop fingerprint we observed in DevTools
+    # on kap.org.tr; this was the fix that made the live pipeline stop
+    # tripping KAP's anti-scrape gate.
     _HEADERS = {
-        "User-Agent": "Mozilla/5.0 (FinanceX/0.1)",
-        "Accept": "application/json",
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/129.0.0.0 Safari/537.36"
+        ),
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Accept-Encoding": "gzip, deflate, br",
         "Content-Type": "application/json",
-        "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+        "Origin": "https://www.kap.org.tr",
+        "Referer": "https://www.kap.org.tr/",
+        "Sec-Ch-Ua": '"Chromium";v="129", "Not=A?Brand";v="8", "Google Chrome";v="129"',
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": '"macOS"',
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
     }
 
     def __init__(
