@@ -110,9 +110,12 @@ describe('composeReportContext — reads from accumulatedContext JSON', () => {
     expect(ev[0].direction).toBe('Negatif');               // translated
   });
 
-  it('narrative blocks empty when not supplied', () => {
-    expect(result.narrative_executive_summary).toBe('');
-    expect(result.narrative_valuation).toBe('');
+  it('narrative blocks fall back to auto-commentary when LLM narrative missing', () => {
+    // narrative_executive_summary now falls back to deterministic Turkish
+    // commentary built from QA + convergence + ROE etc. So it's no longer
+    // empty even when buildNarrativeBlocks returns nothing.
+    const len = String(result.narrative_executive_summary ?? '').length;
+    expect(len).toBeGreaterThan(50);
   });
 });
 
@@ -161,13 +164,15 @@ describe('composeReportContext — resilient to missing upstream', () => {
       reportId: 'r-1',
       accumulatedContext: {},
       narrativeBlocks: {
-        card_summary: 'Şirket güçlü sinyaller veriyor.',
-        valuation: 'DCF değerleme makul.',
+        // Need to be ≥200 chars for fallbackNarrative() to prefer LLM over auto.
+        card_summary: 'Şirket güçlü sinyaller veriyor. '.repeat(10),
+        valuation: 'DCF değerleme makul. '.repeat(12),
       },
     });
-    // card_summary key maps to narrative_executive_summary slot.
-    expect(out.narrative_executive_summary).toBe('Şirket güçlü sinyaller veriyor.');
-    expect(out.narrative_valuation).toBe('DCF değerleme makul.');
-    expect(out.narrative_closing).toBe('');
+    // Explicit narrative wins when it's longer than the fallback threshold.
+    expect(out.narrative_executive_summary).toContain('Şirket güçlü sinyaller');
+    expect(out.narrative_valuation).toContain('DCF değerleme makul');
+    // narrative_closing still falls through to auto-commentary.
+    expect(String(out.narrative_closing).length).toBeGreaterThan(0);
   });
 });
