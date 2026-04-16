@@ -24,6 +24,20 @@
 - [ ] Konsensus guvenilirlik (analist sayisi + aralik genisligi) degerlendirmesi var mi?
 - [ ] Downstream ajanlara veri iletimi teyit edildi mi?
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **Marj/varsayım sensitivity tablosu eksik** — Her analist için implied HRC fiyatı (USD/ton) + implied EBITDA marjı + kur varsayımı + hedef fiyat tablosu oluşturulmadı. Çelik sektörü: USD/ton HRC varsayımı kritik ayrışma noktası.
+- **Revizyon yönü trendi (son 3 ay) eksik** — Ocak-Nisan 2026'da hangi kurumlar upgrade/downgrade yaptı? "Ziraat Yatırım +13.6% upgrade" verildi ✓ ama genel konsensüs momentum (yükselen mi alçalan mı?) hesaplanmadı.
+- **"0 SELL" crowded long riski analiz edilmedi** — 6 BUY / 5 HOLD / 0 SELL; CBAM, EPDK enerji şoku ve Çin dumping baskısına karşın neden hiç SELL yok? Bu asimetrik risk sinyali raporlanmadı.
+- **Hedef fiyat aralığı 15-39.50 TRY (σ/μ=%48) açıklanmadı** — "HIGH DISPERSION" flaglendi ✓ ama neden bu kadar geniş? En düşük hedef (15 TRY, BEAR senaryosu) ile en yüksek (39.50 TRY) arasındaki varsayım farkı analiz edilmedi.
+- **Bazı broker tarihler "[ID doğrula]" olarak kaldı** — Tam tarih yerine "2026-04-XX" veya "Nisan 2026" gibi yaklaşık tarihler verildi; kural "tam tarih" zorunlu.
+
+### Bundan Sonra:
+- **Çelik analizlerinde marj sensitivity zorunlu formatı** — Her analist için: HRC varsayımı (USD/ton) + demir cevheri varsayımı (USD/ton) + enerji maliyeti varsayımı → implied EBITDA marjı → hedef fiyat. Bu tablo olmadan çelik konsensüs analizi eksik.
+- **"0 SELL" durumunda crowded long analizi** — BIMAS dersinden öğrenildi; EREGL'de de uygulanmalıydı. Sıfır SELL = aşırı iyimserlik riski; EPDK + CBAM senaryosunda kim ilk SELL yazacak?
+- **Revizyon trendi konsensüs momentumu tablosu zorunlu** — Son 3 ay: [Broker | Eski Hedef | Yeni Hedef | Yön | Büyüklük(%) | Tarih] tablosu. "Genel momentum pozitif/negatif" sonuç cümlesi ile bitir.
+
 ## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
 
 ### Eksikler:
@@ -80,6 +94,21 @@
 
 - **TUPRS (2026-04-12):** Her 0.5 $/bbl marj farki = 2.5-3B TRY EBITDA = ~7-10 TL hisse fiyati. Bu sensitivity her rafineri raporunda gosterilmeli.
 - **EREGL (2026-04-13):** Celik sirketi icin: "Her $10/ton HRC degisimi = X TRY EBITDA" parametresi uygulanmali. EPDK karari sonrasi asagi revizyon basladi mi izlenmeli.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **İş Yatırım 2025 yıl-sonu (stale) kullanıldı** — 2026 güncellemesi WebFetch başarısız oldu; ancak alternatif (Rota Borsa, Hisseyorum.com, İş Yatırım IR sayfası) denenmedi. Stale raporla konsensüs hesabı güvenilirliği düşürür.
+- **TEB Yatırım bulunamadı** — KCHOL gibi büyük holdingler için 5+ broker eşiği önemli; TEB için "bulunamadı" notu açık bırakıldı ama alternatif kaynaklar denenmedi.
+- **Revizyon yönü trendi (son 3 ay: Ocak-Nisan 2026) eksik** — "Ziraat +%32 upgrade" tek örnek var ✓; konsensüs momentumu pozitif mi negatif mi? Bu trend tablosu eksik.
+- **3 segment sensitivity (TUPRS $/bbl, YKBNK NIM %, holding discount %) her broker için verilmedi** — GCM ve Ziraat için kısmi ✓; Deniz, Garanti, Gedik için bu 3 değişkende varsayım farkları gösterilmedi.
+- **0 SELL crowded long analizi** — 11 BUY / 0 SELL: %49 holding iskontosu + negatif FCF + Fitch indirim ortamında sıfır SELL anormal. Bu asimetrik pozisyon analiz edilmedi.
+- **Çıktı kesildi** — "Mevcut Fiyat vs Consensus" bölümü "vs G" ile bitti; tablo tamamlanmadı.
+
+### Bundan Sonra:
+- **KCHOL için Rota Borsa hedef fiyat sayfası zorunlu ilk kaynak** — rotaborsa.com/koc-holding-kchol-hisse-hedef-fiyat sayfası tüm broker hedeflerini + tarihleri gösteriyor. Her KCHOL analizinde buradan başla.
+- **3 segment sensitivity tablosu KCHOL için standart** — [Broker | TUPRS Marj Varsayımı ($/bbl) | YKBNK NIM (%) | Holding Discount (%) | Hedef Fiyat (TL)]. Bu tablo fiyat farkının kaynağını açıklar.
+- **0 SELL analizi için 3 soru zorunlu** — (1) Konsensüs çok iyimser mi? (2) Holding discount %47 iken neden SELL yok? (3) Downgrade tetikleyicileri — 21 Nisan İran ateşkes/22 Nisan TCMB/29 Nisan YKBNK Q1 — bunlardan hangisi SELL tetikler?
 
 ## Sektor Bilgi Bankasi
 

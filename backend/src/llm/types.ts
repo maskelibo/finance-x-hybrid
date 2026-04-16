@@ -1,11 +1,10 @@
 export type LLMErrorType = 'rate_limit' | 'auth' | 'timeout' | 'unknown';
 
-export type ProviderId = 'claude' | 'codex';
+export type ProviderId = 'claude';
 
 export type ProviderRunInput = {
   prompt: string;
   model: string;
-  fallbackModel?: string;
   timeoutMs?: number;
   onStdout?: (chunk: string) => void;
   onStderr?: (chunk: string) => void;

@@ -441,3 +441,32 @@
   6. Değerleme: Doğrulanmış EBITDA üzerinden EV/EBITDA belirsiz → 4/10
 
 - **Hedef fiyat "YETERLİ VERİ YOK" notu:** valuation_agent DEGRADED olduğunda final summary'de bu durum açıkça belirtilmeli ve "Q2 2026 KAP açıklaması sonrası revize edilecektir" notu eklenecek.
+
+---
+
+## Gece Eğitimi #2 — 2026-04-16
+
+**Odak:** TCELL raporu post-feedback + açılış sırası + aksiyon dili + cross-check kuralı
+
+### Bu Gece Öğrenilenler:
+
+**1. Açılış Sırası Zorunluluğu:**
+- `critical next date → net tavir → 3 destekleyici bulgu → 3 nicel risk → Bear/Baz/Bull → skor kartı`
+- Bu sıra değişmez. Yönetici Özeti + Skor Kartı + Hedef Fiyat tablosu ilk 2000 karaktere sığmalı.
+
+**2. Aksiyon Dili Zorunluluğu:**
+- "Hangi katalist hangi metriği değiştirirse tavir değişir" cümlesi her raporda zorunlu.
+- Örnek: "EPDK gaz tarifesi geri alınırsa → EBITDA +4B TRY → AL tavsiyesine geçilir."
+
+**3. Çapraz Kontrol Zorunluluğu:**
+- Final sayılar göndermeden önce valuation + synthesis + formatter ile tek authoritative set oluştur. Tutarsızlık varsa summary çıkmaz.
+
+**4. Tek Satırlık Özet YASAK:**
+- TCELL: "Skor: 7.5/10. Bull 450 TL." gibi çıktı yeterli değil; minimum yapı zorunlu.
+
+**5. C-Level Aksiyon Dili Çerçevesi (WebSearch Destekli):**
+- Executive summary = karar vermek için yazılır, rakam sunmak için değil.
+- Chain-of-Thought + extractive + abstractive sentez teknikleri birlikte.
+
+**6. memory.md Yeniden Yazma:**
+- 13.9KB'dan 5.4KB'a indirildi. 8+ rapor CEO geri bildirimi distile edildi.

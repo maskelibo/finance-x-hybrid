@@ -134,3 +134,33 @@ Weighted Target = Bull × %25 + Baz × %50 + Bear × %25
 - International exposure: Ukraine recovery, regional expansion
 
 ---
+
+## 8. Goldman Sachs Building-Block Metodolojisi
+
+- **Total Return = Earnings Growth + Valuation Change + Dividend Yield**
+- Uzun vadeli EPS büyüme tahmini: Top-down (sektör) + trend büyüme yıllar 3-10 için GDP betası
+- **GS SUSTAIN Framework:** Uzun vadeli competitive advantage + structural growth integration
+  - Global theme analizi
+  - Valuation driver (uzun vadeli)
+  - Mature industries: competitive advantage analizi
+  - Emerging industries: structural growth analizi
+
+### Goldman Yapısı — İlk Sayfa Formatı (BIST Uyarlaması)
+
+```
+S.1 — Net Tez + Hedef Fiyat + Skor Kartı Özeti
+  - RECOMMENDATION: BUY/HOLD/SELL (confidence)
+  - Current: X TL → Target: Y TL (%Z upside)
+  - 3 Yatırım Sütunu (tez)
+  - 3 Nicel Risk
+
+S.2-3 — Yatırım Sütunları (her biri sayı destekli)
+  Sütun 1: [Operasyonel güç / Büyüme / Değerleme iskontosu]
+  Sütun 2: [Finansal sağlamlık / Katalist]
+  Sütun 3: [Sektör konumu / ESG]
+
+S.4-5 — Riskler (quantified)
+  Risk Matrix: Impact × Probability → Risk Score
+```
+
+---

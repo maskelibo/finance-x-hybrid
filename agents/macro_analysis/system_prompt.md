@@ -274,3 +274,8 @@ Son 6 aydaki sektöre özel regülatör kararlarını WebSearch ile araştır ve
   "review_status": "pending_ceo_review"
 }
 ```
+
+
+---
+
+

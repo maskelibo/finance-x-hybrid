@@ -1,0 +1,876 @@
+---
+
+**ONEMLI TAKVIM UYARISI:** TCMB Para Politikası Kurulu kararı 24 Nisan 2026'da aciklanacaktir. Bu karar, SAHOL'un en buyuk degerleme bilesenini olusturan Akbank'in net faiz marji uzerinde dogrudan etkiye sahiptir. Analizin basinakilacak en kritik yaklasman olayi budur.
+
+**VERI KALITESI UYARISI — RAPORU OKUMADAN ONCE:** Bu rapor QA skoru 0.738 ile tamamlanan analizden uretilmistir (esik: 0.85). EBITDA rakamları (Senaryo A: 97.400M TRY) ve nakit akisi detaylari PDF dogrulamasina baglidir (ORTA guven). Bu sinirlamalar ilgili bolümlerde acikca belirtilmistir.
+
+---
+
+# HACİ ÖMER SABANCI HOLDİNG A.Ş.
+## BIST: SAHOL | Kapsamlı Şirket Analizi
+
+**Rapor Tarihi:** 14 Nisan 2026
+**Analiz Tipi:** Kurumsal Derinlemesine Holding Analizi
+**Hazırlayan:** Finance X Platform
+**Mevcut Fiyat:** 89.30 TL (10 Nisan 2026 kapanış)
+
+---
+
+# İÇİNDEKİLER
+
+| Bölüm | Başlık | Sayfa |
+|-------|--------|-------|
+| I | Yönetici Özeti | 2 |
+| II | Şirket Profili | 4 |
+| III | Finansal Analiz | 6 |
+| IV | Değerleme | 10 |
+| V | Sektör ve Rekabet Analizi | 13 |
+| VI | Makroekonomik Bağlam | 15 |
+| VII | Teknik Analiz | 17 |
+| VIII | ESG Değerlendirmesi | 18 |
+| IX | Haber ve Sentiment Analizi | 19 |
+| X | KAP Olayları ve Etki Analizi | 20 |
+| XI | Risk Değerlendirmesi | 21 |
+| XII | Sonuç ve Değerlendirme | 22 |
+| — | Zorunlu Bildirimler | 23 |
+
+---
+
+# I. YÖNETİCİ ÖZETİ
+
+## Genel Değerlendirme
+
+Sabancı Holding, Türkiye'nin en büyük çeşitlendirilmiş sanayi holdingllerinden biridir. Bankacılık (Akbank %49), enerji dağıtımı (Enerjisa %50), çimento, perakende, sanayi ve sigortayı kapsayan geniş portföyüyle şirket, her segment için farklı dinamikler barındırmaktadır. Bize göre SAHOL, mevcut piyasa fiyatlamasında (89.30 TL) anlamlı bir değerleme anomalisi sunmaktadır; ancak bu anomalinin kapanması, yakın vadede gerçekleşmesi beklenen birkaç kritik katalize bağlıdır.
+
+Yönetim, 2025 yılında Net Borç/EBITDA'yı politika hedefi olan 2.0x'in belirgin biçimde altına — 1.6x'e — çekmeyi başarmıştır. Bu, söz konusu taahhüdün tutulduğuna işaret etmektedir. Bununla birlikte, CarrefourSA'nın 6.5 milyar TRY zararı ve Kordsa'nın 1.49 milyar TRY zararı konsolide karlılığı ciddi ölçüde baskılamaktadır. Akbank'ın 57.2 milyar TRY net kara ulaşması, holdingin gerçek anlamda taşıyıcı sütunudur; ancak bu durum, değerlemeyi büyük ölçüde tek bir bankacılık varlığına bağımlı kılmaktadır. 24 Nisan'daki TCMB PPK kararı, Akbank'ın net faiz marjı üzerinden holdingin 2026 net kar görünümünü doğrudan şekillendirecektir.
+
+[YÖNETİM GÖRÜŞÜ] Şirket, 31 Mart 2026 Genel Kurulu'nda "2025 yılında stratejik portföy dönüşümünü Akçansa satış süreci ile somutlaştırdık; Net Borç/EBITDA politika hedefimizin altında seyrediyor" ifadesini kullanmıştır. (Kaynak: KAP Genel Kurul Kararı, 31 Mart 2026)
+
+## Skor Kartı
+
+| Boyut | Puan (1-10) | Yorum | Güven |
+|-------|-------------|-------|-------|
+| **Finansal Sağlık** | 6.0 | Net Borç/EBITDA 1.6x güçlü; ancak VUK bazlı -20.25B TRY zarar (FY2024) IAS29 optiğini bozuyor | ORTA |
+| **Büyüme Potansiyeli** | 5.5 | Nominal %36.8 gelir büyümesi (FY2025); reel büyüme ~%5.9. CARFA ve KORDS yapısal drags | ORTA |
+| **Sektör Pozisyonu** | 6.5 | Bankacılık liderliği (Akbank) ve Enerjisa regülasyon kalkanı güçlü; perakende ve çimento zayıf | YÜKSEK |
+| **Makro Uyumluluk** | 5.0 | TCMB faiz riski, CBAM, İran enerji şoku — çok taraflı makro baskı mevcut | ORTA |
+| **Teknik Görünüm** | 4.0 | NEUTRAL-BEARISH; 200-gün MA altında; BIST100'e göre -29-32pp underperformance (YTD) | ORTA |
+| **ESG** | 5.0 | Holding düzeyinde entegre ESG raporu yok; CIMSA SBTi hedefleri olumlu; CARFA sosyal riski yüksek | ORTA |
+| **GENEL SKOR** | **5.3/10** | Bankacılık anchor güçlü; portföy drags ve veri opaklığı baskılıyor | ORTA |
+
+**Risk Seviyesi: ORTA** (makro hassasiyet yüksek; katalizör beklentili holding)
+
+## Hedef Fiyat Aralığı
+
+| Senaryo | Olasılık | Holding İskontosu | **Hedef Fiyat** | Mevcut Fiyatdan Sapma |
+|---------|----------|-------------------|-----------------|-----------------------|
+| **Bull** | %25 | %10 | **137 TL** | +53.4% |
+| **Baz** | %50 | %18 | **104 TL** | +16.5% |
+| **Bear** | %25 | %28 | **77 TL** | -13.8% |
+| **Ağırlıklı** | %100 | — | **~106 TL** | +18.7% |
+
+Ağırlıklı hedef fiyat hesabı: (77 × 0.25) + (104 × 0.50) + (137 × 0.25) = **105.5 TL ≈ 106 TL**
+
+[KAYNAK: valuation_agent SOTP analizi, 14 Nisan 2026 — ORTA güven; Akbank fiyat varsayımı piyasa değeri bazlı]
+
+## Temel Değerleme Metrikleri
+
+| Metrik | FY2025 Gerçek | FY2026 Baz Tahmin | Sektör Karş. |
+|--------|---------------|-------------------|--------------|
+| F/K (SPK) | 49.4x | N/U (zarar beklentisi) | KCHOL ~9.8x |
+| FD/FAVÖK (Sn.A) | 4.3x | ~4.1x | KCHOL ~5.5x |
+| PD/DD | 0.56x | — | TR Holding med. 0.63x |
+| Temettü Verimi | 1.6% (1.41 TL) | Baskılı | Sektör ort. 2.3% |
+
+[NOT: F/K IAS29 parasal kazancı içerdiğinden yanıltıcıdır; FD/FAVÖK bankacılık konsolidasyonu nedeniyle sektör kıyaslamaları sınırlıdır]
+
+## 5 Kritik Bulgu
+
+**1. Akbank SAHOL'un tek gerçek değer motoru — ancak TCMB risk tam merkezde.**
+Akbank'ın 57.2 milyar TRY net karı (FY2025), holdingin 3.8 milyar TRY konsolide karının yaklaşık 7.4 katı büyüklüğündedir; diğer segmentler net negatif üretmektedir. SOTP NAV'ının yaklaşık %75'i Akbank'a aittir. 24 Nisan PPK kararı bu nedenle SAHOL değerlemesinin en kritik anlık belirleyicisidir. (Yüksek Güven)
+
+**2. IAS29 optik gerçeği gizliyor — yatırımcı dikkatli olmalı.**
+FY2024 SPK net karı +4.6 milyar TRY iken VUK net zararı -20.25 milyar TRY'dir. Bu 24.85 milyar TRY fark büyük ölçüde IAS29 parasal kazanç etkisinden kaynaklanmaktadır. Operasyonel karlılık VUK rakamına yakındır. Raporlanan SPK karlarının IAS29 içerikten arındırılmadan analiz edilmesi yanıltıcı sonuçlar doğurur. (Yüksek Güven — metodoloji açısından)
+
+**3. Akçansa satışı 2026'nın en somut katalizörü — ama gecikme riski mevcut.**
+28 Ocak 2026'da ilan edilen bağlayıcı teklife göre Akçansa hisselerinin $1.1 milyar şirket değeri üzerinden satışı Q2 2026'da kapanması hedeflenmektedir. Bu işlem yaklaşık 19.5 milyar TRY nakit inflow, CBAM riskinin dekonsolidasyonu ve Net Borç/EBITDA'nın ~1.3x'e gerilemesini sağlayacaktır. Alıcı finansmanına ilişkin belirsizlik nedeniyle gecikme riski %25 olarak değerlendirilmektedir. (Yüksek Güven)
+
+**4. CarrefourSA ve Kordsa zararları yapısal baskı oluşturuyor.**
+CarrefourSA'nın FY2025 zararı -6.5 milyar TRY, Kordsa'nın -1.49 milyar TRY'dir. Bu iki iştirak birlikte SAHOL'un konsolide net karından yaklaşık 8 milyar TRY erode etmektedir. FY2026'da da bu zarar seyrinin devam etmesi baz senaryomuzda öngörülmektedir. (Yüksek Güven)
+
+**5. Holding iskontosu %44 tarihsel ortalamanın üzerinde — katalizörle kompresyon mümkün.**
+Mevcut P/BV 0.56x, SAHOL'un tarihsel ortalaması olan 0.65-0.70x bandının ve Türk holding peer medyanı 0.63x'in belirgin biçimde altındadır. Akçansa satışı ve Enerjisa IPO'sunun gerçekleşmesi durumunda holding iskontosunun 44%'ten 30%'a sıkışması mümkündür; bu da mevcut fiyatın yaklaşık %25 üzerine işaret eder. (Orta Güven)
+
+---
+
+# II. ŞİRKET PROFİLİ
+
+## Tanıtım ve Tarihçe
+
+Hacı Ömer Sabancı Holding A.Ş. (SAHOL), 1967 yılında kurulan ve bugün Türkiye'nin en büyük sanayi konglomeratlarından biri olan bir çeşitlendirilmiş holding şirketidir. Sabancı ailesi tarafından kontrol edilen şirket, bankacılıktan enerjiye, perakendeden çimentoya uzanan geniş bir iş portföyü yönetmektedir. Hisse senetleri BIST 30 endeksinde işlem gören şirket, uluslararası yatırımcıların sürekli gündeminde bulunmaktadır.
+
+## Ortaklık Yapısı
+
+[CHART:PIE] Ortaklık Yapısı (SAHOL)
+| Ortak | Yüzde |
+|-------|-------|
+| Sabancı Ailesi ve Bağlantılı Şirketler | 51.9 |
+| Halka Açık | 48.1 |
+
+[KAYNAK: KAP bildirimleri — YÜKSEK güven]
+
+## Yönetim Kadrosu
+
+- **YK Başkanı:** Mehmet KAHYA (Bağımsız — 25 Mart 2025 atama; ilk bağımsız başkan)
+- **CEO/Genel Müdür:** [Kayıt: Sabancı Üniversitesi'nden gelen üst yönetim; tam isim PDF erişimi gerekli]
+- **YK Yapısı:** CEO-Chairman ayrışımı mevcut (SPK en iyi uygulamalarıyla uyumlu ✓)
+
+YÖNETİM KREDİBİLİTESİ: ORTA (%72)
+
+Son 3 Yıl Taahhüt Performansı:
+- 2022 taahhüdü "Enerjisa şebeke modernizasyonu (23.5B TRY/yıl CAPEX)" → Devam ediyor ✓
+- 2023 taahhüdü "Çimento portföyü rasyonalizasyonu" → Binding offer Ocak 2026 ✓
+- 2023 taahhüdü "CarrefourSA operasyonel iyileştirme" → FY2025 -6.5B TRY zarar ⚠ (hedef geride)
+- 2024 taahhüdü "Net Borç/EBITDA ≤2.0x" → 1.6x gerçekleşti ✓
+
+Kredibilite Etkisi: Yönetimin Net Borç/EBITDA taahhüdü ve çimento stratejisi tutulmuştur; bu nedenle deleveraging projeksiyonlarımızda yönetim açıklamaları baz senaryo ağırlığımızda yer almaktadır. Ancak CARFA turnaround taahhüdünün geride kalması nedeniyle perakende segment için %20 iskontolu yaklaşım benimsedik.
+
+## İş Modeli ve İştirakler
+
+SAHOL'un iş modeli, borsada işlem gören büyük iştiraklerin piyasa değeri artışından gelir elde etmek, temettü akışı ve portföy yönetimi üzerine kuruludur. Gelir kaynakları esas olarak iştirak temettüleri, portföy kazançları ve sınırlı düzeyde holding-level operasyonlardan oluşmaktadır.
+
+**İştirak Tablosu (SOTP Bileşenleri):**
+
+[CHART:BAR] İştirak Bazlı SAHOL Katkısı (SOTP NAV, Milyar TRY — Baz Senaryo)
+| İştirak | SAHOL Katkısı |
+|---------|---------------|
+| Akbank (AKBNK, %49) | 199.8 |
+| Enerjisa Enerji (ENERY, %50) | 38.9 |
+| Akçansa Çimento (AKCNS, %39.7) | 19.5 |
+| Brisa (BRISA, %38.4) | 14.9 |
+| Çimsa (CIMSA, %75.4) | 16.6 |
+| CarrefourSA (CARFA, %59.9) | 1.8 |
+| Kordsa ve Diğer | 19.5 |
+| (-) Holding Net Borcu | -45.0 |
+
+[KAYNAK: valuation_agent SOTP analizi — ORTA güven. Akbank payı YÜKSEK, diğerleri ORTA-DÜŞÜK]
+
+| İştirak | Ticker | SAHOL Payı | FY2025 Net Kar (M TRY) | Katkı Niteliği |
+|---------|--------|------------|------------------------|----------------|
+| Akbank | AKBNK | %49.0 | 57,200 [YÜKSEK] | Tam konsolidasyon — DOMINANT |
+| Enerjisa Enerji | ENERY | %50.0 | Pozitif (temettü 5.08 TL/pay) | Regüle — DEFANSİF |
+| Çimsa | CIMSA | %75.4 | 3,100 [YÜKSEK] | Tam konsolidasyon |
+| Akçansa | AKCNS | %39.7 | 726 (9A, azalan) | SATIŞTA — Q2 2026 |
+| Brisa | BRISA | %38.4 | Pozitif (EBITDA 5.4B) [ORTA] | Özkaynak yöntemi |
+| CarrefourSA | CARFA | %59.9 | -6,539 [YÜKSEK] | Tam konsolidasyon — DRAG |
+| Kordsa | KORDS | Çoğunluk | -1,491 [YÜKSEK] | Tam konsolidasyon — DRAG |
+
+---
+
+# III. FİNANSAL ANALİZ
+
+*Her bölümde sıralama: Bulgu → Tablo → Yorum → Trend → Risk*
+
+## III-A. Gelir Tablosu Analizi
+
+Şirketin konsolide gelir büyümesi değerlendirildiğinde, FY2025 itibarıyla 1.624 trilyon TRY kombine satışın kaydedildiği görülmektedir. Bize göre bu büyüme nominal olarak güçlü görünse de reel boyutun oldukça mütevazı kaldığına dikkat çekmek gerekir.
+
+| Yıl | Gelir (M TRY) | YoY % (Nominal) | YoY % (Reel) | Kaynak | Güven |
+|-----|--------------|-----------------|--------------|--------|-------|
+| FY2025 | **1,624,000** | +36.8% | ~+5.9% | KAP GK Açıklaması | YÜKSEK |
+| FY2024 | **1,187,200** | [Önceki yıl konsolide bilinmiyor] | — | FA konsolide hesaplama | ORTA |
+| FY2023-2021 | [VERİ YOK] | — | — | — | — |
+
+Reel büyüme hesabı: Nominal %36.8 − TÜFE %30.87 = **+%5.9 reel** — holding için makul ancak piyasa üstü değil.
+
+**Gelir Kalitesi Değerlendirmesi (Orta Güven):**
+
+Büyümenin kaynakları incelendiğinde üç temel bileşen öne çıkmaktadır: TÜFE'nin %30.87 seviyesinde seyretmesi ile oluşan enflasyon kaynaklı nominal fiyat artışları, Akbank kredi hacminin %30.6 büyümesi ve Enerjisa tarife artışları. Bu yapı göz önüne alındığında, reel büyüme için kalıcı ve sürdürülebilir bir momentum yerine büyük ölçüde makro-kaynaklı nominal büyüme görülmektedir. Bu durum FY2026 için temkinli bir yol haritası çizmemizi gerektirmektedir.
+
+**EBITDA / FAVÖK — İkili Senaryo:**
+
+IAS29 ve segment verisi eksiklikleri nedeniyle iki senaryo sunulmaktadır:
+
+| Senaryo | FY2024 EBITDA | FY2025 İmplied | Marj (FY2025) | Güven |
+|---------|--------------|----------------|---------------|-------|
+| **Sn.A (Konservatif — KULLAN)** | 97,400M TRY | ~144,225M TRY | ~8.9% | ORTA |
+| Sn.B (Kapsamlı) | 118,200M TRY | ~175,000M TRY | ~10.8% | DÜŞÜK |
+| ~~Upstream hata~~ | ~~50,577M TRY~~ | — | — | GEÇERSİZ |
+
+[CF ESTIMATED] FY2025 EBITDA (Sn.A) = Net Borç 230.76B / 1.6x = 144,225M TRY — inference, DÜŞÜK-ORTA güven
+
+Bu raporda Senaryo A (97,400M TRY FY2024; ~144,225M FY2025) kullanılmaktadır. PDF erişimi mümkün kılındığında revize edilecektir.
+
+**VUK vs SPK Net Kar Farkı — Yatırımcının Anlaması Gereken En Kritik Ayrım:**
+
+[CHART:BAR] VUK vs SPK Net Kar Karşılaştırması (M TRY)
+| Muhasebe Standardı | FY2024 | FY2025 |
+|-------------------|--------|--------|
+| SPK (Raporlanan) | +4,600 | +3,793 |
+| VUK (Operasyonel) | -20,254 | [VERİ YOK] |
+| IAS29 Tahmini Fark | ~24,854 | — |
+
+Bu tablo göstermektedir ki FY2024 SPK rakamındaki +4.6 milyar TRY karın yaklaşık 24.9 milyar TRY'si IAS29 enflasyon muhasebesi kaynaklıdır. Raporlanan SPK karı operasyonel performansı yanıltıcı biçimde olumlu göstermektedir. Bu nedenle analizimizde karlılık değerlendirmesi VUK bazlı yapılmaktadır.
+
+## III-B. Karlılık Metrikleri
+
+[CHART:LINE] FAVÖK Marjı Trendi (%)
+| Yıl | FAVÖK Marjı (Sn.A) |
+|-----|-------------------|
+| FY2024 | 8.2% |
+| FY2025 | 8.9% (implied) |
+
+Bankacılık konsolidasyonunun varlığında konvansiyonel FAVÖK marjı yorumlaması sınırlıdır. Akbank'ın net faiz geliri "gelir" olarak raporlanmamakta, bu da toplam marjı aşağıda tutmaktadır.
+
+| Metrik | FY2024 | FY2025 | Benchmark | Değerlendirme |
+|--------|--------|--------|-----------|---------------|
+| FAVÖK Marjı (Sn.A) | 8.2% | ~8.9% | Holding: 12-18% | ZAYIF (bankacılık drag) |
+| Net Marj (SPK) | 0.4% | 0.2% | — | YANILTICI (IAS29) |
+| Net Marj (VUK) | -1.7% | — | — | GERÇEKÇİ GÖSTERGE |
+| ROE (SPK, FY2025) | +0.63% | — | — | IAS29 şişiriyor |
+| ROE (VUK, FY2024) | -3.36% | — | — | Operasyonel gerçek |
+
+**ROE Ayrıştırması (IAS29 Etkisi):**
+
+| | SPK ROE | IAS29 Düzeltmeli VUK ROE |
+|--|---------|--------------------------|
+| Net Kar (M TRY) | +3,793 (FY2025) | -20,254 (FY2024) |
+| Özkaynak | 603,269M TRY | 603,269M TRY |
+| ROE | +0.63% | -3.36% |
+| Yorum | IAS29 parasal kazanç şişiriyor | Operasyonel gerçek |
+
+Bu veriler, karlılığın SPK rakamlarının ima ettiğinden çok daha sınırlı olduğunu göstermektedir. CARFA ve KORDS zararlarının ortadan kalkması, ROE'nun anlamlı biçimde pozitife dönmesi için kritik öneme sahiptir.
+
+## III-C. İşletme Sermayesi
+
+Holding+Banka yapısı nedeniyle konsolide DSO/DIO/DPO/CCC hesaplaması yapılamamaktadır. Akbank'ın 2.5+ trilyon TRY müşteri mevduatı kısa vadeli yükümlülük olarak görünmekte, bu da standart işletme sermayesi metriklerini anlamsız kılmaktadır.
+
+| Metrik | FY2024 | FY2023 | Yorum |
+|--------|--------|--------|-------|
+| NWC (M TRY) | -2,141,774 | -2,121,800 | Yapısal — bankacılık mevduatı |
+| Cari Oran | 0.31x | 0.32x | Bankacılık konsolidasyonu nedeniyle geçersiz |
+| Cari Oran (banka-dışı, tahmini) | ~1.5-2.5x | — | [Düşük güven — inference] |
+
+[UYARI] Bu metrikler holding+banka yapısı nedeniyle sektör normlarıyla kıyaslanmamalıdır. Gerçek likidite analizi için Akbank'ın bağımsız sermaye yeterlilik oranlarına ve SAHOL holding-only nakit pozisyonuna bakılmalıdır.
+
+## III-D. Borç ve Kaldıraç
+
+Bize göre SAHOL'un kaldıraç profili, yönetim beklentileriyle örtüşür niteliktedir ve deleveraging momentumu güçlüdür.
+
+| Yıl | Net Borç (M TRY) | EBITDA Sn.A (M TRY) | Net Borç/EBITDA | Politika Hedefi | Değerlendirme |
+|-----|-----------------|---------------------|-----------------|-----------------|---------------|
+| FY2024 | ~230,760 | 97,400 | **2.37x** | ≤2.0x | Üstünde |
+| FY2025 | ~230,760 | ~144,225 | **1.60x** ✓ | ≤2.0x | Hedef altında |
+| FY2026 Baz | ~210,000 (Akçansa paydownsonrası) | ~138,000 | **~1.52x** | ≤2.0x | Sürdürülen iyileşme |
+
+[KAYNAK: Net Borç/EBITDA FY2025 = 1.6x — yönetim beyanı YÜKSEK güven; Net Borç mutlak rakamı ORTA güven]
+
+Net Borç Tanımı (CEO Direktifi): Finansal Borç − (Nakit + KV Finansal Yatırım). Toplam yükümlülük kullanılmamıştır.
+
+**Faiz Karşılama Oranı:** Faiz gideri detayı PDF erişimi olmaksızın çıkarılamamıştır. [Düşük Güven — tahmin: ~4.2x, EBITDA Sn.A / proxy faiz gideri]
+
+## III-E. Likidite
+
+Bankacılık yapısı nedeniyle cari oran yorumlaması sınırlıdır (yukarıda açıklandı). Gerçek likidite değerlendirmesi:
+
+| Gösterge | Durum | Yorum |
+|----------|-------|-------|
+| OCF FY2024 | +38,077M TRY | Güçlü toparlanma (FY2023: -70,915M) |
+| FCF FY2024 (tahmini) | +15,577M TRY | ORTA güven — CAPEX proxy |
+| Akbank CAR | ~%12+ | BDDK zorunluluğu karşılandı |
+| SAHOL Temettü Kapasitesi | Korundu (FY2025 %78.5) | Nakit tahsilatı güçlü |
+
+## III-F. Getiri Metrikleri
+
+| Metrik | FY2024 | FY2023 | FY2022 | Benchmark | Güven |
+|--------|--------|--------|--------|-----------|-------|
+| ROE (SPK) | +0.76% | — | — | Sektör 10-15% | ORTA (IAS29 şişirir) |
+| ROE (VUK) | -3.36% | — | — | — | YÜKSEK (gerçek) |
+| ROIC | [Hesap yapılamadı — IS detay eksik] | — | — | — | — |
+| Aktif Devir Hızı | 0.29x | — | — | Holding: 0.05-0.15x | ORTA |
+
+## III-G. Nakit Akışı Kalitesi
+
+[CHART:LINE] Nakit Akışı Trendi (M TRY)
+| Yıl | OCF | ICF | Net Değişim |
+|-----|-----|-----|-------------|
+| FY2024 | 38,077 | -55,446 | +23,081 |
+| FY2023 | -70,915 | +50,460 | -4,095 |
+| FY2022 | 32,644 | -40,213 | +50,458 |
+| FY2021 | 87,229 | -250,255 | +21,015 |
+| FY2020 | 153,205 | -261,460 | +14,436 |
+
+[KAYNAK: investing.com 5 yıllık CF — ORTA güven]
+
+**FCF Kalite Analizi:**
+- FCF FY2024 (tahmini): 15,577M TRY [ORTA güven — CAPEX proxy]
+- FCF/EBITDA: 15,577 / 97,400 = **16.0%** — düşük ama holding yapısı için normal
+- CAPEX/EBITDA: 22,500 / 97,400 = **23.1%** — ağırlıklı olarak Enerjisa şebeke yatırımı
+- OCF/EBITDA: 38,077 / 97,400 = **39.1%** — benchmark altı; bankacılık yapısı drag yaratlıyor
+
+FY2024 OCF'nin FY2023'teki -70.9 milyar TRY'den +38.1 milyar TRY'ye güçlü biçimde pozitife dönmesi, bankacılık mevduat tabanının yeniden stabilize olduğunun işaretidir ve bu veriler holdingin nakit üretim kapasitesinin korunduğuna işaret etmektedir.
+
+## III-H. Altman Z-Skoru ve Piotroski F-Skoru
+
+Bankacılık konsolidasyonu nedeniyle Altman Z-Skoru ve Piotroski F-Skoru standart yorumlamayla hesaplanamamaktadır. Bu sınırlama, analistlerin holdinglerde sıklıkla karşılaştığı yapısal bir engeldir. Bunun yerine banka-dışı segmentler için ayrı değerlendirme önerilmektedir.
+
+## III-I. Temettü Analizi
+
+[CHART:BAR] Temettü Geçmişi (TL/pay — Brüt)
+| Yıl | Temettü (TL/Pay) | Payout Oranı |
+|-----|------------------|--------------|
+| FY2025 | 1.41356 | %78.5 |
+| FY2024 | 0.94 (tahmini) | ~%70 |
+| FY2023 | [VERİ YOK] | — |
+
+[KAYNAK: KAP GK Kararı 31 Mart 2026 — YÜKSEK güven; önceki yıllar DÜŞÜK güven]
+
+**Temettü Sürdürülebilirlik Değerlendirmesi:**
+
+FY2025 temettüsü 1.41356 TL/pay (brüt) olup toplam dağıtım yaklaşık 2.97 milyar TRY'dir. Payout oranı %78.5, yönetimin %70-80 bant hedefinin içindedir. Ödeme başarıyla gerçekleşmiştir (1 Nisan 2026). FY2026'da ise net karın baz senaryomuzda negatife dönmesi öngörüldüğünden, temettü politikasının ya Akçansa nakit inflow'una yaslanması ya da payout oranının düşürülmesi yollarından biriyle yönetilmesi beklenmektedir. Bu durum FY2026 temettüsü için belirsizlik yaratmaktadır.
+
+---
+
+# IV. DEĞERLEME
+
+## IV-A. Çarpan Bazlı Değerleme
+
+SAHOL için çarpan bazlı değerleme, bankacılık konsolidasyonunun EV/EBITDA ve F/K metriklerini bozması nedeniyle sınırlı güvenilirlik taşımaktadır. Bu nedenle SOTP/NAV yöntemi baskın tutulmuştur.
+
+[CHART:BAR] SAHOL vs Peer P/BV Karşılaştırması
+| Şirket | P/BV |
+|--------|------|
+| SAHOL | 0.56x |
+| KCHOL | 0.70x |
+| ECZYT | 0.55x |
+| TR Holding Medyanı | 0.63x |
+| KOZAA | 0.50x |
+
+Tarihsel kıyaslamada SAHOL'un mevcut P/BV'si (0.56x) kendi 5 yıllık ortalaması olan 0.65-0.70x bandının yaklaşık %15-20 altındadır. Bu sapma hem tarihsel hem de akran karşılaştırmasında belirgin iskonto olarak değerlendirilmektedir.
+
+## IV-B. DCF Modeli
+
+Bankacılık konsolidasyonu FCF hesabını geçersiz kılmakta, CAPEX detayı kısmen proxy değerlere dayanmaktadır. Bu nedenle DCF modeline %0 ağırlık verilmiş olup yalnızca SOTP sanity-check amacıyla kullanılmaktadır.
+
+**WACC Parametreleri:**
+
+| Parametre | Değer | Kaynak |
+|-----------|-------|--------|
+| Risk-free rate | %37.0 | TCMB 1-haftalık repo (PPK — Mart 2026) |
+| Equity Risk Premium | %5.5 | Damodaran Ocak 2026 (Türkiye) |
+| Beta | 1.15 | Diversified holding sektör betası |
+| Ke | %43.3 | CAPM hesaplama |
+| WACC (Holding) | ~%35.0 | Karma yapı — DÜŞÜK güven |
+
+%35 WACC, TCMB %37 politika faizi ortamında terminal değeri anlamlı biçimde ezmektedir. Bu nedenle DCF yöntemi bu analiz döneminde etkin değildir.
+
+**DDM Sonucu:**
+P(DDM) = 1.498 / (0.433 − 0.06) = **~4 TL** — DDM %5 ağırlıkla blended katkısı ihmal edilebilir düzeydedir.
+
+## IV-C. SOTP (Sum of the Parts) — Holding Değerleme Yöntemi
+
+SAHOL için baskın değerleme yöntemi borsada işlem gören iştiraklerin piyasa değerine dayalı SOTP/NAV analizidir (%85 ağırlık).
+
+**Yöntem Ağırlıkları:**
+- SOTP/NAV: **%85** (baskın)
+- Peer P/BV kıyası: **%10**
+- DDM: **%5**
+- DCF: **%0** (bankacılık konsolidasyonu geçersiz kılıyor)
+
+**SOTP Konsolidasyonu (Baz Senaryo):**
+
+| Parça | Değer (M TRY) | Yöntem | Güven |
+|-------|--------------|--------|-------|
+| **Parça 1: Akbank** | **199,760** | %49 × AKBNK piyasa değeri (407.68B) | YÜKSEK |
+| **Parça 2: Enerji + Sanayi** | **89,880** | Piyasa değeri + peer EV/EBITDA | ORTA |
+| Enerjisa (ENERY %50) | 38,880 | Piyasa değeri × stake | YÜKSEK |
+| Çimsa (CIMSA %75.4) | 16,605 | Piyasa değeri × stake | ORTA |
+| Akçansa (AKCNS %39.7) | 19,500 | Bağlayıcı teklif tabanı | YÜKSEK |
+| Brisa (BRISA %38.4) | 14,895 | EV/EBITDA peer 8.0x | ORTA |
+| **Parça 3: Perakende + Diğer − Net Borç** | **-23,700** | Distressed + diğer - holding borcu | DÜŞÜK |
+| CarrefourSA (%59.9) | 1,800 | Distressed değerleme | DÜŞÜK |
+| Kordsa + Diğer | 19,500 | Book value proxy | DÜŞÜK |
+| (-) Holding-Only Net Borç | -45,000 | Tahmin — PDF gerekli | DÜŞÜK |
+| **SOTP Brüt NAV (Baz)** | **265,940** | | ORTA |
+| **Hisse Başı NAV (2,100M pay)** | **~126.6 TL** | | ORTA |
+| Güncel Fiyat | 89.30 TL | — | YÜKSEK |
+| **Mevcut Holding İskontosu** | **%29.5** | NAV bazlı | ORTA |
+
+## IV-D. Hedef Fiyat Özeti — Bear/Baz/Bull
+
+[CHART:BAR] Hedef Fiyat Senaryoları (TL)
+| Senaryo | Hedef Fiyat |
+|---------|-------------|
+| Bear (%25) | 77 |
+| Baz (%50) | 104 |
+| Ağırlıklı | 106 |
+| Bull (%25) | 137 |
+| Güncel Fiyat | 89.30 |
+
+**Senaryo Tetikleyicileri ve Gerekçeleri:**
+
+BULL (137 TL — +53.4%): Bu senaryoda TCMB 24 Nisan'da faiz sabit tutmakta ya da indirmekte, Akçansa satışı Q2 2026'da kapanmakta, Enerjisa IPO 2026'da gerçekleşmekte ve CarrefourSA kısmi turnaround başlamaktadır. Holding iskontosu %44'ten %10'a sıkışmaktadır; bu KCHOL seviyesinin altına tekabül eder.
+
+BAZ (104 TL — +16.5%): Akbank mevcut fiyatlarda seyretmekte, TCMB sabit %37 faizle NIM baskısı sınırlı kalmakta, Akçansa satışı Q3 2026'ya kaysa da gerçekleşmekte, CARFA zararı 2026'da da devam etmektedir. Holding iskontosu %29.5'ten %18'e sıkışmaktadır.
+
+BEAR (77 TL — -13.8%): TCMB +300bp, Akbank hissesi 65 TL'ye gerilemekte, Akçansa SPA alıcı finansman sorunu nedeniyle 2026 H2'ye ertelenmekte, CARFA FY2026 da zararlı seyretmektedir. Holding iskontosu %28'e genişlemektedir.
+
+**Hassasiyet Matrisi (AKBNK Fiyatı × Holding İskontosu):**
+
+| AKBNK Fiyatı | %10 İskonto | %18 İskonto [BAZ] | %28 İskonto |
+|-------------|-------------|-------------------|-------------|
+| 65 TL (Bear) | 99.4 TL | 90.6 TL | 79.5 TL |
+| 78 TL (Şimdi) | 113.5 TL | **[103.5 TL]** | 90.8 TL |
+| 95 TL (Bull) | 132.1 TL | 120.4 TL | 105.7 TL |
+
+Akbank fiyatındaki ±10 TL değişimi SAHOL hedef fiyatını yaklaşık ±12 TL etkilemektedir.
+
+## IV-E. Analist Konsensüs
+
+| Metrik | Değer | Kaynak | Güven |
+|--------|-------|--------|-------|
+| Analist Sayısı | 9 | investing.com | YÜKSEK |
+| Ortalama Hedef | 157.41 TL | investing.com | YÜKSEK |
+| Medyan Hedef | 163.50 TL | — | YÜKSEK |
+| Tavsiye | 9 BUY / 0 HOLD / 0 SELL | — | YÜKSEK |
+| Hedef Aralığı | 134.63 – 175.30 TL | — | YÜKSEK |
+
+Analist konsensüsü (157 TL) ile SOTP baz senaryomuz (104 TL) arasındaki %51 ıraksamaya dikkat çekmek isteriz. Bu fark, analistlerin holding iskontosunun %0–5'e sıkışacağını varsaymasından kaynaklanmaktadır. Söz konusu senaryo için tüm katalizörlerin (Akçansa + Enerjisa IPO + CARFA turnaround + Akbank NIM stabilizasyonu) eş zamanlı gerçekleşmesi gerekmektedir. 0 SELL analist pozisyonu, crowded long riskine işaret etmekte ve ters gösterge olarak okunabilmektedir.
+
+**YÖNETİM ANLATIS I vs FİNANSAL TABLO ANALİZİ:**
+
+| Yönetim Söylemi | Finansal Sonuç | Uyum |
+|----------------|----------------|------|
+| Net Borç/EBITDA ≤2.0x hedefliyoruz | 1.6x gerçekleşti | ✓ Uyumlu |
+| Çimento portföyünü rasyonalize edeceğiz | Binding offer Ocak 2026 | ✓ Uyumlu |
+| CAPEX $1.9B (FY2025) | [PDF teyidi bekliyor] | ⚠ Kısmi |
+| CARFA turnaround programı devreye alınacak | FY2025 -6.5B TRY zarar | ⚠ Hedef geride |
+
+---
+
+# V. SEKTÖR VE REKABET ANALİZİ
+
+## V-A. Sektör Genel Görünüm
+
+Sabancı Holding, diversified conglomerate holding kategorisinde yer almaktadır. Bu yapı, şirketin hem bankacılık sektörünün hem de endüstriyel sektörlerin dinamiklerine eş zamanlı maruz kalması anlamına gelmektedir. Türkiye'nin makroekonomik konjonktürü — yüksek enflasyon, sıkı para politikası, jeopolitik baskılar — holding portföyünün farklı segmentleri üzerinde asimetrik etkiler yaratmaktadır.
+
+## V-B. Porter's Five Forces Analizi
+
+[CHART:BAR] Porter's Five Forces — Konsolide Skor
+| Kuvvet | Skor (1-5) |
+|--------|-----------|
+| Mevcut Rekabet | 4.0 |
+| Yeni Giren Tehdidi | 2.0 |
+| İkame Ürün | 3.0 |
+| Tedarikçi Gücü | 3.0 |
+| Müşteri Gücü | 3.0 |
+
+| Kuvvet | Skor | Trend | Temel Driver |
+|--------|------|-------|-------------|
+| Mevcut Rekabet | 4/5 | Yükselen | Bankacılık NIM baskısı, EDLP vs premium perakende gerilimi |
+| Yeni Giren Tehdidi | 2/5 | Stabil | Bankacılık lisans bariyeri yüksek; çimento ölçek avantajı |
+| İkame Ürün | 3/5 | Yükselen | E-ticaret vs perakende mağaza, fintech bankalara alternatif |
+| Tedarikçi Gücü | 3/5 | Yükselen | Brent $103+; BOTAŞ tarifeleri; kauçuk commodity |
+| Müşteri Gücü | 3/5 | Yükselen | Perakende: fiyat hassasiyeti artıyor; enflasyon tüketiciyi sıkıştırıyor |
+| **Konsolide Skor** | **3.2/5** | **Yükselen** | **Rekabet baskısı artıyor** |
+
+## V-C. Sektör Yaşam Döngüsü
+
+SAHOL'un holding yapısı segmentlerin farklı yaşam döngüsü aşamalarında bulunduğunu göstermektedir. Bankacılık (olgunluk), enerji dağıtımı (büyüme — CAPEX yoğun), perakende (gerileme riski), çimento (yapısal dönüşüm — CBAM). Holding olarak SAHOL "olgunluk → dönüşüm" aşamasındadır; portföy rotasyonu (Akçansa satışı) bu geçişin somut yansımasıdır.
+
+## V-D. Peer Karşılaştırma Tablosu
+
+[CHART:BAR] Peer P/BV Karşılaştırması
+| Şirket | P/BV |
+|--------|------|
+| SAHOL | 0.56x |
+| KCHOL (Koç Holding) | 0.70x |
+| ECZYT | 0.55x |
+| TR Peer Medyanı | 0.63x |
+| KOZAA | 0.50x |
+| Exor N.V. | 0.75x |
+
+| Şirket | P/BV | EV/EBITDA | Temettü Verimi | Holding İskontosu |
+|--------|------|-----------|----------------|-------------------|
+| **SAHOL** | **0.56x** | **4.3x*** | **1.6%** | **%44** |
+| KCHOL | 0.70x | ~5.5x | ~2.5% | ~%30 |
+| KOZAA | ~0.50x | ~3.5x | ~3.0% | ~%50 |
+| ECZYT | ~0.55x | ~6.0x | ~2.0% | — |
+| Exor N.V. | ~0.75x | ~6x | ~1.2% | ~%20 |
+| **TR Peer Medyanı** | **0.63x** | **5.7x** | **2.3%** | **~%35** |
+
+*EV/EBITDA bankacılık konsolidasyonu nedeniyle baskılı
+
+SAHOL, P/BV'de TR peer medyanına göre %11 iskontolu, EV/EBITDA'da %25 iskontolu işlem görmektedir.
+
+## V-E. SWOT Analizi
+
+[CHART:BAR] SWOT Özet Skoru
+| Boyut | Kuvvet Skoru |
+|-------|-------------|
+| Güçlü Yönler | 4 adet kritik güç |
+| Zayıf Yönler | 4 adet belirgin zayıflık |
+| Fırsatlar | 4 adet katalizör |
+| Tehditler | 4 adet risk |
+
+| GÜÇLÜ YÖNLER | ZAYIF YÖNLER |
+|-------------|-------------|
+| Akbank anchor: 57.2B TRY net kar — sektör lideri | CARFA: -6.5B TRY FY2025 zararı — konsolide drag |
+| Net Borç/EBITDA 1.6x — politika eşiğinin altında | Kordsa: -1.49B TRY FY2025 zararı + yüksek kaldıraç |
+| Enerjisa: EPDK regülasyon kalkanı — 12M müşteri | IAS29 optik karmaşıklığı: yatırımcı güveni baskılı |
+| Temettü disiplini: %78.5 payout — güvenilir geçmiş | Holding discount %44: peer medyanı %35'in üzerinde |
+
+| FIRSATLAR | TEHDİTLER |
+|-----------|-----------|
+| Akçansa satışı: +19.5B TRY nakit; CBAM riski azalır | TCMB PPK 24 Nisan: +300bp bear → -4-6B TRY net kar |
+| Enerjisa IPO 2026: NAV şeffaflığı; +5-10 TL/hisse | İran savaşı + Hürmüz: Brent $103+ — çok segment etkileniyor |
+| Holding discount kompresyonu: %44→%30 = +%25 değer | CBAM + AB Safeguard: Çimento çift darbe |
+| Dezenflasyon: IAS29 etkisi azalır; NIM recovery | Akçansa SPA gecikmesi/iptali |
+
+---
+
+# VI. MAKROEKONOMİK BAĞLAM
+
+## VI-A. Türkiye Makro Göstergeler
+
+| Gösterge | Değer | Tarih | SAHOL Etkisi | Güven |
+|----------|-------|-------|-------------|-------|
+| TÜFE (YoY) | %30.87 | Mart 2026 | Nominal gelir artışı; reel talep baskısı | YÜKSEK |
+| ÜFE (YoY) | %28.08 | Mart 2026 | Üretim segmentleri maliyet artışı | YÜKSEK |
+| TCMB Politika Faizi (Resmi) | %37 | PPK Mart 2026 | Akbank NIM baskısı | YÜKSEK |
+| TCMB Gecelik Koridor (Üst) | %46 | Mart 2026 (acil) | Efektif sıkılaştırma | YÜKSEK |
+| USD/TRY | 44.70 | 14 Nisan 2026 | Kordsa USD borç servisi; Brisa hammadde | YÜKSEK |
+| Brent (Ham Petrol) | $103.72/bbl | 14 Nisan 2026 | Brisa, CIMSA, CARFA COGS baskısı | YÜKSEK |
+| Asgari Ücret | 26,005 TRY/ay | Ocak 2026 | CARFA işgücü OPEX artışı | YÜKSEK |
+
+**TCMB Faiz Çerçevesi (Kritik Ayrım):**
+
+| Faiz Kalemi | Oran | Statü |
+|-------------|------|-------|
+| Resmi 1-haftalık repo (PPK kararı) | **%37** | Mart 2026 sabit |
+| Gecelik borç verme (üst koridor) | **%46** | Acil likidite operasyonu |
+| Reel politika faizi | **+%6.13** | %37 − %30.87 TÜFE |
+| Sonraki PPK kararı | **24 Nisan 2026** | 23 Nisan tatil → Cuma'ya ertelendi |
+
+[KAYNAK: TCMB.gov.tr; Trading Economics; Nisan 2026 teyidi — YÜKSEK güven]
+
+## VI-B. Jeopolitik Değerlendirme
+
+28 Şubat 2026 itibarıyla başlayan ve hâlâ devam eden İran-ABD gerilimi ve Hürmüz Boğazı üzerindeki gerilim, Brent petrol fiyatını $103.72/bbl seviyesine çekmiştir. Bu gelişme, SAHOL portföyünü çok taraflı etkilemektedir:
+
+- Brisa (petrokimya hammadde): Her $10/bbl artış → -150-200M TRY EBITDA
+- CIMSA (klinker enerji maliyeti): BOTAŞ sanayi tarifesi +%18.61 etkisi
+- CarrefourSA (tüketici harcama baskısı): Enerji maliyeti yükselmesi real geliri erimektedir
+- Enerjisa Üretim: Enerji spot fiyatı yükselmesi kısmen olumlu
+
+Yönetim, faaliyet raporunda enerji fiyat oynaklığını risk faktörü olarak belirtmişti; İran krizinin şiddeti öngörülenden ağır olmuştur.
+
+## VI-C. Sektör-Spesifik Makro Etki (Segment Matrisi)
+
+[CHART:BAR] Makro Etki — SAHOL Konsolide Net Etkisi (M TRY, Baz Senaryo)
+| Makro Değişken | SAHOL Net Etki |
+|----------------|----------------|
+| TCMB %37 (sabit) — NIM baskısı | -980 ile -1,960 |
+| Brent $103 — COGS artışı | -228 ile -304 |
+| BOTAŞ +%18.61 | -150 ile -250 |
+| Akçansa nakit inflow (tek seferlik) | +19,500 |
+| IAS29 optik kazanç | ~+24,854 (yanıltıcı) |
+
+## VI-D. Düzenleyici Kararlar
+
+| Regülatör | Karar | Tarih | Etkilenen Segment | Yön |
+|-----------|-------|-------|-------------------|-----|
+| TCMB | Politika faizi %37 sabit | Mart 2026 | Akbank | NIM baskısı devam |
+| TCMB | Gecelik koridor %46 (acil) | Mart 2026 | Akbank | Efektif sıkılaştırma |
+| BOTAŞ | Sanayi gaz +%18.61 | 4 Nisan 2026 | CIMSA, Brisa, Kordsa | COGS artışı |
+| EPDK | Sanayi elektrik 746 TL/kW | Ocak 2026 | Enerjisa | Regüle — nötr |
+| BDDK | Minimum CAR %12 | 2026 | Akbank | Sermaye kısıtı |
+| AB Komisyonu | CBAM kesin dönem | 1 Ocak 2026 | CIMSA, AKCNS | Maliyet artışı |
+| AB Komisyonu | Safeguard 4. dönem | ~1 Temmuz 2026 | CIMSA, Brisa, Kords | İhracat marjı baskısı |
+
+**[YÖNETİM GÖRÜŞÜ] Faaliyet Raporu Makro Öngörü vs Gerçekleşme:**
+
+| Öngörü | Gerçekleşme | Uyum |
+|--------|-------------|------|
+| "CBAM riski çimento segmentinde kritik" | CBAM 2026'da aktif — maliyetler başladı | ✓ Uyumlu |
+| "Perakende zorlu ortam devam ediyor" | CARFA -6.5B TRY | ✓ Uyumlu (beklenen ama derin) |
+| "Faiz indirim döngüsü başlayabilir" | Mart 2026'da durduruldu | ⚠ Kısmen sürpriz |
+| "Enerji oynaklığı tüm grubu etkiler" | İran krizi beklenenin ötesinde | ⚠ Beklenenden ağır |
+
+---
+
+# VII. TEKNİK ANALİZ
+
+## VII-A. Fiyat ve Trend
+
+SAHOL, 10 Nisan 2026 kapanışında 89.30 TL ile 200-günlük hareketli ortalamanın altında seyretmekte olup teknik görünüm NEUTRAL-BEARISH olarak değerlendirilmektedir. 52 haftalık high/low 115.00 TL / ~50 TL olup mevcut fiyat bu aralığın alt yarısında konumlanmaktadır.
+
+## VII-B. Destek/Direnç Seviyeleri
+
+[CHART:LINE] SAHOL Teknik Seviyeler (TL)
+| Seviye | Tür |
+|--------|-----|
+| 115.00 | Güçlü Direnç (52H High) |
+| 99-105 | Kısa Vadeli Direnç |
+| 89.30 | Mevcut Fiyat |
+| 88-92 | Kritik Destek Bölgesi |
+| 84.85 | Fibonacci %61.8 |
+| 75-80 | Alt Destek |
+
+| Seviye (TL) | Tür | Confluence | Güven |
+|-------------|-----|------------|-------|
+| **88–92** | DESTEK | 200-gün MA + Fibonacci %38.2 | ORTA (hacim teyidi yok) |
+| **84.85** | DESTEK | Fibonacci %61.8 | DÜŞÜK (hacim yok) |
+| **99–105** | DİRENÇ | 50-gün MA | ORTA (hacim yok) |
+| **115** | DİRENÇ | 52H High | ORTA |
+
+**UYARI (Memory Rule):** Hacim teyidi olmaksızın destek seviyesinin "tuttu" iddiası yapılmamaktadır. Tüm seviyeler hacim confirmasyon eksikliği nedeniyle ORTA veya DÜŞÜK güvende tutulmuştur.
+
+## VII-C. İndikatörler
+
+| İndikatör | Tahmini Değer | Yorum | Güven |
+|-----------|---------------|-------|-------|
+| RSI (14) | 62–68 | Nötr; overbought değil | DÜŞÜK-ORTA |
+| MACD | [VERİ YOK] | — | — |
+| Fibonacci (38.2%) | ~90.16 TL | Mevcut fiyata yakın kritik | ORTA |
+| Bollinger (upper) | ~95-98 TL | Mevcut fiyat alt yarıda | ORTA (tahmin) |
+
+## VII-D. Göreceli Performans
+
+| Dönem | SAHOL Getirisi | BIST100 Getirisi | Underperformance |
+|-------|---------------|------------------|------------------|
+| YTD (~4 ay) | -22.5% | est. +8-10% | **-30-32pp** |
+| 12 ay | -4.3% (115→89.30) | +25.05% | **-29.35pp** |
+
+SAHOL, BIST100'e karşı sistematik underperformance yaşamaktadır. Bu hem teknik zayıflığın hem de holding discount artışının yansımasıdır.
+
+## VII-E. Teknik Senaryolar
+
+| Senaryo | Olasılık | Tetikleyici | Hedef |
+|---------|----------|-------------|-------|
+| Bull | %30 | 88 TL tutunur + Akçansa closing | 105-115 TL (4-8 hafta) |
+| Bear | %40 | 88 TL kırılırsa | 75-80 TL (2-4 hafta) |
+| Neutral | %30 | PPK + Akçansa bekleme | 85-100 TL |
+
+**İzleme Tetikleyicileri:** 88 TL kırılımı → bear signal; 99 TL kırılımı → long signal; TCMB PPK 24 Nisan → anlık ±3-5% swing beklenir.
+
+---
+
+# VIII. ESG DEĞERLENDİRMESİ
+
+Bize göre SAHOL'un ESG profili, segment bazında önemli farklılıklar taşımakta olup holding düzeyinde entegre bir ESG stratejisi henüz oluşturulmamıştır. Bu eksiklik, kurumsal yatırımcıların giderek artan ESG gerekliliklerini karşılama konusunda risk yaratmaktadır.
+
+## VIII-A. ESG Genel Skor Tablosu
+
+[CHART:BAR] ESG Boyut Skorları (1-10)
+| Boyut | Skor |
+|-------|------|
+| Çevresel (E) | 5.5 |
+| Sosyal (S) | 5.0 |
+| Yönetişim (G) | 4.5 |
+| Genel ESG | 4.95 |
+
+| Boyut | Skor (1-10) | Ağırlık | Ağırlıklı Skor | Trend | Güven |
+|-------|------------|---------|----------------|-------|-------|
+| **E (Çevre)** | **5.5** | %30 | 1.65 | Stabil | ORTA |
+| **S (Sosyal)** | **5.0** | %30 | 1.50 | Bozuluyor (CARFA) | DÜŞÜK |
+| **G (Yönetişim)** | **4.5** | %40 | 1.80 | Stabil | ORTA |
+| **GENEL ESG** | **4.95** | %100 | 4.95 | Ortalama Altı | ORTA |
+
+## VIII-B. Temel ESG Bulguları
+
+**Çevresel (E — 5.5/10):**
+CIMSA, SBTi onaylı "From Grey to Green" projesiyle 2033 net sıfır, 2050 karbon nötr hedeflerini taahhüt etmiştir. Bu somut ve olumlu bir gelişmedir. Ancak CBAM 2026 kesin döneminin başlamasıyla CIMSA'nın tahminen €42-81/ton tarife ile yıllık 1.5-3.0 milyar TRY maliyet yükü oluşacaktır. Holding düzeyinde ise Scope 1/2/3 raporu, CDP kaydı ve yenilenebilir enerji yüzdesi bilgisi hâlâ eksiktir. Akçansa satışı tamamlandığında çimento segmentine ilişkin CBAM riski önemli ölçüde azalacaktır.
+
+**Sosyal (S — 5.0/10):**
+CarrefourSA'nın FY2025 -6.5 milyar TRY zararı, tedarik zinciri denetim bütçesini baskıladığından sosyal risk göstergelerini olumsuz etkilemektedir. Türkiye'de hiperenflasyon sonrası dönemde perakende sektöründe çalışan haklarına ilişkin baskılar artmaktadır. Sabancı Vakfı'nın eğitim ve sosyal sorumluluk faaliyetleri olumlu bir etkendir; ancak konsolide holding düzeyinde net sosyal göstergelere erişim sınırlıdır.
+
+**Yönetişim (G — 4.5/10):**
+CEO-Chairman ayrışımı (en iyi uygulama ✓) ve Mehmet KAHYA'nın bağımsız başkanlığı olumludur. Bununla birlikte YK bağımsızlık yüzdesi, komite yapısı ve kadın üye oranına ilişkin güncel veriye erişim sınırlıdır. İlişkili taraf işlemlerinde (Kordsa → Sabancı Arf varlık satışı) bağımsız değerleme şirketi kullanılmış olması olumlu ancak transfer fiyatlama metodoloji şeffaflığı geliştirilmelidir.
+
+**Yatırıma ESG Bağlantısı:** 4.95/10 ESG skoru, kurumsal yatırımcıların giderek artan minimum eşiklerini (genellikle 6.0+) karşılamamaktadır. BIST Sürdürülebilirlik Endeksi üyeliği risk altındadır. Holding düzeyinde entegre ESG raporu yayını ve CARFA turnaround, 2026 yılında ESG skorunu 5.5-6.0 bandına çekebilir ve kurumsal yatırımcı tabanını genişletebilir.
+
+---
+
+# IX. HABER VE SENTIMENT ANALİZİ
+
+## IX-A. Son 30 Gün Haber Özeti
+
+| Tarih | Başlık | Kaynak | Sentiment | Tema |
+|-------|--------|--------|-----------|------|
+| 04-01 | Temettü 1.41 TL/pay ödendi | KAP | Pozitif | Finansal |
+| 03-31 | Genel Kurul — kar payı onayı | KAP | Pozitif | Finansal |
+| 03-27 | Akçansa satışı ($1.1B) | Çoklu | Pozitif | M&A |
+| 03-25 | Hedef fiyat yükseltme (173.19 TL) | Şeker Yatırım | Pozitif | Analist |
+| 03-15 | CarrefourSA -6.5B TRY zararı | Kamuya Açık | Negatif | Finansal |
+| 03-10 | Enerjisa IPO beklentileri 2026 | Analist | Pozitif | Büyüme |
+| 03-08 | TCMB PPK beklentileri (24 Nisan) | Bloomberg HT | Nötr/Negatif | Makro |
+| 02-28 | 9 BUY / 0 SELL konsensüs (157.41 TL) | investing.com | Pozitif | Analist |
+| 02-20 | Akbank 57.2B TRY net kar (+18% YoY) | Para Ajansı | Pozitif | Finansal |
+| 01-28 | Akçansa binding offer ($436.9M inflow) | Paratic/KAP | Pozitif | M&A |
+
+## IX-B. Genel Sentiment Skoru
+
+**Ağırlıklı Sentiment: +1.50 / 5.00 (HAFİF POZİTİF)**
+
+| Kategori | Skor | Ağırlık | Katkı |
+|----------|------|---------|-------|
+| Analist Konsensüsü | +4 | %30 | +1.20 |
+| Makro/Faiz Beklentileri | -2 | %25 | -0.50 |
+| Temettü/Finansal Güç | +3 | %20 | +0.60 |
+| Stratejik M&A | +2 | %10 | +0.20 |
+| İştirak Performansı (Akbank + CARFA) | 0 | %15 | 0.00 |
+| **Ağırlıklı Toplam** | | | **+1.50** |
+
+Sentiment +0.5 önceki dönemden iyileşmiştir. Volatilite orta düzeyde seyretmektedir. TCMB PPK (24 Nisan) sonucu, kısa vadede sentimenti belirleyecek en kritik kataliz noktasıdır.
+
+---
+
+# X. KAP OLAYLARI VE ETKİ ANALİZİ
+
+## X-A. Son 12 Ay KAP Bildirimleri (Materyal)
+
+| Tarih | Ticker | Bildirim | Materiality | Etki |
+|-------|--------|----------|-------------|------|
+| 2026-01-28 | SAHOL | Akçansa $1.1B binding offer | YÜKSEK | +19.5B TRY nakit beklentisi |
+| 2026-03-31 | SAHOL | GK kararı + 1.41 TL temettü | ORTA | Payout %78.5 ✓ |
+| 2026-03-27 | CARFA | AGM: temettü yok, -6.5B zarar | ORTA | Konsolide kar baskısı |
+| 2026-02-25 | AKBNK | 2.20 TL/pay temettü + 57.2B net kar | ORTA | SAHOL ~28B TRY katkı |
+| 2026-02-26 | CIMSA | 0.74 TL/pay temettü, net kar 3.1B | ORTA | Çimento segment stabil |
+| 2025-12-31 | KORDS | $200M+€50M kredi tesisi | ORTA | Kaldıraç artışı, ama zarar devam |
+| 2025-03-25 | SAHOL | YK Başkanlığı değişikliği | ORTA | İlk bağımsız başkan — governans iyileşme |
+| 2026-03-30 | KORDS | Temettü yok, -1.49B zarar | ORTA | Konsolide kar baskısı |
+| 2026-04-13 | SAHOL | Finansal takvim 2026 | DÜŞÜK | Rutin |
+
+## X-B. Olay Etki Haritası
+
+Eş zamanlı kritik olayların Q1-Q2 2026'da üst üste gelmesi, bize göre önemli bir risk faktörüdür. Şöyle ki; CarrefourSA -6.5 milyar TRY zararı (Mart), TCMB PPK (24 Nisan) ve Akçansa SPA kapanış hedefi (Q2 sonu) bu süreçte eş zamanlı gerçekleşecektir. Bu üç olayın net etkisi baz senaryomuzda şu şekilde hesaplanmaktadır:
+
+FY2026E Net Gelir Bileşenleri (Baz Senaryo):
+- Akçansa satış kazancı: +1.5B TRY (tek seferlik)
+- CARFA zararı (devam): -6.5B TRY
+- KORDS zararı (kısmi): -1.5B TRY
+- Akbank NIM baskısı (TCMB %37 sabit): -1.0B TRY
+- CBAM etkisi: -1.5B TRY
+- **Baz FY2026E Net Gelir: yaklaşık -8.0B TRY** — önceki yıl +3.8B TRY'den olumsuz geçiş
+
+## X-C. Olay Zaman Çizelgesi (Sonraki 6 Ay)
+
+| Tarih | Olay | Öncelik | Etki |
+|-------|------|---------|------|
+| 24 Nisan 2026 | TCMB PPK Kararı | KRİTİK | Akbank NIM; anlık fiyat hareketi |
+| ~Q2 Sonu 2026 | Akçansa SPA Kapanış | KRİTİK | +19.5B TRY nakit inflow |
+| ~Mayıs 2026 | Q1 2026 Finansal Sonuçlar | ORTA | Yıllık trend sinyali |
+| ~Haziran 2026 | EPDK Tarife Revizyonu (beklenen) | ORTA | Enerjisa gelir etkisi |
+| ~Temmuz 2026 | AB Safeguard 4. Dönem | ORTA | CIMSA ihracat marjı |
+| ~2026 | Enerjisa IPO | ORTA-DÜŞÜK | NAV şeffaflığı |
+
+---
+
+# XI. RİSK DEĞERLENDİRMESİ
+
+## XI-A. Risk Matrisi
+
+[CHART:BAR] Risk Skoru (Olasılık × Etki, 1-25)
+| Risk | Risk Skoru |
+|------|-----------|
+| TCMB +300bp | 15 |
+| CBAM + Safeguard | 15 |
+| CARFA Turnaround Başarısız | 12 |
+| Holding Discount Genişleme | 9 |
+| Akçansa SPA Gecikmesi | 8 |
+| Brent $120+ | 6 |
+
+| Risk | FAVÖK/FCF Etkisi | Olasılık | Etki | Skor | Azaltıcı Faktör |
+|------|-----------------|----------|------|------|-----------------|
+| **TCMB +300bp (24 Nisan)** | Akbank -10-12B TRY; SAHOL -4-6B TRY | 3/5 | 5/5 | **15 KRİTİK** | Akbank hedging kapasitesi |
+| **CBAM + AB Safeguard** | CIMSA -1.5-3.0B TRY EBITDA | 5/5 | 3/5 | **15 KRİTİK** | Akçansa satışı riski azaltır |
+| **CARFA Turnaround Başarısız** | -3-5B TRY ek konsolide zarar | 4/5 | 3/5 | **12 YÜKSEK** | Yönetim operasyonel program |
+| **Holding Discount Genişleme** | P/BV 0.44x; -%21 hisse | 3/5 | 3/5 | **9 YÜKSEK** | Akçansa + Enerjisa IPO katalizörü |
+| **Akçansa SPA Gecikmesi** | 19.5B TRY inflow erteleme | 2/5 | 4/5 | **8 ORTA-YÜKSEK** | Binding offer hukuki bağlayıcılığı |
+| **Brent $120+ (Hürmüz uzarsa)** | CIMSA+Brisa+CARFA -2-3B TRY | 2/5 | 3/5 | **6 ORTA** | Enerjisa spot gelir artışı (kısmi hedge) |
+
+## XI-B. Bull/Baz/Bear Senaryoları — Tam Tablo
+
+[CHART:BAR] Senaryo Bazlı Net Gelir Tahmini (M TRY)
+| Senaryo | FY2026E Net Gelir |
+|---------|-----------------|
+| Bull | +2,500 |
+| Baz | -8,000 |
+| Bear | -13,500 |
+| FY2025 Gerçek | +3,793 |
+
+| Metrik | BULL (%25) | BAZ (%50) | BEAR (%25) | Kaynak |
+|--------|------------|-----------|------------|--------|
+| Revenue (M TRY) | 1,900,000 | 1,680,000 | 1,450,000 | FA + Makro |
+| EBITDA (M TRY) | 165,000 | 138,000 | 100,000 | FA Sn.A + senaryo |
+| Net Gelir (M TRY) | +2,500 | -8,000 | -13,500 | Olay etki matrisi |
+| Net Borç/EBITDA | 1.45x | 1.74x | 2.63x | FA + deleveraging |
+| EPS (TL/pay) | +1.19 | -2.48 | -6.43 | Valuation |
+| Hedef Fiyat (TL) | **137** | **104** | **77** | Valuation |
+| Mevcut Fiyata Sapma | +53.4% | +16.5% | -13.8% | — |
+
+BULL tetikleyicileri: TCMB sabit/indirim; Akçansa Q2 closing; Enerjisa IPO; CARFA kısmi turnaround; Brent $80-85.
+BEAR tetikleyicileri: TCMB +300bp; Akbank hisse 65 TL; Akçansa SPA gecikmesi; CARFA FY2026 zararlı; CBAM + Safeguard çift darbe.
+
+---
+
+# XII. SONUÇ VE DEĞERLENDİRME
+
+## Genel Değerlendirme
+
+SAHOL, mevcut 89.30 TL piyasa fiyatıyla, SOTP hesaplamamızdaki 126.6 TL hisse başı NAV'ına ve baz senaryo hedef fiyatımız olan 104 TL'ye göre anlamlı iskontolu işlem görmektedir. Bu iskontonun temelinde üç yapısal faktör yatmaktadır: CarrefourSA ve Kordsa'nın yarattığı konsolide zararlı portföy yükü, IAS29 muhasebe karmaşıklığının yarattığı yatırımcı belirsizliği ve TCMB para politikasının Akbank üzerindeki makro gölgesi.
+
+Bununla birlikte, derinlikli analizimiz SAHOL'un güçlü yönlerini de açıkça ortaya koymaktadır. Akbank'ın 57.2 milyar TRY net karı holding için güçlü bir nakit üretim tabanı oluşturmaktadır. Net Borç/EBITDA 1.6x ile yönetimin politika hedefinin belirgin biçimde altındadır; Akçansa satışının Q2 2026'da kapanması halinde bu oran 1.3-1.4x'e gerilecektir. Yönetimin çimento portföyü rasyonalizasyonu ve deleveraging taahhütleri tutulmuştur; bu durum, stratejik öncelik açıklamaları için kredibilitenin korunduğuna işaret etmektedir.
+
+Analitik görüşümüz şu yöndedir: SAHOL, katalizör odaklı bir yatırım profili taşımaktadır. Akçansa satışı, Enerjisa IPO'su ve CARFA turnaround'un birlikte gerçekleşmesi halinde holding iskontosu KCHOL seviyesine (~%30) gerilecek ve bu durum mevcut fiyattan %25'e yakın değer açacaktır. Ancak katalizörlerin gecikme veya başarısızlık riski ve 24 Nisan PPK kararının yaratabileceği Akbank NIM şoku göz önüne alındığında, bu pozisyon her iki yönde de önemli fiyat hareketi potansiyeli taşımaktadır.
+
+## İzlenmesi Gereken Kritik Kilometre Taşları
+
+| Tarih | Kilometre Taşı | Beklenen Etki | İzleme Noktası |
+|-------|---------------|---------------|----------------|
+| 24 Nisan 2026 | TCMB PPK Kararı | Anlık ±3-5% | Politika faizi; Akbank açıklaması |
+| Q2 2026 Sonu | Akçansa SPA Kapanış | +19.5B TRY nakit | SPA imza; closing teyidi |
+| Mayıs 2026 | Q1 2026 Finansal Sonuçlar | Yıllık trend sinyali | CARFA Q1 zarar seyri |
+| 2026 H2 | Enerjisa IPO Kararı | +5-10 TL/hisse opsiyonellik | IPO prospektüsü |
+| Aralık 2026 | FY2026 Finansal Sonuçlar | Deleveraging teyidi | Net Borç/EBITDA; CARFA trend |
+
+## Bir Sonraki Analiz İçin Öneriler
+
+Bu analizin en kritik veri sınırlaması, KAP PDF erişiminin sağlanamamasından kaynaklanan EBITDA ve nakit akışı detay eksikliğidir. Bir sonraki analiz döngüsünde: (1) Sabancı Holding 2024 yıllık faaliyet raporu PDF tam çıkarımının yapılması, (2) Akçansa satış kapanış sonrası konsolide bilanço güncellemesinin takip edilmesi ve (3) 24 Nisan PPK kararı sonrasında Akbank NIM rehberliğinin analize yansıtılması öncelikli gündem maddeleri olmalıdır.
+
+---
+
+# ZORUNLU BİLDİRİMLER
+
+Bu rapor Finance X platformu tarafından otomatik olarak üretilmiştir. Yatırım tavsiyesi niteliği taşımaz.
+
+Tüm veriler analiz tarihi olan 14 Nisan 2026 itibarıyla geçerlidir ve bu tarihten sonra değişmiş olabilir.
+
+Finance X, Sermaye Piyasası Kurulu (SPK) veya herhangi bir düzenleyici otorite nezdinde yatırım danışmanlığı lisansına sahip değildir. Yatırım kararları öncesinde bağımsız profesyonel danışmanlık alınması tavsiye edilir.
+
+Bu analizde sunulan hedef fiyatlar ve senaryolar, mevcut verilerin yorumlanmasından elde edilen analitik çıktılardır. "AL", "SAT" veya "TUT" niteliğinde yatırım tavsiyesi içermemektedir.
+
+**Veri Kaynakları:** KAP (kap.org.tr), investing.com, TCMB.gov.tr, BOTAŞ resmi tarifeleri, Bloomberg HT, Para Ajansı, şirket yıllık faaliyet raporları, KAP bildirim arşivi.
+
+**Analitik Kısıtlamalar:**
+- EBITDA FY2024 (97,400M TRY) PDF doğrulaması tamamlanamamıştır; ORTA güven.
+- Nakit akışı CAPEX bileşeni proxy hesaplamaya dayanmaktadır; açılış/kapanış kasa bakiyesi tahmindir.
+- 5 yıllık konsolide gelir trendi FY2023-FY2021 için eksiktir.
+- Holding-only net borç rakamı (~45B TRY) DÜŞÜK güvenle tahmin edilmiştir.
+- KAP PDF erişimi sağlanamadığından çeşitli satır detayları çıkarılamamıştır.
+- QA skoru 0.738 (eşik: 0.85); bu rapor altyapı kısıtlamaları kabul edilerek üretilmiştir.
+
+**Pipeline QA Durumu:** QA Turu 2 — Skor: 0.738 (REVISION_REQUIRED). CEO direktifiyle EBITDA Sn.A = 97,400M TRY ORTA güven ile ilerleme kabulü yapılmıştır. Rapor söz konusu kısıtlamalar dahilinde yorumlanmalıdır.
+
+**Güven Seviyeleri Açıklaması:**
+- YÜKSEK GÜVEN: Güçlü birincil kanıt desteği; KAP teyitli
+- ORTA GÜVEN: Makul kanıt; kısmi tahmin içerir
+- DÜŞÜK GÜVEN: Sınırlı kanıt; ihtiyatla değerlendirilmeli
+- SPEKÜLATİF: Birincil kanıt desteği olmayan çıkarım
+
+**Bu rapor yatırım tavsiyesi niteliğinde değildir. Sunulan tüm analizler bilgilendirme amaçlıdır.**
+
+---
+
+*Finance X Platform | Analiz Tarihi: 14 Nisan 2026 | Sürüm: fs-out-SAHOL-20260414-001*

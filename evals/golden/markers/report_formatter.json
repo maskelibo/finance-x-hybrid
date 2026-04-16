@@ -1,0 +1,20 @@
+{
+  "agent_id": "report_formatter",
+  "description": "HTML rapor uretim metrikleri",
+  "required_metrics": [
+    "html",
+    "HTML"
+  ],
+  "optional_metrics": [
+    "DOCTYPE",
+    "table",
+    "page",
+    "svg",
+    "canvas"
+  ],
+  "required_sections": [],
+  "source_tags": [],
+  "forbidden_patterns": [],
+  "warning_patterns": [],
+  "min_output_length": 1000
+}

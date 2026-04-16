@@ -1,8 +1,99 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import { loadAgent } from './agents.js';
-import { getModelForAgent } from './config.js';
-import { createDefaultProviderRouter, resolveFallbackProviderId } from './llm/default-router.js';
+import { getModelForAgent, AGENTS_ROOT, TARGETED_KNOWLEDGE_INJECTION } from './config.js';
+import { createDefaultProviderRouter } from './llm/default-router.js';
 import type { ProviderRunResult } from './llm/types.js';
+
+/**
+ * Shared directives — tüm agent'lara inject edilen ortak kurallar.
+ * Dosyadan bir kez okunur, her agent çalışmasında yeniden kullanılır.
+ */
+const SHARED_DIRECTIVES_PATH = path.resolve(AGENTS_ROOT, '../prompts/shared_directives.md');
+let _sharedDirectivesCache: string | null = null;
+function getSharedDirectives(): string {
+  if (_sharedDirectivesCache === null) {
+    try {
+      _sharedDirectivesCache = fs.readFileSync(SHARED_DIRECTIVES_PATH, 'utf8').trim();
+    } catch {
+      _sharedDirectivesCache = '';
+      console.warn('[agent-runner] shared_directives.md not found, skipping');
+    }
+  }
+  return _sharedDirectivesCache;
+}
+
+/**
+ * Targeted Knowledge Injection — knowledge.md'den sektör/konu bazlı bölüm çeker.
+ * Context'teki sinyallerden (ticker, sector keywords) ilgili bölümü tespit eder.
+ * Sinyal güvenilir değilse null döner (inject etmemek > yanlış inject).
+ */
+function extractTargetedKnowledge(knowledgePath: string, context?: Record<string, unknown>): string | null {
+  if (!TARGETED_KNOWLEDGE_INJECTION) return null;
+  if (!fs.existsSync(knowledgePath)) return null;
+
+  try {
+    const content = fs.readFileSync(knowledgePath, 'utf8');
+    if (content.length < 500) return null; // Too small to section
+
+    // Try to detect sector from context_extraction output
+    const ctxOutput = String(context?.['context_extraction_output'] || '').toLowerCase();
+
+    // Sector keyword → knowledge.md section heading mapping
+    const SECTOR_SIGNALS: Array<{ keywords: string[]; headings: string[] }> = [
+      { keywords: ['banka', 'bank', 'finans', 'nim', 'cet1', 'bddk'], headings: ['Bankacılık', 'Banka', 'Banking', 'Finans'] },
+      { keywords: ['telekom', 'telecom', 'arpu', 'churn', '5g', 'spectrum'], headings: ['Telekomünikasyon', 'Telekom', 'Telecom'] },
+      { keywords: ['rafineri', 'refinery', 'petrol', 'crude', 'crack spread', 'brent'], headings: ['Rafineri', 'Enerji', 'Energy', 'Refinery'] },
+      { keywords: ['çelik', 'steel', 'hrc', 'demir', 'erdemir'], headings: ['Çelik', 'Steel', 'Demir'] },
+      { keywords: ['holding', 'nav', 'sotp', 'konglomerat'], headings: ['Holding', 'Konglomera'] },
+      { keywords: ['havacılık', 'aviation', 'airline', 'thy', 'ebitdar', 'rpk', 'ask'], headings: ['Havacılık', 'Aviation', 'Havacilik'] },
+      { keywords: ['perakende', 'retail', 'mağaza', 'sssg', 'bim'], headings: ['Perakende', 'Retail'] },
+      { keywords: ['savunma', 'defense', 'defence', 'aselsan', 'ssb'], headings: ['Savunma', 'Defense'] },
+    ];
+
+    // Find matching sector
+    let matchedHeadings: string[] | null = null;
+    for (const { keywords, headings } of SECTOR_SIGNALS) {
+      if (keywords.some(kw => ctxOutput.includes(kw))) {
+        matchedHeadings = headings;
+        break;
+      }
+    }
+
+    if (!matchedHeadings) return null; // No confident signal → don't inject
+
+    // Extract matching sections from knowledge.md
+    const lines = content.split('\n');
+    const sections: string[] = [];
+    let capturing = false;
+    let currentSection: string[] = [];
+
+    for (const line of lines) {
+      const isHeading = /^#{1,4}\s/.test(line);
+      if (isHeading) {
+        if (capturing && currentSection.length > 0) {
+          sections.push(currentSection.join('\n'));
+          currentSection = [];
+        }
+        const lineLower = line.toLowerCase();
+        capturing = matchedHeadings.some(h => lineLower.includes(h.toLowerCase()));
+      }
+      if (capturing) {
+        currentSection.push(line);
+      }
+    }
+    if (capturing && currentSection.length > 0) {
+      sections.push(currentSection.join('\n'));
+    }
+
+    if (sections.length === 0) return null;
+
+    const result = sections.join('\n\n').slice(0, 4000); // Max 4KB injected
+    return result.length > 100 ? result : null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * 3 KATMANLI HAFIZA MİMARİSİ
@@ -25,6 +116,50 @@ function extractMemorySummary(memoryPath: string): string {
   }
 }
 
+function getPermanentRulesPath(memoryPath: string): string {
+  return memoryPath.replace('memory.md', 'permanent_rules.md');
+}
+
+function readPermanentRules(memoryPath: string): string | null {
+  const rulesPath = getPermanentRulesPath(memoryPath);
+  try {
+    if (!fs.existsSync(rulesPath)) return null;
+    return fs.readFileSync(rulesPath, 'utf8').trim();
+  } catch {
+    return null;
+  }
+}
+
+function readSharedKnowledgeModule(sector: string): string | null {
+  const modulePath = path.resolve(AGENTS_ROOT, '_shared_knowledge_modules', `${sector}.md`);
+  try {
+    if (!fs.existsSync(modulePath)) return null;
+    const content = fs.readFileSync(modulePath, 'utf8').trim();
+    return content.length > 100 ? content : null;
+  } catch {
+    return null;
+  }
+}
+
+function detectSector(context?: Record<string, unknown>): string | null {
+  const ctxOutput = String(context?.['context_extraction_output'] || '').toLowerCase();
+  const SECTOR_MAP: Array<{ keywords: string[]; sector: string }> = [
+    { keywords: ['banka', 'bank', 'finans', 'nim', 'cet1', 'bddk'], sector: 'banking' },
+    { keywords: ['telekom', 'telecom', 'arpu', 'churn', '5g'], sector: 'telecom' },
+    { keywords: ['rafineri', 'refinery', 'petrol', 'crude', 'crack spread'], sector: 'refinery' },
+    { keywords: ['çelik', 'steel', 'hrc', 'demir', 'erdemir'], sector: 'steel' },
+    { keywords: ['holding', 'nav', 'sotp', 'konglomerat'], sector: 'holding' },
+    { keywords: ['havacılık', 'aviation', 'airline', 'thy', 'ebitdar'], sector: 'aviation' },
+    { keywords: ['perakende', 'retail', 'mağaza', 'sssg', 'bim'], sector: 'retail' },
+    { keywords: ['savunma', 'defense', 'defence', 'aselsan', 'ssb'], sector: 'defense' },
+    { keywords: ['telekom', 'tcell', 'turkcell', 'ttkom'], sector: 'telecom' },
+  ];
+  for (const { keywords, sector } of SECTOR_MAP) {
+    if (keywords.some(kw => ctxOutput.includes(kw))) return sector;
+  }
+  return null;
+}
+
 function getKnowledgePath(memoryPath: string): string {
   return memoryPath.replace('memory.md', 'knowledge.md');
 }
@@ -39,6 +174,14 @@ function hasKnowledgeFile(memoryPath: string): boolean {
 
 function hasArchiveFile(memoryPath: string): boolean {
   return fs.existsSync(getArchivePath(memoryPath));
+}
+
+function getCaseLessonsPath(memoryPath: string): string {
+  return memoryPath.replace('memory.md', 'case_lessons.md');
+}
+
+function hasCaseLessonsFile(memoryPath: string): boolean {
+  return fs.existsSync(getCaseLessonsPath(memoryPath));
 }
 
 export type AgentRunResult = Omit<ProviderRunResult, 'rawOutput'>;
@@ -75,6 +218,35 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     `## System Instructions`,
     agent.systemPrompt,
     ``,
+    // Permanent rules injection — always loaded, before memory
+    ...((() => {
+      const permanentRules = readPermanentRules(agent.memoryPath);
+      if (permanentRules) {
+        return [
+          `## Kalıcı Kurallar (her zaman yüklenir)`,
+          ``,
+          permanentRules,
+          ``,
+        ];
+      }
+      return [];
+    })()),
+    // Shared knowledge module injection — sector-specific
+    ...((() => {
+      const sector = detectSector(opts.context);
+      if (sector) {
+        const module = readSharedKnowledgeModule(sector);
+        if (module) {
+          return [
+            `## Sektör Bilgi Modülü (${sector}) — otomatik inject edildi`,
+            ``,
+            module,
+            ``,
+          ];
+        }
+      }
+      return [];
+    })()),
     `## Hafıza — Katman 1: Kurallar (otomatik yüklendi)`,
     ``,
     extractMemorySummary(agent.memoryPath),
@@ -86,6 +258,9 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     hasKnowledgeFile(agent.memoryPath)
       ? `- **Katman 2** (ihtiyaç duyduğunda aç): \`${getKnowledgePath(agent.memoryPath)}\` — Domain bilgisi, formüller, benchmark'lar, best practice. Karmaşık bir konuyla karşılaşırsan \`Read\` ile aç.`
       : `- **Katman 2**: knowledge.md henüz oluşturulmamış.`,
+    hasCaseLessonsFile(agent.memoryPath)
+      ? `- **Katman 2b** (vaka dersleri): \`${getCaseLessonsPath(agent.memoryPath)}\` — Önceki analizlerden öğrenimler ve CEO geri bildirimleri. Aynı şirket veya sektörü analiz ederken \`Read\` ile aç.`
+      : `- **Katman 2b**: case_lessons.md henüz oluşturulmamış.`,
     hasArchiveFile(agent.memoryPath)
       ? `- **Katman 3** (sadece eğitimde): \`${getArchivePath(agent.memoryPath)}\` — Tüm eğitim geçmişi ve ham kayıtlar. Normal görevde AÇMA.`
       : `- **Katman 3**: Arşiv henüz oluşturulmamış.`,
@@ -93,8 +268,22 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     `**Görev sonunda önemli bir şey öğrendiysen:**`,
     `- Kalıcı kural → \`Edit\` ile \`memory.md\`'ye ekle`,
     `- Domain bilgisi → \`Edit\` ile \`knowledge.md\`'ye ekle`,
-    `- memory.md 6KB'yi aşarsa → en eski öğrenmeyi knowledge.md'ye taşı`,
+    `- Vaka bazlı öğrenim (şirket/sektör dersi) → \`Edit\` ile \`case_lessons.md\`'ye ekle`,
+    `- memory.md 6KB'yi aşarsa → en eski öğrenmeyi knowledge.md veya case_lessons.md'ye taşı`,
     ``,
+    // Targeted knowledge injection — sektör sinyali varsa knowledge.md'den ilgili bölümü inject et
+    ...(hasKnowledgeFile(agent.memoryPath) ? (() => {
+      const targeted = extractTargetedKnowledge(getKnowledgePath(agent.memoryPath), opts.context);
+      if (targeted) {
+        return [
+          `## Sektör-Spesifik Bilgi (knowledge.md'den otomatik çekildi)`,
+          ``,
+          targeted,
+          ``,
+        ];
+      }
+      return [];
+    })() : []),
     requiresWebResearch ? `## ZORUNLU: Web Araştırma Politikası (Chairman Direktifi — 2026-04-09)` : '',
     requiresWebResearch ? `` : '',
     requiresWebResearch ? `**ÇOK ÖNEMLİ:** Senin eğitim verin Ağustos 2025'te kesildi. Bugün **${new Date().toLocaleDateString('tr-TR')}**. Aradan geçen süre boyunca piyasalarda, jeopolitikte ve şirketlerde çok şey değişmiş olabilir. **Hafızandan konuşma — git bak.**` : '',
@@ -130,24 +319,23 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     `## Output Instructions`,
     `Respond with your agent output in plain text or markdown. Stay focused on the task above. Do not ask clarifying questions — make reasonable assumptions and proceed. Keep the output structured and evidence-backed.`,
     ``,
-    `## TRUNCATION ÖNLEME (KRİTİK)`,
-    `Çıktın kesilme riski var. Bu yüzden:`,
-    `1. **Önce en kritik bulguları yaz** — skor, hedef fiyat, ana metrikler İLK paragrafta`,
-    `2. **Sonra detayları ekle** — yorum, benchmark, trend analizi`,
-    `3. **Verbose olma** — aynı şeyi farklı kelimelerle tekrarlama`,
-    `4. **Tablo tercih et** — 5 satır tablo = 15 satır metin, daha kompakt`,
+    `## Ortak Kurallar (Tüm Agent'lar İçin Geçerli)`,
+    ``,
+    getSharedDirectives(),
     opts.context?.qa_revision_instruction ? `\n## QA REVİZYON TALİMATI\n${opts.context.qa_revision_instruction}` : '',
   ].filter(line => line !== '').join('\n');
 
+  // Prompt size logging — detect oversized prompts before sending
+  const promptChars = fullPrompt.length;
+  const estimatedTokens = Math.round(promptChars / 4);
+  console.log(`[agent-runner] ${opts.agentId}: prompt ${Math.round(promptChars / 1000)}K chars (~${Math.round(estimatedTokens / 1000)}K tokens)`);
+  if (promptChars > 100000) {
+    console.warn(`[agent-runner] ⚠️ ${opts.agentId}: LARGE PROMPT ${Math.round(promptChars / 1000)}K chars — may cause slow processing`);
+  }
+
   const result = await providerRouter.run({
     prompt: fullPrompt,
-    model: getModelForAgent(
-      opts.agentId,
-      providerRouter.getPrimaryProvider().id,
-    ),
-    fallbackModel: resolveFallbackProviderId()
-      ? getModelForAgent(opts.agentId, resolveFallbackProviderId()!)
-      : undefined,
+    model: getModelForAgent(opts.agentId),
     timeoutMs: opts.timeoutMs,
     onStdout: opts.onStdout,
     onStderr: opts.onStderr,

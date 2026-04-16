@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCELL — Finance X Kurumsal Raporu</title>
+  <style>
+    :root {
+      --brand-primary: #003366;
+      --brand-secondary: #1a1a2e;
+      --brand-accent: #f59e0b;
+      --brand-bg: #f8fafc;
+      --fx-dark: #0f172a;
+      --fx-gray: #64748b;
+      --fx-light: #f1f5f9;
+      --fx-border: #e2e8f0;
+      --fx-positive: #059669;
+      --fx-negative: #dc2626;
+      --fx-warning: #d97706;
+      --fx-info: #2563eb;
+      --fx-white: #ffffff;
+      --font-main: 'Segoe UI', Tahoma, Arial, sans-serif;
+      --font-mono: Consolas, 'Courier New', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; background: #fff; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.5;
+      color: var(--fx-dark);
+      background: var(--fx-white);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    @page { size: A4 portrait; margin: 20mm 15mm 20mm 15mm; }
+
+    .page {
+      page-break-before: always;
+      break-before: page;
+      min-height: 257mm;
+      position: relative;
+      padding: 0;
+    }
+    .page:first-child { page-break-before: avoid; break-before: auto; }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 2px solid var(--brand-primary);
+      margin-bottom: 14px;
+      font-size: 8pt;
+      color: var(--fx-gray);
+    }
+    .page-header-left { display: flex; align-items: center; gap: 10px; }
+    .company-ticker {
+      color: var(--brand-primary);
+      font-weight: 700;
+      font-size: 10pt;
+      letter-spacing: 0.3px;
+    }
+    .report-section { color: var(--fx-gray); }
+    .page-header-right { display: flex; align-items: center; gap: 8px; }
+    .brand-mark {
+      background: var(--brand-primary);
+      color: var(--fx-white);
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 9pt;
+      font-weight: 700;
+    }
+
+    .page-footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 4px;
+      border-top: 1px solid var(--fx-border);
+      font-size: 7.5pt;
+      color: var(--fx-gray);
+    }
+
+    .cover-page {
+      min-height: 257mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: var(--fx-white);
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .cover-page::before,
+    .cover-page::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.12;
+      background: #fff;
+    }
+    .cover-page::before { width: 180px; height: 180px; top: 32px; right: 28px; }
+    .cover-page::after { width: 280px; height: 280px; bottom: -90px; left: -60px; }
+    .cover-kicker {
+      font-size: 9pt;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 18px;
+    }
+    .cover-ticker {
+      font-size: 48pt;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 5px;
+      margin-bottom: 10px;
+    }
+    .cover-company {
+      font-size: 16pt;
+      font-weight: 300;
+      margin-bottom: 22px;
+      opacity: 0.95;
+    }
+    .cover-title {
+      font-size: 15pt;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .cover-subtitle {
+      font-size: 10.5pt;
+      max-width: 165mm;
+      opacity: 0.92;
+      line-height: 1.7;
+      margin: 0 auto 18px auto;
+    }
+    .cover-meta {
+      margin-top: 26px;
+      padding: 14px 18px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      min-width: 150mm;
+    }
+    .cover-meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 6px 0;
+      font-size: 10pt;
+    }
+    .cover-badge {
+      margin-top: 22px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.35);
+      font-size: 8.5pt;
+      letter-spacing: 0.3px;
+      opacity: 0.95;
+    }
+
+    h1 {
+      font-size: 18pt;
+      color: var(--brand-primary);
+      margin: 8px 0 12px 0;
+      border-bottom: 2px solid var(--brand-primary);
+      padding-bottom: 6px;
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    h2 {
+      font-size: 14pt;
+      color: var(--brand-primary);
+      margin: 18px 0 8px 0;
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    h3 {
+      font-size: 11pt;
+      color: var(--brand-primary);
+      margin: 14px 0 6px 0;
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    p, li, .analysis-block, .callout {
+      orphans: 4;
+      widows: 4;
+    }
+
+    .analysis-block { margin: 14px 0 16px 0; page-break-inside: avoid; break-inside: avoid; }
+    .analysis-intro {
+      font-style: italic;
+      color: #475569;
+      margin-bottom: 10px;
+      border-left: 3px solid var(--brand-primary);
+      padding-left: 10px;
+      font-size: 9.5pt;
+    }
+    .analysis-commentary {
+      background: #f8fafc;
+      border: 1px solid var(--fx-border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      color: #1e293b;
+      line-height: 1.65;
+      font-size: 9.5pt;
+    }
+
+    .callout {
+      border-left: 4px solid;
+      background: #f8fafc;
+      border-radius: 4px;
+      padding: 10px 12px;
+      margin: 10px 0;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .callout-positive { border-color: var(--fx-positive); background: #f0fdf4; color: #064e3b; }
+    .callout-negative { border-color: var(--fx-negative); background: #fef2f2; color: #7f1d1d; }
+    .callout-warning { border-color: var(--fx-warning); background: #fffbeb; color: #78350f; }
+    .callout-info { border-color: var(--fx-info); background: #eff6ff; color: #1e3a8a; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 8pt;
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .badge-high { background: #dcfce7; color: #14532d; }
+    .badge-medium { background: #fef3c7; color: #92400e; }
+    .badge-low { background: #fee2e2; color: #991b1b; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 12px 0;
+      font-size: 8.8pt;
+      table-layout: fixed;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    th {
+      background: var(--brand-primary);
+      color: var(--fx-white);
+      padding: 7px 8px;
+      text-align: left;
+      border: 1px solid var(--brand-primary);
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    td {
+      border: 1px solid var(--fx-border);
+      padding: 6px 8px;
+      vertical-align: top;
+      word-wrap: break-word;
+    }
+    tr:nth-child(even) td { background: #f8fafc; }
+    td.num, th.num { text-align: right; font-family: var(--font-mono); }
+    .note-cell { color: var(--fx-gray); font-size: 8pt; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 12px 0 14px 0;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .kpi-card {
+      border: 1px solid var(--fx-border);
+      border-left: 4px solid var(--brand-primary);
+      border-radius: 7px;
+      padding: 10px;
+      background: #fff;
+      min-height: 86px;
+    }
+    .kpi-label {
+      font-size: 8pt;
+      color: var(--fx-gray);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .kpi-value {
+      font-size: 17pt;
+      font-weight: 800;
+      color: var(--brand-primary);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .kpi-change {
+      font-size: 8.3pt;
+      color: var(--fx-positive);
+    }
+    .kpi-change.negative { color: var(--fx-negative); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 10px 0 6px 0;
+    }
+    .soft-panel {
+      border: 1px solid var(--fx-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+    .soft-panel ul { margin-left: 18px; }
+    .soft-panel li { margin: 5px 0; }
+
+    .swot-grid, .scenario-grid, .risk-grid {
+      display: grid;
+      gap: 10px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .swot-grid { grid-template-columns: repeat(2, 1fr); }
+    .scenario-grid { grid-template-columns: repeat(3, 1fr); }
+    .risk-grid { grid-template-columns: repeat(2, 1fr); }
+    .swot-box, .scenario-box, .risk-box {
+      border: 1px solid var(--fx-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      min-height: 92px;
+    }
+    .swot-box h4, .scenario-box h4, .risk-box h4 {
+      font-size: 9.5pt;
+      margin-bottom: 6px;
+      color: var(--brand-primary);
+    }
+    .swot-box p, .scenario-box p, .risk-box p {
+      font-size: 8.8pt;
+      line-height: 1.55;
+      color: #334155;
+    }
+
+    .chart-container {
+      border: 1px solid var(--fx-border);
+      border-radius: 8px;
+      padding: 10px 10px 6px 10px;
+      background: #fff;
+      margin: 10px 0 12px 0;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      max-height: 250px;
+      overflow: hidden;
+    }
+    .chart-title {
+      font-size: 10pt;
+      font-weight: 700;
+      color: var(--brand-primary);
+      margin-bottom: 4px;
+    }
+    .chart-subtitle {
+      font-size: 8.3pt;
+      color: var(--fx-gray);
+      margin-bottom: 8px;
+    }
+    .svg-wrap { width: 100%; }
+    svg { width: 100%; height: auto; display: block; }
+
+    .small-text { font-size: 8.4pt; color: var(--fx-gray); }
+    .mono { font-family: var(--font-mono); }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .timeline-item {
+      border: 1px solid var(--fx-border);
+      border-radius: 8px;
+      padding: 10px 10px 8px 10px;
+      background: #fff;
+    }
+    .timeline-date {
+      color: var(--brand-primary);
+      font-weight: 700;
+      font-size: 9pt;
+      margin-bottom: 4px;
+    }
+    .timeline-text { font-size: 8.8pt; color: #334155; line-height: 1.55; }
+
+    .page-number { font-weight: 700; color: var(--brand-primary); }
+    .confidential { text-align: right; }
+
+    .source-list a { color: var(--brand-primary); text-decoration: none; }
+    .source-list li { margin: 6px 0; }
+    .source-list { margin-left: 18px; }
+
+    .divider {
+      height: 1px;
+      background: var(--fx-border);
+      margin: 10px 0 12px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page cover-page">
+    <div class="page-header" style="width:100%; padding-left: 0; padding-right: 0; border-bottom-color: rgba(255,255,255,0.28); color: rgba(255,255,255,0.9); position:absolute; top:0; left:0;">
+      <div class="page-header-left">
+        <span class="company-ticker" style="color:#fff;">TCELL</span>
+        <span class="report-section" style="color: rgba(255,255,255,0.8);">Finance X Bağımsız Analizi</span>
+      </div>
+      <div class="page-header-right">
+        <div class="brand-mark" style="background: rgba(255,255,255,0.16); color:#fff; border:1px solid rgba(255,255,255,0.28);">TCELL</div>
+      </div>
+    </div>
+
+    <div class="cover-kicker">Finance X | Kurumsal Araştırma</div>
+    <div class="cover-ticker">TCELL</div>
+    <div class="cover-company">Turkcell İletişim Hizmetleri A.Ş.</div>
+    <div class="cover-title">Kapsamlı Şirket Analizi</div>
+    <div class="cover-subtitle">
+      Bu rapor, FY2021-FY2025 dönemi için birincil finansal tablolar, faaliyet raporu ve düzenleyici kurum verileri üzerinde kurulan birleşik fact base'i kurumsal sunum standardında formatlar. Rapor, 1 Nisan 2026 5G lansmanı sonrası yatırım döngüsünü, nakit üretim kalitesini, değerleme çarpanlarını ve riskleri tek bir PDF hazır HTML dokümanda toplar.
+    </div>
+    <div class="cover-meta">
+      <div class="cover-meta-row"><span>Rapor Tarihi</span><span>15.04.2026</span></div>
+      <div class="cover-meta-row"><span>Kapsam</span><span>FY2021 - FY2025</span></div>
+      <div class="cover-meta-row"><span>Güncel Fiyat Referansı</span><span>116,30 TL (14.04.2026 kapanış)</span></div>
+      <div class="cover-meta-row"><span>Hazırlayan</span><span>Finance X Platform</span></div>
+      <div class="cover-meta-row"><span>Dağıtım</span><span>Yönetim Kurulu / Yatırımcı</span></div>
+    </div>
+    <div class="cover-badge">Bağımsız analiz | Kurumsal araştırma formatı | Finansal, operasyonel ve risk çerçevesi</div>
+
+    <div class="page-footer" style="color: rgba(255,255,255,0.82); border-top-color: rgba(255,255,255,0.28);">
+      <div>Sayfa 1 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">1. Yönetici Özeti</span>
+      </div>
+      <div class="page-header-right">
+        <div class="brand-mark">TCELL</div>
+      </div>
+    </div>
+
+    <h1>Yönetici Özeti</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        TCELL’in 2025 yılı, güçlü operasyonel nakit üretimi ile yoğun 5G yatırım döngüsünün aynı anda yaşandığı bir eşik yıl olarak okunmalıdır. Aşağıdaki özet, gelir, FAVÖK, net kâr ve serbest nakit akışını tek bakışta birleştirir.
+      </p>
+
+      <div class="kpi-grid">
+        <div class="kpi-card" style="border-left-color: var(--brand-primary);">
+          <div class="kpi-label">Hasılat FY2025</div>
+          <div class="kpi-value">241,5 mlr TL</div>
+          <div class="kpi-change">+10,7% YoY | FY2024: 218,2 mlr TL</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: var(--fx-positive);">
+          <div class="kpi-label">FAVÖK FY2025</div>
+          <div class="kpi-value">104,0 mlr TL</div>
+          <div class="kpi-change">+41,2% YoY | FAVÖK marjı: %43,1</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: var(--fx-info);">
+          <div class="kpi-label">Net Kâr FY2025</div>
+          <div class="kpi-value">17,6 mlr TL</div>
+          <div class="kpi-change">Net marj: %7,3 | Sürdürülebilir kârlılık</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: var(--fx-warning);">
+          <div class="kpi-label">FCF FY2025</div>
+          <div class="kpi-value">22,2 mlr TL</div>
+          <div class="kpi-change">OCF: 112,1 mlr TL | CAPEX: 90,0 mlr TL</div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Ana Sonuç:</strong> TCELL, strict net borç/FAVÖK <span class="mono">0,64x</span>, faiz karşılama <span class="mono">6,98x</span> ve negatif CCC <span class="mono">-30,3 gün</span> ile operasyonel olarak güçlü; ancak piyasa 5G ve dijital servis monetizasyonunu önceden fiyatlamış görünüyor. Baz senaryo adil değeri <span class="mono">104 TL</span>, güncel kapanış ise <span class="mono">116,30 TL</span>.
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>Güçlü Yönler</h3>
+          <ul>
+            <li>OCF/FAVÖK <span class="mono">107,8%</span> ile muhasebe kârlılığı nakde dönüşüyor.</li>
+            <li>Net borç seviyesi strict tanımda <span class="mono">66,8 mlr TL</span>; kaldıraç yönetilebilir.</li>
+            <li>Negatif CCC, ön ödemeli telekom modelinin nakit avantajını yansıtıyor.</li>
+            <li>5G, fiber ve veri merkezi yatırımları uzun vadeli gelir karmasını destekliyor.</li>
+          </ul>
+        </div>
+        <div class="soft-panel">
+          <h3>Zayıf / İzlenecek Alanlar</h3>
+          <ul>
+            <li>Marj genişlemesi, enerji ve pazarlama baskısı nedeniyle yönetim rehberliğinin altında kalabilir.</li>
+            <li>FCF pozitife dönmüş olsa da yatırım temposu hâlâ yüksek.</li>
+            <li>Teknik görünüm, bağımsız fiyat verisi sınırlı olduğu için karar bölgesinde.</li>
+            <li>5G abonelik dönüşümünün gerçek hızı 24.04.2026 çeyrek sonuçlarıyla doğrulanacak.</li>
+          </ul>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Boyut</th>
+            <th class="num">Puan</th>
+            <th>Yorum</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Finansal Sağlık</td><td class="num">7,0</td><td>Likidite ve kaldıraç güçlü; yatırım döngüsü nakit tamponunu geçici olarak daraltıyor.</td></tr>
+          <tr><td>Büyüme Potansiyeli</td><td class="num">7,0</td><td>5G ve dijital servis opsiyonu güçlü; monetizasyon kanıtı henüz tam değil.</td></tr>
+          <tr><td>Sektör Pozisyonu</td><td class="num">8,0</td><td>Pazar liderliği, marka ve altyapı derinliği korunuyor.</td></tr>
+          <tr><td>Makro Uyumluluk</td><td class="num">5,0</td><td>Faiz, enerji ve kur kanalı üzerinden dolaylı ama maddi baskı var.</td></tr>
+          <tr><td>Teknik Görünüm</td><td class="num">5,0</td><td>Kısa vadede destek/direnç bandı dar; teyit gerekiyor.</td></tr>
+          <tr><td>Genel Skor</td><td class="num">6,6 / 10</td><td>Kaliteli şirket, fakat fiyatın önemli bölümü hikâyeyi önceden fiyatlıyor.</td></tr>
+        </tbody>
+      </table>
+
+      <p class="analysis-commentary">
+        Bu sayfa yalnızca ilk çerçeveyi verir: şirket kalitesi yüksek, fakat yatırımcı bundan sonra kazanç büyümesini değil, bu büyümenin nakde ve değerlemeye dönüşme hızını izleyecek. 2026 boyunca kritik eşikler 22.04.2026 TCMB kararı, 24.04.2026 1Ç26 sonuçları ve yıl sonu yatırım temposu olacaktır. Bu nedenle değerlendirme, tek çarpan yerine senaryo disiplinine bağlanmalıdır.
+      </p>
+      <div class="callout callout-warning">
+        <strong>Veri Kalitesi Notu:</strong> İlgili çalışma setinde bazı oranlar farklı tanım setleriyle üretilmiş; bu raporda market-facing tablo ve risk okuması, reconciliation-verified FY2025 çekirdeğine bağlanmıştır.
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 2 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">2. Şirket Profili</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Şirket Profili</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        TCELL, mobil iletişim, sabit geniş bant, fiber altyapı, veri merkezi, bulut ve dijital servisler ekseninde faaliyet gösteren entegre bir telekom operatörüdür. Şirketin son stratejik dili, klasik mobil operatör profilini aşarak daha yüksek kaliteli gelir bileşimi yaratma yönünde şekillenmektedir.
+      </p>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>İş Modeli</h3>
+          <p>
+            TCELL’in gelir motoru üç tabanda çalışır: çekirdek mobil servisler, sabit/fiber bağlantı ve techfin-dijital hizmetler. Yatırım hikâyesi ise bu gelirlerin üzerine veri merkezi, bulut ve 5G kapasitesini bindirerek marj kalitesini artırmak üzerinedir. 2025 faaliyet raporunda yönetim, 5G, fiber, bulut, yapay zekâ ve yenilenebilir enerji yatırımlarını birlikte konumlandırmıştır.
+          </p>
+          <div class="callout callout-info">
+            <strong>Öne Çıkan Yapı:</strong> Ön ödeme ağırlıklı telekom modeli, nakit dönüşümünü desteklerken altyapı yatırımı ile ölçeklenebilir bir gelir karışımı yaratır.
+          </div>
+        </div>
+        <div class="soft-panel">
+          <h3>Yönetim ve Sermaye Tahsisi</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Başlık</th>
+                <th>Özet</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>2026 rehberi</td><td>%5-7 reel gelir büyümesi, %40-42 FAVÖK marjı, ~%25 CAPEX yoğunluğu</td></tr>
+              <tr><td>Yatırım odağı</td><td>5G, fiber, veri merkezi, bulut, yenilenebilir enerji</td></tr>
+              <tr><td>Paydaş odağı</td><td>Müşteri deneyimi, kapsama, kurumsal servis ve ölçek ekonomisi</td></tr>
+              <tr><td>Risk algısı</td><td>Enerji maliyeti, FX ve monetizasyon hızında gecikme</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="analysis-block">
+        <p class="analysis-intro">
+          Ortaklık yapısı ve gelir karmasını birlikte görmek, şirketin hem kontrol dinamiklerini hem de operasyonel çeşitlenmesini okumayı kolaylaştırır. Aşağıdaki grafikler bu nedenle yalnızca görsel değil, aynı zamanda yatırım tezi için veri yoğun birer özet görevi görür.
+        </p>
+
+        <div class="chart-container">
+          <div class="chart-title">Ortaklık Yapısı</div>
+          <div class="chart-subtitle">2025 sonu itibarıyla yönetim ve piyasa yapısının sadeleştirilmiş görünümü.</div>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 500 250" aria-label="Ortaklık yapısı pie chart">
+              <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+              <circle cx="145" cy="125" r="72" fill="none" stroke="#003366" stroke-width="38" stroke-dasharray="149 452" stroke-dashoffset="0" transform="rotate(-90 145 125)"/>
+              <circle cx="145" cy="125" r="72" fill="none" stroke="#0d9488" stroke-width="38" stroke-dasharray="123 452" stroke-dashoffset="-149" transform="rotate(-90 145 125)"/>
+              <circle cx="145" cy="125" r="72" fill="none" stroke="#f59e0b" stroke-width="38" stroke-dasharray="58 452" stroke-dashoffset="-272" transform="rotate(-90 145 125)"/>
+              <circle cx="145" cy="125" r="72" fill="none" stroke="#94a3b8" stroke-width="38" stroke-dasharray="72 452" stroke-dashoffset="-330" transform="rotate(-90 145 125)"/>
+              <circle cx="145" cy="125" r="36" fill="#fff"/>
+              <text x="145" y="119" text-anchor="middle" font-size="18" fill="#003366" font-weight="700">TCELL</text>
+              <text x="145" y="138" text-anchor="middle" font-size="10" fill="#64748b">Sermaye Yapısı</text>
+
+              <rect x="275" y="48" width="12" height="12" fill="#003366"/>
+              <text x="295" y="58" font-size="11" fill="#0f172a">TVF — %26,2</text>
+
+              <rect x="275" y="78" width="12" height="12" fill="#0d9488"/>
+              <text x="295" y="88" font-size="11" fill="#0f172a">LetterOne / büyük ortak grubu — %24,8</text>
+
+              <rect x="275" y="108" width="12" height="12" fill="#f59e0b"/>
+              <text x="295" y="118" font-size="11" fill="#0f172a">Halka Açık — %43,1</text>
+
+              <rect x="275" y="138" width="12" height="12" fill="#94a3b8"/>
+              <text x="295" y="148" font-size="11" fill="#0f172a">Diğer — %5,9</text>
+
+              <text x="275" y="188" font-size="9" fill="#64748b">Kaynak: birincil ve doğrulanmış piyasa verileri</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-title">2025 Segment Bazlı Gelir Dağılımı</div>
+          <div class="chart-subtitle">Turkcell Türkiye çekirdek gelir taşıyıcısı; techfin ve diğer segmentler gelir kalitesini yükseltiyor.</div>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 500 250" aria-label="Segment gelir dağılımı bar chart">
+              <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+              <line x1="50" y1="20" x2="50" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+              <line x1="50" y1="205" x2="470" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+
+              <rect x="90" y="20" width="95" height="185" fill="#003366" rx="4"/>
+              <rect x="220" y="180" width="95" height="25" fill="#0d9488" rx="4"/>
+              <rect x="350" y="178" width="95" height="27" fill="#f59e0b" rx="4"/>
+
+              <text x="137" y="16" text-anchor="middle" font-size="10" fill="#003366" font-weight="700">220,3</text>
+              <text x="267" y="170" text-anchor="middle" font-size="10" fill="#0d9488" font-weight="700">13,7</text>
+              <text x="397" y="168" text-anchor="middle" font-size="10" fill="#f59e0b" font-weight="700">14,1</text>
+
+              <text x="137" y="225" text-anchor="middle" font-size="10" fill="#475569">Turkcell Türkiye</text>
+              <text x="267" y="225" text-anchor="middle" font-size="10" fill="#475569">Techfin</text>
+              <text x="397" y="225" text-anchor="middle" font-size="10" fill="#475569">Diğer</text>
+            </svg>
+          </div>
+        </div>
+
+        <p class="analysis-commentary">
+          Ortaklık yapısı, güçlü bir ana paydaş bloğunun yanında anlamlı bir halka açıklık oranı içeriyor ve bu durum kurumsal takip açısından likiditeyi destekliyor. Segment bazlı görünüm ise TCELL’in yalnızca bir erişim operatörü değil, hizmet karması giderek çeşitlenen bir platform haline geldiğini gösteriyor. Özellikle Turkcell Türkiye segmentinin ölçeği, diğer iki segmentin henüz nispeten küçük olmasına rağmen stratejik önem taşıyan bir gelir kalitesi katkısı yarattığını ortaya koyuyor.
+        </p>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 3 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">3. Finansal Performans</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Finansal Performans</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        Finansal performans bölümünde amaç, 5 yıllık ana trendi tek tabloda görmektir. Burada hem büyüme hem de nakit üretimi birlikte okunmalıdır; çünkü TCELL’in yatırım hikâyesi, güçlü büyümenin yüksek CAPEX ile nasıl finanse edildiği sorusuna dayanır.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>FY</th>
+            <th class="num">Hasılat</th>
+            <th class="num">FAVÖK</th>
+            <th class="num">Net Kâr</th>
+            <th class="num">OCF</th>
+            <th class="num">CAPEX</th>
+            <th class="num">FCF</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>2021</td><td class="num">72.891</td><td class="num">25.261</td><td class="num">5.671</td><td class="num">15.691</td><td class="num">17.490</td><td class="num">-1.799</td></tr>
+          <tr><td>2022</td><td class="num">103.546</td><td class="num">34.946</td><td class="num">8.243</td><td class="num">22.093</td><td class="num">25.040</td><td class="num">-2.947</td></tr>
+          <tr><td>2023</td><td class="num">142.275</td><td class="num">45.155</td><td class="num">11.637</td><td class="num">28.987</td><td class="num">35.260</td><td class="num">-6.273</td></tr>
+          <tr><td>2024</td><td class="num">218.237</td><td class="num">73.677</td><td class="num">19.990</td><td class="num">45.854</td><td class="num">68.160</td><td class="num">-22.306</td></tr>
+          <tr><td>2025</td><td class="num">241.471</td><td class="num">104.017</td><td class="num">17.604</td><td class="num">112.146</td><td class="num">89.961</td><td class="num">22.185</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <div class="chart-title">Gelir ve Nakit Üretimi Trendi</div>
+        <div class="chart-subtitle">Revenue, EBITDA ve OCF birlikte büyüdü; CAPEX ise 5G döngüsü nedeniyle geçici olarak yükseldi.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Financial performance chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <line x1="50" y1="18" x2="50" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="50" y1="205" x2="475" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+
+            <rect x="74" y="145" width="38" height="60" fill="#003366" rx="3"/>
+            <rect x="154" y="116" width="38" height="89" fill="#003366" rx="3"/>
+            <rect x="234" y="82" width="38" height="123" fill="#003366" rx="3"/>
+            <rect x="314" y="26" width="38" height="179" fill="#003366" rx="3"/>
+            <rect x="394" y="20" width="38" height="185" fill="#003366" rx="3"/>
+
+            <rect x="118" y="173" width="38" height="32" fill="#0d9488" rx="3"/>
+            <rect x="198" y="160" width="38" height="45" fill="#0d9488" rx="3"/>
+            <rect x="278" y="141" width="38" height="64" fill="#0d9488" rx="3"/>
+            <rect x="358" y="95" width="38" height="110" fill="#0d9488" rx="3"/>
+            <rect x="438" y="60" width="38" height="145" fill="#0d9488" rx="3"/>
+
+            <polyline points="93,185 173,179 253,172 333,147 413,95" fill="none" stroke="#f59e0b" stroke-width="3"/>
+            <circle cx="93" cy="185" r="4" fill="#f59e0b"/>
+            <circle cx="173" cy="179" r="4" fill="#f59e0b"/>
+            <circle cx="253" cy="172" r="4" fill="#f59e0b"/>
+            <circle cx="333" cy="147" r="4" fill="#f59e0b"/>
+            <circle cx="413" cy="95" r="4" fill="#f59e0b"/>
+
+            <text x="93" y="223" text-anchor="middle" font-size="10" fill="#475569">2021</text>
+            <text x="173" y="223" text-anchor="middle" font-size="10" fill="#475569">2022</text>
+            <text x="253" y="223" text-anchor="middle" font-size="10" fill="#475569">2023</text>
+            <text x="333" y="223" text-anchor="middle" font-size="10" fill="#475569">2024</text>
+            <text x="413" y="223" text-anchor="middle" font-size="10" fill="#475569">2025</text>
+
+            <text x="440" y="42" font-size="10" fill="#f59e0b">Net Kâr</text>
+            <text x="440" y="57" font-size="10" fill="#0d9488">FAVÖK</text>
+            <text x="440" y="72" font-size="10" fill="#003366">Hasılat</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="callout callout-positive">
+        <strong>Temel Çıkarım:</strong> 2025 yılında OCF, FAVÖK’ün üzerine çıkarak işletme sermayesi disiplinini ve vergi/itfa sonrası nakit kalitesini doğruladı. Bu, kârlılığın yalnızca muhasebe düzeyinde değil, nakit düzeyinde de güçlü olduğunu gösterir.
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>Büyüme ve Marjlar</h3>
+          <p>
+            2021-2025 arasında gelir artışı güçlü seyretti; 2024’te hızlanan büyüme 2025’te normalleşti. FAVÖK 104,0 mlr TL’ye yükselirken EBITDA marjı %43,1 seviyesine ulaştı. Net kâr 17,6 mlr TL’de kalsa da serbest nakit akışı pozitif bölgeye döndü.
+          </p>
+        </div>
+        <div class="soft-panel">
+          <h3>Yatırım Döngüsü ve Nakit</h3>
+          <p>
+            CAPEX yoğunluğu 2025’te normal işletme yatırımının ötesine geçti; ancak bu, 5G lansmanı, fiber ve veri merkezi yatırımlarının doğal sonucudur. Böyle dönemlerde değerleme, sadece kâr tablosuna değil, yatırım dönüşümünün zamanlamasına göre yapılmalıdır.
+          </p>
+        </div>
+      </div>
+
+      <p class="analysis-commentary">
+        Tablo ve grafik birlikte okunduğunda TCELL’in ana hikâyesi netleşiyor: şirket satış büyütüyor, marjlarını koruyor ve yatırım döngüsünü operasyonel nakit ile dengeliyor. 2025 FCF’nin pozitife dönmesi, yatırım döneminin tamamen bir nakit erimesi değil, kontrollü bir büyüme yatırımı olduğuna işaret ediyor. Dolayısıyla performans, kısa vadede “yüksek CAPEX / güçlü OCF” formülüyle, orta vadede ise “monetizasyon kanıtı” ile takip edilmelidir.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 4 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">4. Karlılık Analizi</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Karlılık Analizi</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        Karlılık analizi yalnızca marjlara bakmak değildir; bu marjların sermaye verimliliğine ve nakde ne kadar dönüştüğünü de görmek gerekir. TCELL’de 2025 görünümü, brüt marjda normalleşme, EBITDA marjında güçlenme ve net marjda sürdürülebilirlik olarak özetlenebilir.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Gösterge</th>
+            <th class="num">2021</th>
+            <th class="num">2022</th>
+            <th class="num">2023</th>
+            <th class="num">2024</th>
+            <th class="num">2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Brüt Marj</td><td class="num">57,1%</td><td class="num">57,4%</td><td class="num">56,9%</td><td class="num">57,6%</td><td class="num">28,3%</td></tr>
+          <tr><td>EBITDA Marjı</td><td class="num">34,6%</td><td class="num">33,7%</td><td class="num">31,8%</td><td class="num">33,8%</td><td class="num">43,1%</td></tr>
+          <tr><td>Net Marj</td><td class="num">7,8%</td><td class="num">8,0%</td><td class="num">8,2%</td><td class="num">9,2%</td><td class="num">7,3%</td></tr>
+          <tr><td>ROE</td><td class="num">7,8%</td><td class="num">11,2%</td><td class="num">15,0%</td><td class="num">23,2%</td><td class="num">6,8%</td></tr>
+          <tr><td>ROCE</td><td class="num">13,0%</td><td class="num">16,0%</td><td class="num">17,0%</td><td class="num">21,0%</td><td class="num">9,8%</td></tr>
+          <tr><td>ROA</td><td class="num">3,7%</td><td class="num">4,0%</td><td class="num">4,5%</td><td class="num">5,8%</td><td class="num">3,5%</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <div class="chart-title">Karlılık Trendleri</div>
+        <div class="chart-subtitle">EBITDA marjı güçlü; ROE/ROCE ise yatırım döngüsü ve büyük sermaye tabanı nedeniyle daha muhafazakâr görünüm veriyor.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Profitability trend chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <line x1="50" y1="20" x2="50" y2="200" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="50" y1="200" x2="470" y2="200" stroke="#cbd5e1" stroke-width="1"/>
+
+            <polyline points="90,55 170,56 250,59 330,54 410,135" fill="none" stroke="#003366" stroke-width="3"/>
+            <circle cx="90" cy="55" r="4" fill="#003366"/>
+            <circle cx="170" cy="56" r="4" fill="#003366"/>
+            <circle cx="250" cy="59" r="4" fill="#003366"/>
+            <circle cx="330" cy="54" r="4" fill="#003366"/>
+            <circle cx="410" cy="135" r="4" fill="#003366"/>
+
+            <polyline points="90,95 170,98 250,104 330,97 410,72" fill="none" stroke="#0d9488" stroke-width="3"/>
+            <circle cx="90" cy="95" r="4" fill="#0d9488"/>
+            <circle cx="170" cy="98" r="4" fill="#0d9488"/>
+            <circle cx="250" cy="104" r="4" fill="#0d9488"/>
+            <circle cx="330" cy="97" r="4" fill="#0d9488"/>
+            <circle cx="410" cy="72" r="4" fill="#0d9488"/>
+
+            <polyline points="90,152 170,149 250,146 330,138 410,154" fill="none" stroke="#f59e0b" stroke-width="3"/>
+            <circle cx="90" cy="152" r="4" fill="#f59e0b"/>
+            <circle cx="170" cy="149" r="4" fill="#f59e0b"/>
+            <circle cx="250" cy="146" r="4" fill="#f59e0b"/>
+            <circle cx="330" cy="138" r="4" fill="#f59e0b"/>
+            <circle cx="410" cy="154" r="4" fill="#f59e0b"/>
+
+            <text x="95" y="220" text-anchor="middle" font-size="10" fill="#475569">2021</text>
+            <text x="175" y="220" text-anchor="middle" font-size="10" fill="#475569">2022</text>
+            <text x="255" y="220" text-anchor="middle" font-size="10" fill="#475569">2023</text>
+            <text x="335" y="220" text-anchor="middle" font-size="10" fill="#475569">2024</text>
+            <text x="415" y="220" text-anchor="middle" font-size="10" fill="#475569">2025</text>
+
+            <text x="354" y="30" font-size="10" fill="#003366">Brüt marj</text>
+            <text x="354" y="45" font-size="10" fill="#0d9488">EBITDA marjı</text>
+            <text x="354" y="60" font-size="10" fill="#f59e0b">Net marj</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>Benchmark Okuması</h3>
+          <table>
+            <thead>
+              <tr><th>Kalem</th><th class="num">TCELL</th><th class="num">Yorum</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>EBITDA marjı</td><td class="num">43,1%</td><td>Yüksek operasyonel kârlılık.</td></tr>
+              <tr><td>Net marj</td><td class="num">7,3%</td><td>Sağlıklı ama faiz/vergiden etkileniyor.</td></tr>
+              <tr><td>ROE</td><td class="num">6,8%</td><td>Muhafazakâr, sermaye tabanı geniş.</td></tr>
+              <tr><td>ROCE</td><td class="num">9,8%</td><td>Orta düzey; yatırım döngüsü baskısı var.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="soft-panel">
+          <h3>Yönetim Rehberiyle Bağlantı</h3>
+          <p>
+            Yönetim 2026 için %40-42 FAVÖK marjı hedefi vermektedir. Bu hedef, 2025’in 43,1% EBITDA marjıyla kıyaslandığında ilk bakışta erişilebilir görünse de pazarlama, enerji ve 5G edinim maliyetleri nedeniyle aşağı yönlü sapma riski taşır. Bu nedenle baz senaryoda rehberliğin alt bandı bir miktar iskontolu kullanılmalıdır.
+          </p>
+          <div class="callout callout-warning">
+            <strong>Yorum:</strong> Karlılık güçlü, ancak hisse değeri açısından asıl soru bu marjın sürdürülebilir nakit akışına ne kadar hızla dönüşeceğidir.
+          </div>
+        </div>
+      </div>
+
+      <p class="analysis-commentary">
+        Karlılık göstergeleri, TCELL’in operasyonel olarak yüksek kalite bir telekom operatörü olduğunu teyit ediyor. Bununla birlikte ROE ve ROCE, büyük sermaye tabanı nedeniyle bazı yatırımcıların beklediği kadar yüksek görünmeyebilir; bu durum, şirketin güçlü kârlılığının tamamının hisse başına getiriye aynı hızda dönüşmediğini gösterir. Sonuç olarak, kârlılık tek başına yatırım kararı için yeterli değildir; büyüme, sermaye tahsisi ve nakit üretimi ile birlikte okunmalıdır.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 5 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">5. Bilanço ve Borçluluk</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Bilanço ve Borçluluk</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        Bilanço tarafı, TCELL’in 5G yatırım döngüsüne rağmen mali açıdan kırılgan değil, aksine yönetilebilir kaldığını gösteriyor. Net borç, faiz karşılama ve kısa vadeli likidite birlikte okunmalı; çünkü tek bir oran gerçeği tam anlatmaz.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Metrik</th>
+            <th class="num">2024</th>
+            <th class="num">2025</th>
+            <th>Açıklama</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Toplam Varlıklar</td><td class="num">344.276</td><td class="num">500.573</td><td>Ölçek büyümeye devam ediyor.</td></tr>
+          <tr><td>Özkaynak</td><td class="num">186.967</td><td class="num">259.333</td><td>Sermaye tabanı güçlendi.</td></tr>
+          <tr><td>Nakit</td><td class="num">12.450</td><td class="num">91.828</td><td>Likidite tamponu yükseldi.</td></tr>
+          <tr><td>Toplam Finansal Borç</td><td class="num">77.400</td><td class="num">158.649</td><td>Yatırım döngüsü etkisiyle arttı.</td></tr>
+          <tr><td>Strict Net Borç</td><td class="num">64.950</td><td class="num">66.821</td><td>Yönetilebilir kaldıraç.</td></tr>
+          <tr><td>Strict Net Borç / FAVÖK</td><td class="num">0,88x</td><td class="num">0,64x</td><td>Düşük kaldıraç.</td></tr>
+          <tr><td>Faiz Karşılama</td><td class="num">2,21x</td><td class="num">6,98x</td><td>Borç servisi rahatladı.</td></tr>
+          <tr><td>Cari Oran</td><td class="num">1,25x</td><td class="num">1,70x</td><td>Kısa vadeli likidite iyileşti.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <div class="chart-title">Borç ve Likidite Dengesi</div>
+        <div class="chart-subtitle">Nakit, borç ve faiz karşılama oranı birlikte değerlendirildiğinde bilanço baskı altında değil.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Leverage chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <line x1="120" y1="20" x2="120" y2="210" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="120" y1="205" x2="460" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+
+            <text x="10" y="48" font-size="11" fill="#0f172a">Nakit</text>
+            <rect x="120" y="35" width="230" height="20" fill="#0d9488" rx="3"/>
+            <text x="360" y="49" font-size="10" fill="#0d9488" font-weight="700">91,8 mlr TL</text>
+
+            <text x="10" y="88" font-size="11" fill="#0f172a">Toplam Borç</text>
+            <rect x="120" y="75" width="300" height="20" fill="#003366" rx="3"/>
+            <text x="430" y="89" font-size="10" fill="#003366" font-weight="700">158,6 mlr TL</text>
+
+            <text x="10" y="128" font-size="11" fill="#0f172a">Strict Net Borç</text>
+            <rect x="120" y="115" width="120" height="20" fill="#f59e0b" rx="3"/>
+            <text x="250" y="129" font-size="10" fill="#b45309" font-weight="700">66,8 mlr TL</text>
+
+            <text x="10" y="168" font-size="11" fill="#0f172a">FAVÖK / Faiz</text>
+            <rect x="120" y="155" width="280" height="20" fill="#059669" rx="3"/>
+            <text x="410" y="169" font-size="10" fill="#059669" font-weight="700">6,98x</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>Likidite Okuması</h3>
+          <p>
+            Cari oran 1,70x ile kısa vadeli yükümlülükler karşılanabiliyor. Asit-test oranı 1,69x’e ulaşıyor ve nakit oranı neredeyse 1,0x seviyesinde. Bu, şirketin 2025 sonunda kısa vadede rahat bir ödeme kapasitesine sahip olduğunu gösterir.
+          </p>
+        </div>
+        <div class="soft-panel">
+          <h3>Kaldıraç Okuması</h3>
+          <p>
+            Strict net borç/FAVÖK 0,64x, yönetim tanımında ise daha düşük görünmektedir; iki tanımın ayrı okunması gerekir. Önemli olan nokta, her iki tanımda da borç yükünün kontrol altında olmasıdır. Bu nedenle bilanço, 5G yatırım döngüsünü taşıyabilecek kadar sağlamdır.
+          </p>
+        </div>
+      </div>
+
+      <div class="callout callout-positive">
+        <strong>Temel Çıkarım:</strong> Borç artışı, finansal strese değil stratejik yatırım döngüsüne işaret ediyor. Faiz karşılama oranı 6,98x seviyesinde olduğundan, kısa vadede bilanço kırılganlığı beklenmiyor.
+      </div>
+
+      <p class="analysis-commentary">
+        Bilanço tarafı, TCELL’in yatırım iştahını finanse edebilecek kapasitede olduğunu ortaya koyuyor. Net borç büyümüş olsa da nakit ve operasyonel üretim bunu dengeliyor; ayrıca borç servisinin ana belirleyicisi olan faiz karşılama oranı oldukça rahat. Bu tablo, riskin “borç geri ödenemez” değil, “yatırımın geri dönüşü beklenenden geç gelir” tarafında toplandığını gösterir.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 6 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">6. Nakit Akışı</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Nakit Akışı</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        TCELL’in nakit akışı, yatırım döngüsünün en görünür yeridir. OCF yüksek kalırken CAPEX’in 2025’te artması, kısa vadeli FCF üzerinde baskı yaratsa da ana resim pozitif bir işletme nakdi üretimidir.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Kalem</th>
+            <th class="num">2021</th>
+            <th class="num">2022</th>
+            <th class="num">2023</th>
+            <th class="num">2024</th>
+            <th class="num">2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>OCF</td><td class="num">15.691</td><td class="num">22.093</td><td class="num">28.987</td><td class="num">45.854</td><td class="num">112.146</td></tr>
+          <tr><td>CAPEX</td><td class="num">17.490</td><td class="num">25.040</td><td class="num">35.260</td><td class="num">68.160</td><td class="num">89.961</td></tr>
+          <tr><td>FCF</td><td class="num">-1.799</td><td class="num">-2.947</td><td class="num">-6.273</td><td class="num">-22.306</td><td class="num">22.185</td></tr>
+          <tr><td>FCF Marjı</td><td class="num">-2,5%</td><td class="num">-2,8%</td><td class="num">-4,4%</td><td class="num">-10,2%</td><td class="num">9,2%</td></tr>
+          <tr><td>OCF / FAVÖK</td><td class="num">62,1%</td><td class="num">63,2%</td><td class="num">64,2%</td><td class="num">62,3%</td><td class="num">107,8%</td></tr>
+          <tr><td>CAPEX / FAVÖK</td><td class="num">69,3%</td><td class="num">71,6%</td><td class="num">78,0%</td><td class="num">92,5%</td><td class="num">86,5%</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <div class="chart-title">OCF, CAPEX ve FCF</div>
+        <div class="chart-subtitle">5G yatırım döngüsünde operasyonel nakit güçlü; FCF 2025’te pozitife dönmüş durumda.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Cash flow chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <line x1="60" y1="20" x2="60" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="60" y1="205" x2="470" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+
+            <rect x="92" y="140" width="56" height="65" fill="#0d9488" rx="4"/>
+            <text x="120" y="134" text-anchor="middle" font-size="10" fill="#0d9488" font-weight="700">OCF</text>
+            <text x="120" y="132" text-anchor="middle" font-size="9" fill="#0d9488">112,1</text>
+
+            <rect x="214" y="168" width="56" height="37" fill="#003366" rx="4"/>
+            <text x="242" y="162" text-anchor="middle" font-size="10" fill="#003366" font-weight="700">CAPEX</text>
+            <text x="242" y="160" text-anchor="middle" font-size="9" fill="#003366">90,0</text>
+
+            <rect x="336" y="92" width="56" height="113" fill="#059669" rx="4"/>
+            <text x="364" y="86" text-anchor="middle" font-size="10" fill="#059669" font-weight="700">FCF</text>
+            <text x="364" y="84" text-anchor="middle" font-size="9" fill="#059669">22,2</text>
+
+            <text x="120" y="226" text-anchor="middle" font-size="10" fill="#475569">OCF</text>
+            <text x="242" y="226" text-anchor="middle" font-size="10" fill="#475569">CAPEX</text>
+            <text x="364" y="226" text-anchor="middle" font-size="10" fill="#475569">FCF</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>İşletme Sermayesi</h3>
+          <table>
+            <thead>
+              <tr><th>Kalem</th><th class="num">2025</th><th class="num">Yorum</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>DSO</td><td class="num">35,7 gün</td><td>Tahsilat disiplini güçlü.</td></tr>
+              <tr><td>DIO</td><td class="num">1,9 gün</td><td>Stok ihtiyacı minimal.</td></tr>
+              <tr><td>DPO</td><td class="num">67,8 gün</td><td>Tedarikçi finansmanı destekleyici.</td></tr>
+              <tr><td>CCC</td><td class="num">-30,3 gün</td><td>Ön ödemeli model nakit yaratıyor.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="soft-panel">
+          <h3>FCF Kalitesi</h3>
+          <p>
+            FCF’nin 2025’te pozitife dönmesi, yatırım hikâyesi için önemli bir eşik. OCF, net kârın üzerinde ve working capital etkisi sınırlı; bu da muhasebe kârının gerçek nakde dönüşebildiğini gösteriyor. CAPEX yüksek olduğu için büyüme yatırımı devam ediyor, fakat temel faaliyetlerin nakit üretme kabiliyeti korunmuş durumda.
+          </p>
+          <div class="callout callout-warning">
+            <strong>Not:</strong> Eski analiz katmanlarında görülen negatif FCF tanımları, yatırım nakit çıkışı ile serbest nakit akışının karıştırılmasından kaynaklanıyordu; market-facing bu raporda FCF, OCF eksi CAPEX olarak alınmıştır.
+          </div>
+        </div>
+      </div>
+
+      <p class="analysis-commentary">
+        Nakit akışı tarafının ana mesajı, TCELL’in büyüme yatırımı yaparken işletme nakdi üretimini kaybetmediğidir. Bu, temettü ve borç servisi açısından kritik bir güvence sağlar. Önümüzdeki dönemde yatırımcının izlemesi gereken metrik, FCF’nin pozitifte kalıp kalmamasından çok, FCF’nin hangi hızda ölçeklenip faiz ve yeni CAPEX baskısını ne kadar rahat karşıladığıdır.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 7 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">7. Değerleme</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Değerleme</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        Değerleme bölümünde temel soru, şirketin kalitesi kadar bu kalitenin fiyata ne kadar yansıdığıdır. TCELL için baz senaryo 104 TL, bull 132 TL ve bear 90 TL olarak çalışılmıştır; güncel fiyat referansı 116,30 TL’dir.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Senaryo</th>
+            <th class="num">Olasılık</th>
+            <th class="num">Hedef Fiyat</th>
+            <th class="num">Upside / Downside</th>
+            <th>Temel Varsayım</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Bull</td><td class="num">%25</td><td class="num">132 TL</td><td class="num">+%13,5</td><td>Hızlı 5G ARPU dönüşümü, güçlü marj genişlemesi.</td></tr>
+          <tr><td>Base</td><td class="num">%50</td><td class="num">104 TL</td><td class="num">-%10,6</td><td>Kademeli büyüme, kontrollü CAPEX ve ılımlı marj toparlanması.</td></tr>
+          <tr><td>Bear</td><td class="num">%25</td><td class="num">90 TL</td><td class="num">-%22,6</td><td>Zayıf 5G monetizasyonu ve enerji/kur baskısı.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <div class="chart-title">Hedef Fiyat Senaryoları</div>
+        <div class="chart-subtitle">Comparative yaklaşım ana omurga; DCF aşağı yönlü çıpa, DDM ara destek olarak kullanıldı.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Valuation scenario chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <line x1="60" y1="20" x2="60" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="60" y1="205" x2="470" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+
+            <rect x="90" y="96" width="90" height="109" fill="#dc2626" rx="4"/>
+            <rect x="220" y="77" width="90" height="128" fill="#003366" rx="4"/>
+            <rect x="350" y="45" width="90" height="160" fill="#059669" rx="4"/>
+
+            <text x="135" y="88" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="700">90</text>
+            <text x="265" y="69" text-anchor="middle" font-size="10" fill="#003366" font-weight="700">104</text>
+            <text x="395" y="37" text-anchor="middle" font-size="10" fill="#059669" font-weight="700">132</text>
+
+            <text x="135" y="226" text-anchor="middle" font-size="10" fill="#475569">Bear</text>
+            <text x="265" y="226" text-anchor="middle" font-size="10" fill="#475569">Base</text>
+            <text x="395" y="226" text-anchor="middle" font-size="10" fill="#475569">Bull</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>Çarpanlar</h3>
+          <table>
+            <thead>
+              <tr><th>Metrik</th><th class="num">TCELL</th><th class="num">Peer Medyan</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>F/K</td><td class="num">14,4x</td><td class="num">10,4x</td></tr>
+              <tr><td>FD/FAVÖK</td><td class="num">2,8x</td><td class="num">6,0x</td></tr>
+              <tr><td>PD/DD</td><td class="num">1,0x</td><td class="num">1,7x</td></tr>
+              <tr><td>ROE</td><td class="num">6,8%</td><td class="num">17,9%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="soft-panel">
+          <h3>Yöntem Ağırlıkları</h3>
+          <table>
+            <thead>
+              <tr><th>Yöntem</th><th class="num">Hedef Değer</th><th class="num">Ağırlık</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>DCF</td><td class="num">37,5 TL</td><td class="num">%20</td></tr>
+              <tr><td>Comparative</td><td class="num">126 TL</td><td class="num">%65</td></tr>
+              <tr><td>DDM</td><td class="num">95 TL</td><td class="num">%15</td></tr>
+            </tbody>
+          </table>
+          <div class="callout callout-info">
+            <strong>Okuma:</strong> DCF tek başına çok düşük çıpa veriyor; nihai baz değer, karşılaştırmalı çarpanlar ve temettü davranışı ile taşınıyor. Bu yüzden baz hedef 104 TL.
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-block">
+        <p class="analysis-intro">
+          Güncel fiyat referansı ile baz senaryo arasındaki fark, piyasanın operasyonel kaliteyi kısmen fiyatlamış olabileceğini düşündürüyor. Ancak buna rağmen EV/FAVÖK bazında TCELL’in peer medyana göre belirgin iskonto taşıması, hikâyenin tamamen fiyatlandığını söylemeyi zorlaştırıyor.
+        </p>
+        <div class="analysis-commentary">
+          Bugünkü fiyat, baz hedefe göre primli; fakat bull senaryonun altında kalıyor. Bu durum, piyasada “iyi şirket ama kanıt bekleyen dönüşüm” algısının sürdüğünü düşündürüyor. Yatırımcı açısından en önemli takip değişkenleri 5G ücretli abone dönüşümü, veri merkezi katkısı ve 2026 marj patikasıdır.
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 8 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">8. Sektör Karşılaştırması</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Sektör Karşılaştırması</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        Sektör karşılaştırması, TCELL’in mutlak performansını değil göreli kalitesini gösterir. Telekom sektörü doğası gereği sermaye yoğun olduğundan, borç ve çarpanlar yalnızca birer sayı değil, iş modelinin parçasıdır.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Şirket</th>
+            <th class="num">F/K</th>
+            <th class="num">FD/FAVÖK</th>
+            <th class="num">PD/DD</th>
+            <th class="num">ROE</th>
+            <th>Not</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>TCELL</td><td class="num">14,4x</td><td class="num">2,8x</td><td class="num">1,0x</td><td class="num">6,8%</td><td>Hedef şirket</td></tr>
+          <tr><td>TTKOM</td><td class="num">9,4x</td><td class="num">2,9x</td><td class="num">1,0x</td><td class="num">12,8%</td><td>En yakın yerel peer</td></tr>
+          <tr><td>Global Medyan</td><td class="num">10,4x</td><td class="num">6,0x</td><td class="num">1,7x</td><td class="num">17,9%</td><td>EM / gelişmiş pazar karması</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <div class="chart-title">Peer FD/FAVÖK Karşılaştırması</div>
+        <div class="chart-subtitle">TCELL EV/FAVÖK bazında ucuz, ancak F/K bazında tarihsel ortalamanın üzerinde fiyatlanıyor.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Peer comparison grouped bar chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <line x1="60" y1="18" x2="60" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="60" y1="205" x2="475" y2="205" stroke="#cbd5e1" stroke-width="1"/>
+
+            <rect x="95" y="146" width="42" height="59" fill="#003366" rx="3"/>
+            <rect x="150" y="142" width="42" height="63" fill="#0d9488" rx="3"/>
+            <rect x="205" y="70" width="42" height="135" fill="#94a3b8" rx="3"/>
+
+            <text x="116" y="138" text-anchor="middle" font-size="9" fill="#003366" font-weight="700">2,8</text>
+            <text x="171" y="134" text-anchor="middle" font-size="9" fill="#0d9488" font-weight="700">2,9</text>
+            <text x="226" y="62" text-anchor="middle" font-size="9" fill="#94a3b8" font-weight="700">6,0</text>
+
+            <text x="116" y="225" text-anchor="middle" font-size="10" fill="#475569">TCELL</text>
+            <text x="171" y="225" text-anchor="middle" font-size="10" fill="#475569">TTKOM</text>
+            <text x="226" y="225" text-anchor="middle" font-size="10" fill="#475569">Global</text>
+
+            <text x="300" y="52" font-size="11" fill="#0f172a">TCELL’in iskontosu EV/FAVÖK bazında anlamlıdır.</text>
+            <text x="300" y="72" font-size="11" fill="#0f172a">Fakat yüksek F/K, piyasanın kâr kalitesini tamamen</text>
+            <text x="300" y="92" font-size="11" fill="#0f172a">iskontolamadığını gösterir. ROE medyana göre düşük</text>
+            <text x="300" y="112" font-size="11" fill="#0f172a">görünse de bu, geniş sermaye tabanının doğal sonucudur.</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="swot-grid">
+        <div class="swot-box">
+          <h4>Strengths</h4>
+          <p>Pazar liderliği, ölçek ekonomisi, güçlü OCF, negatif CCC ve geniş altyapı ağı.</p>
+        </div>
+        <div class="swot-box">
+          <h4>Weaknesses</h4>
+          <p>Yüksek CAPEX, marj baskısı, çarpanların tamamen ucuz olmaması ve veri tanımı hassasiyeti.</p>
+        </div>
+        <div class="swot-box">
+          <h4>Opportunities</h4>
+          <p>5G ARPU primi, veri merkezi büyümesi, techfin ile gelir çeşitlenmesi ve enerji hedge etkisi.</p>
+        </div>
+        <div class="swot-box">
+          <h4>Threats</h4>
+          <p>Kur oynaklığı, enerji fiyatları, faiz seviyesi ve 5G monetizasyonun beklenenden yavaş kalması.</p>
+        </div>
+      </div>
+
+      <p class="analysis-commentary">
+        Sektör görüntüsü, TCELL’in operasyonel kalitesini teyit ediyor fakat aynı zamanda piyasanın telekom hisselerine çarpan atarken seçici davrandığını gösteriyor. TCELL, EV/FAVÖK iskontosu nedeniyle cazip görünürken, F/K ve bazı getiri metrikleri yatırımcının kısa vadeli re-rating beklentisini sınırlıyor. Bu nedenle sektör karşılaştırması, “ucuzluk” yerine “kalite / fiyat dengesi” olarak okunmalıdır.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 9 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">9. Makro Ortam</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Makro Ortam</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        TCELL’in gelirleri ağırlıkla yurtiçi olsa da değerlemesi faiz, kur ve enerji maliyeti üzerinden makro çerçeveye duyarlıdır. Telekom doğrudan çevrimsel bir sektör değildir; ancak finansman ve elektrik maliyeti kanalları şirketin marjlarını etkiler.
+      </p>
+
+      <div class="kpi-grid">
+        <div class="kpi-card" style="border-left-color: var(--fx-info);">
+          <div class="kpi-label">TCMB Politika Faizi</div>
+          <div class="kpi-value">%37,0</div>
+          <div class="kpi-change">12.03.2026 karar metni</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: var(--fx-warning);">
+          <div class="kpi-label">Son PPK Toplantısı</div>
+          <div class="kpi-value">22.04.2026</div>
+          <div class="kpi-change">Takvim: 30.04.2026 özet</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: var(--fx-negative);">
+          <div class="kpi-label">Faiz / İskonto Riski</div>
+          <div class="kpi-value">Yüksek</div>
+          <div class="kpi-change negative">Değerleme hassasiyeti sürüyor</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: var(--fx-positive);">
+          <div class="kpi-label">İş Modeli Hassasiyeti</div>
+          <div class="kpi-value">Dolaylı</div>
+          <div class="kpi-change">Enerji, kur ve finansman kanalı</div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">Makro Risk Etki Haritası</div>
+        <div class="chart-subtitle">Telekom için ana baskı, talep daralmasından çok maliyet ve iskonto oranı kanalıdır.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Macro risk bar chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <text x="20" y="40" font-size="11" fill="#0f172a">Faiz</text>
+            <rect x="120" y="28" width="280" height="18" fill="#fee2e2" rx="3"/>
+            <rect x="120" y="28" width="235" height="18" fill="#dc2626" rx="3"/>
+            <text x="430" y="42" font-size="10" fill="#dc2626" font-weight="700">8/10</text>
+
+            <text x="20" y="76" font-size="11" fill="#0f172a">Enerji</text>
+            <rect x="120" y="64" width="280" height="18" fill="#fef3c7" rx="3"/>
+            <rect x="120" y="64" width="200" height="18" fill="#d97706" rx="3"/>
+            <text x="430" y="78" font-size="10" fill="#d97706" font-weight="700">7/10</text>
+
+            <text x="20" y="112" font-size="11" fill="#0f172a">Kur</text>
+            <rect x="120" y="100" width="280" height="18" fill="#fef3c7" rx="3"/>
+            <rect x="120" y="100" width="220" height="18" fill="#d97706" rx="3"/>
+            <text x="430" y="114" font-size="10" fill="#d97706" font-weight="700">7/10</text>
+
+            <text x="20" y="148" font-size="11" fill="#0f172a">Büyüme</text>
+            <rect x="120" y="136" width="280" height="18" fill="#d1fae5" rx="3"/>
+            <rect x="120" y="136" width="120" height="18" fill="#059669" rx="3"/>
+            <text x="430" y="150" font-size="10" fill="#059669" font-weight="700">4/10</text>
+
+            <text x="20" y="184" font-size="11" fill="#0f172a">Jeopolitik</text>
+            <rect x="120" y="172" width="280" height="18" fill="#fef3c7" rx="3"/>
+            <rect x="120" y="172" width="170" height="18" fill="#d97706" rx="3"/>
+            <text x="430" y="186" font-size="10" fill="#d97706" font-weight="700">6/10</text>
+          </svg>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Kanal</th>
+            <th class="num">Yön</th>
+            <th>Etkisi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Faiz</td><td class="num">Yüksek</td><td>İskonto oranı ve refinansman maliyeti üzerinden baskı.</td></tr>
+          <tr><td>Enerji</td><td class="num">Orta-Yüksek</td><td>EBITDA marjı üzerinde aşağı yönlü baskı.</td></tr>
+          <tr><td>Kur</td><td class="num">Yüksek oynaklık</td><td>Finansman gideri ve bilanço duyarlılığı artıyor.</td></tr>
+          <tr><td>Büyüme</td><td class="num">Ilımlı</td><td>Defansif talep sayesinde gelir çöküşü riski düşük.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warning">
+        <strong>Makro Yorum:</strong> TCELL’de ana risk talep daralması değil, maliyet ve iskonto oranıdır. Bu nedenle faiz, enerji ve kuru ayrı ayrı takip etmek gerekir.
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>Jeopolitik Kanal</h3>
+          <p>
+            Jeopolitik gelişmeler, telekom hisselerinde doğrudan ciro kaybı olarak değil; enerji fiyatı, kur ve finansman kanalıyla değerlemeye yansır. Bu nedenle risk “iş modeli bozuluyor” değil, “iyi modelin fiyata geç yansıması” şeklinde çalışır.
+          </p>
+        </div>
+        <div class="soft-panel">
+          <h3>Takvimsel Eşikler</h3>
+          <p>
+            22.04.2026 TCMB kararı iskonto oranı için önemlidir; 24.04.2026 1Ç26 sonuçları ise 5G monetizasyonunun ilk ciddi testi olacaktır. Bu iki tarih, 2026 görünümü açısından ana kontrol noktalarıdır.
+          </p>
+        </div>
+      </div>
+
+      <p class="analysis-commentary">
+        Makro ortam bölümünün sonucu, TCELL’in gelir yapısının defansif, fakat değerlemesinin faiz ve kur hassasiyeti yüksek olduğudur. Bu yapı, hisseyi makro şoklara tamamen açık hale getirmese de re-rating sürecini yavaşlatabilir. Dolayısıyla makro iyileşme olmadan çarpan genişlemesi otomatik beklenmemelidir.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 10 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">10. Teknik Analiz</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Teknik Analiz</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        Bağımsız teknik analiz veri seti sınırlı olduğu için bu bölüm, fiyat bandı ve kısa vadeli eşiklere odaklanır. Buradaki amaç uzun vadeli bir trade tavsiyesi vermek değil, kurumsal raporda piyasanın yakın dönem davranış alanını görünür kılmaktır.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Seviye</th>
+            <th class="num">Değer</th>
+            <th>Açıklama</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Kapanış</td><td class="num">116,30 TL</td><td>14.04.2026 kapanışı.</td></tr>
+          <tr><td>10 Günlük Ortalama</td><td class="num">111,00 TL</td><td>Kısa vade destek alanı.</td></tr>
+          <tr><td>Kısa Vadeli Destek</td><td class="num">112,33 TL</td><td>İlk kontrol noktası.</td></tr>
+          <tr><td>Kısa Vadeli Direnç</td><td class="num">118,33 TL</td><td>İlk yukarı bant.</td></tr>
+          <tr><td>İkinci Direnç</td><td class="num">124,00 TL</td><td>Psikolojik eşik.</td></tr>
+          <tr><td>Adil Değer Baz</td><td class="num">104,00 TL</td><td>Temel değerleme çapası.</td></tr>
+          <tr><td>Bull Hedef</td><td class="num">132,00 TL</td><td>Güçlü monetizasyon senaryosu.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <div class="chart-title">Fiyat Bandı ve Eşikler</div>
+        <div class="chart-subtitle">Teknik görünüm karar bölgesinde; destek ve direnç bandı birbirine yakın.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Technical analysis range chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <line x1="70" y1="30" x2="70" y2="210" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="70" y1="210" x2="470" y2="210" stroke="#cbd5e1" stroke-width="1"/>
+
+            <line x1="180" y1="175" x2="430" y2="175" stroke="#003366" stroke-width="6" stroke-linecap="round"/>
+            <line x1="180" y1="145" x2="430" y2="145" stroke="#0d9488" stroke-width="6" stroke-linecap="round"/>
+            <line x1="180" y1="115" x2="430" y2="115" stroke="#f59e0b" stroke-width="6" stroke-linecap="round"/>
+            <line x1="180" y1="85" x2="430" y2="85" stroke="#059669" stroke-width="6" stroke-linecap="round"/>
+
+            <circle cx="335" cy="130" r="7" fill="#dc2626"/>
+            <text x="350" y="126" font-size="10" fill="#dc2626" font-weight="700">116,3</text>
+
+            <text x="92" y="180" font-size="10" fill="#0f172a">104 TL</text>
+            <text x="92" y="150" font-size="10" fill="#0f172a">112,33 TL</text>
+            <text x="92" y="120" font-size="10" fill="#0f172a">118,33 TL</text>
+            <text x="92" y="90" font-size="10" fill="#0f172a">132 TL</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>Hareketli Ortalama Okuması</h3>
+          <table>
+            <thead>
+              <tr><th>Ortalama</th><th class="num">Değer</th><th>Durum</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>10 Gün</td><td class="num">111,00 TL</td><td>Kısa vade destek.</td></tr>
+              <tr><td>20 Gün</td><td class="num">113,50 TL</td><td>Nötr bölge.</td></tr>
+              <tr><td>50 Gün</td><td class="num">108,20 TL</td><td>Orta vade trend korunuyor.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="soft-panel">
+          <h3>Senaryo Çerçevesi</h3>
+          <table>
+            <thead>
+              <tr><th>Senaryo</th><th class="num">Tetikleyici</th><th class="num">Yorum</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Bear</td><td class="num">90 TL</td><td>5G dönüşümü zayıf.</td></tr>
+              <tr><td>Base</td><td class="num">104 TL</td><td>Fiyatın altında orta bant.</td></tr>
+              <tr><td>Bull</td><td class="num">132 TL</td><td>ARPU ve kurumsal servis hızlanır.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Teknik Yorum:</strong> Fiyat, baz hedefe göre primli ve direnç bandına yakın. Bu nedenle teknik açıdan yeni bir yukarı kırılma için ya 5G monetizasyonunun görünür hızlanması ya da makro tarafta belirgin rahatlama gerekir.
+      </div>
+
+      <p class="analysis-commentary">
+        Teknik analiz bu raporda yardımcı bir katmandır; esas yatırım tezi finansal kalite ve değerleme çarpanları üzerinde kuruludur. Buna rağmen kısa vadeli fiyat davranışı, yatırımcı psikolojisini ve taktik giriş/çıkış bantlarını belirlediği için ihmal edilmemelidir. Mevcut görünüm, hissenin destek üzerinde ama dirençle karşı karşıya olduğunu söylüyor.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 11 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">11. KAP Olayları</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>KAP Olayları</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        Kısa vadeli fiyatlama çoğu zaman bilanço kadar takvim olaylarına da bağlıdır. TCELL’de 2025 faaliyet raporu, 1 Nisan 2026 5G lansmanı ve 24 Nisan 2026 1Ç26 sonuçları birbirini takip eden ana olay setini oluşturur.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Tarih</th>
+            <th>Olay</th>
+            <th>Etkisi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>2025 yıl sonu</td><td>FY2025 faaliyet raporu ve denetimli finansallar</td><td>OCF, net borç ve çalışma sermayesi kalitesi görünür oldu.</td></tr>
+          <tr><td>01.04.2026</td><td>5G ticari lansmanı</td><td>Yatırım tezini güçlendirdi; monetizasyon doğrulaması bekleniyor.</td></tr>
+          <tr><td>22.04.2026</td><td>TCMB PPK kararı</td><td>İskonto oranı ve finansman koşulları açısından kritik.</td></tr>
+          <tr><td>24.04.2026</td><td>1Ç26 sonuçları</td><td>Ücretli 5G abone dönüşümü ve marj patikası için ilk test.</td></tr>
+          <tr><td>Aralık 2026</td><td>Spectrum payment #2</td><td>Nakit ve borç göstergeleri için ara baskı.</td></tr>
+          <tr><td>Mayıs 2027</td><td>Spectrum payment #3</td><td>Yatırım döngüsünün son büyük taksiti.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <div class="chart-title">Zaman Çizgisi</div>
+        <div class="chart-subtitle">Önümüzdeki 12 ay, 5G hikâyesinin piyasa tarafından ne kadar fiyatlanacağını belirleyecek.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Event timeline">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <line x1="60" y1="125" x2="460" y2="125" stroke="#cbd5e1" stroke-width="2"/>
+            <circle cx="110" cy="125" r="9" fill="#003366"/>
+            <circle cx="220" cy="125" r="9" fill="#0d9488"/>
+            <circle cx="300" cy="125" r="9" fill="#f59e0b"/>
+            <circle cx="380" cy="125" r="9" fill="#dc2626"/>
+
+            <text x="110" y="95" text-anchor="middle" font-size="10" fill="#0f172a" font-weight="700">01.04.2026</text>
+            <text x="110" y="109" text-anchor="middle" font-size="10" fill="#64748b">5G lansmanı</text>
+
+            <text x="220" y="95" text-anchor="middle" font-size="10" fill="#0f172a" font-weight="700">22.04.2026</text>
+            <text x="220" y="109" text-anchor="middle" font-size="10" fill="#64748b">TCMB kararı</text>
+
+            <text x="300" y="95" text-anchor="middle" font-size="10" fill="#0f172a" font-weight="700">24.04.2026</text>
+            <text x="300" y="109" text-anchor="middle" font-size="10" fill="#64748b">1Ç26 sonuçları</text>
+
+            <text x="380" y="95" text-anchor="middle" font-size="10" fill="#0f172a" font-weight="700">Aralık 2026</text>
+            <text x="380" y="109" text-anchor="middle" font-size="10" fill="#64748b">Spectrum #2</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="callout callout-positive">
+        <strong>Öncelikli İzleme:</strong> 24.04.2026 çeyrek sonuçları, 5G ücretli abonelik ve ARPU priminin ilk doğrulaması olacak. Sonuç güçlü gelirse baz senaryonun üzeri test edilebilir.
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>Olayların Önemi</h3>
+          <p>
+            KAP olayları, TCELL’de yalnızca bilgilendirme değil, değerleme tetikleyicisidir. Özellikle lansman sonrası abonelik yapısı, gelir karmaşası ve marj davranışı gibi unsurlar yatırımcının hisseye biçtiği çarpanı değiştirebilir.
+          </p>
+        </div>
+        <div class="soft-panel">
+          <h3>Pratik Sonuç</h3>
+          <p>
+            Bu nedenle portföy yöneticisi açısından olay takvimi, bilanço kadar önemlidir. İyi haber akışı çarpanı genişletebilir; kötü sürpriz ise güçlü bilanço olsa bile kısa vadeli baskı yaratabilir.
+          </p>
+        </div>
+      </div>
+
+      <p class="analysis-commentary">
+        KAP takvimi, TCELL’in yatırım hikâyesinin kısa vadeli doğrulama noktalarını belirliyor. 2025 faaliyet raporundan 2026 çeyrek sonuçlarına geçiş, bir şirketin raporlandığı performanstan anlatılan dönüşüme geçişidir. Yatırımcı, 24 Nisan’ı bu nedenle kritik bir fiyatlama eşiği olarak görmelidir.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 12 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">12. Risk Değerlendirmesi</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Risk Değerlendirmesi</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        TCELL’de riskler operasyonel çöküşten çok geçiş dönemi riskleridir. Ana başlıklar 5G monetizasyon hızı, enerji maliyeti, kur oynaklığı ve veri tanımı / metodoloji tutarlılığıdır.
+      </p>
+
+      <div class="risk-grid">
+        <div class="risk-box">
+          <h4>5G Monetizasyon Gecikmesi</h4>
+          <p>Olasılık: Orta | Etki: Yüksek. Ücretli abone dönüşümü beklenenden yavaş olursa marj genişlemesi ertelenir ve bull senaryo ötelenir.</p>
+        </div>
+        <div class="risk-box">
+          <h4>FX Oynaklığı</h4>
+          <p>Olasılık: Yüksek | Etki: Orta-Yüksek. Kur hareketi finansman giderini ve net kâr volatilitesini artırabilir.</p>
+        </div>
+        <div class="risk-box">
+          <h4>Enerji Maliyeti Baskısı</h4>
+          <p>Olasılık: Orta-Yüksek | Etki: Orta. Telekom operasyonları enerji yoğun olduğu için EBITDA marjı etkilenebilir.</p>
+        </div>
+        <div class="risk-box">
+          <h4>Veri Tanımı / Açıklama Kalitesi</h4>
+          <p>Olasılık: Orta | Etki: Orta. Farklı analiz katmanlarının birleşik fact base ile uyumlu tutulması gerekir.</p>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">Risk Skorları</div>
+        <div class="chart-subtitle">0-10 ölçeğinde daha yüksek skor, daha yüksek risk anlamına gelir.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Risk scores chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <text x="10" y="35" font-size="10" fill="#0f172a">5G</text>
+            <rect x="80" y="22" width="360" height="18" fill="#fee2e2" rx="3"/>
+            <rect x="80" y="22" width="252" height="18" fill="#dc2626" rx="3"/>
+            <text x="448" y="36" font-size="10" fill="#dc2626" font-weight="700">7/10</text>
+
+            <text x="10" y="70" font-size="10" fill="#0f172a">FX</text>
+            <rect x="80" y="57" width="360" height="18" fill="#fee2e2" rx="3"/>
+            <rect x="80" y="57" width="288" height="18" fill="#dc2626" rx="3"/>
+            <text x="448" y="71" font-size="10" fill="#dc2626" font-weight="700">8/10</text>
+
+            <text x="10" y="105" font-size="10" fill="#0f172a">Enerji</text>
+            <rect x="80" y="92" width="360" height="18" fill="#fef3c7" rx="3"/>
+            <rect x="80" y="92" width="216" height="18" fill="#d97706" rx="3"/>
+            <text x="448" y="106" font-size="10" fill="#d97706" font-weight="700">6/10</text>
+
+            <text x="10" y="140" font-size="10" fill="#0f172a">Metodoloji</text>
+            <rect x="80" y="127" width="360" height="18" fill="#fef3c7" rx="3"/>
+            <rect x="80" y="127" width="180" height="18" fill="#d97706" rx="3"/>
+            <text x="448" y="141" font-size="10" fill="#d97706" font-weight="700">5/10</text>
+
+            <text x="10" y="175" font-size="10" fill="#0f172a">Makro</text>
+            <rect x="80" y="162" width="360" height="18" fill="#fef3c7" rx="3"/>
+            <rect x="80" y="162" width="198" height="18" fill="#d97706" rx="3"/>
+            <text x="448" y="176" font-size="10" fill="#d97706" font-weight="700">5,5/10</text>
+          </svg>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Risk</th>
+            <th class="num">Olasılık</th>
+            <th class="num">Etki</th>
+            <th>Azaltıcı Faktör</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>5G monetizasyon gecikmesi</td><td class="num">Orta</td><td class="num">Yüksek</td><td>Güçlü pazar payı ve geniş kapsama.</td></tr>
+          <tr><td>FX ve kur oynaklığı</td><td class="num">Yüksek</td><td class="num">Orta-Yüksek</td><td>Düşük strict kaldıraç ve nakit tamponu.</td></tr>
+          <tr><td>Enerji maliyeti baskısı</td><td class="num">Orta-Yüksek</td><td class="num">Orta</td><td>Yenilenebilir enerji yatırımları.</td></tr>
+          <tr><td>Veri tanımı / açıklama kalitesi</td><td class="num">Orta</td><td class="num">Orta</td><td>Reconciliation-verified fact base kullanımı.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warning">
+        <strong>Risk Özeti:</strong> TCELL için en büyük risk, iş modelinin zayıflaması değil, güçlü modelin piyasaya beklenenden geç yansımasıdır. Bu yüzden risk okuması, değerleme kadar zamanlamaya da bağlıdır.
+      </div>
+
+      <p class="analysis-commentary">
+        Risk matrisi, yatırımcı için iki ayrı düzlem sunar: operasyonel riskler ve metodolojik riskler. Operasyonel tarafta 5G ve enerji önde gelirken, metodolojik tarafta doğru tanım setini korumak kritik önemdedir. Kurumsal raporun amacı, bu iki düzlemi aynı sayfada görünür kılmaktır; çünkü yanlış veri kadar yanlış zamanlama da yatırım kararını bozabilir.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 13 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">13. Genel Değerlendirme</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Genel Değerlendirme</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        Genel değerlendirme, tüm analiz katmanlarını tek skor kartında toplar. Burada amaç sadece not vermek değil, hangi eksenin yatırım kararını en çok etkilediğini göstermektir.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Boyut</th>
+            <th class="num">Puan</th>
+            <th class="num">Ağırlık</th>
+            <th>Açıklama</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Finansal Sağlık</td><td class="num">7</td><td class="num">%30</td><td>OCF güçlü, kaldıraç yönetilebilir, likidite rahat.</td></tr>
+          <tr><td>Büyüme Potansiyeli</td><td class="num">7</td><td class="num">%20</td><td>5G, veri merkezi ve techfin büyüme opsiyonu.</td></tr>
+          <tr><td>Sektör Pozisyonu</td><td class="num">8</td><td class="num">%15</td><td>Türkiye telekom pazarında lider ölçek.</td></tr>
+          <tr><td>Makro Uyumluluk</td><td class="num">5</td><td class="num">%15</td><td>Faiz, enerji ve kur baskısı belirgin.</td></tr>
+          <tr><td>Teknik Görünüm</td><td class="num">5</td><td class="num">%10</td><td>Fiyat destek/direnç arasında.</td></tr>
+          <tr><td>Kurumsal / Yönetim</td><td class="num">6</td><td class="num">%10</td><td>Strateji net; guidance geçmişi için daha fazla kanıt gerekir.</td></tr>
+          <tr><td>Genel Skor</td><td class="num">6,6 / 10</td><td class="num">—</td><td>Ağırlıklı ortalama, orta-olumlu ama kanıt bekleyen profil.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <div class="chart-title">Skor Kartı Görünümü</div>
+        <div class="chart-subtitle">Şirket kalitesi yüksek, fakat fiyat ve monetizasyon görünümü daha fazla kanıt istiyor.</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 500 250" aria-label="Score card chart">
+            <rect x="0" y="0" width="500" height="250" fill="#ffffff"/>
+            <circle cx="120" cy="125" r="72" fill="none" stroke="#e2e8f0" stroke-width="18"/>
+            <circle cx="120" cy="125" r="72" fill="none" stroke="#003366" stroke-width="18" stroke-dasharray="300 452" stroke-dashoffset="0" transform="rotate(-90 120 125)"/>
+            <text x="120" y="118" text-anchor="middle" font-size="26" fill="#003366" font-weight="800">6,6</text>
+            <text x="120" y="138" text-anchor="middle" font-size="10" fill="#64748b">Genel Skor</text>
+
+            <rect x="230" y="52" width="190" height="20" fill="#e2e8f0" rx="10"/>
+            <rect x="230" y="52" width="140" height="20" fill="#059669" rx="10"/>
+            <text x="435" y="66" font-size="10" fill="#0f172a">Finansal Sağlık</text>
+
+            <rect x="230" y="82" width="190" height="20" fill="#e2e8f0" rx="10"/>
+            <rect x="230" y="82" width="140" height="20" fill="#0d9488" rx="10"/>
+            <text x="435" y="96" font-size="10" fill="#0f172a">Büyüme</text>
+
+            <rect x="230" y="112" width="190" height="20" fill="#e2e8f0" rx="10"/>
+            <rect x="230" y="112" width="160" height="20" fill="#003366" rx="10"/>
+            <text x="435" y="126" font-size="10" fill="#0f172a">Sektör</text>
+
+            <rect x="230" y="142" width="190" height="20" fill="#e2e8f0" rx="10"/>
+            <rect x="230" y="142" width="100" height="20" fill="#d97706" rx="10"/>
+            <text x="435" y="156" font-size="10" fill="#0f172a">Makro</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>İzleme Planı</h3>
+          <table>
+            <thead>
+              <tr><th>Tarih</th><th>İzlenecek Kalem</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>22.04.2026</td><td>TCMB faiz kararı ve metin tonu.</td></tr>
+              <tr><td>24.04.2026</td><td>1Ç26 sonuçları ve 5G abonelik verisi.</td></tr>
+              <tr><td>2H 2026</td><td>Marj genişlemesi ve veri merkezi katkısı.</td></tr>
+              <tr><td>Aralık 2026</td><td>Spectrum taksit etkisi ve net borç patikası.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="soft-panel">
+          <h3>Kritik Kilometre Taşları</h3>
+          <ul>
+            <li>Ücretli 5G abone sayısı ve ARPU primi.</li>
+            <li>Veri merkezi / bulut büyüme katkısı.</li>
+            <li>OCF’nin FAVÖK üzerinde kalmaya devam etmesi.</li>
+            <li>FCF’nin pozitif kalması ve faiz tamponunun korunması.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Sonuç:</strong> TCELL, “yüksek kalite, fakat kanıt bekleyen yeniden değerleme” profilinde. Bu profil, uzun vadeli yatırımcı için cazip; kısa vadeli yatırımcı için ise takvim ve fiyat hassasiyeti taşır.
+      </div>
+
+      <p class="analysis-commentary">
+        Genel sonuç, şirketin iş modelinin sağlam olduğu, ancak piyasanın artık yalnızca kalite değil hız da talep ettiğidir. Eğer 5G ve dijital servis gelirleri 2026 boyunca görünür şekilde ivmelenirse, baz değer üzerinde kalıcı re-rating mümkün olabilir. Aksi durumda hisse, güçlü bilanço ve nakit kalitesine rağmen daha uzun süre band içinde işlem görebilir.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 14 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="company-ticker">TCELL</span>
+        <span class="report-section">14. Zorunlu Bildirimler</span>
+      </div>
+      <div class="page-header-right"><div class="brand-mark">TCELL</div></div>
+    </div>
+
+    <h1>Zorunlu Bildirimler</h1>
+    <div class="analysis-block">
+      <p class="analysis-intro">
+        Bu bölüm, raporun hukuki ve metodolojik çerçevesini tanımlar. Amaç yatırım tavsiyesi vermek değil; mevcut verileri kurumsal rapor standardında bağımsız analiz olarak düzenlemektir.
+      </p>
+
+      <div class="two-col">
+        <div class="soft-panel">
+          <h3>Yasal Uyarı</h3>
+          <p>
+            Bu belge Finance X Platformu tarafından otomatik olarak oluşturulmuş bağımsız analiz çıktısıdır. Yatırım tavsiyesi niteliği taşımaz. Buradaki görüşler analiz tarihi itibarıyla geçerli bir veri seti üzerinde kurulmuştur ve düzenleyici, piyasa veya şirket beyanlarındaki yeni gelişmeler bu görüşleri değiştirebilir.
+          </p>
+        </div>
+        <div class="soft-panel">
+          <h3>Metodolojik Sınırlar</h3>
+          <p>
+            Bu rapor, birincil kaynak olarak KAP, şirketin IR içerikleri ve TCMB gibi resmi kurum verilerini; destekleyici olarak doğrulanmış piyasa verilerini kullanır. Farklı analiz katmanlarında tanım farklılıkları olabileceği için market-facing tablo, reconciliation-verified FY2025 çekirdeği ile uyumlu hazırlanmıştır.
+          </p>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Kaynak</th>
+            <th>Amaç</th>
+            <th>Not</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>KAP şirket finansalları</td><td>Birincil finansal tablo ve bildirimler</td><td>FY2025 bilanço, gelir tablosu ve nakit akışı için ana kaynak</td></tr>
+          <tr><td>Turkcell 2025 faaliyet raporu</td><td>Yönetim mesajı, strateji ve segment görünümü</td><td>5G, fiber, bulut ve yenilenebilir enerji vurgusu</td></tr>
+          <tr><td>TCMB 12.03.2026 kararı</td><td>Makro ve iskonto oranı referansı</td><td>Politika faizi %37,0</td></tr>
+          <tr><td>Doğrulanmış piyasa verileri</td><td>Fiyat ve çarpan karşılaştırması</td><td>14.04.2026 kapanış referansı kullanıldı</td></tr>
+        </tbody>
+      </table>
+
+      <div class="analysis-block">
+        <p class="analysis-intro">
+          Aşağıdaki kaynak listesi, raporda kullanılan ana veri zincirini açıklar. Her başlık, bir karar alanını temsil eder; böylece rapor, denetlenebilir ve tekrar üretilebilir hale gelir.
+        </p>
+        <div class="analysis-commentary">
+          <ul class="source-list">
+            <li><a href="https://www.kap.org.tr/tr/sirket-finansal-bilgileri/1103-turkcell-iletisim-hizmetleri-a-s">KAP şirket finansal bilgileri — TCELL</a></li>
+            <li><a href="https://www.turkcell.com.tr/hakkimizda/yatirimci-iliskileri/faaliyet-raporu">Turkcell 2025 faaliyet raporu / IR</a></li>
+            <li><a href="https://www.tcmb.gov.tr/wps/wcm/connect/tr/tcmb%2Btr/main%2Bmenu/duyurular/basin/2026/duy2026-12">TCMB PPK kararı, 12 Mart 2026</a></li>
+            <li><a href="https://www.tcmb.gov.tr/wps/wcm/connect/en/tcmb%2Ben/main%2Bmenu/announcements/calendar">TCMB MPC takvimi</a></li>
+            <li><a href="https://finans.cnnturk.com/borsa/hisse-senetleri/turkcell-tcell">TCELL fiyat referansı, 14 Nisan 2026 kapanış</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout-warning">
+        <strong>Sınırlama:</strong> Bu rapor, bazı alt analiz katmanlarında tanım farkları bulunduğunu varsayarak, birleşik ve tutarlı bir market-facing anlatı üretir. Veri setinde yeni bir KAP, TCMB veya şirket IR duyurusu gelirse sayısal çerçeve güncellenmelidir.
+      </div>
+
+      <p class="analysis-commentary">
+        Sonuç olarak, bu HTML doküman yönetim kuruluna verilebilecek kurumsal formatta hazırlanmış bağımsız bir analizdir. En önemli bulgu, TCELL’in iş modelinin sağlam, nakit üretiminin güçlü ve değerleme profilinin ise hâlâ kanıt bekleyen bir dönüşüm hikâyesi taşıdığıdır. Bu durum, raporun nihai mesajını belirler: kalite yüksek, fakat piyasanın aradığı kanıt henüz tam olarak fiyatlanmamış bir hızda gelmektedir.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <div>Sayfa 15 / 15</div>
+      <div>Finance X Platform | Confidential</div>
+    </div>
+  </div>
+
+</body>
+</html>

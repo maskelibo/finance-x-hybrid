@@ -1,0 +1,355 @@
+# STRATEJİK SENTEZ — SAHOL (Sabancı Holding A.Ş.)
+**Agent ID:** `strategic_synthesis` | **Output ID:** `ss-out-SAHOL-20260414-001`
+**Session:** `ceo-session-SAHOL-20260414` | **Tarih:** 14 Nisan 2026
+**Upstream QA:** 0.738 (REVISION_REQUIRED — Bu sentez altyapı eksiklikleri kabul edilerek üretilmiştir)
+
+---
+
+## ⚡ KRİTİK BULGULAR — İLK BAKIŞTA (Truncation Önleme)
+
+| Metrik | Değer | Kaynak | Güven |
+|--------|-------|--------|-------|
+| **Güncel Fiyat** | 89.30 TL | technical_analysis | HIGH |
+| **Ağırlıklı Hedef** | **~106 TL** (+18.7%) | valuation_agent | MEDIUM |
+| **Bear / Base / Bull** | **77 / 104 / 137 TL** | valuation_agent | MEDIUM |
+| **Holding İskontosu** | %44 (P/BV 0.56x) | sector_competition | HIGH |
+| **Net Borç/EBITDA FY2025** | **1.6x** (politika hedefi ≤2.0x) | management_guidance | MEDIUM |
+| **EBITDA FY2024 (Sn.A)** | 97,400M TRY | financial_analysis | MEDIUM (PDF teyidi bekliyor) |
+| **Net Kar FY2025 (SPK)** | +3,793M TRY | KAP GK 31-03-2026 | HIGH |
+| **Net Kar FY2024 (VUK)** | −20,254M TRY | context_extraction | HIGH |
+| **IAS29 Parasal Kazanç FY2024** | ~24,854M TRY | reconciliation | MEDIUM |
+| **Analist Konsensüs** | 157.41 TL ort. / 9 BUY / 0 SELL | analyst_consensus | HIGH |
+| **Sentez Güveni** | **MEDIUM** | QA 0.738 + yapısal eksikler | — |
+
+**⚠️ VERİ KALİTESİ UYARISI:** Yukarı akış verisi 0.738 QA skoru ile CONDITIONAL_PASS seviyesinde. EBITDA, FCF ve nakit bakiyesi PDF teyidine bağlı. Bu sentez "EBITDA Sn.A = 97,400M TRY MEDIUM güven ile ilerleme" direktifiyle üretilmiştir.
+
+---
+
+## BÖLÜM 1: SİNYAL IRAKSAMA HARİTASI (Divergence Map — ÖNCE)
+
+### DIV-1: QA Veri Kalitesi (0.738 FAIL) ↔ Güçlü Operasyonel Momentum
+
+**Çelişen Sinyaller:**
+- `qa_review`: Skor 0.738 — eşiğin (0.85) altında; EBITDA audited kaynak yok, CF reconciliation partial fail, IAS29 ROE ayrımı eksik
+- `financial_analysis` + `macro_analysis`: FY2025 revenue +36.8%, Net Borç/EBITDA 1.6x (yönetim politika hedefinin altında), OCF FY2024 +38.1B TRY pozitife döndü
+
+**Bu Uyuşmazlık Neden Önemli?** Veri kalitesi güvensizliği, gerçek operasyonel performansı gizleyebilir veya aşırı gösterebilir. IAS29 optik (+4.6B SPK) ile VUK gerçeği (−20.25B) arasındaki 24.8B TRY fark, raporlanan karlılığın yanıltıcı olduğunu teyit ediyor.
+
+**Hangisine Güveniyoruz?** Operasyonel momentum güvenilir (Net Borç/EBITDA yönetim beyanı HIGH confidence; KAP teyitli), ancak IAS29 varlığında tüm net kar metrikleri MEDIUM üstünde güven kazanamaz.
+
+**Çözüm Hipotezi:** Operasyonel güç gerçek ama muhasebe karmaşıklığı (IAS29 + bankacılık konsolidasyonu) yatırımcı güvenini baskılıyor → holding discount'un yapısal bileşeni.
+
+**AKSIYON NOTU:** Analist güncelleme raporlarını Q1 2026 sonuçları (30 Nisan) sonrası izle; IAS29 düzeltmeli operasyonel ROE açıklanırsa holding discount daralabilir.
+
+---
+
+### DIV-2: Teknik BEARISH (200MA Altında, −29pp BIST100) ↔ Değerleme Anmalisi (%44 İskonto)
+
+**Çelişen Sinyaller:**
+- `technical_analysis`: Fiyat 89.30 TL — 200-gün MA altında, 52-haftalık high 115 TL'den %22.5 geride, BIST100 vs SAHOL −29–32pp underperformance. NEUTRAL-BEARISH trend.
+- `valuation_agent`: NAV 126.6 TL, ağırlıklı hedef 106 TL, analist konsensüs 157 TL. Tarihsel P/BV ortalaması 0.65–0.70x vs mevcut 0.56x → %15–20 tarihin altında.
+
+**Bu Uyuşmazlık Neden Önemli?** Piyasa fiyatı ile içsel değer arasındaki derin ıraksama iki açıklamadan birini gösterir: (a) piyasa fiyatı öne fiyatlıyor — TCMB PPK, CARFA zararlı seyir, CBAM baskısı; veya (b) gerçek bir yeniden fiyatlama fırsatı var. Her iki açıklama da katalizör gerektiriyor.
+
+**Hangisine Güveniyoruz?** Teknik zayıflık doğru: makro belirsizlik ortamında holding hisseleri sistematik underperform eder. Ancak değerleme anomalisi de gerçek: SOTP NAV 126.6 TL vs 89.30 TL fiyat = %29.5 iskonto. Katalizörler (Akçansa closing, Enerjisa IPO) gerçekleşmeden bu ıraksama kapanmaz.
+
+**Yönetim-Veri Uyuşmazlığı:** `context_extraction`: "Yönetim portföy rasyonalizasyonunu stratejik öncelik olarak vurguladı" → Akçansa binding offer doğruluyor. Finansal tablolar Akçansa'yı hala konsolide gösteriyor → Q2 satış kapanışı net kataliz.
+
+**AKSIYON NOTU:** 88 TL destek kırılırsa teknik baskı artar (84.85 TL hedef). Akçansa SPA imzası (Nisan sonu hedef) 19.5B TRY nakit inflow ile kısa vadeli teknik toparlanma katalizörü.
+
+---
+
+### DIV-3: Analist Konsensüs (157 TL, 9 BUY/0 SELL) ↔ SOTP Baz Değer (104 TL)
+
+**Çelişen Sinyaller:**
+- `analyst_consensus_agent`: 9 analist konsensüs hedef 157.41 TL — mevcut fiyattan +76.4% upside; 0 SELL, 0 HOLD. Şeker Yatırım +18.4% revizyon (Ocak 2026).
+- `valuation_agent`: SOTP baz senaryo 104 TL (18% holding iskontosu); analist 157 TL ile SOTP arasında %51 gap.
+
+**Bu Uyuşmazlık Neden Önemli?** Analist konsensüsü holding discount'un %0–5'e sıkışacağını fiyatlıyor (sensitivity matrix'in üst-sol köşesi). Bu senaryo için: Akbank 95 TL + Enerjisa IPO + Akçansa closing + CARFA turnaround — tüm katalizörlerin aynı anda gerçekleşmesi gerekiyor.
+
+**Hangisine Güveniyoruz?** SOTP baz (104 TL) gerçekçi, ancak analist 157 TL bull case'i olmakla birlikte crowded long riski taşıyor (0 SELL = asimetrik pozisyon). TCMB PPK (24 Nisan) sonrası downgrade dalgası %25–30 olasılık.
+
+**AKSIYON NOTU:** 0 SELL analist pozisyonu ters gösterge olarak okuyun. PPK faiz artırımı → Akbank EPS revizyonu → SAHOL consensus cut → kısa vadeli hisse baskısı. Orta vadede SOTP base (104 TL) gerçekçi çıpa.
+
+---
+
+### DIV-4: Yönetim Kredibilitesi — Taahhüt Takibi
+
+**Çelişen Sinyaller:**
+- `context_extraction` commitment_tracker: Net Borç/EBITDA ≤2.0x → **TUTULDU** (1.6x) ✓; Çimento rasyonalizasyonu → **KISMEN TUTULDU** (binding offer Ocak 2026) ✓; CARFA turnaround → **GERİDE** (FY2025 −6.5B TRY zarar) ✗; Kordsa sermaye güçlendirme → **KISMEN** ($200M+€50M kredi, ama -1.49B zarar devam) ✗
+
+**[YÖNETİM GÖRÜŞÜ]** "2025 yılında stratejik portföy dönüşümünü Akçansa satış süreci ile somutlaştırdık; Net Borç/EBITDA politika hedefimizin altında seyrediyor." (KAP GK Kararı, 31 Mart 2026)
+
+**Yönetim Kredibilitesi Puanı: ORTA (%72)**
+- 2 taahhüt tutuldu (Net Borç + Çimento stratejisi) ✓
+- 2 taahhüt geride (CARFA + Kordsa operasyonel iyileşme) ✗
+- Forward-looking statements'a güven: MEDIUM — kataliz taahhütleri için %65–75 gerçekleşme olasılığı
+
+---
+
+## BÖLÜM 2: SİNYAL YAKINSAMA HARİTASI (Convergence Map)
+
+### CON-1: Deleveraging Hikayesi — Güçlü Yakınsama
+
+```
+YAKINSAMA: SAHOL'un banka dışı Net Borç/EBITDA profili güçlü iyileşme gösteriyor.
+KAYNAKLAR: financial_analysis + context_extraction (management_guidance) + valuation_agent + event_impact_mapper
+KANIT: Net Borç/EBITDA FY2024: 2.37x → FY2025: 1.6x (yönetim teyitli, HIGH confidence).
+       Akçansa satış (+19.5B TRY, Q2 2026) ile FY2026 sonu: ~1.3x–1.4x beklentisi.
+       
+YATIRIMCI ETKİSİ: 1.6x Net Borç/EBITDA politika hedefi ≤2.0x'in altında → temettü kapasitesi
+  korunuyor (FY2025 payout %78.5), yatırım esnekliği var, Akçansa inflow ile deleveraging hızlanacak.
+  
+AKSIYON NOTU: Akçansa closing gecikmesi (Q3'e kayarsa) 6 ay deleveraging geciktirir.
+  SPA imza tarihi (Nisan sonu hedef) kritik izleme noktası.
+```
+
+**Önemli Noktalar (CON-1):**
+- **Güçlü:** Net Borç/EBITDA 1.6x — holding sektöründe üstün pozisyon; KCHOL peer kıyasında benzer seviye
+- **Zayıf:** Konsolide net borç 230.76B TRY'nin büyük kısmı Akbank mevduat fonlaması — gerçek holding-only borç ~45B TRY (LOW confidence)
+- **Fırsat:** Akçansa inflow → net borç azaltımı + buyback veya Enerjisa IPO CAPEX finansmanı
+- **Risk:** TCMB PPK faiz artışı → holding refinancing maliyeti artar
+
+---
+
+### CON-2: Akbank Anchor Hakimiyeti — Kritik Bağımlılık
+
+```
+YAKINSAMA: Akbank SAHOL'un tek en önemli değer kaynağı; ama aynı zamanda en büyük makro riski.
+KAYNAKLAR: financial_analysis + valuation_agent + macro_analysis + event_impact_mapper + sector_competition
+KANIT: Akbank FY2025 net kar 57.2B TRY. SAHOL 49% payı → ~28B TRY konsolide katkı.
+       FY2025 SAHOL toplam net karı 3.8B TRY → diğer segmentler -24.2B TRY net negatif üretiyor.
+       Valuation: Akbank SOTP'nin %75'i (199.76B / 265.96B TRY).
+
+YATIRIMCI ETKİSİ: SAHOL yatırımı büyük ölçüde Akbank yatırımına eşdeğer — ancak %44 holding
+  iskontosuyla. Akbank doğrudan almak daha şeffaf ama SAHOL diğer varlıkları bedavaya veriyor.
+  
+AKSIYON NOTU: TCMB PPK 24 Nisan → Akbank NIM sonucu → SAHOL değerlemesinin en kritik anlık katalizörü.
+```
+
+---
+
+### CON-3: Stratejik Portföy Dönüşümü — Kataliz Paketi
+
+```
+YAKINSAMA: Yönetim, sorunlu segmentleri (çimento CBAM, perakende) dekonsolide ederek
+  NAV transparensi ve discount sıkışmasını hedefliyor.
+KAYNAKLAR: context_extraction + event_classification + event_impact_mapper + analyst_consensus + esg_agent
+KANIT: (1) Akçansa $1.1B binding offer → CBAM riski azalır, +19.5B TRY nakit;
+       (2) Enerjisa IPO 2026 → NAV şeffaflığı → discount daralması;
+       (3) Yönetim taahhüdü %72 kredibilite skoru ile orta güvenilir.
+
+YATIRIMCI ETKİSİ: Tüm kataliz gerçekleşirse holding discount 44%→30% (KCHOL seviyesi) = +25%
+  değer. Kısmi gerçekleşme (Akçansa only) → 44%→37% = +12% değer.
+  
+AKSIYON NOTU: Enerjisa IPO gecikirse (2027'ye kayarsa) bull case zayıflar; SOTP base 104 TL
+  gerçekçi çıpa kalır.
+```
+
+---
+
+## BÖLÜM 3: BULL / BAZ / BEAR — TAM KUANTİFİKASYON
+
+**FY2026 Senaryo Tablosu (4 Zorunlu Metrik):**
+
+| Metrik | BULL (%25) | BAZ (%50) | BEAR (%25) | FY2025 Gerçek | Kaynak |
+|--------|------------|-----------|------------|---------------|--------|
+| **Revenue (M TRY)** | 1,900,000 | 1,680,000 | 1,450,000 | 1,624,000 | FA + macro_analysis |
+| **EBITDA (M TRY)** | 165,000 | 138,000 | 100,000 | ~144,225 (est.) | FA Sn.A + senaryo |
+| **EPS (TL/hisse)** | +1.19 TL | −2.48 TL | −6.43 TL | +1.81 TL (SPK) | event_impact + valuation |
+| **FCF (M TRY)** | 26,000 | 16,500 | 7,500 | ~15,577 | data_collection + senaryo |
+| **Net Kar (M TRY)** | +2,500 | −5,200 | −13,500 | +3,793 (SPK) | event_impact_mapper |
+| **Net Borç/EBITDA** | 1.45x | 1.74x | 2.63x | 1.6x | FA + deleveraging model |
+| **Hedef Fiyat (TL)** | **137** | **104** | **77** | 89.30 | valuation_agent |
+| **Upside/(Downside)** | +53.4% | +16.5% | −13.8% | — | valuation_agent |
+
+**⚠️ EPS NOTU:** FY2026 baz senaryoda SPK net kar negatife dönüyor — Akçansa one-time satış kazancı (+1.5B TRY) CARFA zararı (−6.5B+) ve TCMB NIM baskısını dengeleyemiyor. IAS29 etkisine göre VUK EPS daha da kötü olabilir.
+
+**Ağırlıklı Ortalama Hedef:** (77 × %25) + (104 × %50) + (137 × %25) = **~105.5 TL** ≈ **106 TL**
+
+---
+
+### BULL (İyimser — %25 Olasılık)
+**Tetikleyiciler:** TCMB PPK 24 Nisan sabit veya -50bp; Akçansa closing Q2 2026 (19.5B TRY inflow); Enerjisa IPO H2 2026; CARFA kısmi turnaround (+2B TRY zarar azalması); Brent $80–85 (İran ateşkes); CBAM erteleme.
+**Revenue:** ~1.9T TRY (+17% nominal; reel ~+8%); **EBITDA:** ~165B TRY (+14%); **Net Kar:** +2.5B TRY SPK; **FCF:** ~26B TRY.
+**Holding iskontosu:** 44%→%10 (KCHOL altına). **Hedef: 137 TL.**
+
+### BAZ (Olası — %50 Olasılık)
+**Tetikleyiciler:** TCMB PPK sabit %37; Akçansa Q3'e kayar ama kapanır; CARFA −4–5B TRY zarar devam; Brent $95–105; CBAM full etkisi H2'den.
+**Revenue:** ~1.68T TRY (+3.7% reel); **EBITDA:** ~138B TRY (−4% — NIM baskısı + CBAM); **Net Kar:** −5.2B TRY SPK; **FCF:** ~16.5B TRY.
+**Holding iskontosu:** 44%→%18. **Hedef: 104 TL.**
+
+### BEAR (Kötümser — %25 Olasılık)
+**Tetikleyiciler:** TCMB +300bp (24 Nisan); Akçansa SPA iflas/alıcı çekilme; CARFA FY2026 da −6.5B+; Brent $120+ (Hürmüz tıkanması uzar); CBAM + AB Safeguard çift darbe; Kordsa borç krizi.
+**Revenue:** ~1.45T TRY (−11% reel daralma); **EBITDA:** ~100B TRY (−31%); **Net Kar:** −13.5B TRY SPK; **FCF:** ~7.5B TRY.
+**Holding iskontosu:** 44%→%28 (tarihsel max). **Hedef: 77 TL.**
+
+---
+
+## BÖLÜM 4: SWOT ANALİZİ
+
+| GÜÇLÜ YÖNLER | ZAYIF YÖNLER |
+|--------------|--------------|
+| ✓ Akbank anchor: 57.2B TRY net kar (FY2025), ROE ~27% — sektör lideri [kap_watch, AKBNK] | ✗ CARFA: −6.5B TRY FY2025 zarar; %59.9 konsolide → SAHOL'un net karından −%17 [KAP GK 27-03-2026] |
+| ✓ Net Borç/EBITDA 1.6x — politika hedefinin altında; deleveraging tutarlı [management_guidance HIGH] | ✗ Kordsa: −1.49B TRY FY2025 zarar; $200M+€50M kaldıraç yüksek [kap_watch] |
+| ✓ Enerjisa: EPDK regülasyon korumalı — 12M müşteri, CAPEX 23.5B TRY network modernizasyonu | ✗ IAS29 optik karmaşıklığı: VUK −20.25B vs SPK +4.6B (FY2024) — 24.8B TRY fark; yatırımcı güveni baskılı |
+| ✓ Temettü disiplini: FY2025 payout %78.5 — güvenilir nakit dağıtım geçmişi | ✗ Holding discount %44 (P/BV 0.56x) — peer medyan 0.63x vs SAHOL −%11 |
+| ✓ Çimento rasyonalizasyonu: Akçansa $1.1B binding offer — CBAM riski dekonsolidasyonu | ✗ ESG: Holding-level integrated rapor yok; CDP kayıt bilinmiyor; BIST Sürdürülebilirlik üyeliği risk altında |
+
+| FIRSATLAR | TEHDİTLER |
+|-----------|-----------|
+| ✓ Akçansa closing Q2 2026: +19.5B TRY nakit; Net Borç 1.4x'e; CBAM risk azalır [event_impact] | ✗ TCMB PPK 24 Nisan: +300bp bear → Akbank NIM −10–12B TRY → SAHOL −4–6B TRY [macro_analysis] |
+| ✓ Enerjisa IPO 2026: NAV şeffaflığı → holding discount 44%→30%; +5–10 TL/hisse [context_extraction] | ✗ İran savaşı + Hürmüz: Brent $103+ → CIMSA/Brisa/CARFA COGS baskısı −2–3B TRY konsolide [macro_analysis] |
+| ✓ Holding discount kompresyonu potansiyeli: 44%→30% = +%25 değer (tüm kataliz ile) [sector_competition] | ✗ CBAM + AB Safeguard çift darbe: CIMSA için −1.5–3B TRY; AB Safeguard Temmuz 2026 [macro_analysis] |
+| ✓ TCMB dezenflasyon 2026 sonu %22–24: IAS29 etkisi azalır; NIM recovery başlar [macro_analysis] | ✗ Akçansa SPA gecikme/iptal: Buyer financing riski; +6 ay gecikme = nakit inflow erteleme [kap_watch] |
+| ✓ CARFA turnaround: CEO atama kalıcılaşırsa operasyonel kriz çözülür; +%5–10 hisse potansiyeli | ✗ CARFA FY2026 da zararlı: −3–5B TRY ek konsolide zarar; holding discount genişleme riski |
+
+---
+
+## BÖLÜM 5: RİSK MATRİSİ (Impact × Probability)
+
+| Risk | Olası FAVÖK/FCF Etkisi | Olasılık (1-5) | Etki (1-5) | Risk Skoru | Ağırlık | Tetikleyici | Azaltıcı Faktör |
+|------|----------------------|----------------|------------|------------|---------|-------------|-----------------|
+| **TCMB +300bp (24 Nisan)** | Akbank NIM −10–12B TRY; SAHOL −4–6B TRY net kar | 3 | 5 | **15 — KRİTİK** | HIGH | PPK 24 Nisan kararı | Akbank hedging kapasitesi; %37→%40 zaten kısmen fiyatlı |
+| **CBAM + AB Safeguard** | CIMSA −1.5–3B TRY EBITDA; BRISA −1–2pp marj | 5 | 3 | **15 — KRİTİK** | HIGH | 1 Temmuz 2026 Safeguard + süregelen CBAM | Akçansa satışı → çimento dekonsolidasyonu |
+| **CARFA Turnaround Başarısızlığı** | FY2026 −3–5B TRY ek konsolide zarar | 4 | 3 | **12 — YÜKSEK** | HIGH | Q1 2026 sonuçlarında zarar devamı | Yönetim operasyonel program; format pivot |
+| **Holding Discount Genişlemesi** | P/BV 0.56x → 0.44x; −%21 hisse | 3 | 3 | **9 — YÜKSEK** | MEDIUM | TCMB şoku + CARFA zarar devamı | Akçansa satış + Enerjisa IPO kataliz |
+| **Akçansa SPA İptali/Gecikmesi** | +19.5B TRY inflow riski; 1 çeyrek gecikme | 2 | 4 | **8 — MEDIUM-HIGH** | MEDIUM | Heidelberg financing sorunu | Binding offer hukuki bağlayıcılığı |
+| **Brent $120+ (Hürmüz Uzar)** | CIMSA+Brisa+CARFA COGS +2–3B TRY | 2 | 4 | **8 — MEDIUM-HIGH** | MEDIUM | Hürmüz ablukası kalıcılaşması | EPDK tarife geçişi (kısmi) |
+| **Enerjisa IPO Gecikmesi** | NAV opsiyonelliği −5–10 TL/hisse | 3 | 2 | **6 — ORTA** | LOW | E.ON ile koordinasyon kopukluğu | Mevcut borsada işlem görüyor (ENERY) |
+
+---
+
+## BÖLÜM 6: FIRSAT MATRİSİ
+
+| Fırsat | Katma Değer Potansiyeli | Gerçekleşme Şartı | Zaman Çerçevesi |
+|--------|------------------------|-------------------|-----------------|
+| **Akçansa SPA Closing** | +19.5B TRY nakit; Net Borç 1.4x; holding discount −3pp; +1.5B TRY satış kazancı | SPA imzası Nisan, closing Haziran 2026 | **12 ay** |
+| **Holding Discount Kompresyonu** | 44%→30% = +25% değer artışı (89 TL→111 TL sadece bu etki) | Akçansa + Enerjisa IPO + ESG raporu + CARFA turnaround | **12–24 ay** |
+| **Enerjisa IPO** | +5–10 TL/hisse NAV şeffaflığı; holding discount −4pp | E.ON ortak kararı + SPK onayı + piyasa koşulları | **12–24 ay** |
+| **TCMB Dezenflasyon (2026 sonu %22–24)** | NIM recovery + IAS29 etkisi azalır; Akbank EPS artışı | TÜFE 2026 H2'de %25 altına | **>24 ay** |
+| **CARFA CEO Atama Kalıcılaşması** | Governance premi normalleşmesi; +%5–10 hisse | Kalıcı CEO + operasyonel iyileşme Q2–Q3 2026 | **12 ay** |
+
+---
+
+## BÖLÜM 7: YÖNETİM TAAHHÜT TAKİBİ VE KREDİBİLİTE
+
+**[YÖNETİM GÖRÜŞÜ]** "2025 yılında stratejik portföy dönüşümümüzü Akçansa'nın satış süreci ile somutlaştırdık. Net Borç/EBITDA oranımızı politika hedefimizin altında tutarak finansal disiplinimizi koruduk." (KAP Genel Kurul Açıklaması, 31 Mart 2026, s.1)
+
+**Gerçekleşme Analizi:**
+
+```
+Yönetim Taahhüdü: "Akçansa satışı Q2 2026'da tamamlanacak" (KAP 28 Ocak 2026)
+Finansal Temel: Binding offer $1.1B; SPA hedef Nisan imzası; Heidelberg Materials muhtemel alıcı
+Gerçekleşme Olasılığı: YÜKSEK (%65–70) — hukuki bağlayıcılık mevcut, buyer financing riski sınırlı
+
+Yönetim Taahhüdü: "CarrefourSA operasyonel iyileştirme programı" (2024 faaliyet raporu)
+Finansal Temel: FY2025 −6.5B TRY zarar → taahhüt ZEMİNDE GERİDE
+Gerçekleşme Olasılığı: DÜŞÜK (%25–35) — 2026 turnaround makro desteğe bağlı
+
+Yönetim Taahhüdü: "Net Borç/EBITDA ≤2.0x politika eşiği" (süregelen)
+Finansal Temel: FY2025 gerçekleşme 1.6x — taahhüt TUTULDU ✓
+Gerçekleşme Olasılığı: YÜKSEK (%80+) — deleveraging trendi destekliyor
+```
+
+**Yönetim Kredibilitesi: ORTA (%72)** — Finansal disiplin güvenilir; operasyonel turnaround (CARFA) zayıf. Forward-looking statements'a MEDIUM güven.
+
+---
+
+## BÖLÜM 8: ANALİTİK AÇIK SORULAR
+
+1. **EBITDA Kesin Değeri:** FY2024 audited EBITDA KAP PDF'den teyit edilmedi. Sn.A 97,400M TRY kullanılıyor ancak ±20B TRY revizyon riski mevcut.
+2. **CARFA 2026 Seyrimi:** Q1 2026 sonuçları (Nisan sonu) operasyonel turnaround başlıyor mu başlamıyor mu — SAHOL FY2026 net kar tahmininin kritik değişkeni.
+3. **TCMB PPK 24 Nisan Kararı:** Sabit / +50bp / +300bp — Akbank NIM üzerindeki etki ve SAHOL 2026 net karı için belirleyici.
+4. **Enerjisa IPO Yapısı:** Mevcut ENERY mi, Enerjisa Üretim mü, yoksa her ikisi mi? Seyreltme etkisi ve NAV katkısı belirsiz.
+5. **Akçansa Alıcı Finansmanı:** Heidelberg Materials teyidi bekleniyor; alternative buyers mevcut mu?
+6. **IAS29 FY2025 Parasal Kazanç Büyüklüğü:** Enflasyon %30.87 ortamında IAS29 etkisi FY2025 SPK karının ne kadarını şişiriyor? PDF notu olmadan tahmin LOW confidence.
+
+---
+
+## BÖLÜM 9: YATİRIM TEZİ ÖZETİ
+
+```
+YATİRIM TEZİ:
+Sabancı Holding, Akbank anchor (57.2B TRY net kar, sektör lideri) ve Enerjisa'nın EPDK 
+korumalı dağıtım monopoly'si üzerine kurulu Türkiye'nin en büyük diversified holdinglerinden 
+biridir. Akçansa $1.1B satışı (Q2 2026 hedef) ve Enerjisa IPO (2026) holding discount'unu 
+%44'ten %30'a sıkıştırabilecek somut kataliz paketi sunmaktadır. Baz senaryoda SOTP NAV'ı 
+126.6 TL, %18 discount ile hedef fiyat 104 TL (+16.5% upside). Ana risk: TCMB PPK 24 Nisan 
+faiz artırımı (+300bp bear) Akbank NIM'ini ciddi baskılar ve FY2026 net karı −13.5B TRY'ye 
+taşıyabilir.
+```
+
+**SPK UYARISI:** Bu sentez analistik değerlendirmedir; yatırım tavsiyesi değildir. AL/SAT/TUT önerisi içermez. Bireysel yatırım kararları için lisanslı yatırım kuruluşuna başvurunuz.
+
+---
+
+## BÖLÜM 10: ÇELİŞKİ ÇÖZÜM KAYDI
+
+| Çelişki | Kaynak A | Kaynak B | Çözüm |
+|---------|----------|----------|-------|
+| EBITDA 50,577M vs 97,400M | parse_standardization (9A hata) | financial_analysis Sn.A | 97,400M TRY MEDIUM confidence kullan; 50,577M 9 aylık veri [YANLIŞ ETİKET] |
+| Net Kar +4,600M vs −20,254M | parse_standardization (SPK/9A) | financial_analysis (VUK) | VUK −20,254M operasyonel gerçek; SPK +4,600M IAS29 içeriyor |
+| Hedef fiyat 157 TL vs 104 TL | analyst_consensus | valuation_agent SOTP | SOTP 104 TL gerçekçi baz; 157 TL bull case (discount sıfır varsayımı) |
+| Revenue 195B vs 1,187B TRY | parse_standardization | financial_analysis | Konsolide 1,187B TRY doğru; 195B segment kısmı |
+
+---
+
+## BÖLÜM 11: GENEL ANALİTİK GÜVENİLİRLİK
+
+**Overall Confidence: MEDIUM**
+
+Gerekçe:
+- Valuation HIGH anchor: SOTP %85 ağırlık, borsada işlem gören iştiraklerin piyasa değeri direkten kullanılıyor (AKBNK, ENERY, CIMSA, AKCNS) → yüksek güven sağlayıcı
+- EBITDA MEDIUM: Audited PDF erişimsiz; Sn.A proxy kullanılıyor
+- Net Kar: FY2025 SPK HIGH (KAP teyitli); FY2024 VUK HIGH (reconciliation teyitli); IAS29 ayrımı MEDIUM
+- Makro: TCMB, BOTAŞ, CBAM parametreleri HIGH (resmi kaynaklar teyitli)
+- Zayıf halka: CF tablosu, opening/closing cash, detaylı WC = LOW confidence → synthesisin genel güvenini MEDIUM düzeyde tutuyor
+
+**Confidence floor kuralı gereği:** Financial_analysis'in CF bölümü LOW confidence → synthesis HIGH olamaz. MEDIUM en yüksek atanabilir seviye.
+
+---
+
+## BÖLÜM 12: STANDARDİZE ŞİRKET SKOR KARTI
+
+| Boyut | Puan (1-10) | Ağırlık | Ağırlıklı | Açıklama |
+|-------|-------------|---------|-----------|----------|
+| **Finansal Sağlık** | **6** | %30 | 1.80 | Net Borç/EBITDA 1.6x güçlü ✓; VUK −20.25B (FY2024) zarar ✗; CARFA+Kordsa −8B TRY drag ✗; OCF +38.1B recovery ✓ |
+| **Büyüme Potansiyeli** | **6** | %20 | 1.20 | Akçansa+Enerjisa IPO kataliz paketi güçlü; revenue +36.8% FY2025; ancak CARFA/Kordsa zarar büyüme potansiyelini törpülüyor |
+| **Sektör Pozisyonu** | **7** | %15 | 1.05 | Akbank sektör lideri ROE ~27%; Enerjisa monopoly-like; holding discount %44 yapısal zayıflık; CARFA SOKM'ye karşı dezavantajlı |
+| **Makro Uyumluluk** | **5** | %15 | 0.75 | TCMB PPK belirsizliği (24 Nisan kritik); İran savaşı Brent $103+; CBAM çimento riski; kur (USD/TRY 44.70) Kordsa borç servisi baskısı |
+| **Teknik Görünüm** | **4** | %10 | 0.40 | NEUTRAL-BEARISH; 200MA altında; BIST100 vs −29pp; 88–92 TL kritik destek test; hacim teyidi yok |
+| **Yönetim/Kurumsal** | **6** | %10 | 0.60 | Bağımsız chairman ✓; taahhüt kredibilitesi %72 (ORTA); CARFA turnaround gecikmeli ✗; ESG holding-level rapor eksik ✗ |
+| **GENEL SKOR** | **5.80/10** | %100 | **5.80** | Orta/Kabul edilebilir — Güçlü katalizör paketi varsa 6.5–7.0'a yükselebilir |
+
+**Skor Yorumu:** 5.80 = "Orta/Kabul Edilebilir" bandının üst kısmı. Akbank anchor ve deleveraging hikayesi güçlü baz oluşturuyor. CARFA zarar devamı ve TCMB riski skoru baskılıyor. Akçansa kapanışı ve Enerjisa IPO gerçekleşirse skor 6.5–7.0 bandına taşınabilir.
+
+---
+
+```json
+{
+  "agent_id": "strategic_synthesis",
+  "output_id": "ss-out-SAHOL-20260414-001",
+  "overall_confidence": "medium",
+  "overall_score": 5.80,
+  "target_price_base": 104,
+  "target_price_bear": 77,
+  "target_price_bull": 137,
+  "target_price_weighted": 106,
+  "holding_discount_current": "44%",
+  "signal_divergence_count": 4,
+  "signal_convergence_count": 3,
+  "key_risks": ["TCMB_PPK_300bp", "CBAM_safeguard_dual", "CARFA_turnaround_failure"],
+  "key_opportunities": ["Akcansa_closing_Q2", "Enerjisa_IPO_2026", "holding_discount_compression"],
+  "management_credibility": "MEDIUM_72pct",
+  "analytical_open_questions": 6,
+  "qa_upstream_score": 0.738,
+  "review_status": "pending_ceo_review",
+  "warnings": [
+    "EBITDA audited PDF teyidi eksik — Sn.A 97,400M MEDIUM confidence kullanıldı",
+    "CF reconciliation PARTIAL — FCF 15,577M MEDIUM confidence",
+    "IAS29 FY2025 magnitude bilinmiyor — SPK net kar güvenilirliği sınırlı",
+    "TCMB PPK 24 Nisan — synthesis güncellemesi gerekebilir"
+  ]
+}
+```

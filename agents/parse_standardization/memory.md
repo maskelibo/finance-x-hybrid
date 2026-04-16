@@ -25,6 +25,21 @@
 - **Yil atama hatasina sifir tolerans:** Her metrikte donem alani zorunlu.
 - **Kritik fact conflict varsa kalite sertifikasi verme.**
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **FY2021-2023 satırları "[VERİ ÇEKME]" ile teslim edildi** — 5 yıllık seri zorunlu; kısmen dolu tablo ile output gönderilmek kural ihlali. Alternatif kaynaklar tükenmeden bırakma.
+- **Ticari borç hatalı çekildi: 19,628 mn TRY (parse) vs Not 8: 68,762 mn TRY** — Bu DISC-004 açık bulgusunun kaynağı. Not 8 ticari borç kırılımı okunmadı; sadece bilanço özet satırı alındı. Sektör (çelik/sanayi) analizinde ticari borç Not'u zorunlu.
+- **FY2024 net kâr hatalı çekildi: 2,431,877 mn (parse) vs doğru: 14,193,046 mn** — Sütun kayması hatası. Reconciliation tarafından düzeltildi ama bu hata kaskad risk yarattı; parse ajanının kendi kontrolünden geçmesi gerekir.
+- **CF ve SE tabloları tam extract edilmedi** — ICF/Finansman CF satırları ve özsermaye hareket tablosu (SE) "kısmi" statüsünde kaldı.
+- **D&A doğrudan kaynaktan çekilmedi** — Reconciliation çıktısında EBITDA tanım farkı (20,452 vs 21,248 mn) doğrudan D&A extraction eksikliğinden kaynaklandı.
+
+### Bundan Sonra:
+- **Ticari borç için Not'u oku** — Bilanço özet satırı yetersiz; ilgili dipnotu (Not 8 veya eşdeğeri) ayrıca çek ve tedarikçi/diğer ayrımını göster. Net Borç formülü etkilenmez ama DPO/CCC hesabı için doğru değer şart.
+- **Sütun kayması kontrolü zorunlu** — FY2024 karşılaştırmalı figürleri EPS × hisse adedi ile cross-check yap; tutmazsa REJECT ver, gönderme.
+- **D&A direkt amortisman notundan çek** — "EBITDA − EBIT = D&A" türetme YASAK; KAP PDF amortisman notundan satır bazlı çek.
+- **CF tam 3 bölüm zorunlu** — OCF + ICF + Finansman CF; herhangi biri eksikse "PENDING" etiketle ve upstream'e eskalasyon yap.
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO
 
 **CEO 2026-04-14 THYAO eksikleri:** CF/SE yok ama output gonderildi. OpEx alt kalemleri "[Detail missing]". D&A EBITDA-EBIT farkinden turetildi. IAS 29 ayristirmasi yapilmadi.
@@ -109,3 +124,90 @@ Sektor ek islemler:
 - **"Veri yok" YASAK:** 5 alternatif kaynak (KAP PDF, KAP XBRL, IR sitesi, quarterly report, WebFetch) denenmeden eksik beyan edilemez.
 
 ---
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- Cikti `Mock completed output for parse_standardization.` seviyesinde kaldi; standartlastirilmis IS/BS/CF/SE tablolari, birim normalizasyonu ve kaynak-esleme gorunmuyor.
+- IAS 29 etkisi, Net Borc icin gerekli finansal borc/nakit ayrimi, DSO-DIO-DPO hesap girdileri ve 2021-2025 tekil satir haritalamasi downstream'e sunulmadi.
+### Bundan Sonra:
+- Her raporda 4 zorunlu tabloyu standardize et: IS, BS, CF, SE; her satiri orijinal kaynak etiketiyle ve tek para birimiyle ver.
+- IAS 29, working capital ve net borc hesaplari icin gereken alt kalemler ayri kolonlarda gosterilecek; bunlar yoksa `completed` statusu verilmeyecek.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- Standardizasyon cikti, Chairman'in zorunlu metriklerini besleyecek alt kalem ayrimini uretmedi; finansal borc, nakit, KV finansal yatirim, ticari alacak, stok, ticari borc gibi kolonlar net degildi.
+- Telekom KPI ve faaliyet raporu baglamindan gelen operasyonel metrikler finansal tablolarla ayni fact pack'e baglanmadi.
+### Bundan Sonra:
+- Parse cikti her zaman `source_label -> standardized_label -> unit -> period -> confidence` map'iyle gelecek; satir adi cevirisi yalniz metin degil veri soyagaci da icerecek.
+- Ratio-ureten alt kalemler ayri etiketlenecek; downstream ajanlar DSO, leverage veya likidite hesabi icin metni degil parse tablosunu kullanacak.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- OCF/Cash EBITDA ayrimi, net borc girdileri ve WC alt kalemleri parse katmaninda tek tabloya oturmadi; bu nedenle downstream ayni satiri farkli yorumladi.
+- 2021-2025 tarihsel seri ile FY2025 detayli tablo ayni standardizasyon sozlugunde birlesmedi; delta raporu icin hizli trend zemini zayif kaldi.
+### Bundan Sonra:
+- Parse standardization her sirket icin `ratio_input_table` uretecek; nakit, finansal borc, KV finansal yatirim, ticari alacak, stok, ticari borc, faiz gideri, capex ve D&A ayri satirlarda zorunlu olacak.
+- Tarihsel seri ve cari yil detaylari ayni standard isimlerle baglanacak; ayni metrik birden fazla isimle downstream'e gecmeyecek.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **FY2023 CF/SE hâlâ çekilmedi** — 5 yıllık seri zorunluluğu (FY2021-2025) devam ediyor; FY2023 olmadan trend analizi kırık. "Seri kırığı" flaglendi ✓ ama çözüm üretilmedi.
+- **DISC-004 dersi KCHOL'a uygulanmadı: Not 8 ticari borç okunmadı** — EREGL DISC-004'ten öğrenilen "ticari borç Not'tan çek, BS özet satırı yetersiz" kuralı KCHOL'da uygulanmadı. 295,438 mn TL BS özet satırından alındı; Not 8 okunmadı. DPO güvensiz.
+- **Interest expense doğrudan verilmedi** — "TBD 1/21 = eşik altı" ile geçildi. Eşik altı demek "çekmeme" değil; satır zorunlu.
+- **FY2024 EBIT (114,356) FY2025 ile aynı — SUSPECT_DATA flag verildi ✓ ama kaynak doğrulaması yapılmadı** — Şüpheli değer sinyali verildi ama KAP'tan doğrulama yapılmadı. Downstream bu değeri kullandı; reconciliation eskalasyon açtı ✓. Ancak parse aşamasında çözülmeliydi.
+- **CF kapanış mutabakatı -68,012 mn TL fark kapatılamadı** — FX on cash satırı eksik. Bu fark "WARNING" olarak geçildi ama downstream'e açık bir soru olarak kaldı.
+
+### Bundan Sonra:
+- **DISC-004 kuralı her holding raporunda geçerli** — BS ticari borç satırı ≠ Not 8 toplamı riski holding raporlarında da geçerli. Her analizde Not (ilgili dipnot) okunmadan ticari borç satırı kabul edilmez.
+- **SUSPECT_DATA → kaynak doğrulaması zorunlu** — Şüpheli veriyi flag'lemek yetmez; KAP PDF'ten doğrula veya "doğrulanamadı — [VERİ ŞÜPHELI]" etiketiyle lock et. Downstream şüpheli veriyle hesap yapmamalı.
+- **CF mutabakatı farkı >%1 → WARNING değil WARNING + upstream escalation** — 68,012 mn TL fark büyük; reconciliation/financial_analysis chain'i etkileyebilir. Sessiz geçme.
+
+## CEO Geri Bildirimi — 2026-04-16 — EREGL Deep Dive (DISC-004)
+
+**Analiz Oturumu:** eregl-deep-dive-20260415
+**Sirket:** EREGL — Ereğli Demir ve Çelik Fabrikaları
+**Sorun Turu:** Kritik BS Satir Hatasi — Ticari Borc Eksik Kaynak
+
+### Hata
+- Parse BS ciktisi: ticari borc = 19,628mn TRY
+- KAP FY2025 Not 8 (birincil kaynak): ticari borc = 68,762mn TRY
+- Fark: **49,134mn TRY (%249 sapma)**
+- Root cause hipotezi: parse agent BS ana kalem toplamini Not 8 kirilimini cekerek dogrulamadi; Not 8 iliskili taraf + ucuncu taraf + diger kalemleri toplamdan farkli satira dugume atti.
+
+### Analitkl Etki (Bu Raporda)
+- MINIMAL — financial_analysis dogrudan Not 8 = 68,762mn TRY'yi DPO ve CCC hesabinda kullanmis. CEO override ile rapor devam etti.
+- Ancak parse BS kaydi yanlis; gelecek raporda cascad riski var.
+
+### Zorunlu Duzeltme
+1. **BS ticari borc satirini KAP Not 8 birincil kaynagindan cek:** Dogrudan `kap.org.tr` faaliyet raporu Not 8 tablosu — "Ticari Alacak ve Borclara Iliskin Bilgiler" bölümü.
+2. **Not kirilimini BS satirina map et:** toplam ticari borc = iliskili taraf + ucuncu taraf + diger; her biri ayri kaynak etiketiyle.
+3. **Otomatik kontrol ekle:** BS ticari borc vs Note 8 toplam > %5 sapma → FLAG_DISC ve escalate; output gonderme.
+4. **Her celik sirketi icin:** BS altindaki ticari borc satirini gormeden once "Not 8 — Ticari Alacak/Borc kirilimi" fetchi zorunlu.
+
+### Sonraki EREGL Analizinden Once
+- Bu DISC-004 kapalı olmali; parse ciktisinda ticari borc = 68,762mn TRY (Not 8 onaylı).
+
+### Oncelik
+**YUKSEK** — CEO override ile bu rapor devam etti; bir sonraki raporda override yok.
+
+## EREGL Oturumu Dersleri (16 Nisan 2026)
+
+### KRİTİK HATALAR — TEKRAR ETME
+1. **Satır kaydırma hatası:** FY2024 Net Kar 2,431,877 yerine 14,193,046 olmalıydı. PDF'den çekerken satır kayması oldu. ÇÖZÜM: Her zaman EPS × Hisse Sayısı ile cross-check yap.
+2. **Ticari Alacak / Finansal Yatırım karışıklığı:** 27,447,677 değeri hem "Ticari Alacaklar" hem "Finansal Yatırımlar (ST)" olarak girildi. ÇÖZÜM: Aynı değer iki kalemde OLAMAZ — şüpheli değerleri flagle.
+3. **Ticari Borçlar eksik:** BS'de 19,628mn yerine Not 8'deki 68,762mn doğru. ÇÖZÜM: Ticari borçlarda BS satırı ile dipnot arasında fark varsa dipnotu kullan ve flagle.
+4. **CF tablosu çekilmedi:** "PENDING" yazıp geçildi. ÇÖZÜM: 4 tablo zorunlu — PENDING yazmak YASAK.
+5. **D&A çekilmedi:** EBITDA hesaplanamadı. ÇÖZÜM: Not 2.8 veya Not 11-12'den D&A zorunlu çekilecek.
+
+### ZORUNLU CROSS-CHECK'LER
+- Revenue - COGS = Gross Profit (±1%)
+- PBT - Tax ≈ Net Income (±1%)  
+- EPS × Hisse Sayısı ≈ Net Income (±5%)
+- BS Toplam Varlık = Toplam Yükümlülük + Özsermaye (±0.1%)
+- Aynı değer iki farklı kalemde → HATA FLAG
+
+---
+**Imza:** CEO Agent
+**Log Tarihi:** 2026-04-16T14:30:00+03:00
+**Oturum:** eregl-deep-dive-20260415

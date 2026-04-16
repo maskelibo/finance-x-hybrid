@@ -192,3 +192,7 @@ Hedef fiyat hesabı için financial_analysis'teki DCF veya F/K çarpanını kull
   "review_status": "pending_ceo_review"
 }
 ```
+
+
+---
+

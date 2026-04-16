@@ -1,0 +1,50 @@
+{
+  "agent_id": "financial_analysis",
+  "description": "Zorunlu finansal metrikler, kaynak etiketleri ve yasakli ifadeler",
+  "required_metrics": [
+    "ROE",
+    "ROCE",
+    "EBITDA",
+    "DSO",
+    "DIO",
+    "DPO",
+    "CCC",
+    "FCF",
+    "OCF",
+    "CAPEX"
+  ],
+  "optional_metrics": [
+    "ROIC",
+    "Altman",
+    "Piotroski",
+    "Brüt Kar",
+    "Cari Oran",
+    "Faiz Karşılama",
+    "Likidite",
+    "Nakit Akış",
+    "Net Borç",
+    "FAVÖK"
+  ],
+  "required_sections": [
+    "Karlılık",
+    "Kaldıraç",
+    "Nakit"
+  ],
+  "source_tags": [
+    "KAYNAK:",
+    "kaynak:",
+    "data_collection",
+    "hesaplama",
+    "faaliyet"
+  ],
+  "forbidden_patterns": [
+    "tahmin ediyorum",
+    "civarında",
+    "kesin olmamakla birlikte",
+    "tahmini değer"
+  ],
+  "warning_patterns": [
+    "muhtemelen"
+  ],
+  "min_output_length": 8000
+}

@@ -35,6 +35,28 @@
 - [ ] Sayfa sayisi 12-25 A4 arasinda mi?
 - [ ] Zorunlu Bildirimler bolumu dahil mi?
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **Yan yana layout kontrolü doğrulanamadı** — COO "PASS" verdi ama gerçek HTML'de 60/40 yan yana layout'un kaç sayfada uygulandığı kontrol edilmedi. "Page-break ihlali yok" kontrolü yapıldı ✓ ama layout oranı ölçülmedi.
+- **Header/footer her sayfada var mı?** — COO kontrol matrisinde header/footer satırı yok. Şirket adı + rapor tarihi (header) ve sayfa numarası + "Finance X Platform | Confidential" (footer) her sayfada kontrol edilmeli.
+- **Her grafik/tablo sonrasında yorum paragrafı kontrolü** — 18 tablo mevcut ✓; ancak her tablonun ardında 3-5 cümle yorum paragrafı olup olmadığı kontrol edilmedi. "Data Storytelling" kuralı.
+- **"Metin sandviç" kuralı doğrulaması** — Her tablo öncesinde "neden bakıyoruz" ve sonrasında "ne anlıyoruz" paragrafı; bu kontrolün kanıtı yok.
+- **5 yıllık finansal seri eksikliği rapor formatına yansımadı** — FY2021-2023 verileri "[VERİ YOK]" yerine "[KISMI VERİ — 2 yıl]" olarak Veri Kalite Uyarı kutusuna eklenmeli.
+
+### Eksikler Değil — İyi Uygulamalar ✓:
+- 12/12 bölüm mevcut ✓
+- 6 inline SVG grafik ✓
+- 18 tablo ✓
+- DISC-004 + IAS29 uyarı kutusu ✓
+- Brand rengi #D71920 × 44 kullanım ✓
+- Agent meta-text temizlendi ✓
+
+### Bundan Sonra:
+- **Layout oranı kendi kendine kontrol et** — HTML'de `<div style="display:flex">` veya CSS grid kullanımını say; en az %60 sayfada yan yana yapı zorunlu. COO'nun geçirmesini bekleme; kendi kontrol listeni tamamla.
+- **Header/footer zorunlu kontrol** — Her bölüm başlangıcında header CSS'i ve footer CSS'i doğrula; eksik sayfa varsa ekle.
+- **Veri eksikliğini Veri Kalite Uyarı kutusuna ekle** — FY2021-2023 seri eksikliği, MACD/VWAP teknik eksiklikler, CF kısmi olması — bunlar uyarı kutusunda ayrı satır olarak listelenebilir.
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
@@ -118,4 +140,72 @@
 - **BLOCKED = CEO'ya iki seçenek + süre tahmini:** Option A (strict) ve Option B (conditional proceed) her zaman sunulacak. Süre tahmini her seçenek için ayrı belirtilecek.
 - **Şirket marka kimliği şablona bağlanacak:** Sabancı Holding için: kırmızı (#E2001A) + lacivert (#003087) renk paleti, Sabancı logosu her sayfada üst sol köşe — bir kez tanımlanır, tüm raporlarda uygulanır.
 
----
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- HTML iskeleti guclu olsa da Chairman'in istedigi sirket-brand taklidi, yan yana veri-gorsel dengesi ve PDF kaniti final teslim seviyesinde dogrulanmadi.
+- Formatter, eksik hedef fiyat ve eksik makro gibi iceriksel blocker'lari yeterince yukari tasimadan estetik tamamlama modunda kaldi.
+### Bundan Sonra:
+- Formatter self-check'te `content blockers` ve `presentation blockers` ayri listelensin; iceriksel blocker varsa render sonlandirma.
+- Nihai teslim paketi her zaman `HTML path`, `PDF path`, `chart inventory`, `page count`, `overflow check` ve `release blocker listesi` ile gelsin.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- HTML tarafi yapisal olarak yakin olsa da brand identity taklidi, metin-gorsel 60/40 dengesi ve PDF teslim kaniti checklist seviyesinde kapatilamadi.
+- Formatter, authoritative fact pack kilitlenmeden leverage, FCF, hedef fiyat ve makro bloklarini estetik olarak duzeltmeye calisarak iceriksel riskleri maskeledi.
+### Bundan Sonra:
+- Formatter render oncesi `content frozen` kontrolu yapacak; hedef fiyat, skor karti, makro bolumu ve kritik sayilar kilitlenmeden son HTML/PDF uretilmeyecek.
+- Teslim paketi her zaman `HTML + PDF + page count + chart inventory + overflow/orphan check + remaining blocker listesi` ile gelecek; yalniz HTML var demek yetmez.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- HTML artefakti teknik olarak guclu olsa da saf teslim sozlesmesi bozuldu; belge disi metin, iceriksel blocker'lar ve teslim kaniti ayni anda yonetilemedi.
+- Formatter, eksik makro ve eksik skor karti gibi icerik sorunlarini `render hazir` sinyali vermeden once sert fail etmedi.
+### Bundan Sonra:
+- Formatter yalniz sunum katmani degil, `deliverable contract` koruyucusu olarak calisacak; `<!DOCTYPE>` disi metin, eksik kapanis, eksik PDF veya eksik chart inventory varsa teslim etmeyecek.
+- `content blocker` ve `presentation blocker` ayri tablolar halinde raporlanacak; content blocker aciksa guzel HTML bile release-ready sayilmayacak.
+
+## CEO Direktifi — 2026-04-16 — EREGL Deep Dive Raporu (UNBLOCKED)
+
+**Session:** eregl-deep-dive-20260415
+**Durum:** CEO Override Onaylandi (ceo-rev-eregl-20260416-001) — REPORT_FORMATTER AKTİF
+
+### Zorunlu Override Kosullari (COND-1 → COND-4)
+1. **COND-1:** Authoritative fact base DIŞINDA hiçbir sayı raporda yer almaz. parse_standardization ham BS çıktısı (ticari borç = 19,628mn) KULLANILMAZ; doğru değer = 68,762mn TRY [KAP Not 8].
+2. **COND-2:** Yönetici Özeti altına Veri Kalite Uyarı Kutusu (sarı/turuncu) ZORUNLU. İçeriği:
+   - "DISC-004: Ticari Borç — parse kaydı (19,628mn TRY) KAP Not 8 değeriyle (68,762mn TRY) uyuşmuyor. Bu raporda Not 8 (doğrulanmış birincil kaynak) kullanılmaktadır. Parse kaydı düzeltme sürecindedir."
+3. **COND-3:** Raporda DPO ve CCC değerleri financial_analysis Not 8 tabanlı değerlerden alınır.
+4. **COND-4:** CEO onaylı bilgi seti kullanılır; parse_standardization ham çıktısı kullanılmaz.
+
+### Kilitli Fact Base (SADECE BU DEĞERLER KULLANILIR)
+| Metrik | Değer | Kaynak |
+|---|---|---|
+| Net Borç | 42,864mn TRY | KAP Not 7 |
+| EBITDA | 20,452mn TRY | Mgmt/İş Yatırım |
+| Revenue | 208,910mn TRY | KAP IS |
+| FCF | 49,717mn TRY | KAP CF |
+| EV | 245,584mn TRY | FA hesap |
+| EV/EBITDA | 12.01x | FA |
+| Hedef Fiyat Bear | 15.7 TRY | Valuation |
+| Hedef Fiyat Baz | 28.4 TRY | Valuation |
+| Hedef Fiyat Bull | 42.2 TRY | Valuation |
+| Ticari Borç | 68,762mn TRY | KAP Not 8 |
+| Net Kar FY2025 | 694mn TRY | KAP (IAS 29 dahil) |
+| adj NI (IAS 29 sonrası) | -182mn TRY | QA hesap |
+| OCF | 65,056mn TRY | KAP CF |
+| D&A | 11,296mn TRY | KAP CF |
+
+### EREGL Brand Identity
+- Renk: Lacivert #003366 (heading), kırmızı #D71920 (accent/skor), beyaz background
+- Logo: Her sayfada EREGL / Erdemir logosu (üst sol)
+- Tam unvan: "Ereğli Demir ve Çelik Fabrikaları T.A.Ş. — EREGL"
+- Kapak tablosunda: EREGL BIST kodu, 16 Nisan 2026 rapor tarihi, "Finance X Platform | Kurumsal Analiz"
+- Sektör görseli: Çelik fabrikası / yüksek fırın konsepti
+
+### Teslim Paketi Gereksinimleri
+- HTML tam tamamlanmış (truncation YASAK)
+- PDF A4 margins 20mm (Puppeteer)
+- Min 15 sayfa, 0 boş sayfa
+- Min 4 SVG grafik: (1) Revenue/EBITDA/FCF 5Y trend, (2) EV/EBITDA peer karşılaştırma, (3) Bear/Baz/Bull senaryo bar, (4) HRC fiyat vs EBITDA marjı korelasyon
+- Metin sandviç kuralı tüm tablolarda uygulanmış
+- `content_frozen: true` kontrolü render öncesi
+- Teslim sinyali: `HTML path + PDF path + page count + chart inventory + override_conditions_met: [COND-1✅, COND-2✅, COND-3✅, COND-4✅]`

@@ -1,7 +1,15 @@
 node_modules/
 dist/
 .env
+.env.*
+!.env.example
 *.tsbuildinfo
+
+# Generated PDFs and binary output (kept off git)
+output/pdfs/
+backend/finance_x.db
+backend/finance-x.db
+evals/results/
 drizzle/meta/
 .vite/
 coverage/

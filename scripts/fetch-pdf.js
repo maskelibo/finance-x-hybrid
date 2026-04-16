@@ -40,8 +40,9 @@ const HEADERS = {
   'Referer': 'https://www.kap.org.tr/',
 };
 
-const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 2000;
+const MAX_RETRIES = 5;
+// Exponential backoff schedule: 1s, 2s, 4s, 8s, 16s (between attempts)
+const RETRY_BACKOFF_MS = [1000, 2000, 4000, 8000, 16000];
 
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
@@ -49,19 +50,22 @@ function sleep(ms) {
 
 async function downloadPdf(url) {
   let lastError;
+  let lastStatus = null;
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const attemptStart = Date.now();
     try {
+      console.error(`[fetch-pdf:retry] attempt=${attempt}/${MAX_RETRIES} url="${url}"`);
       const res = await fetch(url, {
         headers: HEADERS,
         redirect: 'follow',
       });
+      lastStatus = res.status;
 
       if (!res.ok) {
         throw new Error(`HTTP ${res.status} ${res.statusText}`);
       }
 
-      const contentType = res.headers.get('content-type') || '';
       const buffer = Buffer.from(await res.arrayBuffer());
 
       if (buffer.length < 100) {
@@ -79,17 +83,25 @@ async function downloadPdf(url) {
         console.error(`[UYARI] PDF magic bytes bulunamadi ama devam ediliyor...`);
       }
 
+      const durMs = Date.now() - attemptStart;
+      console.error(`[fetch-pdf:retry] attempt=${attempt} SUCCESS status=${lastStatus} bytes=${buffer.length} took=${durMs}ms`);
       return buffer;
     } catch (err) {
       lastError = err;
+      const durMs = Date.now() - attemptStart;
+      const statusStr = lastStatus !== null ? String(lastStatus) : 'n/a';
+      console.error(`[fetch-pdf:retry] attempt=${attempt}/${MAX_RETRIES} FAIL status=${statusStr} took=${durMs}ms url="${url}" error="${err.message}"`);
+
       if (attempt < MAX_RETRIES) {
-        console.error(`[Deneme ${attempt}/${MAX_RETRIES}] Hata: ${err.message} — ${RETRY_DELAY_MS}ms bekleyip tekrar deneniyor...`);
-        await sleep(RETRY_DELAY_MS);
+        const delay = RETRY_BACKOFF_MS[attempt - 1] ?? RETRY_BACKOFF_MS[RETRY_BACKOFF_MS.length - 1];
+        console.error(`[fetch-pdf:retry] backing off ${delay}ms before attempt ${attempt + 1}`);
+        await sleep(delay);
       }
     }
   }
 
-  throw new Error(`PDF indirilemedi (${MAX_RETRIES} deneme): ${lastError.message}`);
+  const statusStr = lastStatus !== null ? String(lastStatus) : 'n/a';
+  throw new Error(`PDF indirilemedi (${MAX_RETRIES} deneme, son HTTP=${statusStr}): ${lastError ? lastError.message : 'unknown'}`);
 }
 
 async function extractText(pdfBuffer) {

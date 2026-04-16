@@ -1,0 +1,22 @@
+{
+  "agent_id": "qa_review",
+  "description": "Kalite kontrol metrikleri",
+  "required_metrics": [
+    "quality",
+    "review"
+  ],
+  "optional_metrics": [
+    "kalite",
+    "puan",
+    "skor",
+    "score",
+    "eksik",
+    "denetim",
+    "kontrol"
+  ],
+  "required_sections": [],
+  "source_tags": [],
+  "forbidden_patterns": [],
+  "warning_patterns": [],
+  "min_output_length": 500
+}

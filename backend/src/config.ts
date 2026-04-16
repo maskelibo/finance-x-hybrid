@@ -16,7 +16,6 @@ export const PROJECT_ROOT = process.env.FINANCE_X_ROOT || path.resolve(__dirname
 export const AGENTS_ROOT = path.join(PROJECT_ROOT, 'agents');
 
 export const CLAUDE_PATH = process.env.CLAUDE_PATH || '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin';
-export const CODEX_PATH = process.env.CODEX_PATH || CLAUDE_PATH;
 
 // Server
 export const PORT = parseInt(process.env.PORT || '4000', 10);
@@ -26,43 +25,100 @@ export const PORT = parseInt(process.env.PORT || '4000', 10);
 // Analiz, sentez, CEO ise pahalı modelle yapilir
 export const CLAUDE_MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 export const CLAUDE_MODEL_LIGHT = process.env.CLAUDE_MODEL_LIGHT || 'claude-haiku-4-5';
-export const CODEX_MODEL = process.env.CODEX_MODEL || 'gpt-5.4';
-export const CODEX_MODEL_LIGHT = process.env.CODEX_MODEL_LIGHT || 'gpt-5.4-mini';
-export const LLM_PRIMARY_PROVIDER = (process.env.LLM_PRIMARY_PROVIDER || 'claude').trim();
-export const LLM_FALLBACK_PROVIDER = (process.env.LLM_FALLBACK_PROVIDER || 'codex').trim();
+export const LLM_PRIMARY_PROVIDER = 'claude' as const;
 
 // Agent -> model mapping: light model kullanacak agent'lar
 // Ağır model (Sonnet/GPT-5.4): financial_analysis, strategic_synthesis, valuation_agent,
 //   qa_review, ceo, final_summary, macro_analysis, context_extraction
 // Light model (Haiku/GPT-5.4-mini): veri toplama, parse, sınıflandırma, formatlama
 const LIGHT_MODEL_AGENTS = new Set([
-  'data_collection',
-  'parse_standardization',
-  'reconciliation',
   'event_classification',
-  'event_timeline_alert',
-  'event_impact_mapper',
   'kap_watch',
   'sentiment_news_agent',
   'analyst_consensus_agent',
-  'report_formatter',
   'esg_agent',
-  'sector_competition',
   'technical_analysis',
-  'coo',            // Pre-flight check + delivery check
 ]);
 
-export function getModelForAgent(agentId: string, provider: 'claude' | 'codex' = 'claude'): string {
+export function getModelForAgent(agentId: string): string {
   const useLightModel = LIGHT_MODEL_AGENTS.has(agentId);
-  if (provider === 'codex') {
-    return useLightModel ? CODEX_MODEL_LIGHT : CODEX_MODEL;
-  }
   return useLightModel ? CLAUDE_MODEL_LIGHT : CLAUDE_MODEL;
 }
 
-// Timeouts (ms)
+// Timeouts (ms) — Agent bazlı kalibrasyon (baseline verilerinden: max_observed × 2)
 export const STUCK_AGENT_THRESHOLD_MS = parseInt(process.env.STUCK_AGENT_THRESHOLD_MS || String(25 * 60 * 1000), 10);
+
+// Agent-specific timeout overrides (ms) — generous limits for web research + large context
+const AGENT_TIMEOUT_OVERRIDES: Record<string, number> = {
+  // Ağır agent'lar — web research + büyük context
+  financial_analysis: 45 * 60 * 1000,   // revision loop dahil
+  final_summary:      35 * 60 * 1000,   // tüm upstream'i sentezliyor
+  context_extraction: 30 * 60 * 1000,   // web research ağır
+  macro_analysis:     30 * 60 * 1000,   // web research
+  valuation_agent:    30 * 60 * 1000,   // DCF + sensitivity hesabı
+  strategic_synthesis:25 * 60 * 1000,   // tüm upstream sentez
+  report_formatter:   35 * 60 * 1000,   // 100KB HTML üretimi
+  qa_review:          25 * 60 * 1000,   // revision context büyük
+  // Orta agent'lar
+  sector_competition: 25 * 60 * 1000,   // web research + peer analysis
+  technical_analysis: 25 * 60 * 1000,   // web research
+  esg_agent:          20 * 60 * 1000,   // web research
+  event_impact_mapper:20 * 60 * 1000,
+  reconciliation:     20 * 60 * 1000,   // revision loop dahil
+  // Hafif agent'lar
+  data_collection:    20 * 60 * 1000,   // web scraping
+  parse_standardization: 20 * 60 * 1000, // PDF extraction
+  ceo:                20 * 60 * 1000,
+  kap_watch:          15 * 60 * 1000,
+  sentiment_news_agent: 15 * 60 * 1000,
+  analyst_consensus_agent: 15 * 60 * 1000,
+  event_classification: 10 * 60 * 1000,
+  event_timeline_alert: 10 * 60 * 1000,
+  coo:                10 * 60 * 1000,
+};
+
+export function getStuckThresholdForAgent(agentId: string): number {
+  return AGENT_TIMEOUT_OVERRIDES[agentId] ?? STUCK_AGENT_THRESHOLD_MS;
+}
 export const CONTEXT_CHAR_LIMIT = parseInt(process.env.CONTEXT_CHAR_LIMIT || '15000', 10);
+
+// Feature flags — ADIM 4
+export const DIGEST_MODE = (process.env.DIGEST_MODE || 'true') === 'true';
+export const TARGETED_KNOWLEDGE_INJECTION = (process.env.TARGETED_KNOWLEDGE_INJECTION || 'true') === 'true';
+
+// Feature flag — ADIM 7: Deterministic financial engine
+export const FINANCIAL_ENGINE_ENABLED = (process.env.FINANCIAL_ENGINE_ENABLED || 'true') === 'true';
+export const BYPASS_CEO_FOR_TESTS = (process.env.BYPASS_CEO_FOR_TESTS || 'false') === 'true';
+
+// Feature flag — ADIM 8: Structured report payload for formatter
+export const REPORT_PAYLOAD_MODE = (process.env.REPORT_PAYLOAD_MODE || 'true') === 'true';
+
+// Feature flag — Formatter minimal context mode.
+// When true, buildReportPayload discards low-value agent excerpts and ships only:
+//   metadata + engineResults + final_summary (full, 30K) + canonical_fact_pack + brand identity (3K)
+// Reduces payload from ~48K to ~35K max, improving formatter reliability and truncation risk.
+export const FORMATTER_MINIMAL_CONTEXT = (process.env.FORMATTER_MINIMAL_CONTEXT || 'true') === 'true';
+
+// Feature flag — ADIM 9: Optimized pipeline (true = new parallel phases, false = legacy 11-phase)
+export const OPTIMIZED_PIPELINE = (process.env.OPTIMIZED_PIPELINE || 'true') === 'true';
+
+// Feature flag — ADIM 12: Post-session regression eval (observe mode — logs result, never blocks)
+export const REGRESSION_EVAL_ENABLED = (process.env.REGRESSION_EVAL_ENABLED || 'true') === 'true';
+
+// Stall detection: if provider produces no output for this many seconds, kill
+export const PROVIDER_STALL_TIMEOUT_S = parseInt(process.env.PROVIDER_STALL_TIMEOUT_S || '900', 10);
+
+// Feature flag — ADIM 5: Schema validation mode ('off' | 'warn')
+// 'warn' = validate + log warnings, pipeline devam eder
+// 'off' = validation atlanır
+// Schema validation modes:
+// 'off'        = no validation
+// 'warn'       = validate + log, pipeline continues normally
+// 'soft_block' = validate + log + mark degraded for critical agents, pipeline continues but downstream sees flag
+export const SCHEMA_VALIDATION_MODE = (process.env.SCHEMA_VALIDATION_MODE || 'warn') as 'off' | 'warn' | 'soft_block';
+// Agents where soft_block applies (degraded flag set). Only used when mode='soft_block'.
+export const SCHEMA_SOFT_BLOCK_AGENTS = new Set((process.env.SCHEMA_SOFT_BLOCK_AGENTS || 'financial_analysis,reconciliation').split(',').map(s => s.trim()));
+
 export const HEARTBEAT_INTERVAL_MIN = parseInt(process.env.HEARTBEAT_INTERVAL_MIN || '30', 10);
 export const WATCHDOG_INTERVAL_MIN = parseInt(process.env.WATCHDOG_INTERVAL_MIN || '2', 10);
 export const NIGHT_TRAINING_HOUR_UTC = parseInt(process.env.NIGHT_TRAINING_HOUR_UTC || '23', 10);
@@ -72,21 +128,11 @@ export const CLAUDE_SPAWN_ENV = {
   PATH: CLAUDE_PATH,
 };
 
-export const CODEX_SPAWN_ENV = {
-  ...process.env,
-  PATH: CODEX_PATH,
-};
-
 export const CLAUDE_PERMISSION_MODE = (process.env.CLAUDE_PERMISSION_MODE || 'bypassPermissions').trim();
 
 export const CLAUDE_SPAWN_OPTIONS = {
   cwd: PROJECT_ROOT,
   env: CLAUDE_SPAWN_ENV,
-};
-
-export const CODEX_SPAWN_OPTIONS = {
-  cwd: PROJECT_ROOT,
-  env: CODEX_SPAWN_ENV,
 };
 
 const defaultAllowedOrigins = [

@@ -201,3 +201,7 @@ Every section must have a visible confidence indicator:
 - Kaynaksız rakam kullanma
 - Platform çıktılarından (önceki raporlar, HTML dosyaları) veri alma YASAK
 - Claude eğitim bilgisinden rakam kullanma YASAK
+
+
+---
+

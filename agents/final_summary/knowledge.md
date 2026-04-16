@@ -143,3 +143,30 @@ Rapor output'a gönderilmeden önce:
 - [ ] Truncation yok mu? (Yarım bölüm YASAK)
 
 ---
+
+## 10. C-Level Aksiyon Dili Çerçevesi
+
+Executive Summary rakam sunmak değil, karar vermek için yazılır. Her final summary şu cümleyi içermeli:
+
+**Zorunlu Aksiyon Cümlesi Formatı:**
+> "Eğer [katalist] gerçekleşirse → [metrik değişimi] → tavir [AL/TUT/SAT] olarak revize edilecektir."
+
+Örnek (çelik): "EPDK gaz tarifesi geri alınırsa → EBITDA +4B TRY → AL tavsiyesine geçilir."
+Örnek (havacılık): "İran ateşkesi kalıcı olursa → EBITDA +12B TRY → AL tavsiyesi, hedef 650 TRY."
+
+### Critical Next Date Format
+```
+⚠️ ÖNEMLİ: [Tarih] — [Olay]
+Beklenen etki: [Metrik + yön]
+Bu tarih geçtikten sonra tavsiye gözden geçirilecek.
+```
+
+### Belirsizlik Sınıflandırması (Raporda zorunlu)
+| Sınıf | Tanım | Etiket |
+|---|---|---|
+| Doğrulanmış | KAP/audited kaynak | ✓ |
+| Tahmini | Hesaplama/proxy | [TAHMİN] |
+| Spekülatif | Varsayıma dayalı | [SPEC] |
+| Contestable | Kaynaklar çelişiyor | [CONTESTED] |
+
+---

@@ -452,3 +452,28 @@ Struktur EREGL 10 event'ı net organize etmiş; CEO'ya 4 priority alerts sunmuş
 - Her timeline girdisinde gerçek kaynak ID/URL ve teyit seviyesi ver.
 - Beklenen pencere veya release tahminlerini `estimated` diye etiketle.
 - Senaryo anlatısını olay gibi yazma; timeline yalnız izleme önceliği kurmalı.
+
+---
+
+## Gece Eğitimi #2 — 2026-04-16
+
+**Odak:** TCELL raporu post-feedback + Near-term mandate-specific watch window protokolü
+
+### Bu Gece Öğrenilenler:
+
+**1. Timeline'da Yalnız Tarih Yetmez:**
+- Her olay için: `tarih + olay + olası surprise yönü + etkilenecek metrik + yeniden hesaplanacak KPI + aksiyon` formatı zorunlu.
+- Örnek: "24 Nisan 2026 — TCELL Q1 sonuçları — Surprise: EBITDA marjı >%42? → Bear case iptal → hedef fiyat revize — Aksiyon: synthesis update tetikle"
+
+**2. Mandate-Specific Watch Window:**
+- Son 7 gün KAP olayları + sonraki 30-90 gün catalystleri aynı takip zincirine bağla.
+- Her catalyst: Bull/Baz/Bear hangi senaryoyu aktive eder? Net belirt.
+
+**3. Near-Term Catalyst Senaryoyla Bağlantısı:**
+- Catalystler bear/base/bull ile çapraz bağlanmadan output tamamlanmış sayılmayacak.
+
+**4. EPDK Nisan 2026 (WebSearch):**
+- 4 Nisan 2026 yürürlük: Elektrik +%25 / Sanayi +%20. IMMEDIATE faz olayı geçti ama EBITDA revizesi hâlâ bekliyor olan şirketler (EREGL, TUPRS) için NEAR-TERM watch window'a girmeli.
+
+**5. memory.md Yeniden Yazma:**
+- 13.7KB'dan 4.9KB'a indirildi. Tüm CEO geri bildirim bölümleri distile edildi.

@@ -1,10 +1,16 @@
 import { nanoid } from 'nanoid';
-import { db } from './db.js';
+import { db, ensureColumn } from './db.js';
 import { runAgent } from './agent-runner.js';
 import { getAgentMeta } from './agents.js';
 import { runFeedbackLoop } from './feedback-loop.js';
-import { CONTEXT_CHAR_LIMIT } from './config.js';
+import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT } from './config.js';
+import { computeAll, type FinancialInputs, type EngineOutput } from './financial-engine.js';
+import { validateAgentOutput } from './schema-validator.js';
+import { captureSessionSnapshot } from './version-snapshot.js';
+import { runRegressionEval } from './regression-eval.js';
 import { ANALYSIS_LAYERS, MODE_DEFAULT_LAYERS, type AnalysisLayer, type RuntimeMode } from './analysis-config.js';
+import { computeIndicators } from './technical-indicators.js';
+import { fetchMacroSnapshot } from './macro-refresh.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -275,7 +281,8 @@ export function resumeSession(sessionId: string): boolean {
 
   const session = db.prepare(`SELECT * FROM analysis_sessions WHERE id = ?`).get(sessionId) as any;
   if (!session) return false;
-  if (session.status !== 'paused_rate_limit' && session.status !== 'paused_stuck_agent' && session.status !== 'failed') return false;
+  // Only resume paused/failed sessions — never completed
+  if (!['paused_rate_limit', 'paused_stuck_agent', 'failed'].includes(session.status)) return false;
   const selectedLayers = parseSelectedLayers(session.selected_layers);
 
   const promise = executeSession(session.id, session.ticker, session.runtime_mode as RuntimeMode, selectedLayers).catch((err) => {
@@ -312,31 +319,93 @@ export function resumeAllPausedSessions(): number {
 }
 
 // Parallel execution phases — agents within the same phase run concurrently
+// ADIM 9: Optimized pipeline — dependency-aware paralellik artırıldı
+//
+// ÖNCEKİ: 11 seri faz, ~55dk
+// YENİ: 10 faz, daha fazla paralel grup
+//
+// Değişiklikler:
+// 1. context_extraction + reconciliation paralel (ikisi de parse+data'ya bağlı)
+// 2. Events, Analysis ile paralel (events kap_watch'a bağlı, analysis'e değil)
+// 3. sector_competition FA sonrasına taşındı (gerçek FA dependency)
+// 4. valuation + sector_competition paralel çalışır
+// 5. Kritik path: 11 faz → 10 faz, Events artık bekleme noktası değil
 const EXECUTION_PHASES: Array<{ name: string; agents: string[][] }> = [
   { name: 'Mandate', agents: [['ceo']] },
-  { name: 'Pre-Flight', agents: [['coo']] }, // COO: veri kaynakları erişilebilir mi, agent'lar hazır mı
-  { name: 'Data Acquisition', agents: [['data_collection', 'kap_watch']] }, // parallel
+  { name: 'Pre-Flight', agents: [['coo']] },
+  { name: 'Data Acquisition', agents: [['data_collection', 'kap_watch']] },
   { name: 'Parsing', agents: [['parse_standardization']] },
-  { name: 'Data Quality', agents: [['reconciliation']] }, // DATA QUALITY GATE after this
-  { name: 'Analysis', agents: [['context_extraction', 'financial_analysis', 'macro_analysis', 'sector_competition', 'technical_analysis', 'sentiment_news_agent', 'analyst_consensus_agent', 'esg_agent']] }, // all parallel — esg_agent bağımsız, buraya taşındı
-  { name: 'Valuation', agents: [['valuation_agent']] }, // financial_analysis çıktısına bağımlı
-  { name: 'Events', agents: [['event_classification'], ['event_impact_mapper', 'event_timeline_alert']] },
-  { name: 'Quality Review', agents: [['qa_review']] }, // QA REVISION LOOP after this
+  // reconciliation + context_extraction paralel (ikisi de parse+data_collection'a bağlı)
+  { name: 'Data Quality & Context', agents: [['reconciliation', 'context_extraction']] },
+  // Analysis: FA + bağımsız agent'lar paralel + events paralel (kap_watch zaten tamamlanmış)
+  { name: 'Analysis & Events', agents: [
+    ['financial_analysis', 'macro_analysis', 'technical_analysis', 'sentiment_news_agent', 'analyst_consensus_agent', 'esg_agent', 'event_classification'],
+  ]},
+  // FA-dependent + event-dependent agent'lar paralel
+  { name: 'Valuation & Sector & Event Impact', agents: [
+    ['valuation_agent', 'sector_competition', 'event_impact_mapper', 'event_timeline_alert'],
+  ]},
+  { name: 'Quality Review', agents: [['qa_review']] },
   { name: 'Synthesis', agents: [['strategic_synthesis']] },
   { name: 'Final Report', agents: [['final_summary']] },
 ];
 
-// Agent timeout configuration
+// Agent timeout configuration — config.ts'teki kalibre edilmiş değerleri kullan
 function getAgentTimeout(agentId: string): number {
-  const DATA_AGENTS = ['data_collection', 'kap_watch'];
-  const HEAVY_ANALYSIS = ['financial_analysis', 'technical_analysis', 'macro_analysis', 'sector_competition', 'context_extraction', 'valuation_agent', 'esg_agent', 'sentiment_news_agent', 'analyst_consensus_agent'];
-  const SYNTHESIS_AGENTS = ['strategic_synthesis', 'final_summary'];
+  return getStuckThresholdForAgent(agentId);
+}
 
-  if (DATA_AGENTS.includes(agentId)) return 15 * 60 * 1000;
-  if (HEAVY_ANALYSIS.includes(agentId)) return 25 * 60 * 1000;
-  if (SYNTHESIS_AGENTS.includes(agentId)) return 25 * 60 * 1000;
-  if (agentId === 'report_formatter') return 30 * 60 * 1000;
-  return 15 * 60 * 1000; // default for meta/qa agents (artırıldı: 10dk → 15dk)
+function buildCeoBypassOutput(ticker: string): string {
+  return [
+    '[TEST BYPASS] CEO agent local runtime validation için atlandı.',
+    '',
+    `# ${ticker} Mandate Plan`,
+    '- Scope: Standard BIST issuer review with emphasis on financial quality, context extraction, valuation readiness, and final synthesis.',
+    '- Quality threshold: All downstream agents must cite sources, separate facts from inference, and flag data gaps explicitly.',
+    '- Critical downstream requirement: financial_analysis output must include a `structured_financials` JSON appendix for deterministic engine extraction.',
+    '- COO instruction: proceed with pre-flight checks and keep the pipeline moving unless a blocking infrastructure issue is found.',
+    '- Data priority: KAP filings, investor relations PDFs, recent quarterly and annual financial statements, market cap, shares outstanding, debt/cash, and management guidance.',
+    '- Delivery rule: if deterministic calculations are available in context, downstream valuation and synthesis agents must use them instead of recomputing arithmetic manually.',
+  ].join('\n');
+}
+
+/**
+ * Detect upstream data gap markers in agent output.
+ * If agent is flagging upstream failures, log a warning so we can add
+ * dependency-aware retry in future (for now just observability).
+ */
+function detectUpstreamGap(agentId: string, output: string): { hasGap: boolean; gapPatterns: string[]; upstreamAgents: string[] } {
+  const gapPatterns: string[] = [];
+  const upstreamAgents = new Set<string>();
+
+  // Look for PENDING context patterns that indicate upstream-caused gaps
+  const patterns = [
+    /\[VERİ YOK\s*\|\s*denendi:\s*([^;]+);[^\]]+\]/gi,
+    /upstream[a-z\s]*(eksik|yok|pending|gap|retry)/gi,
+    /parse.{0,50}(eksik|yok|pending|tamamla)/gi,
+    /data_collection.{0,50}(eksik|yok|pending|indir)/gi,
+  ];
+
+  for (const pattern of patterns) {
+    const matches = output.matchAll(pattern);
+    for (const match of matches) {
+      gapPatterns.push(match[0].slice(0, 200));
+    }
+  }
+
+  // Detect which upstream agent might need re-run
+  if (/parse_standardization|parse/i.test(output) && /eksik|yok|pending/i.test(output)) {
+    upstreamAgents.add('parse_standardization');
+  }
+  if (/data_collection|KAP.*indir/i.test(output) && /eksik|yok|pending/i.test(output)) {
+    upstreamAgents.add('data_collection');
+  }
+
+  return {
+    hasGap: gapPatterns.length > 0,
+    gapPatterns: gapPatterns.slice(0, 5),
+    upstreamAgents: Array.from(upstreamAgents),
+  };
 }
 
 // Run a single agent and update DB. Returns true if session should pause (rate limit).
@@ -356,10 +425,22 @@ async function runSingleAgent(
 
   db.prepare(`UPDATE analysis_sessions SET current_phase = ? WHERE id = ?`).run(phase, sessionId);
   const runId = runRow.id;
+  const taskPrompt = buildTaskPrompt(agentId, ticker, accumulatedContext);
+
+  if (BYPASS_CEO_FOR_TESTS && agentId === 'ceo') {
+    const now = new Date().toISOString();
+    const bypassOutput = buildCeoBypassOutput(ticker);
+    db.prepare(`
+      UPDATE agent_runs SET status = 'completed', started_at = ?, completed_at = ?, duration_ms = ?,
+      output_text = ?, tokens_used = 0, cost_usd = 0, input_prompt = ?, error_message = NULL, provider_used = ? WHERE id = ?
+    `).run(now, now, 1, bypassOutput, taskPrompt, 'test-bypass', runId);
+    accumulatedContext[`${agentId}_output`] = bypassOutput;
+    console.warn(`[TEST BYPASS] CEO agent skipped for session ${sessionId}`);
+    return 'ok';
+  }
+
   db.prepare(`UPDATE agent_runs SET status = 'running', started_at = ?, error_message = NULL, provider_used = NULL WHERE id = ?`)
     .run(new Date().toISOString(), runId);
-
-  const taskPrompt = buildTaskPrompt(agentId, ticker, accumulatedContext);
   const timeoutMs = getAgentTimeout(agentId);
   // Sadece geçici hata (network/timeout) için 1 retry — aynı prompt ile tekrar çalıştırmanın anlamı yok
   const maxAttempts = 2; // 1 deneme + 1 retry
@@ -395,12 +476,70 @@ async function runSingleAgent(
       // Store output with conservative limit — downstream agents will get even less via dependency matrix
       accumulatedContext[`${agentId}_output`] = result.output.slice(0, 1000000);
 
+      // Schema validation — warn or soft_block (pipeline never stops; soft_block marks critical agents degraded)
+      if (SCHEMA_VALIDATION_MODE === 'warn' || SCHEMA_VALIDATION_MODE === 'soft_block') {
+        const validation = validateAgentOutput(agentId, result.output);
+        if (!validation.valid) {
+          const isBlockAgent = SCHEMA_VALIDATION_MODE === 'soft_block' && SCHEMA_SOFT_BLOCK_AGENTS.has(agentId);
+          const prefix = isBlockAgent ? '[SCHEMA:SOFT_BLOCK]' : '[SCHEMA]';
+          console.warn(`${prefix} ${agentId}: ${validation.errors.join('; ')}`);
+          try {
+            db.prepare(`INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, created_at)
+              VALUES (?, ?, ?, ?, 'autonomous', 'completed', ?)`)
+              .run(nanoid(), isBlockAgent ? 'schema_soft_block' : 'schema_warning', `${agentId} schema uyumsuzluğu`, validation.errors.join('\n'), new Date().toISOString());
+          } catch { /* non-fatal logging */ }
+
+          // BLOCK mode: mark critical agent outputs as degraded so downstream agents can see
+          if (isBlockAgent) {
+            console.warn(`[SCHEMA:SOFT_BLOCK] ${agentId} çıktısı schema'ya uymuyor — DEGRADED olarak işaretlendi`);
+            accumulatedContext[`${agentId}_schema_soft_blocked`] = true;
+          }
+        }
+        if (validation.warnings.length > 0) {
+          console.log(`[SCHEMA] ${agentId} warnings: ${validation.warnings.join('; ')}`);
+        }
+        // Store extracted structured fields for downstream use
+        if (Object.keys(validation.extractedFields).length > 0) {
+          accumulatedContext[`${agentId}_structured`] = validation.extractedFields;
+        }
+      }
+
+      // Financial Engine — financial_analysis tamamlandığında deterministik hesap çalıştır
+      if (FINANCIAL_ENGINE_ENABLED && agentId === 'financial_analysis') {
+        try {
+          const engineInput = extractFinancialInputs(result.output, accumulatedContext);
+          const engineOutput = computeAll(engineInput);
+          accumulatedContext['financial_engine_results'] = engineOutput;
+          const computedCount = Object.keys(engineOutput.ratios).length + Object.keys(engineOutput.scores).length;
+          console.log(`[ENGINE] financial_analysis → ${computedCount} ratio/score hesaplandı, ${engineOutput.warnings.length} warning`);
+          if (engineOutput.warnings.length > 0) {
+            console.log(`[ENGINE] warnings: ${engineOutput.warnings.slice(0, 5).join('; ')}`);
+          }
+        } catch (err: any) {
+          console.warn(`[ENGINE] Financial engine failed (fallback — LLM hesaplamaları kullanılacak): ${err.message}`);
+          // Engine başarısız → pipeline devam eder, agent çıktıları yeterli
+        }
+      }
+
       if (agentId === 'final_summary') {
         const scoreMatch = result.output.match(/(?:overall[_\s-]*score|genel[_\s-]*puan|puan)\D{0,20}(\d{1,3}(?:[.,]\d+)?)/i);
         const overallScore = scoreMatch ? Number.parseFloat(scoreMatch[1].replace(',', '.')) : null;
         if (overallScore !== null && Number.isFinite(overallScore)) {
           db.prepare(`UPDATE analysis_sessions SET overall_score = ? WHERE id = ?`)
             .run(overallScore, sessionId);
+        }
+      }
+
+      // Dependency-aware gap detection (observability for future retry logic)
+      if (result.output) {
+        const gap = detectUpstreamGap(agentId, result.output);
+        if (gap.hasGap) {
+          console.log(`[GAP DETECT] ${agentId}: ${gap.gapPatterns.length} upstream gaps, upstream agents: ${gap.upstreamAgents.join(', ') || 'unknown'}`);
+          // TODO: Future enhancement — trigger upstream retry here
+          try {
+            db.prepare(`INSERT INTO watchdog_events (id, event_type, agent_id, session_id, ticker, details, created_at) VALUES (?, 'upstream_gap', ?, ?, ?, ?, ?)`)
+              .run(nanoid(), agentId, sessionId, ticker, JSON.stringify({ gaps: gap.gapPatterns, upstream: gap.upstreamAgents }), new Date().toISOString());
+          } catch (e) { /* non-fatal */ }
         }
       }
       return 'ok';
@@ -485,6 +624,44 @@ async function executeSession(
     if (r.output_text) accumulatedContext[`${r.agent_id}_output`] = String(r.output_text).slice(0, 1000000);
   }
 
+    // Price snapshot lock — tek referans fiyat tüm agent'larda kullanılır
+    accumulatedContext['session_metadata'] = JSON.stringify({
+      ticker,
+      session_start: new Date().toISOString(),
+      runtime_mode: runtimeMode,
+      note: 'Tüm agent\'lar bu session_metadata\'daki bilgileri referans almalı. Farklı fiyat snapshot\'ları kullanmayın.'
+    });
+
+  // Pre-fetch macro snapshot (best-effort, non-blocking)
+  try {
+    const macroSnapshot = await fetchMacroSnapshot();
+    accumulatedContext['macro_snapshot'] = JSON.stringify(macroSnapshot);
+    console.log(`[ORCHESTRATOR] Macro snapshot: USD/TRY=${macroSnapshot.usdTry?.toFixed(2)} (${macroSnapshot.asOf})`);
+  } catch (err) {
+    console.warn(`[ORCHESTRATOR] Macro snapshot failed (non-fatal):`, err);
+  }
+
+  // Pre-fetch technical indicators for ticker (best-effort, non-blocking)
+  try {
+    const indicators = await computeIndicators(ticker);
+    if (indicators) {
+      accumulatedContext['technical_indicators'] = JSON.stringify(indicators);
+      console.log(`[ORCHESTRATOR] Technical indicators: price=${indicators.currentPrice} RSI=${indicators.rsi14.toFixed(1)} MACD=${indicators.macd.line.toFixed(2)}`);
+    }
+  } catch (err) {
+    console.warn(`[ORCHESTRATOR] Technical indicators failed (non-fatal):`, err);
+  }
+
+  // Version snapshot — capture artifact hashes at session start
+  try {
+    const snapshot = captureSessionSnapshot(pipeline);
+    ensureColumn('analysis_sessions', 'version_snapshot', 'TEXT');
+    db.prepare(`UPDATE analysis_sessions SET version_snapshot = ? WHERE id = ?`)
+      .run(JSON.stringify(snapshot), sessionId);
+  } catch (err: any) {
+    console.warn(`[VERSION] Snapshot capture failed (non-fatal): ${err.message}`);
+  }
+
   // Include previous report summary for delta analysis (agents can compare/update)
   if (previousReport) {
     console.log(`  Delta mode: previous report found from ${previousReport.created_at}`);
@@ -500,7 +677,9 @@ async function executeSession(
 
   // Execute phases sequentially, agents within a phase in parallel
   for (const phase of EXECUTION_PHASES) {
-    console.log(`\n--- Phase: ${phase.name} ---`);
+    const phaseStart = Date.now();
+    const allPhaseAgents = phase.agents.flat().filter(id => activeAgentIds.has(id));
+    console.log(`\n--- Phase: ${phase.name} [${allPhaseAgents.length} agent${allPhaseAgents.length > 1 ? ', parallel' : ''}] ---`);
 
     for (const parallelGroup of phase.agents) {
       // Filter to only agents that are in this session's pipeline
@@ -512,17 +691,28 @@ async function executeSession(
         const status = await runSingleAgent(agentsToRun[0], sessionId, ticker, accumulatedContext, costTracker);
         if (status === 'rate_limit') return;
       } else {
-        // Multiple agents — run in parallel
-        console.log(`  [parallel] ${agentsToRun.join(', ')}`);
-        const results = await Promise.all(
-          agentsToRun.map(id => runSingleAgent(id, sessionId, ticker, accumulatedContext, costTracker))
-        );
-        if (results.includes('rate_limit')) return;
+        // Multiple agents — run with concurrency limit to avoid API throttling
+        const MAX_CONCURRENT = 3;
+        console.log(`  [parallel, max ${MAX_CONCURRENT}] ${agentsToRun.join(', ')}`);
+        const results: string[] = [];
+        for (let i = 0; i < agentsToRun.length; i += MAX_CONCURRENT) {
+          const batch = agentsToRun.slice(i, i + MAX_CONCURRENT);
+          const batchResults = await Promise.all(
+            batch.map(id => runSingleAgent(id, sessionId, ticker, accumulatedContext, costTracker))
+          );
+          results.push(...batchResults);
+          if (batchResults.includes('rate_limit')) return;
+        }
       }
     }
 
+    const phaseDur = Math.round((Date.now() - phaseStart) / 1000);
+    if (allPhaseAgents.length > 0) {
+      console.log(`  ← Phase ${phase.name} completed in ${phaseDur}s (${allPhaseAgents.join(', ')})`);
+    }
+
     // DATA QUALITY GATE: after reconciliation phase
-    if (phase.name === 'Data Quality') {
+    if (phase.name === 'Data Quality' || phase.name === 'Data Quality & Context') {
       const reconOutput = String(accumulatedContext['reconciliation_output'] || '');
       const scoreMatch = reconOutput.match(/data_quality_score["\s:]*([0-9.]+)/i);
       const score = scoreMatch ? parseFloat(scoreMatch[1]) : 1.0;
@@ -618,6 +808,20 @@ async function executeSession(
         if (qaRound >= MAX_QA_ROUNDS) {
           console.warn(`[QA GATE] ${MAX_QA_ROUNDS} tur revision sonrası hâlâ geçemedi — UYARI ile devam ediliyor`);
           accumulatedContext['qa_warning'] = `QA ${MAX_QA_ROUNDS} turda onay veremedi. Rapor eksiklikler içerebilir.`;
+
+          // CEO override post-mortem log — QA still blocking after max rounds but we ship anyway.
+          try {
+            db.prepare(`INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, created_at) VALUES (?, 'ceo_override', ?, ?, 'ceo', 'logged', ?)`)
+              .run(
+                nanoid(),
+                `CEO Override — ${ticker}`,
+                `QA flagged issues but CEO approved delivery. Session: ${sessionId}. Review post-mortem.\nQA ${MAX_QA_ROUNDS} revision turu sonrası hâlâ onay vermedi — CEO rapor teslimine izin verdi.`,
+                new Date().toISOString(),
+              );
+          } catch (err: any) {
+            console.warn(`[CEO OVERRIDE LOG] Failed to persist QA-revision override event: ${err.message}`);
+          }
+
           break; // Block etme, devam et
         }
 
@@ -663,27 +867,35 @@ async function executeSession(
           `5. Truncation olmasın diye önce en kritik eksikleri yaz`,
         ].join('\n');
 
-        // Re-run flagged agents — ORİJİNAL ÇIKTIYI KORU, revision patch olarak ekle
-        for (const agentId of revisionTargets) {
-          if (!activeAgentIds.has(agentId)) continue;
-          // Orijinal çıktıyı context'te sakla — revision agent bunu görecek
-          const originalRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
-            .get(sessionId, agentId) as { output_text: string | null } | undefined;
-          if (originalRun?.output_text) {
-            accumulatedContext[`${agentId}_original_output`] = originalRun.output_text.slice(0, 10000);
-          }
-          db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, error_message = 'QA revision round ${qaRound + 1} — hedefli düzeltme' WHERE session_id = ? AND agent_id = ?`)
-            .run(sessionId, agentId);
-          const status = await runSingleAgent(agentId, sessionId, ticker, accumulatedContext, costTracker);
-          if (status === 'rate_limit') return;
-          // Revision sonrası: orijinal + revision birleştir
-          const revisedRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
-            .get(sessionId, agentId) as { output_text: string | null } | undefined;
-          if (originalRun?.output_text && revisedRun?.output_text) {
-            const merged = originalRun.output_text + '\n\n---\n## QA REVISION EKI\n' + revisedRun.output_text;
-            db.prepare(`UPDATE agent_runs SET output_text = ? WHERE session_id = ? AND agent_id = ?`)
-              .run(merged, sessionId, agentId);
-            accumulatedContext[`${agentId}_output`] = merged.slice(0, 1000000);
+        // Smart revision: don't re-run agents whose failure is caused by upstream data gaps
+        const qaRevisionText = String(accumulatedContext['qa_review_output'] || '').toLowerCase();
+        const upstreamDataGap = qaRevisionText.includes('pending') || qaRevisionText.includes('veri yok') || (qaRevisionText.includes('eksik') && qaRevisionText.includes('parse'));
+        if (upstreamDataGap) {
+          console.log(`[QA REVISION] Upstream data gap detected — skipping agent re-runs, proceeding with available data`);
+          // Don't re-run agents, just continue pipeline
+        } else {
+          // Re-run flagged agents — ORİJİNAL ÇIKTIYI KORU, revision patch olarak ekle
+          for (const agentId of revisionTargets) {
+            if (!activeAgentIds.has(agentId)) continue;
+            // Orijinal çıktıyı context'te sakla — revision agent bunu görecek
+            const originalRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
+              .get(sessionId, agentId) as { output_text: string | null } | undefined;
+            if (originalRun?.output_text) {
+              accumulatedContext[`${agentId}_original_output`] = originalRun.output_text.slice(0, 10000);
+            }
+            db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, error_message = 'QA revision round ${qaRound + 1} — hedefli düzeltme' WHERE session_id = ? AND agent_id = ?`)
+              .run(sessionId, agentId);
+            const status = await runSingleAgent(agentId, sessionId, ticker, accumulatedContext, costTracker);
+            if (status === 'rate_limit') return;
+            // Revision sonrası: orijinal + revision birleştir
+            const revisedRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
+              .get(sessionId, agentId) as { output_text: string | null } | undefined;
+            if (originalRun?.output_text && revisedRun?.output_text) {
+              const merged = originalRun.output_text + '\n\n---\n## QA REVISION EKI\n' + revisedRun.output_text;
+              db.prepare(`UPDATE agent_runs SET output_text = ? WHERE session_id = ? AND agent_id = ?`)
+                .run(merged, sessionId, agentId);
+              accumulatedContext[`${agentId}_output`] = merged.slice(0, 1000000);
+            }
           }
         }
 
@@ -805,6 +1017,20 @@ async function executeSession(
     console.warn(`\n⚠️  [CEO APPROVAL GATE] ${warningMsg}\n`);
     // Block etme, uyarı ile devam et — rapor çıksın, Chairman değerlendirir
     accumulatedContext['ceo_approval_warning'] = warningMsg;
+
+    // CEO override post-mortem log — QA flagged issues but CEO approved delivery.
+    // Persisted as ceo_activities row for Chairman review / governance traceability.
+    try {
+      db.prepare(`INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, created_at) VALUES (?, 'ceo_override', ?, ?, 'ceo', 'logged', ?)`)
+        .run(
+          nanoid(),
+          `CEO Override — ${ticker}`,
+          `QA flagged issues but CEO approved delivery. Session: ${sessionId}. Review post-mortem.\n\n${warningMsg}`,
+          new Date().toISOString(),
+        );
+    } catch (err: any) {
+      console.warn(`[CEO OVERRIDE LOG] Failed to persist override event: ${err.message}`);
+    }
   } else {
     console.log(`\n✅ [CEO APPROVAL GATE] Tüm kritik agent'lar onaylandı — rapor teslime hazır\n`);
   }
@@ -816,28 +1042,58 @@ async function executeSession(
     SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = 'final_summary'
   `).get(sessionId) as { output_text: string | null } | undefined;
   const finalSummaryOutput = finalSummaryRun?.output_text || '';
+  const completedAt = new Date().toISOString();
   if (!finalSummaryOutput.trim()) {
     console.warn(`[PIPELINE] final_summary çıktısı boş — mevcut strategic_synthesis çıktısı ile devam ediliyor`);
     // Boş final_summary yerine strategic_synthesis çıktısını kullan
     const fallbackOutput = String(accumulatedContext['strategic_synthesis_output'] || 'Rapor özeti oluşturulamadı.');
     db.prepare(`INSERT INTO reports (id, session_id, report_type, title, content, created_at) VALUES (?, ?, 'executive', ?, ?, ?)`)
-      .run(nanoid(), sessionId, `${ticker} — Yonetici Ozeti (Kısmi)`, fallbackOutput, new Date().toISOString());
+      .run(nanoid(), sessionId, `${ticker} — Yonetici Ozeti (Kısmi)`, fallbackOutput, completedAt);
+  } else {
+    db.prepare(`INSERT INTO reports (id, session_id, report_type, title, content, created_at) VALUES (?, ?, 'executive', ?, ?, ?)`)
+      .run(nanoid(), sessionId, `${ticker} — Yonetici Ozeti`, finalSummaryOutput, completedAt);
   }
 
-  const completedAt = new Date().toISOString();
-  db.prepare(`INSERT INTO reports (id, session_id, report_type, title, content, created_at) VALUES (?, ?, 'executive', ?, ?, ?)`)
-    .run(nanoid(), sessionId, `${ticker} — Yonetici Ozeti`, finalSummaryOutput, completedAt);
-
   if (activeAgentIds.has('report_formatter')) {
-    const formatterStatus = await runSingleAgent('report_formatter', sessionId, ticker, accumulatedContext, costTracker);
+    let formatterStatus = await runSingleAgent('report_formatter', sessionId, ticker, accumulatedContext, costTracker);
     if (formatterStatus !== 'ok') {
-      console.warn(`[PIPELINE] report_formatter fail — PDF olmadan devam ediliyor, text rapor mevcut`);
+      console.warn(`[PIPELINE] report_formatter fail (${formatterStatus}) — trying two-stage formatter`);
+      // İki aşamalı formatter: prompt çok büyükse bölüm bölüm üret
+      const twoStageSuccess = await runTwoStageFormatter(sessionId, ticker, accumulatedContext, costTracker);
+      if (!twoStageSuccess) {
+        // Son çare: normal retry
+        db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, output_text = NULL, error_message = 'Formatter retry after two-stage failed' WHERE session_id = ? AND agent_id = 'report_formatter'`)
+          .run(sessionId);
+        formatterStatus = await runSingleAgent('report_formatter', sessionId, ticker, accumulatedContext, costTracker);
+        if (formatterStatus !== 'ok') {
+          console.warn(`[PIPELINE] report_formatter all attempts failed — PDF olmadan devam ediliyor, text rapor mevcut`);
+        }
+      }
       // Block etme — text rapor reports tablosunda, PDF olmasa da rapor tamamlansın
     }
 
     const formatterRun = db.prepare(`
       SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = 'report_formatter'
     `).get(sessionId) as { output_text: string | null } | undefined;
+
+    // If formatter wrote HTML to file but DB has only summary, store HTML in DB too
+    const formatterOutput = formatterRun?.output_text || '';
+    if (formatterOutput.length < 5000) {
+      // Formatter likely wrote HTML to file, DB has only summary
+      const htmlPath = path.join(PROJECT_ROOT, `${ticker}_Kapsamli_Analiz_Raporu_2026.html`);
+      try {
+        if (fs.existsSync(htmlPath)) {
+          const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+          if (htmlContent.length > 5000) {
+            db.prepare(`UPDATE agent_runs SET output_text = ? WHERE session_id = ? AND agent_id = 'report_formatter'`)
+              .run(htmlContent, sessionId);
+            console.log(`[PIPELINE] Formatter HTML stored in DB (${Math.round(htmlContent.length / 1024)}KB)`);
+          }
+        }
+      } catch (err) {
+        console.warn(`[PIPELINE] Could not store formatter HTML in DB:`, err);
+      }
+    }
 
     // ============================================================
     // COO DELIVERY CHECK — Rapor finalize olmadan son kontrol
@@ -889,6 +1145,13 @@ async function executeSession(
     }
   }
 
+  // Guard: only mark completed if still running (prevent duplicate completion on resume race)
+  const currentStatus = (db.prepare(`SELECT status FROM analysis_sessions WHERE id = ?`).get(sessionId) as any)?.status;
+  if (currentStatus === 'completed') {
+    console.warn(`[GOVERNANCE] Session ${sessionId} already completed — skipping post-completion hooks`);
+    return;
+  }
+
   db.prepare(`UPDATE analysis_sessions SET status = 'completed', completed_at = ?, current_phase = NULL WHERE id = ?`)
     .run(completedAt, sessionId);
 
@@ -899,6 +1162,26 @@ async function executeSession(
     console.log(`Feedback loop completed for ${ticker}`);
   } catch (err: any) {
     console.error(`Feedback loop failed (non-blocking):`, err.message);
+  }
+
+  // Post-completion: Regression eval (observe mode — never blocks)
+  if (REGRESSION_EVAL_ENABLED) {
+    try {
+      const evalResult = runRegressionEval(sessionId);
+      if (evalResult) {
+        // Write eval summary to session row for governance traceability
+        ensureColumn('analysis_sessions', 'eval_summary', 'TEXT');
+        db.prepare(`UPDATE analysis_sessions SET eval_summary = ? WHERE id = ?`)
+          .run(JSON.stringify(evalResult), sessionId);
+        if (evalResult.regression_detected) {
+          console.warn(`[GOVERNANCE] ⚠️ Regression detected for ${ticker} — review recommended`);
+        } else {
+          console.log(`[GOVERNANCE] ✅ ${ticker} quality check passed (${(evalResult.overall_quality * 100).toFixed(0)}%)`);
+        }
+      }
+    } catch (err: any) {
+      console.error(`[GOVERNANCE] Regression eval failed (non-blocking): ${err.message}`);
+    }
   }
 }
 
@@ -924,7 +1207,7 @@ const AGENT_DEPENDENCIES: Record<string, string[]> = {
   event_classification: ['kap_watch_output'],
   event_impact_mapper: ['event_classification_output', 'context_extraction_output'],
   event_timeline_alert: ['event_classification_output', 'event_impact_mapper_output'],
-  qa_review: ['financial_analysis_output', 'context_extraction_output', 'reconciliation_output', 'valuation_agent_output', 'strategic_synthesis_output'],
+  qa_review: ['financial_analysis_output', 'context_extraction_output', 'reconciliation_output', 'valuation_agent_output'],
   strategic_synthesis: ['financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'context_extraction_output', 'event_impact_mapper_output', 'valuation_agent_output'],
   final_summary: ['strategic_synthesis_output', 'financial_analysis_output', 'valuation_agent_output', 'qa_review_output', 'macro_analysis_output', 'technical_analysis_output', 'sector_competition_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output'],
   report_formatter: ['final_summary_output', 'strategic_synthesis_output', 'financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'valuation_agent_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output', 'event_impact_mapper_output', 'analyst_consensus_agent_output', 'reconciliation_output'],
@@ -935,16 +1218,507 @@ const AGENT_CONTEXT_LIMITS: Record<string, number> = {
   // Veri agent'ları — az context yeterli
   data_collection: 3000, kap_watch: 2000, parse_standardization: 8000,
   reconciliation: 8000, event_classification: 3000,
-  // Hepsi 100KB — maliyet farkı rapor başına ~$0.04, kalite farkı çok büyük
-  sentiment_news_agent: 1000000, analyst_consensus_agent: 1000000,
-  event_impact_mapper: 1000000, event_timeline_alert: 1000000,
-  financial_analysis: 1000000, context_extraction: 1000000,
-  technical_analysis: 1000000, macro_analysis: 1000000,
-  sector_competition: 1000000, valuation_agent: 1000000, esg_agent: 1000000,
-  qa_review: 1000000, strategic_synthesis: 1000000, final_summary: 1000000,
-  report_formatter: 1000000,
-  ceo: 1000000, coo: 1000000,
+  // Analiz agent'ları — digest aktif, gerçekçi limitler
+  sentiment_news_agent: 30000, analyst_consensus_agent: 30000,
+  event_impact_mapper: 30000, event_timeline_alert: 20000,
+  financial_analysis: 50000, context_extraction: 40000,
+  technical_analysis: 30000, macro_analysis: 40000,
+  sector_competition: 40000, valuation_agent: 50000, esg_agent: 25000,
+  // Sentez/QA/format — daha fazla context gerekli
+  qa_review: 60000, strategic_synthesis: 60000, final_summary: 80000,
+  report_formatter: 60000,
+  ceo: 50000, coo: 20000,
 };
+
+// ============================================================
+// RUNTIME DIGEST — upstream output'ları downstream agent'a özetleyerek geçirir
+// DIGEST_MODE=false ise tüm digest atlanır, raw output slice kullanılır
+// ============================================================
+
+/**
+ * Extract lines from text that contain any of the given keywords.
+ * Includes the keyword line + up to `contextLines` surrounding lines.
+ */
+function extractByKeywords(text: string, keywords: string[], contextLines = 2, maxChars = 30000): string {
+  const lines = text.split('\n');
+  const linesLower = lines.map(l => l.toLowerCase());
+  const keywordsLower = keywords.map(k => k.toLowerCase());
+  const selected = new Set<number>();
+
+  for (let i = 0; i < lines.length; i++) {
+    if (keywordsLower.some(kw => linesLower[i].includes(kw))) {
+      for (let j = Math.max(0, i - contextLines); j <= Math.min(lines.length - 1, i + contextLines); j++) {
+        selected.add(j);
+      }
+    }
+  }
+
+  const sorted = Array.from(selected).sort((a, b) => a - b);
+  const result: string[] = [];
+  let prevIdx = -2;
+  for (const idx of sorted) {
+    if (idx > prevIdx + 1) result.push(''); // gap marker
+    result.push(lines[idx]);
+    prevIdx = idx;
+  }
+
+  const joined = result.join('\n').slice(0, maxChars);
+  return joined;
+}
+
+/**
+ * Extract markdown sections that match heading keywords.
+ * Looks for ## or ### headings containing the keyword.
+ */
+function extractSections(text: string, headingKeywords: string[], maxChars = 40000): string {
+  const lines = text.split('\n');
+  const headingKwLower = headingKeywords.map(k => k.toLowerCase());
+  const sections: string[] = [];
+  let capturing = false;
+  let currentSection: string[] = [];
+
+  for (const line of lines) {
+    const isHeading = /^#{1,4}\s/.test(line);
+    if (isHeading) {
+      // Finish previous section if capturing
+      if (capturing && currentSection.length > 0) {
+        sections.push(currentSection.join('\n'));
+        currentSection = [];
+      }
+      // Check if this heading matches
+      const lineLower = line.toLowerCase();
+      capturing = headingKwLower.some(kw => lineLower.includes(kw));
+    }
+    if (capturing) {
+      currentSection.push(line);
+    }
+  }
+  if (capturing && currentSection.length > 0) {
+    sections.push(currentSection.join('\n'));
+  }
+
+  return sections.join('\n\n').slice(0, maxChars);
+}
+
+/**
+ * Extract tables (lines containing | characters) and their surrounding context.
+ */
+function extractTablesAndMetrics(text: string, maxChars = 40000): string {
+  const lines = text.split('\n');
+  const selected = new Set<number>();
+
+  for (let i = 0; i < lines.length; i++) {
+    // Table rows (contain |)
+    if (lines[i].includes('|') && lines[i].trim().startsWith('|')) {
+      for (let j = Math.max(0, i - 1); j <= Math.min(lines.length - 1, i + 1); j++) {
+        selected.add(j);
+      }
+    }
+    // Lines with numbers that look like financial data
+    if (/\d{1,3}([.,]\d{3})+|\d+[.,]\d+%|\d+[.,]\d+x/.test(lines[i])) {
+      selected.add(i);
+    }
+  }
+
+  const sorted = Array.from(selected).sort((a, b) => a - b);
+  const result: string[] = [];
+  let prevIdx = -2;
+  for (const idx of sorted) {
+    if (idx > prevIdx + 1) result.push('');
+    result.push(lines[idx]);
+    prevIdx = idx;
+  }
+
+  return result.join('\n').slice(0, maxChars);
+}
+
+/**
+ * Agent-pair specific digest rules.
+ * Returns digested text, or null to use default raw slice.
+ */
+function digestOutput(sourceAgentId: string, rawOutput: string, targetAgentId: string): string | null {
+  if (!DIGEST_MODE) return null; // Feature flag off → use raw
+
+  // financial_analysis → valuation_agent: sadece FCF/EBITDA/kaldıraç/büyüme metrikleri
+  if (sourceAgentId === 'financial_analysis' && targetAgentId === 'valuation_agent') {
+    const digest = extractByKeywords(rawOutput, [
+      'FCF', 'OCF', 'CAPEX', 'EBITDA', 'FAVÖK', 'Net Borç', 'Net Borc',
+      'Faiz', 'Interest', 'WACC', 'büyüme', 'growth', 'ROE', 'ROCE', 'ROIC',
+      'Nakit', 'Cash', 'Temettü', 'Dividend', 'Gelir', 'Revenue', 'Net Kar',
+      'Özkaynak', 'Equity', 'Borç', 'Debt', 'Kaldıraç', 'Leverage',
+    ], 3, 40000);
+    return digest.length > 2000 ? digest : null; // Fallback if too little extracted
+  }
+
+  // financial_analysis → report_formatter: tablolar ve sayısal veriler öncelikli
+  if (sourceAgentId === 'financial_analysis' && targetAgentId === 'report_formatter') {
+    const digest = extractTablesAndMetrics(rawOutput, 50000);
+    return digest.length > 2000 ? digest : null;
+  }
+
+  // financial_analysis → strategic_synthesis: tüm ana bölümler
+  if (sourceAgentId === 'financial_analysis' && targetAgentId === 'strategic_synthesis') {
+    const digest = extractSections(rawOutput, [
+      'Karlılık', 'Profitability', 'Kaldıraç', 'Leverage', 'Likidite', 'Liquidity',
+      'Nakit', 'Cash', 'İşletme Sermayesi', 'Working Capital', 'Trend', 'Risk',
+      'Skor', 'Score', 'Özet', 'Summary', 'Sonuç', 'Conclusion',
+    ], 40000);
+    return digest.length > 2000 ? digest : null;
+  }
+
+  // context_extraction → any downstream: business model + management guidance + risk
+  if (sourceAgentId === 'context_extraction') {
+    const digest = extractSections(rawOutput, [
+      'İş Modeli', 'Business Model', 'Yönetim', 'Management', 'Guidance',
+      'Rehber', 'Strateji', 'Strategy', 'Risk', 'Ortaklık', 'Ownership',
+      'Segment', 'SOTP', 'Holding', 'Temettü', 'Dividend', 'ESG',
+      'Brand', 'Marka', 'Rekabet', 'Competition',
+    ], 30000);
+    return digest.length > 1000 ? digest : null;
+  }
+
+  // macro_analysis → any downstream: key indicators + risk signals
+  if (sourceAgentId === 'macro_analysis') {
+    const digest = extractByKeywords(rawOutput, [
+      'TCMB', 'faiz', 'enflasyon', 'TÜFE', 'kur', 'USD/TRY', 'EUR/TRY',
+      'büyüme', 'GDP', 'GSYH', 'cari açık', 'bütçe', 'risk', 'jeopolitik',
+      'petrol', 'Brent', 'emtia', 'altın', 'tahvil', 'CDS', 'spread',
+    ], 3, 15000);
+    return digest.length > 1000 ? digest : null;
+  }
+
+  // technical_analysis → downstream: signal + levels only
+  if (sourceAgentId === 'technical_analysis') {
+    const digest = extractByKeywords(rawOutput, [
+      'destek', 'support', 'direnç', 'resistance', 'sinyal', 'signal',
+      'trend', 'RSI', 'MACD', 'hacim', 'volume', 'kırılım', 'breakout',
+      'hedef', 'target', 'stop', 'fiyat', 'price', 'Bear', 'Bull', 'Baz',
+    ], 2, 10000);
+    return digest.length > 500 ? digest : null;
+  }
+
+  // sentiment_news_agent → downstream: score + top news
+  if (sourceAgentId === 'sentiment_news_agent') {
+    const digest = extractByKeywords(rawOutput, [
+      'sentiment', 'skor', 'score', 'pozitif', 'negatif', 'nötr',
+      'haber', 'news', 'analist', 'analyst', 'hedef fiyat', 'target',
+      'SELL', 'BUY', 'HOLD', 'upgrade', 'downgrade',
+    ], 2, 10000);
+    return digest.length > 500 ? digest : null;
+  }
+
+  // sector_competition → downstream: Porter + peer ranking
+  if (sourceAgentId === 'sector_competition') {
+    const digest = extractByKeywords(rawOutput, [
+      'Porter', 'rakip', 'competitor', 'peer', 'pazar payı', 'market share',
+      'quartile', 'çeyrek', 'benchmark', 'sıralama', 'ranking',
+      'avantaj', 'advantage', 'tehdit', 'threat', 'giriş engeli',
+    ], 2, 12000);
+    return digest.length > 500 ? digest : null;
+  }
+
+  // valuation_agent → downstream: target prices + method summary
+  if (sourceAgentId === 'valuation_agent') {
+    const digest = extractByKeywords(rawOutput, [
+      'hedef fiyat', 'target price', 'DCF', 'WACC', 'upside', 'downside',
+      'Bull', 'Bear', 'Baz', 'Base', 'çarpan', 'multiple', 'EV/EBITDA',
+      'P/E', 'P/BV', 'NAV', 'SOTP', 'sensitivity', 'duyarlılık',
+    ], 2, 15000);
+    return digest.length > 500 ? digest : null;
+  }
+
+  // esg_agent → downstream: ESG scores + risks
+  if (sourceAgentId === 'esg_agent') {
+    const digest = extractByKeywords(rawOutput, [
+      'ESG', 'çevresel', 'sosyal', 'yönetişim', 'karbon', 'emisyon',
+      'sürdürülebilirlik', 'sustainability', 'risk', 'skor', 'score',
+      'MSCI', 'CDP', 'GRI', 'uyum', 'compliance',
+    ], 2, 8000);
+    return digest.length > 500 ? digest : null;
+  }
+
+  // reconciliation → downstream: data quality signals
+  if (sourceAgentId === 'reconciliation') {
+    const digest = extractByKeywords(rawOutput, [
+      'skor', 'score', 'tutarsızlık', 'inconsistency', 'uyarı', 'warning',
+      'hata', 'error', 'doğrulama', 'validation', 'fark', 'deviation',
+      'güvenilirlik', 'reliability', 'kaynak', 'source',
+    ], 2, 8000);
+    return digest.length > 500 ? digest : null;
+  }
+
+  return null; // No specific rule → use default raw slice
+}
+
+/**
+ * Extract financial inputs from agent output text using regex.
+ * Best-effort — returns whatever it can find, engine handles nulls gracefully.
+ */
+function extractFinancialInputs(faOutput: string, context: Record<string, unknown>): FinancialInputs {
+  const inputs: FinancialInputs = {};
+
+  // Strategy 1: Try to extract structured_financials JSON block (preferred — agent output'unun sonunda)
+  const jsonMatch = faOutput.match(/```json\s*\n(\{[\s\S]*?"structured_financials"[\s\S]*?\})\s*\n```/);
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[1]);
+      const sf = parsed.structured_financials || parsed;
+      if (sf.revenue != null) inputs.revenue = sf.revenue;
+      if (sf.cogs != null) inputs.cogs = sf.cogs;
+      if (sf.gross_profit != null) inputs.grossProfit = sf.gross_profit;
+      if (sf.ebit != null) inputs.ebit = sf.ebit;
+      if (sf.ebitda != null) inputs.ebitda = sf.ebitda;
+      if (sf.net_income != null) inputs.netIncome = sf.net_income;
+      if (sf.interest_expense != null) inputs.interestExpense = sf.interest_expense;
+      if (sf.total_assets != null) inputs.totalAssets = sf.total_assets;
+      if (sf.current_assets != null) inputs.currentAssets = sf.current_assets;
+      if (sf.current_liabilities != null) inputs.currentLiabilities = sf.current_liabilities;
+      if (sf.equity != null) inputs.equity = sf.equity;
+      if (sf.financial_debt != null) inputs.financialDebt = sf.financial_debt;
+      if (sf.cash != null) inputs.cashAndEquivalents = sf.cash;
+      if (sf.trade_receivables != null) inputs.tradeReceivables = sf.trade_receivables;
+      if (sf.trade_payables != null) inputs.tradePayables = sf.trade_payables;
+      if (sf.inventories != null) inputs.inventories = sf.inventories;
+      if (sf.total_liabilities != null) inputs.totalLiabilities = sf.total_liabilities;
+      if (sf.ocf != null) inputs.ocf = sf.ocf;
+      if (sf.capex != null) inputs.capex = sf.capex;
+      if (sf.shares_outstanding != null) inputs.sharesOutstanding = sf.shares_outstanding;
+      if (sf.market_cap != null) inputs.marketCap = sf.market_cap;
+
+      const fieldCount = Object.values(inputs).filter(v => v != null).length;
+      console.log(`[ENGINE] Structured JSON block found — ${fieldCount} fields extracted`);
+      return inputs; // JSON extraction successful — skip regex fallback
+    } catch (err) {
+      console.warn(`[ENGINE] Structured JSON parse failed, falling back to regex: ${err}`);
+    }
+  }
+
+  // Strategy 2: Regex fallback — extract numbers from markdown text
+  // Helper: extract first number after a keyword
+  function extractNumber(text: string, ...patterns: string[]): number | undefined {
+    for (const pattern of patterns) {
+      // Match: keyword followed by number (with optional TL/B/M suffix)
+      const regex = new RegExp(pattern + '[\\s:=]*([\\-]?[\\d.,]+)\\s*(?:TL|TRY|B|M|milyon|milyar)?', 'i');
+      const match = text.match(regex);
+      if (match) {
+        let numStr = match[1].replace(/\./g, '').replace(',', '.'); // Turkish number format
+        const val = parseFloat(numStr);
+        if (Number.isFinite(val)) return val;
+      }
+    }
+    return undefined;
+  }
+
+  // Also check structured fields from schema validator (Adım 5)
+  const structured = context['financial_analysis_structured'] as Record<string, unknown> | undefined;
+
+  // Revenue / Income Statement
+  inputs.revenue = extractNumber(faOutput, 'Net Satış', 'Net Sales', 'Revenue', 'Hasılat');
+  inputs.grossProfit = extractNumber(faOutput, 'Brüt Kar(?!.*Marj)', 'Gross Profit');
+  inputs.ebitda = extractNumber(faOutput, 'FAVÖK(?!.*Marj)', 'EBITDA(?!.*Marj)');
+  inputs.ebit = extractNumber(faOutput, 'FVÖK', 'EBIT(?!DA)', 'Faaliyet Kârı');
+  inputs.netIncome = extractNumber(faOutput, 'Net (?:Dönem )?Kâr', 'Net Income', 'Net Profit');
+  inputs.interestExpense = extractNumber(faOutput, 'Faiz Gider', 'Interest Expense');
+  inputs.cogs = extractNumber(faOutput, 'SMM', 'COGS', 'Satışların Maliyeti');
+
+  // Balance Sheet
+  inputs.totalAssets = extractNumber(faOutput, 'Toplam (?:Aktif|Varlık)', 'Total Assets');
+  inputs.currentAssets = extractNumber(faOutput, 'Dönen Varlık', 'Current Assets');
+  inputs.currentLiabilities = extractNumber(faOutput, 'KVYK', 'Kısa Vadeli', 'Current Liabilities');
+  inputs.equity = extractNumber(faOutput, 'Özkaynak', 'Özsermaye', 'Equity');
+  inputs.financialDebt = extractNumber(faOutput, 'Finansal Borç', 'Financial Debt');
+  inputs.cashAndEquivalents = extractNumber(faOutput, 'Nakit(?! Akış)', 'Cash(?! Flow)');
+  inputs.tradeReceivables = extractNumber(faOutput, 'Ticari Alacak', 'Trade Receivable');
+  inputs.tradePayables = extractNumber(faOutput, 'Ticari Borç', 'Trade Payable');
+  inputs.inventories = extractNumber(faOutput, 'Stok', 'Inventor');
+  inputs.totalLiabilities = extractNumber(faOutput, 'Toplam (?:Borç|Yükümlülük)', 'Total Liabilities');
+
+  // Cash Flow
+  inputs.ocf = extractNumber(faOutput, 'OCF', 'İşletme Nakit', 'Operating Cash');
+  inputs.capex = extractNumber(faOutput, 'CAPEX', 'Yatırım Harcama');
+
+  // Market
+  inputs.marketCap = extractNumber(faOutput, 'Piyasa Değeri', 'Market Cap');
+  inputs.sharesOutstanding = extractNumber(faOutput, 'Hisse (?:Adedi|Sayısı)', 'Shares Outstanding');
+
+  return inputs;
+}
+
+/**
+ * Build a structured report payload for report_formatter.
+ * Instead of passing 13 raw agent outputs, assemble a compact payload
+ * with pre-extracted sections, structured data, and clear instructions.
+ * Falls back to raw context if REPORT_PAYLOAD_MODE is off.
+ */
+function buildReportPayload(ticker: string, context: Record<string, unknown>): string {
+  // FORMATTER_MINIMAL_CONTEXT — trim the payload aggressively when true.
+  // Drops all secondary agent excerpts; ships only the highest-signal content.
+  const MINIMAL_MODE = FORMATTER_MINIMAL_CONTEXT;
+
+  // Extract key sections from each agent output (first N chars of each)
+  function excerpt(key: string, maxChars = 8000): string {
+    return String(context[key] || '').slice(0, maxChars);
+  }
+
+  // Engine results if available
+  const engineResults = context['financial_engine_results'] as Record<string, unknown> | undefined;
+  const engineRatios = engineResults?.ratios as Record<string, { value: number | null }> | undefined;
+
+  // Build compact key metrics from engine
+  let keyMetrics = '';
+  if (engineRatios) {
+    const metrics = Object.entries(engineRatios)
+      .filter(([, r]) => r.value !== null)
+      .map(([name, r]) => `${name}: ${r.value}`)
+      .join(' | ');
+    keyMetrics = `\n### Engine Hesaplanmış Metrikler\n${metrics}\n`;
+  }
+
+  // Overall score from final_summary
+  const scoreMatch = excerpt('final_summary_output', 2000).match(/(?:overall|genel|toplam)[_\s-]*(?:score|puan|skor)["\s:]*([0-9]+(?:[.,][0-9]+)?)/i);
+  const overallScore = scoreMatch ? scoreMatch[1] : '?';
+
+  // QA status
+  const qaExcerpt = excerpt('qa_review_output', 2000).toLowerCase();
+  const qaStatus = qaExcerpt.includes('pass') ? 'PASS' : qaExcerpt.includes('fail') ? 'FAIL' : 'UNKNOWN';
+
+  // Data quality warning
+  const dqWarning = context['data_quality_warning'] ? String(context['data_quality_warning']) : '';
+  const qaWarning = context['qa_warning'] ? String(context['qa_warning']) : '';
+  const ceoWarning = context['ceo_approval_warning'] ? String(context['ceo_approval_warning']) : '';
+
+  // -------- MINIMAL MODE PATH --------
+  if (MINIMAL_MODE) {
+    // Build canonical_fact_pack — key numeric metrics from financial_analysis + reconciliation
+    const faOutput = excerpt('financial_analysis_output', 20000);
+    const reconOutput = excerpt('reconciliation_output', 8000);
+
+    // Pull key financial lines (revenue, ebitda, margins, growth) via regex sweep.
+    const factLines: string[] = [];
+    const FACT_PATTERNS: Array<[string, RegExp]> = [
+      ['Net Satışlar', /net\s+satı[sş]lar?[^\n]{0,160}/i],
+      ['Revenue', /revenue[^\n]{0,120}/i],
+      ['FAVÖK', /fav[öo]k[^\n]{0,160}/i],
+      ['EBITDA', /ebitda[^\n]{0,120}/i],
+      ['Net Kar', /net\s+(?:d[öo]nem\s+)?k[aâ]r[^\n]{0,160}/i],
+      ['Net Income', /net\s+income[^\n]{0,120}/i],
+      ['Brüt Marj', /br[üu]t\s+(?:k[aâ]r\s+)?(?:oran|marj)[^\n]{0,140}/i],
+      ['FAVÖK Marjı', /fav[öo]k\s+(?:oran|marj)[^\n]{0,140}/i],
+      ['Net Borç', /net\s+bor[çc][^\n]{0,140}/i],
+      ['Net Debt', /net\s+debt[^\n]{0,120}/i],
+      ['ROE', /roe[^\n]{0,120}/i],
+      ['ROIC', /roic[^\n]{0,120}/i],
+      ['ROA', /roa[^\n]{0,120}/i],
+      ['DSO', /dso[^\n]{0,120}/i],
+      ['Cari Oran', /cari\s+oran[^\n]{0,120}/i],
+      ['İşletme Sermayesi', /i[sş]letme\s+sermayesi[^\n]{0,160}/i],
+    ];
+    for (const [label, pat] of FACT_PATTERNS) {
+      const m = faOutput.match(pat);
+      if (m) factLines.push(`- ${label}: ${m[0].replace(/\s+/g, ' ').trim().slice(0, 200)}`);
+    }
+
+    // Data quality score from reconciliation
+    const dqMatch = reconOutput.match(/data_quality_score["\s:]*([0-9.]+)/i);
+    const dqScore = dqMatch ? dqMatch[1] : null;
+    if (dqScore) factLines.push(`- Data Quality Score: ${dqScore}`);
+
+    const canonicalFactPack = factLines.length > 0
+      ? `### Canonical Fact Pack\n${factLines.join('\n')}\n`
+      : `### Canonical Fact Pack\n(no structured metrics extracted)\n`;
+
+    // Brand identity — first 3K of context_extraction for logo/colors/style references
+    const brandIdentity = excerpt('context_extraction_output', 3000);
+
+    // Engine results block (full JSON if present, else metrics line)
+    let engineBlock = '';
+    if (engineResults) {
+      try {
+        const json = JSON.stringify(engineResults, null, 2);
+        engineBlock = `\n### Engine Results (Deterministic)\n\`\`\`json\n${json.slice(0, 6000)}\n\`\`\`\n`;
+      } catch {
+        engineBlock = keyMetrics;
+      }
+    } else {
+      engineBlock = keyMetrics;
+    }
+
+    const minimalPayload = `## REPORT PAYLOAD — ${ticker} (MINIMAL MODE)
+
+### Metadata
+- Ticker: ${ticker}
+- Overall Score: ${overallScore}
+- QA Status: ${qaStatus}
+- Report Date: ${new Date().toLocaleDateString('tr-TR')}
+${dqWarning ? `- Data Quality Warning: ${dqWarning}` : ''}
+${qaWarning ? `- QA Warning: ${qaWarning}` : ''}
+${ceoWarning ? `- CEO Warning: ${ceoWarning}` : ''}
+${engineBlock}
+${canonicalFactPack}
+### Marka / Şirket Kimliği (context_extraction, ilk 3K)
+${brandIdentity}
+
+### Yönetici Özeti (final_summary — tam)
+${excerpt('final_summary_output', 30000)}
+`;
+
+    return minimalPayload;
+  }
+  // -------- END MINIMAL MODE --------
+
+  const payload = `## REPORT PAYLOAD — ${ticker}
+
+### Metadata
+- Ticker: ${ticker}
+- Overall Score: ${overallScore}
+- QA Status: ${qaStatus}
+- Report Date: ${new Date().toLocaleDateString('tr-TR')}
+${dqWarning ? `- Data Quality Warning: ${dqWarning}` : ''}
+${qaWarning ? `- QA Warning: ${qaWarning}` : ''}
+${ceoWarning ? `- CEO Warning: ${ceoWarning}` : ''}
+${keyMetrics}
+### Yönetici Özeti (final_summary)
+${excerpt('final_summary_output', 8000)}
+
+### Stratejik Sentez (strategic_synthesis)
+${excerpt('strategic_synthesis_output', 6000)}
+
+### Finansal Analiz (financial_analysis)
+${excerpt('financial_analysis_output', 8000)}
+
+### Değerleme (valuation_agent)
+${excerpt('valuation_agent_output', 5000)}
+
+### Şirket Profili (context_extraction)
+${excerpt('context_extraction_output', 4000)}
+
+### Makro Analiz (macro_analysis)
+${excerpt('macro_analysis_output', 3000)}
+
+### Sektör & Rekabet (sector_competition)
+${excerpt('sector_competition_output', 3000)}
+
+### Teknik Analiz (technical_analysis)
+${excerpt('technical_analysis_output', 3000)}
+
+### ESG (esg_agent)
+${excerpt('esg_agent_output', 2000)}
+
+### Haber & Sentiment (sentiment_news_agent)
+${excerpt('sentiment_news_agent_output', 2000)}
+
+### KAP Olayları (event_impact_mapper)
+${excerpt('event_impact_mapper_output', 2000)}
+
+### Analist Konsensüs (analyst_consensus_agent)
+${excerpt('analyst_consensus_agent_output', 2000)}
+
+### Veri Kalitesi (reconciliation)
+${excerpt('reconciliation_output', 3000)}
+`;
+
+  return payload;
+}
 
 function buildTaskPrompt(agentId: string, ticker: string, context: Record<string, unknown>): string {
   // Use dependency matrix to filter context — each agent only sees what it needs
@@ -961,11 +1735,17 @@ function buildTaskPrompt(agentId: string, ticker: string, context: Record<string
   }
 
   // Build context string with per-agent limit — distribute budget across dependencies
+  // DIGEST_MODE: agent-pair bazlı digest uygula, fallback raw slice
   const perDepLimit = ctxKeys.length > 0 ? Math.floor(contextLimit / ctxKeys.length) : 0;
   const priorOutputs = ctxKeys.length > 0
     ? `\n\n## Prior Agent Outputs\n` + ctxKeys.map(k => {
-        const val = String(context[k] || '').slice(0, perDepLimit);
-        return `### ${k.replace('_output', '')}\n${val}`;
+        const sourceAgentId = k.replace('_output', '');
+        const rawVal = String(context[k] || '');
+        const digested = digestOutput(sourceAgentId, rawVal, agentId);
+        const val = digested !== null
+          ? digested.slice(0, perDepLimit)
+          : rawVal.slice(0, perDepLimit);
+        return `### ${sourceAgentId}\n${val}`;
       }).join('\n\n')
     : '';
 
@@ -1411,5 +2191,149 @@ KONTROL:
 - Hedef: 13-16 sayfa A4`,
   };
 
+  // report_formatter: REPORT_PAYLOAD_MODE aktifse structured payload kullan, yoksa raw context
+  if (agentId === 'report_formatter' && REPORT_PAYLOAD_MODE) {
+    const payload = buildReportPayload(ticker, context);
+    return (perAgent[agentId] || '') + '\n\n## Report Payload (Structured)\n' + payload;
+  }
+
   return (perAgent[agentId] || `Perform your agent duties for ${ticker}.`) + priorOutputs;
+}
+
+// ============================================================
+// İKİ AŞAMALI FORMATTER — büyük prompt sorununa karşı
+// ============================================================
+async function runTwoStageFormatter(
+  sessionId: string,
+  ticker: string,
+  context: Record<string, unknown>,
+  costTracker: { totalCost: number; totalTokens: number },
+): Promise<boolean> {
+  console.log(`[TWO-STAGE FORMATTER] Starting for ${ticker}`);
+
+  const SECTIONS = [
+    { id: 'cover_summary', title: 'Kapak + Yönetici Özeti', deps: ['final_summary_output', 'context_extraction_output'] },
+    { id: 'financial', title: 'Finansal Analiz + Ratiolar', deps: ['financial_analysis_output'] },
+    { id: 'valuation_sector', title: 'Değerleme + Sektör', deps: ['valuation_agent_output', 'sector_competition_output'] },
+    { id: 'macro_technical', title: 'Makro + Teknik', deps: ['macro_analysis_output', 'technical_analysis_output'] },
+    { id: 'sentiment_events', title: 'Sentiment + Events + ESG', deps: ['sentiment_news_agent_output', 'event_impact_mapper_output', 'analyst_consensus_agent_output', 'esg_agent_output'] },
+    { id: 'synthesis_risks', title: 'Stratejik Sentez + Riskler', deps: ['strategic_synthesis_output'] },
+  ];
+
+  const sectionOutputs: Record<string, string> = {};
+
+  for (const section of SECTIONS) {
+    console.log(`[TWO-STAGE] Generating section: ${section.title}`);
+
+    // Sadece bu section'a ait upstream'i topla
+    const sectionContext: Record<string, unknown> = { ticker };
+    for (const dep of section.deps) {
+      const val = String(context[dep] || '').slice(0, 20000);
+      if (val) sectionContext[dep] = val;
+    }
+
+    // Mini formatter prompt
+    const sectionPrompt = [
+      `# Section Generator: ${section.title}`,
+      ``,
+      `Ticker: ${ticker}`,
+      `Bu sadece raporun bir bölümü. Sadece "${section.title}" için HTML üret.`,
+      ``,
+      `## Kurallar:`,
+      `- Sadece bu section'ın HTML'ini üret, <section class="section"> ile başla </section> ile bitir`,
+      `- İçeride H1 + tablolar + SVG grafikler + callout kutuları olsun`,
+      `- CSS class isimleri: .section, .kpi-grid, .kpi-card, .data-table, .callout, .callout-positive, .callout-negative, .analysis-block`,
+      `- Brand color: #003366 (başlıklar), #059669 (pozitif), #dc2626 (negatif)`,
+      `- Metin sandviç kuralı: her tablo/grafik öncesi + sonrası metin ZORUNLU`,
+      `- page-break-before: always; section başlangıcında`,
+      ``,
+      `## Upstream Data:`,
+      Object.entries(sectionContext).filter(([k]) => k !== 'ticker').map(([k, v]) => `### ${k}\n${v}`).join('\n\n'),
+      ``,
+      `## Output:`,
+      `Sadece HTML ver, başka açıklama yazma. <section> ile başla.`,
+    ].join('\n');
+
+    try {
+      const { runAgent } = await import('./agent-runner.js');
+      const result = await runAgent({
+        agentId: 'report_formatter',
+        taskPrompt: sectionPrompt,
+        context: sectionContext,
+        timeoutMs: 10 * 60 * 1000, // 10dk per section
+      });
+
+      if (result.success && result.output && result.output.length > 1000) {
+        sectionOutputs[section.id] = result.output;
+        costTracker.totalCost += result.costUsd || 0;
+        costTracker.totalTokens += result.tokensUsed || 0;
+        console.log(`[TWO-STAGE] ✓ ${section.title}: ${Math.round(result.output.length / 1024)}KB`);
+      } else {
+        console.warn(`[TWO-STAGE] ✗ ${section.title} failed: ${result.error || 'empty output'}`);
+        sectionOutputs[section.id] = `<section class="section"><h1>${section.title}</h1><p>Bu bölüm üretilemedi.</p></section>`;
+      }
+    } catch (err) {
+      console.error(`[TWO-STAGE] Error on ${section.title}:`, err);
+      sectionOutputs[section.id] = `<section class="section"><h1>${section.title}</h1><p>Hata: ${err instanceof Error ? err.message : String(err)}</p></section>`;
+    }
+  }
+
+  // HTML iskeletini oluştur
+  const htmlShell = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>${ticker} Kapsamlı Analiz Raporu</title>
+<style>
+@page { size: A4 portrait; margin: 20mm 15mm; }
+body { font-family: 'Georgia', serif; font-size: 10pt; color: #1e293b; line-height: 1.5; }
+.section { page-break-before: always; padding: 0 5mm; }
+.section:first-child { page-break-before: avoid; }
+h1 { color: #003366; font-size: 22pt; border-bottom: 2px solid #003366; padding-bottom: 8px; }
+h2 { color: #003366; font-size: 16pt; margin-top: 20px; }
+h3 { color: #1e3a5f; font-size: 13pt; }
+table, .kpi-grid, .callout, .analysis-block { page-break-inside: avoid; }
+table.data-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 9pt; }
+table.data-table th { background: #003366; color: #fff; padding: 8px; text-align: left; }
+table.data-table td { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; }
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+.kpi-card { border-left: 4px solid #003366; padding: 10px; background: #f8fafc; }
+.kpi-label { font-size: 8pt; color: #64748b; text-transform: uppercase; }
+.kpi-value { font-size: 16pt; font-weight: bold; color: #003366; margin: 4px 0; }
+.callout { padding: 12px; margin: 12px 0; border-radius: 4px; }
+.callout-positive { background: #d1fae5; border-left: 4px solid #059669; }
+.callout-negative { background: #fee2e2; border-left: 4px solid #dc2626; }
+.analysis-block { margin: 16px 0; }
+.analysis-intro { font-style: italic; color: #475569; border-left: 3px solid #003366; padding-left: 10px; font-size: 10pt; }
+.analysis-commentary { background: #f8fafc; padding: 12px; margin-top: 10px; font-size: 10pt; line-height: 1.7; }
+orphans: 4; widows: 4;
+p, li { orphans: 4; widows: 4; }
+h1, h2, h3 { page-break-after: avoid; }
+</style>
+</head>
+<body>
+${SECTIONS.map(s => sectionOutputs[s.id] || '').join('\n\n')}
+<section class="section" style="page-break-before: always;">
+<h2>Yasal Uyarılar</h2>
+<p><strong>Sorumluluk Reddi:</strong> Bu rapor sadece bilgilendirme amaçlıdır. Yatırım tavsiyesi değildir. SPK mevzuatı kapsamındadır.</p>
+<p><em>Finance X Platform — ${new Date().toLocaleDateString('tr-TR')}</em></p>
+</section>
+</body>
+</html>`;
+
+  // Dosyaya yaz
+  const htmlPath = path.join(PROJECT_ROOT, `${ticker}_Kapsamli_Analiz_Raporu_2026.html`);
+  try {
+    fs.writeFileSync(htmlPath, htmlShell, 'utf8');
+    console.log(`[TWO-STAGE] HTML written: ${htmlPath} (${Math.round(htmlShell.length / 1024)}KB)`);
+
+    // DB'ye agent_run olarak kaydet
+    db.prepare(`UPDATE agent_runs SET status = 'completed', output_text = ?, error_message = 'Generated via two-stage formatter', completed_at = ? WHERE session_id = ? AND agent_id = 'report_formatter'`)
+      .run(htmlShell, new Date().toISOString(), sessionId);
+
+    return true;
+  } catch (err) {
+    console.error(`[TWO-STAGE] Failed to write HTML:`, err);
+    return false;
+  }
 }

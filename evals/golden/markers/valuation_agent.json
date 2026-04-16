@@ -1,0 +1,31 @@
+{
+  "agent_id": "valuation_agent",
+  "description": "Degerleme metodolojisi, senaryo analizi ve hedef fiyat metrikleri",
+  "required_metrics": [
+    "DCF",
+    "WACC",
+    "Bull",
+    "Bear",
+    "Sensitivity",
+    "Terminal",
+    "Peer"
+  ],
+  "optional_metrics": [
+    "NAV",
+    "SOTP",
+    "DDM",
+    "hassasiyet",
+    "Hedef Fiyat",
+    "target price"
+  ],
+  "required_sections": [],
+  "source_tags": [],
+  "forbidden_patterns": [
+    "tahmin ediyorum",
+    "civarında"
+  ],
+  "warning_patterns": [
+    "muhtemelen"
+  ],
+  "min_output_length": 5000
+}
