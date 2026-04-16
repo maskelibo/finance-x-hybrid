@@ -72,11 +72,11 @@ describe('formatters', () => {
     expect(result).toMatch(/1\.234\.567/);
   });
 
-  it('formatTRY returns em-dash for null/undefined/non-numeric', () => {
-    expect(formatTRY(null)).toBe('—');
-    expect(formatTRY(undefined)).toBe('—');
-    expect(formatTRY('n/a')).toBe('—');
-    expect(formatTRY('')).toBe('—');
+  it('formatTRY returns "Raporlanmadı" for null/undefined/non-numeric', () => {
+    expect(formatTRY(null)).toBe('Raporlanmadı');
+    expect(formatTRY(undefined)).toBe('Raporlanmadı');
+    expect(formatTRY('n/a')).toBe('Raporlanmadı');
+    expect(formatTRY('')).toBe('Raporlanmadı');
   });
 
   it('formatPct prefixes with %', () => {
