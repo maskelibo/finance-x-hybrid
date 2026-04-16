@@ -17,6 +17,7 @@ from financex.schemas.base import (
 )
 from financex.schemas.brand import BrandIdentity
 from financex.schemas.company import CompanyInfo, Subsidiary
+from financex.schemas.data_collection import CollectedDocument, DataCollectionManifest
 from financex.schemas.engine import (
     DcfResult,
     DcfSensitivityCell,
@@ -57,7 +58,9 @@ __all__ = [
     "BrandIdentity",
     "CashFlowStatement",
     "CbamExposure",
+    "CollectedDocument",
     "CompanyInfo",
+    "DataCollectionManifest",
     "Confidence",
     "Currency",
     "DcfResult",
