@@ -118,6 +118,7 @@ export const PYTHON_KAP_WATCH_ENABLED = (process.env.PYTHON_KAP_WATCH_ENABLED ||
 export const PYTHON_DATA_COLLECTION_ENABLED = (process.env.PYTHON_DATA_COLLECTION_ENABLED || 'false') === 'true';
 export const PYTHON_PARSE_STANDARDIZATION_ENABLED = (process.env.PYTHON_PARSE_STANDARDIZATION_ENABLED || 'false') === 'true';
 export const PYTHON_RECONCILIATION_ENABLED = (process.env.PYTHON_RECONCILIATION_ENABLED || 'false') === 'true';
+export const PYTHON_FINANCIAL_ANALYSIS_ENABLED = (process.env.PYTHON_FINANCIAL_ANALYSIS_ENABLED || 'false') === 'true';
 export const PYTHON_TECHNICAL_ANALYSIS_ENABLED = (process.env.PYTHON_TECHNICAL_ANALYSIS_ENABLED || 'false') === 'true';
 export const PYTHON_TECHNICAL_BARS = parseInt(process.env.PYTHON_TECHNICAL_BARS || '250', 10);
 export const PYTHON_MACRO_ANALYSIS_ENABLED = (process.env.PYTHON_MACRO_ANALYSIS_ENABLED || 'false') === 'true';
