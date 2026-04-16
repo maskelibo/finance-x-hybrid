@@ -3,6 +3,8 @@ import typer
 from financex.cli.db import db_app
 from financex.cli.sample import sample_app
 from financex.cli.schemas import schemas_app
+from financex.cli.technical import technical_app
+from financex.cli.timeline import timeline_app
 
 app = typer.Typer(
     help="Finance X Python runners — data collection, parsing, financial math.",
@@ -11,6 +13,8 @@ app = typer.Typer(
 app.add_typer(db_app, name="db")
 app.add_typer(schemas_app, name="schemas")
 app.add_typer(sample_app, name="sample")
+app.add_typer(timeline_app, name="timeline")
+app.add_typer(technical_app, name="technical")
 
 
 @app.command()
