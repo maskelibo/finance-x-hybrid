@@ -1,5 +1,6 @@
 import typer
 
+from financex.cli.data import data_app
 from financex.cli.db import db_app
 from financex.cli.kap import kap_app
 from financex.cli.sample import sample_app
@@ -17,6 +18,7 @@ app.add_typer(sample_app, name="sample")
 app.add_typer(timeline_app, name="timeline")
 app.add_typer(technical_app, name="technical")
 app.add_typer(kap_app, name="kap")
+app.add_typer(data_app, name="data")
 
 
 @app.command()
