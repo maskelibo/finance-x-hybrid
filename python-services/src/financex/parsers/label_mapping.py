@@ -99,6 +99,105 @@ INCOME_STATEMENT_MAP: dict[str, str] = {
 }
 
 
+# ---------------------------------------------------------------------
+# BANKING — BDDK format overlay
+# ---------------------------------------------------------------------
+
+INCOME_STATEMENT_MAP_BANKING: dict[str, str] = {
+    "faiz gelirleri": "interest_income",
+    "faiz giderleri": "interest_expense",
+    "net faiz geliri": "net_interest_income",
+    "net faiz geliri gideri": "net_interest_income",
+    # Fees
+    "ucret ve komisyon gelirleri": "fee_and_commission_income",
+    "ucret ve komisyon giderleri": "fee_and_commission_expense",
+    "net ucret ve komisyon gelirleri": "net_fee_and_commission_income",
+    "komisyon gelirleri": "fee_and_commission_income",
+    # Trading
+    "alim satim karlari zararlari net": "trading_income",
+    "ticari kar zarar net": "trading_income",
+    "sermaye piyasasi islemleri karlari net": "trading_income",
+    # FX
+    "kambiyo islemleri karlari zararlari net": "fx_income",
+    # Loan losses
+    "beklenen zarar karsiliklari": "loan_loss_provisions",
+    "kredi ve diger alacaklar degisim karsiligi": "loan_loss_provisions",
+    "karsilik giderleri": "loan_loss_provisions",
+    # Operating costs
+    "personel giderleri": "bank_operating_expenses",  # approximation
+    "diger faaliyet giderleri": "bank_operating_expenses",
+    # Net income
+    "donem net kari veya zarari": "net_income",
+    "grubun kari zarari": "net_income",
+}
+
+
+BALANCE_SHEET_MAP_BANKING: dict[str, str | None] = {
+    # Banks under BDDK use DIFFERENT label conventions than industrials.
+    # The totals in particular:
+    #   "VARLIKLAR TOPLAMI"       (= total_assets;    NOT 'Toplam Aktifler')
+    #   "YÜKÜMLÜLÜKLER TOPLAMI"   (= total_liabilities)
+    #   "ÖZKAYNAKLAR"             (= total_equity — also used as section header
+    #                              but in banking IS the aggregate)
+    "varliklar toplami": "total_assets",
+    "aktif toplami": "total_assets",
+    "toplam aktifler": "total_assets",
+    # NOTE on banking BS: BDDK's "YÜKÜMLÜLÜKLER TOPLAMI" / "PASİF TOPLAMI"
+    # is the balancing side of the balance sheet — it INCLUDES equity.
+    # We do NOT map it to total_liabilities here; we derive pure liabilities
+    # in _with_fallbacks_for_balance as (balancing_side − equity).
+    "ozkaynaklar": "total_equity",
+    "toplam ozkaynaklar": "total_equity",
+    # Asset-side bank-specific lines
+    "nakit degerler ve merkez bankasi": "cash_and_equivalents",
+    "nakit ve nakit benzerleri": "cash_and_equivalents",
+    # Footnote-reference columns surface as informational only
+    "odenmis sermaye": None,
+}
+
+
+# ---------------------------------------------------------------------
+# HOLDING overlay — adds financial-segment stream on top of standard
+# ---------------------------------------------------------------------
+
+INCOME_STATEMENT_MAP_HOLDING: dict[str, str] = {
+    "finans sektoru faaliyetleri hasilati": "financial_segment_revenue",
+    "finans sektoru faaliyetleri maliyeti": "financial_segment_cost",
+}
+
+
+# ---------------------------------------------------------------------
+# Getters — sector-aware merged maps
+# ---------------------------------------------------------------------
+
+def get_income_statement_map(sector: str = "industrial") -> dict[str, str]:
+    """Return the merged label → field map for a sector.
+
+    Precedence: sector overlay wins over standard. Banking fully overrides
+    the standard P&L since a bank has no `revenue`/`cost_of_sales`/`gross_profit`.
+    """
+    sector = (sector or "industrial").lower()
+    if sector == "banking":
+        # Banks: banking overlay is the whole map (no revenue/CoGS).
+        merged = {**INCOME_STATEMENT_MAP_BANKING}
+        return merged
+    if sector == "holding":
+        merged = dict(INCOME_STATEMENT_MAP)
+        merged.update(INCOME_STATEMENT_MAP_HOLDING)
+        return merged
+    return dict(INCOME_STATEMENT_MAP)
+
+
+def get_balance_sheet_map(sector: str = "industrial") -> dict[str, str | None]:
+    sector = (sector or "industrial").lower()
+    if sector == "banking":
+        # Bank BS is mostly shared labels, but swap a few banking-specific ones.
+        merged = dict(BALANCE_SHEET_MAP)
+        merged.update(BALANCE_SHEET_MAP_BANKING)
+        return merged
+    return dict(BALANCE_SHEET_MAP)
+
+
 # --- Cash Flow ---------------------------------------------------------
 
 CASH_FLOW_MAP: dict[str, str] = {
@@ -129,23 +228,27 @@ EQUITY_CHANGE_MAP: dict[str, str] = {
 }
 
 
-def lookup(table_kind: str, label: str) -> str | None:
+def lookup(table_kind: str, label: str, sector: str = "industrial") -> str | None:
     """Find the canonical field for a label within a statement kind.
 
     table_kind ∈ {'balance_sheet', 'income_statement', 'cash_flow', 'equity_change'}
+    sector ∈ {'industrial', 'holding', 'banking', 'insurance', ...}
     """
-    table = {
-        "balance_sheet": BALANCE_SHEET_MAP,
-        "income_statement": INCOME_STATEMENT_MAP,
-        "cash_flow": CASH_FLOW_MAP,
-        "equity_change": EQUITY_CHANGE_MAP,
-    }.get(table_kind)
-    if not table:
+    if table_kind == "balance_sheet":
+        table: dict[str, str | None] = get_balance_sheet_map(sector)
+    elif table_kind == "income_statement":
+        table = get_income_statement_map(sector)
+    elif table_kind == "cash_flow":
+        table = CASH_FLOW_MAP
+    elif table_kind == "equity_change":
+        table = EQUITY_CHANGE_MAP
+    else:
         return None
+
     key = normalize_label(label)
     if key in table:
         return table[key]
-    # Fuzzy: try prefix match on the first 25 chars (KAP sometimes adds trailing detail)
+    # Fuzzy: try prefix match (KAP sometimes adds trailing detail)
     for known in table:
         if key.startswith(known) or known.startswith(key):
             return table[known]
