@@ -135,6 +135,112 @@ export const PYTHON_COO_ENABLED = (process.env.PYTHON_COO_ENABLED || 'false') ==
 export const PYTHON_REPORT_FORMATTER_ENABLED = (process.env.PYTHON_REPORT_FORMATTER_ENABLED || 'false') === 'true';
 export const PYTHON_SECTOR_COMPETITION_ENABLED = (process.env.PYTHON_SECTOR_COMPETITION_ENABLED || 'false') === 'true';
 
+
+// ---------------------------------------------------------------------
+// Flag dependency validation
+//
+// Python downstream agents parse upstream JSON; LLM upstream agents
+// emit markdown. Mixing them drops critical fields (sector, metrics,
+// DCF). The dry-run against KCHOL caught a valuation_agent sector
+// defaulting bug exactly because valuation was Python while
+// financial_analysis was LLM.
+//
+// At startup we log a warning for any enabled agent whose upstream
+// dependencies are still on the LLM path. We do NOT hard-fail: the
+// adapters degrade gracefully (LLM markdown fallback in
+// llm_fallback.ts), but the operator should know the combo is
+// sub-optimal.
+// ---------------------------------------------------------------------
+
+interface FlagDep {
+  flag: boolean;
+  name: string;
+  dependsOn: Array<{ flag: boolean; name: string }>;
+}
+
+export function validatePythonFlagDependencies(): string[] {
+  const dependencies: FlagDep[] = [
+    {
+      flag: PYTHON_EVENT_CLASSIFICATION_ENABLED,
+      name: 'PYTHON_EVENT_CLASSIFICATION_ENABLED',
+      dependsOn: [{ flag: PYTHON_KAP_WATCH_ENABLED, name: 'PYTHON_KAP_WATCH_ENABLED' }],
+    },
+    {
+      flag: PYTHON_EVENT_IMPACT_MAPPER_ENABLED,
+      name: 'PYTHON_EVENT_IMPACT_MAPPER_ENABLED',
+      dependsOn: [{ flag: PYTHON_EVENT_CLASSIFICATION_ENABLED, name: 'PYTHON_EVENT_CLASSIFICATION_ENABLED' }],
+    },
+    {
+      flag: PYTHON_EVENT_TIMELINE_ALERT_ENABLED,
+      name: 'PYTHON_EVENT_TIMELINE_ALERT_ENABLED',
+      dependsOn: [
+        { flag: PYTHON_EVENT_CLASSIFICATION_ENABLED, name: 'PYTHON_EVENT_CLASSIFICATION_ENABLED' },
+        { flag: PYTHON_EVENT_IMPACT_MAPPER_ENABLED, name: 'PYTHON_EVENT_IMPACT_MAPPER_ENABLED' },
+      ],
+    },
+    {
+      flag: PYTHON_FINANCIAL_ANALYSIS_ENABLED,
+      name: 'PYTHON_FINANCIAL_ANALYSIS_ENABLED',
+      dependsOn: [
+        { flag: PYTHON_PARSE_STANDARDIZATION_ENABLED, name: 'PYTHON_PARSE_STANDARDIZATION_ENABLED' },
+        { flag: PYTHON_RECONCILIATION_ENABLED, name: 'PYTHON_RECONCILIATION_ENABLED' },
+      ],
+    },
+    {
+      flag: PYTHON_RECONCILIATION_ENABLED,
+      name: 'PYTHON_RECONCILIATION_ENABLED',
+      dependsOn: [{ flag: PYTHON_PARSE_STANDARDIZATION_ENABLED, name: 'PYTHON_PARSE_STANDARDIZATION_ENABLED' }],
+    },
+    {
+      flag: PYTHON_PARSE_STANDARDIZATION_ENABLED,
+      name: 'PYTHON_PARSE_STANDARDIZATION_ENABLED',
+      dependsOn: [{ flag: PYTHON_DATA_COLLECTION_ENABLED, name: 'PYTHON_DATA_COLLECTION_ENABLED' }],
+    },
+    {
+      flag: PYTHON_VALUATION_ENABLED,
+      name: 'PYTHON_VALUATION_ENABLED',
+      dependsOn: [{ flag: PYTHON_FINANCIAL_ANALYSIS_ENABLED, name: 'PYTHON_FINANCIAL_ANALYSIS_ENABLED' }],
+    },
+    {
+      flag: PYTHON_SECTOR_COMPETITION_ENABLED,
+      name: 'PYTHON_SECTOR_COMPETITION_ENABLED',
+      dependsOn: [{ flag: PYTHON_FINANCIAL_ANALYSIS_ENABLED, name: 'PYTHON_FINANCIAL_ANALYSIS_ENABLED' }],
+    },
+    {
+      flag: PYTHON_QA_REVIEW_ENABLED,
+      name: 'PYTHON_QA_REVIEW_ENABLED',
+      dependsOn: [
+        { flag: PYTHON_FINANCIAL_ANALYSIS_ENABLED, name: 'PYTHON_FINANCIAL_ANALYSIS_ENABLED' },
+        { flag: PYTHON_RECONCILIATION_ENABLED, name: 'PYTHON_RECONCILIATION_ENABLED' },
+      ],
+    },
+    {
+      flag: PYTHON_STRATEGIC_SYNTHESIS_ENABLED,
+      name: 'PYTHON_STRATEGIC_SYNTHESIS_ENABLED',
+      dependsOn: [{ flag: PYTHON_FINANCIAL_ANALYSIS_ENABLED, name: 'PYTHON_FINANCIAL_ANALYSIS_ENABLED' }],
+    },
+  ];
+
+  const warnings: string[] = [];
+  for (const dep of dependencies) {
+    if (!dep.flag) continue;  // only check enabled flags
+    const missing = dep.dependsOn.filter(d => !d.flag);
+    if (missing.length > 0) {
+      warnings.push(
+        `[flag-deps] ${dep.name}=true but upstream still LLM: ${missing.map(m => m.name + '=false').join(', ')}. Python adapter will fall back to markdown parsing (lower fidelity).`,
+      );
+    }
+  }
+  return warnings;
+}
+
+
+// Emit warnings at module load so every process startup sees them.
+// Silent in prod when no flags are enabled.
+for (const w of validatePythonFlagDependencies()) {
+  console.warn(w);
+}
+
 // Stall detection: if provider produces no output for this many seconds, kill
 export const PROVIDER_STALL_TIMEOUT_S = parseInt(process.env.PROVIDER_STALL_TIMEOUT_S || '900', 10);
 
