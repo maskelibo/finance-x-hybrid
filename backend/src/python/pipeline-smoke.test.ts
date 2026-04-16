@@ -33,6 +33,8 @@ import { runPythonQaReview } from './agent_runners/qa_review.js';
 import { runPythonSectorCompetition } from './agent_runners/sector_competition.js';
 import { runPythonStrategicSynthesis } from './agent_runners/strategic_synthesis.js';
 import { runPythonValuation } from './agent_runners/valuation.js';
+import { runPythonAnalystConsensus } from './agent_runners/analyst_consensus.js';
+import { runPythonEsg } from './agent_runners/esg.js';
 
 
 const sessionId = `smoke-${nanoid()}`;
@@ -49,6 +51,8 @@ const AGENTS = [
   'qa_review',
   'strategic_synthesis',
   'valuation_agent',
+  'analyst_consensus_agent',
+  'esg_agent',
   'coo_delivery',
 ] as const;
 
@@ -326,6 +330,42 @@ describe('Pipeline smoke — reshape-only Python runners', () => {
     expect(ctx.valuation_agent_output).toBeTruthy();
   });
 
+  it('09a — analyst_consensus consumes analyst_consensus_reports context', async () => {
+    ctx.analyst_consensus_reports = JSON.stringify([
+      { broker: 'Is Yatirim',   recommendation: 'buy',  target_price: 55, report_date: '2026-04-10' },
+      { broker: 'Ak Yatirim',   recommendation: 'hold', target_price: 48, report_date: '2026-03-25' },
+      { broker: 'Garanti BBVA', recommendation: 'buy',  target_price: 52, report_date: '2026-04-05' },
+    ]);
+    ctx.last_close_trym = 45;
+    const outcome = await runPythonAnalystConsensus(sessionId, runIds.analyst_consensus_agent, ticker, ctx);
+    expect(outcome).toBe('ok');
+    const parsed = JSON.parse(readRunRow(runIds.analyst_consensus_agent).output_text!);
+    expect(parsed.count).toBe(3);
+    expect(parsed.distribution_buy).toBe(2);
+    expect(parsed.distribution_hold).toBe(1);
+    expect(parsed.target_price_mean).toBeGreaterThan(0);
+    expect(parsed.upside_vs_last_close_pct).toBeGreaterThan(0);
+    expect(ctx.analyst_consensus_agent_output).toBeTruthy();
+  });
+
+  it('09b — esg_agent runs CBAM math when esg_cbam_inputs supplied', async () => {
+    ctx.esg_cbam_inputs = JSON.stringify({
+      scope1_tco2: 5_000_000,          // heavy emitter scale (steel)
+      carbon_price_eur_per_t: 85,
+      ets_free_allowance_pct: 0.5,
+      cbam_coverage_pct: 0.485,
+      eur_try: 45,
+    });
+    const outcome = await runPythonEsg(sessionId, runIds.esg_agent, ticker, ctx);
+    expect(outcome).toBe('ok');
+    const parsed = JSON.parse(readRunRow(runIds.esg_agent).output_text!);
+    expect(parsed.cbam).not.toBeNull();
+    expect(parsed.cbam.total_annual_cost_eur).toBeGreaterThan(0);
+    expect(parsed.cbam.total_annual_cost_try).toBeGreaterThan(0);
+    expect(parsed.sector_hint).toBe('industrial');   // picked up from fa upstream
+    expect(ctx.esg_agent_output).toBeTruthy();
+  });
+
   it('09 — coo delivery consumes report_formatter_html', async () => {
     ctx.delivery_check_mode = true;
     ctx.report_formatter_html = reportFormatterHtml;
@@ -355,6 +395,8 @@ describe('Pipeline smoke — reshape-only Python runners', () => {
       'qa_review_output',
       'strategic_synthesis_output',
       'valuation_agent_output',
+      'analyst_consensus_agent_output',
+      'esg_agent_output',
     ];
     for (const k of expectedKeys) {
       expect(ctx[k], `ctx.${k} must be populated`).toBeTruthy();
