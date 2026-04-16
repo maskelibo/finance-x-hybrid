@@ -150,42 +150,106 @@ export interface NarrativeInputs {
 }
 
 
-/** Extract the four template narrative slots from upstream LLM agent
- *  outputs. Missing sources = empty blocks (template hides them). */
+/** Extract 15+ narrative slots from upstream LLM agent outputs onto
+ *  the 12-section template. Missing sources → empty block, template
+ *  hides the surrounding container. */
 export function buildNarrativeBlocks(inputs: NarrativeInputs): Record<string, string> {
   const finalText = stripToNarrative(inputs.final_summary);
   const ssText = stripToNarrative(inputs.strategic_synthesis);
   const valText = stripToNarrative(inputs.valuation_agent);
   const ctxText = stripToNarrative(inputs.context_extraction);
 
-  // 1. card_summary: investor card / yatırımcı kartı narrative from
-  //    final_summary (canonical source), fallback to context_extraction.
+  // --- I. Yönetici Özeti ---
   const cardSummary =
-    sliceSection(finalText, ['Yatırımcı Kartı', 'Yatirimci Karti', 'Investor Card', 'Özet', 'Ozet', 'Executive Summary'], 1400)
-    || sliceSection(finalText, ['Yatırım Tezi', 'Yatirim Tezi', 'Investment Thesis'], 1400)
-    || sliceSection(ctxText, ['Şirket Özeti', 'Sirket Ozeti', 'Company Overview'], 1400);
+    sliceSection(finalText, ['Yönetici Özeti', 'Yonetici Ozeti', 'Yatırımcı Kartı', 'Executive Summary', 'Temel Değerlendirme'], 2000)
+    || sliceSection(finalText, ['Yatırım Tezi', 'Investment Thesis', 'Özet', 'Summary'], 1600)
+    || sliceSection(ctxText, ['Şirket Özeti', 'Company Overview'], 1400);
 
-  // 2. financial_intro: from final_summary's financial section.
+  // --- II. Şirket Profili ---
+  const companyProfile =
+    sliceSection(ctxText, ['Şirket Profili', 'Company Profile', 'Şirket Tanıtımı', 'Kurumsal Yapı'], 2400)
+    || sliceSection(ctxText, ['İş Modeli', 'Business Model'], 2000);
+
+  const segments =
+    sliceSection(ctxText, ['Segment', 'İştirak', 'Subsidiary', 'Portföy', 'SOTP'], 1800)
+    || sliceSection(finalText, ['Segment', 'İştirak', 'SOTP'], 1400);
+
+  // --- III. Finansal Analiz ---
   const financialIntro =
-    sliceSection(finalText, ['Finansal Panorama', 'Finansal Görünüm', 'Finansal Analiz', 'Financial Overview'], 1600)
-    || sliceSection(finalText, ['Finansal', 'Financial'], 1200);
+    sliceSection(finalText, ['Finansal Analiz', 'Finansal Panorama', 'Finansal Performans', 'Financial Analysis', 'Financial Performance'], 2000)
+    || sliceSection(finalText, ['Finansal Göstergeler', 'Financial Overview'], 1400);
 
-  // 3. valuation narrative: prefer valuation_agent output's own
-  //    scenarios, fall back to final_summary section.
+  const profitability =
+    sliceSection(finalText, ['Karlılık', 'Kârlılık', 'Profitability', 'Marj Analizi', 'Margin Analysis'], 1800)
+    || sliceSection(ssText, ['Karlılık', 'Kârlılık', 'Profitability'], 1400);
+
+  const leverage =
+    sliceSection(finalText, ['Bilanço', 'Borçluluk', 'Kaldıraç', 'Leverage', 'Balance Sheet', 'Liquidity', 'Likidite'], 1800)
+    || sliceSection(finalText, ['Borç', 'Debt'], 1400);
+
+  const cashflow =
+    sliceSection(finalText, ['Nakit Akış', 'Nakit Akisi', 'Cash Flow', 'CAPEX', 'FCF', 'OCF', 'İşletme Sermayesi', 'Working Capital'], 1800)
+    || sliceSection(finalText, ['Capex', 'Dividend'], 1200);
+
+  // --- IV. Değerleme ---
   const valuationBlock =
-    sliceSection(valText, ['Bear', 'Base', 'Bull', 'Senaryo', 'Scenarios'], 1600)
-    || sliceSection(finalText, ['Değerleme', 'Degerleme', 'Valuation'], 1600);
+    sliceSection(valText, ['Bear', 'Base', 'Bull', 'Senaryo', 'Scenarios', 'Hedef Fiyat', 'Target Price'], 2400)
+    || sliceSection(finalText, ['Değerleme', 'Degerleme', 'Valuation', 'Hedef Fiyat'], 2000);
 
-  // 4. closing narrative — investment thesis / risks / recommendation
-  //    wrap-up from strategic_synthesis or final_summary tail.
+  // --- V. Sektör & Rekabet ---
+  const sector =
+    sliceSection(finalText, ['Sektör', 'Rekabet', 'Competition', 'Peer', 'Emsal', 'Porter', 'SWOT'], 2200)
+    || sliceSection(ctxText, ['Rekabet', 'Sektör', 'Competition'], 1600);
+
+  // --- VI. Makro ---
+  const macro =
+    sliceSection(finalText, ['Makro', 'Macro', 'Jeopolitik', 'Geopolitic', 'TCMB', 'Transmisyon', 'Transmission'], 2200)
+    || sliceSection(finalText, ['Enflasyon', 'Inflation', 'Faiz', 'FX', 'Kur'], 1600);
+
+  // --- VII. Teknik ---
+  const technical =
+    sliceSection(finalText, ['Teknik Analiz', 'Technical Analysis', 'Trend Analizi', 'Destek', 'Direnç', 'Support', 'Resistance'], 1600)
+    || sliceSection(finalText, ['RSI', 'MACD', 'Momentum'], 1200);
+
+  // --- VIII. ESG ---
+  const esg =
+    sliceSection(finalText, ['ESG', 'Sürdürülebilirlik', 'Sustainability', 'CBAM', 'Karbon', 'Carbon'], 1800)
+    || sliceSection(ctxText, ['ESG', 'CBAM'], 1400);
+
+  // --- IX. Sentiment ---
+  const sentiment =
+    sliceSection(finalText, ['Haber', 'Sentiment', 'Duygu', 'Market Mood', 'News Flow'], 1600);
+
+  // --- XI. Risk ---
+  const risks =
+    sliceSection(finalText, ['Risk Değerlendirmesi', 'Risk Assessment', 'Temel Riskler', 'Key Risks', 'Risk Matrisi'], 2000)
+    || sliceSection(finalText, ['Risk'], 1600);
+
+  // --- XII. Sonuç ---
   const closing =
-    sliceSection(finalText, ['Sonuç', 'Sonuc', 'Kapanış', 'Closing', 'Conclusion', 'Risk'], 1800)
-    || sliceSection(ssText, ['Yatırım Tezi', 'Yatirim Tezi', 'Convergence', 'Divergence', 'Sentez'], 1800);
+    sliceSection(finalText, ['Sonuç', 'Sonuc', 'Conclusion', 'Analitik Sonuç', 'Genel Değerlendirme', 'Kapanış'], 2400)
+    || sliceSection(ssText, ['Sentez', 'Convergence', 'Divergence'], 1800);
+
+  const investmentThesis =
+    sliceSection(finalText, ['Yatırım Tezi', 'Investment Thesis', 'Öneriler', 'Recommendations'], 2000)
+    || sliceSection(ssText, ['Yatırım Tezi', 'Investment Thesis'], 1600);
 
   return {
     card_summary: cardSummary,
+    company_profile: companyProfile,
+    segments,
     financial_intro: financialIntro,
+    profitability,
+    leverage,
+    cashflow,
     valuation: valuationBlock,
+    sector,
+    macro,
+    technical,
+    esg,
+    sentiment,
+    risks,
     closing,
+    investment_thesis: investmentThesis,
   };
 }
