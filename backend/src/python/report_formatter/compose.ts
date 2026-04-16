@@ -93,11 +93,27 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
   // ----- I. Yönetici Özeti -----
 
-  const highlights = arrayFrom(fa?.highlights ?? fa?.metrics ?? []).slice(0, 10).map(h => ({
+  const metrics = arrayFrom(fa?.highlights ?? fa?.metrics ?? []);
+  const highlights = metrics.slice(0, 10).map(h => ({
     label: String(h.label ?? h.code ?? ''),
     value_formatted: formatValueByCode(String(h.code ?? ''), h.value),
     narrative_hint: String(h.narrative_hint ?? ''),
   }));
+
+  // Extract scoring metrics for dedicated score cards
+  const findMetric = (code: string) => metrics.find(m => m.code === code);
+  const piotroski = findMetric('PIOTROSKI_F');
+  const altman = findMetric('ALTMAN_Z');
+  const scoreMetrics = {
+    piotroski_f: piotroski?.value != null ? String(piotroski.value) : '—',
+    piotroski_label: piotroski?.value != null
+      ? (Number(piotroski.value) >= 7 ? 'Güçlü' : Number(piotroski.value) >= 4 ? 'Orta' : 'Zayıf')
+      : '—',
+    altman_z: altman?.value != null ? Number(altman.value).toFixed(2) : '—',
+    altman_label: altman?.value != null
+      ? (Number(altman.value) >= 3 ? 'Güvenli' : Number(altman.value) >= 1.8 ? 'Gri Bölge' : 'Distress')
+      : '—',
+  };
 
   const recChecks = arrayFrom(rec?.checks ?? rec?.check_results ?? []);
   const recTotal = Number(rec?.check_count ?? recChecks.length);
@@ -425,6 +441,12 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
     // Section II
     company_highlights: companyHighlights,
+
+    // Section I — scoring badges
+    piotroski_f: scoreMetrics.piotroski_f,
+    piotroski_label: scoreMetrics.piotroski_label,
+    altman_z: scoreMetrics.altman_z,
+    altman_label: scoreMetrics.altman_label,
 
     // Section III
     highlights,
