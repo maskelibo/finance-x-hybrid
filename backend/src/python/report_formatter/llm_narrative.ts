@@ -99,6 +99,24 @@ export function sliceSection(
 /** Light markdown → HTML-paragraph conversion safe for template {{&raw}}. */
 function cleanupMarkdown(md: string): string {
   let out = md.trim();
+
+  // Clean up LLM's ugly "[VERI YOK — ...]" and "[Hesaplanamadi — ...]"
+  // placeholders before the conversion — turn them into muted italic.
+  out = out.replace(/\[VER[İI]\s*YOK\s*[—\-]?\s*([^\]]*)\]/gi, (_, reason) => {
+    const r = reason.trim();
+    return r
+      ? `<em style="color:#94a3b8;">(Raporlanmadı — ${r})</em>`
+      : `<em style="color:#94a3b8;">(Raporlanmadı)</em>`;
+  });
+  out = out.replace(/\[Hesaplanamad[ıi][^\]]*\]/gi, (m) => {
+    const reason = m.replace(/^\[Hesaplanamad[ıi]\s*[—\-]?\s*/i, '').replace(/\]$/, '').trim();
+    return reason
+      ? `<em style="color:#94a3b8;">(Hesaplanamadı — ${reason})</em>`
+      : `<em style="color:#94a3b8;">(Hesaplanamadı)</em>`;
+  });
+  // Plain "VERİ YOK" outside brackets
+  out = out.replace(/\bVER[İI]\s*YOK\b/gi, '<em style="color:#94a3b8;">Raporlanmadı</em>');
+
   // Drop redundant heading lines that snuck into the slice.
   out = out.replace(/^\s*#{1,6}\s+.*$/gm, '').trim();
   // Convert markdown bold/italic into <strong>/<em>.
