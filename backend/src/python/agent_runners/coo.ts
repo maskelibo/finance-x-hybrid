@@ -5,28 +5,10 @@ import {
   adaptCooForLegacy,
   runDeliveryCheck,
   runPreflight,
-  type Sector,
 } from '../adapters/coo.js';
+import { guessSectorFromTicker } from '../adapters/llm_fallback.js';
 
 export type RunOutcome = 'ok' | 'failed';
-
-// Minimal ticker→sector heuristic. COO preflight runs BEFORE
-// context_extraction, so we can't rely on the LLM sector detector.
-// Unknown tickers fall back to 'industrial' (safest default — the
-// sector-gated banking/holding rules simply don't fire).
-const KNOWN_BANKING = new Set(['AKBNK', 'ISCTR', 'GARAN', 'YKBNK', 'HALKB', 'VAKBN', 'TSKB', 'ALBRK', 'KLNMA']);
-const KNOWN_HOLDING = new Set(['KCHOL', 'SAHOL', 'DOHOL', 'TKFEN', 'SISE', 'EGYO', 'GSDHO', 'GOZDE']);
-const KNOWN_REIT = new Set(['EKGYO', 'HLGYO', 'ISGYO', 'TRGYO']);
-const KNOWN_INSURANCE = new Set(['AKGRT', 'ANSGR', 'RAYSG', 'AVIVA']);
-
-function guessSector(ticker: string): Sector {
-  const t = ticker.toUpperCase();
-  if (KNOWN_BANKING.has(t)) return 'banking';
-  if (KNOWN_HOLDING.has(t)) return 'holding';
-  if (KNOWN_REIT.has(t)) return 'reit';
-  if (KNOWN_INSURANCE.has(t)) return 'insurance';
-  return 'industrial';
-}
 
 
 export async function runPythonCoo(
@@ -62,7 +44,7 @@ export async function runPythonCoo(
     legacy = adaptCooForLegacy(report, 'delivery', outputId);
     summary = `python:coo delivery (${report.decision}, ${report.items.length} checks, ${html.length}B)`;
   } else {
-    const sector = guessSector(ticker);
+    const sector = guessSectorFromTicker(ticker);
     const report = runPreflight(ticker, sector);
     legacy = adaptCooForLegacy(report, 'preflight', outputId);
     summary = `python:coo preflight (${sector}, ${report.decision}, ${report.items.length} rules)`;

@@ -21,10 +21,12 @@ export async function runPythonQaReview(
     `UPDATE agent_runs SET status = 'running', started_at = ?, error_message = NULL, provider_used = 'python' WHERE id = ?`,
   ).run(startedAt, runId);
 
-  const fa = extractFinancialAnalysis(accumulatedContext['financial_analysis_output']);
+  const faRaw = accumulatedContext['financial_analysis_output'];
+  const fa = extractFinancialAnalysis(faRaw);
   const rec = extractReconciliation(accumulatedContext['reconciliation_output']);
 
-  const legacy = adaptQaReviewForLegacy(fa, rec, ticker, `qa-out-${nanoid()}`);
+  const llmMarkdownSource = typeof faRaw === 'string' ? faRaw : null;
+  const legacy = adaptQaReviewForLegacy(fa, rec, ticker, `qa-out-${nanoid()}`, { llmMarkdownSource });
   const outputJson = JSON.stringify(legacy, null, 2);
 
   const completedAt = new Date().toISOString();

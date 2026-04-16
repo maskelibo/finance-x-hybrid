@@ -144,7 +144,7 @@ describe('adaptSectorCompetitionForLegacy — degenerate cases', () => {
   it('returns empty output with warning when company is null', () => {
     const out = adaptSectorCompetitionForLegacy(null, [], 'X', 'sc-1');
     expect(out.benchmarks).toEqual([]);
-    expect(out.warnings[0]).toContain('No financial_analysis');
+    expect(out.warnings.some(w => w.includes('No financial_analysis'))).toBe(true);
   });
 
   it('metric with no data produces null benchmark entry', () => {

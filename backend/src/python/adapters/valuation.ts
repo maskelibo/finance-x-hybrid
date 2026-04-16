@@ -12,7 +12,13 @@
  * Bull/Base/Bear narrative, SOTP composition, WACC policy choice,
  * scenario weighting, sensitivity matrix narration — all stay with
  * the LLM. This is the numeric skeleton only.
+ *
+ * When upstream financial_analysis is LLM markdown (mixed-flag mode),
+ * we fall back to llm_fallback.resolveSector() to still get the
+ * sector-aware flags right.
  */
+
+import { resolveSector } from './llm_fallback.js';
 
 export interface UpstreamRatioValue {
   value?: string | number | null;
@@ -77,6 +83,7 @@ export interface LegacyValuationOutput {
   try_wacc_warning: boolean;
   holding_sotp_required: boolean;
   banking_sector_warning: boolean;
+  sector_source: 'structured' | 'markdown' | 'ticker';
   notes: string[];
   warnings: string[];
   review_status: string;
@@ -139,13 +146,26 @@ export function adaptValuationForLegacy(
   sc: UpstreamSectorCompetition | null,
   ticker: string,
   outputId: string,
+  opts: { llmMarkdownSource?: string | null } = {},
 ): LegacyValuationOutput {
   const warnings: string[] = [];
   if (!fa) {
     warnings.push('No financial_analysis output — valuation cannot pull engine DCF');
   }
 
-  const sector = (fa?.sector ?? 'industrial').toLowerCase();
+  // Sector resolution: structured first, then LLM markdown cues, then
+  // ticker heuristic. Mixed-flag mode (valuation Python + fa LLM)
+  // leaves fa=null here; we still want banking/holding warnings to
+  // fire so the LLM doesn't produce an FCF-DCF on a bank.
+  const sectorResolution = resolveSector({
+    structuredSector: fa?.sector ?? null,
+    markdownSource: opts.llmMarkdownSource ?? null,
+    ticker,
+  });
+  const sector = sectorResolution.sector;
+  if (sectorResolution.source !== 'structured') {
+    warnings.push(`Sector inferred via ${sectorResolution.source} fallback → ${sector}; LLM should verify.`);
+  }
   const engine = fa?.engine_snapshot ?? fa?.engine ?? null;
   const dcf = engine?.dcf ?? null;
 
@@ -194,6 +214,7 @@ export function adaptValuationForLegacy(
     try_wacc_warning: tryWacc,
     holding_sotp_required: holdingSotp,
     banking_sector_warning: bankingWarn,
+    sector_source: sectorResolution.source,
     notes,
     warnings,
     review_status: 'pending_ceo_review',
