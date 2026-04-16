@@ -22,6 +22,16 @@
  *   XII. Sonuç — yatırım tezi, katalizörler, metodoloji
  */
 
+import {
+  commentaryCashflow,
+  commentaryClosing,
+  commentaryExecSummary,
+  commentaryFinancialIntro,
+  commentaryLeverage,
+  commentaryProfitability,
+  commentaryRisk,
+  commentaryValuation,
+} from './auto_commentary.js';
 import { buildNarrativeBlocks } from './llm_narrative.js';
 import { formatPct, formatRatio, formatTRY, type TemplateContext, type TemplateValue } from './template_engine.js';
 
@@ -526,26 +536,124 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Section XII
     catalysts,
 
-    // Narrative slots (auto-extracted from LLM outputs)
-    narrative_executive_summary: narrativeBlocks.card_summary ?? '',
+    // Narrative slots — LLM first, auto-commentary as fallback
+    narrative_executive_summary: fallbackNarrative(
+      narrativeBlocks.card_summary,
+      commentaryExecSummary({
+        ticker, sectorTr: SECTOR_LABEL_TR[sectorRaw] ?? sectorRaw,
+        qaScore: qa?.overall_score as number | null | undefined,
+        convergenceScore: ss?.convergence_score as number | null | undefined,
+        recPassRate,
+        revenue: canonicalNumbers.revenue as number | null | undefined,
+        netIncome: canonicalNumbers.net_income as number | null | undefined,
+        roe: canonicalNumbers.roe as number | null | undefined,
+        piotroskiF: Number(scoreMetrics.piotroski_f) || null,
+        altmanZ: Number(scoreMetrics.altman_z) || null,
+        criticalFlagCount: criticalFindings.length,
+      }),
+    ),
     narrative_company_profile: narrativeBlocks.company_profile ?? narrativeBlocks.card_summary ?? '',
     narrative_segments: narrativeBlocks.segments ?? '',
-    narrative_financial_intro: narrativeBlocks.financial_intro ?? '',
-    narrative_profitability: narrativeBlocks.profitability ?? '',
-    narrative_leverage: narrativeBlocks.leverage ?? '',
-    narrative_cashflow: narrativeBlocks.cashflow ?? '',
-    narrative_valuation: narrativeBlocks.valuation ?? '',
+    narrative_financial_intro: fallbackNarrative(
+      narrativeBlocks.financial_intro,
+      commentaryFinancialIntro({
+        ticker, sectorTr: SECTOR_LABEL_TR[sectorRaw] ?? sectorRaw,
+        revenue: canonicalNumbers.revenue as number | null | undefined,
+        netIncome: canonicalNumbers.net_income as number | null | undefined,
+        totalAssets: canonicalNumbers.total_assets as number | null | undefined,
+        totalEquity: canonicalNumbers.total_equity as number | null | undefined,
+        netDebt: canonicalNumbers.net_debt as number | null | undefined,
+        periodLabel: fa?.period_label as string | undefined,
+      }),
+    ),
+    narrative_profitability: fallbackNarrative(
+      narrativeBlocks.profitability,
+      commentaryProfitability({
+        grossMargin: canonicalNumbers.gross_margin as number | null | undefined,
+        ebitdaMargin: canonicalNumbers.ebitda_margin as number | null | undefined,
+        netMargin: canonicalNumbers.net_margin as number | null | undefined,
+        roe: canonicalNumbers.roe as number | null | undefined,
+        roa: canonicalNumbers.roa as number | null | undefined,
+        sector: sectorRaw,
+      }),
+    ),
+    narrative_leverage: fallbackNarrative(
+      narrativeBlocks.leverage,
+      commentaryLeverage({
+        netDebt: canonicalNumbers.net_debt as number | null | undefined,
+        ebitda: canonicalNumbers.ebitda as number | null | undefined,
+        totalEquity: canonicalNumbers.total_equity as number | null | undefined,
+        currentRatio: canonicalNumbers.current_ratio as number | null | undefined,
+        sector: sectorRaw,
+      }),
+    ),
+    narrative_cashflow: fallbackNarrative(
+      narrativeBlocks.cashflow,
+      commentaryCashflow({
+        ocf: canonicalNumbers.operating_cash_flow as number | null | undefined,
+        capex: canonicalNumbers.capex as number | null | undefined,
+        fcf: canonicalNumbers.fcf as number | null | undefined,
+        netIncome: canonicalNumbers.net_income as number | null | undefined,
+        dividendsPaid: canonicalNumbers.dividends_paid as number | null | undefined,
+        sector: sectorRaw,
+      }),
+    ),
+    narrative_valuation: fallbackNarrative(
+      narrativeBlocks.valuation,
+      commentaryValuation({
+        ticker, sector: sectorRaw,
+        dcfPerShare: dcf ? (dcf as Record<string, unknown>).per_share_value as number | null : null,
+        lastClose: tech?.last_close as number | null | undefined,
+        wacc: dcf ? (dcf as Record<string, unknown>).wacc_used as number | null : null,
+        terminalG: dcf ? (dcf as Record<string, unknown>).terminal_growth as number | null : null,
+        tryWaccWarning: Boolean(val?.try_wacc_warning),
+        holdingSotp: Boolean(val?.holding_sotp_required),
+        bankingWarn: Boolean(val?.banking_sector_warning),
+      }),
+    ),
     narrative_sector: narrativeBlocks.sector ?? '',
     narrative_macro: narrativeBlocks.macro ?? '',
     narrative_technical: narrativeBlocks.technical ?? '',
     narrative_esg: narrativeBlocks.esg ?? '',
     narrative_sentiment: narrativeBlocks.sentiment ?? '',
-    narrative_risks: narrativeBlocks.risks ?? '',
-    narrative_closing: narrativeBlocks.closing ?? '',
-    narrative_investment_thesis: narrativeBlocks.investment_thesis ?? narrativeBlocks.closing ?? '',
+    narrative_risks: fallbackNarrative(
+      narrativeBlocks.risks,
+      commentaryRisk({
+        criticalFlags: arrayFrom(fa?.red_flags ?? []).filter(f => String(f.severity ?? '').toLowerCase() === 'critical').map(f => ({ code: String(f.code ?? ''), message: f.message as string | undefined })),
+        warningFlags: arrayFrom(fa?.red_flags ?? []).filter(f => ['warn', 'warning'].includes(String(f.severity ?? '').toLowerCase())).map(f => ({ code: String(f.code ?? ''), message: f.message as string | undefined })),
+        divergences: arrayFrom(ss?.divergences ?? []).map(String),
+        tryWaccWarning: Boolean(val?.try_wacc_warning),
+        holdingSotp: Boolean(val?.holding_sotp_required),
+        sector: sectorRaw,
+      }),
+    ),
+    narrative_closing: fallbackNarrative(narrativeBlocks.closing,
+      commentaryClosing({
+        ticker, sectorTr: SECTOR_LABEL_TR[sectorRaw] ?? sectorRaw,
+        convergenceScore: ss?.convergence_score as number | null | undefined,
+        qaScore: qa?.overall_score as number | null | undefined,
+        dcfPerShare: dcf ? (dcf as Record<string, unknown>).per_share_value as number | null : null,
+        lastClose: tech?.last_close as number | null | undefined,
+        criticalFlagCount: criticalFindings.length,
+        catalystsCount: catalysts.length,
+      }),
+    ),
+    narrative_investment_thesis: fallbackNarrative(
+      narrativeBlocks.investment_thesis ?? narrativeBlocks.closing,
+      '',
+    ),
     narrative_investments: narrativeBlocks.investments ?? '',
     narrative_dividend: narrativeBlocks.dividend ?? '',
   };
+}
+
+
+/** Use LLM-extracted narrative when non-empty, otherwise fall back to
+ *  rule-based auto commentary. Keeps the report populated even when
+ *  final_summary fails or doesn't emit anchor headings. */
+function fallbackNarrative(llm: string | undefined, autoText: string): string {
+  if (llm && llm.trim().length > 200) return llm;
+  return autoText;
 }
 
 
