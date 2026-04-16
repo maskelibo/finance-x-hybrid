@@ -890,6 +890,16 @@
     </ul>
     {{/if}}
 
+    {{#if full_narrative_has}}
+    <h2>Detaylı Analiz (LLM Yönetici Raporu — Tam Metin)</h2>
+    <p style="font-size:9pt; color:var(--fx-gray); font-style:italic;">
+      Aşağıdaki bölüm, Finance X platformunun özet ajanı tarafından üretilen tam narrative raporu içermektedir. Yukarıdaki özet ve görsel analizlere ek olarak detaylı arka plan, rasyo yorumları, senaryo analizleri ve CAPEX programı değerlendirmesi burada yer alıyor.
+    </p>
+    <div class="llm-full-narrative" style="font-size:9.5pt; line-height:1.6;">
+      {{&full_narrative_html}}
+    </div>
+    {{/if}}
+
     <h2>Zorunlu Bildirim</h2>
     <div class="disclaimer">
       <strong>Uyarı:</strong> Bu rapor Finance X platformu tarafından otomatik üretilmiştir. Python deterministic

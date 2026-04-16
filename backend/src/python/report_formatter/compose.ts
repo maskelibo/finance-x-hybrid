@@ -81,6 +81,14 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
   // ----- Extract upstream outputs -----
 
+  // Full LLM narrative — appended to report as "Detaylı Analiz" section
+  // so nothing from the 30KB final_summary is lost even if our slice
+  // extractors couldn't anchor specific sub-sections.
+  const fullNarrativeRaw = typeof ctx['final_summary_output'] === 'string'
+    ? ctx['final_summary_output'] as string
+    : '';
+  const fullNarrativeHtml = mdToHtml(fullNarrativeRaw);
+
   const fa = parseJson<Record<string, unknown>>(ctx['financial_analysis_output']);
   const rec = parseJson<Record<string, unknown>>(ctx['reconciliation_output']);
   const qa = parseJson<Record<string, unknown>>(ctx['qa_review_output']);
@@ -716,6 +724,8 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     ),
     narrative_investments: narrativeBlocks.investments ?? '',
     narrative_dividend: narrativeBlocks.dividend ?? '',
+    full_narrative_html: fullNarrativeHtml,
+    full_narrative_has: fullNarrativeHtml.length > 500,
   };
 }
 
@@ -726,6 +736,68 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 function fallbackNarrative(llm: string | undefined, autoText: string): string {
   if (llm && llm.trim().length > 200) return llm;
   return autoText;
+}
+
+
+/** Light-touch Markdown → HTML converter for the full LLM narrative
+ *  dump. Headings, tables, lists, paragraphs, bold/italic. Preserves
+ *  ordering and structure; the result is wrapped in a <section> for
+ *  CSS styling. */
+function mdToHtml(md: string): string {
+  if (!md || md.trim().length < 200) return '';
+
+  // Strip Claude wrapper fence if present.
+  let text = md.replace(/^\s*---\s*\n/, '').trim();
+
+  // Convert markdown tables to HTML tables.
+  text = text.replace(/(?:^|\n)((?:\|[^\n]+\|\n)+\|[\s|:-]+\|(?:\n\|[^\n]+\|)+)/g, (_, block) => {
+    const rows = block.trim().split('\n').map((r: string) => r.trim());
+    if (rows.length < 2) return block;
+    const sep = rows[1];
+    if (!/^\|[\s|:-]+\|$/.test(sep)) return block;
+    const headerCells = rows[0].slice(1, -1).split('|').map((c: string) => c.trim());
+    const bodyRows = rows.slice(2).map((r: string) => r.slice(1, -1).split('|').map((c: string) => c.trim()));
+    const thead = `<thead><tr>${headerCells.map((c: string) => `<th>${escapeHtmlLight(c)}</th>`).join('')}</tr></thead>`;
+    const tbody = `<tbody>${bodyRows.map((cells: string[]) => `<tr>${cells.map(c => `<td>${escapeHtmlLight(c)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    return `\n<table>${thead}${tbody}</table>\n`;
+  });
+
+  // Convert H1-H4 headings.
+  text = text.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+  text = text.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+  text = text.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+  text = text.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+  // Blockquotes.
+  text = text.replace(/^>\s*(.+)$/gm, '<blockquote>$1</blockquote>');
+
+  // Bold + italic.
+  text = text.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/(^|[^*])\*([^*\n]+)\*(?=[^*]|$)/g, '$1<em>$2</em>');
+
+  // Bullet lists.
+  text = text.replace(/((?:^[-*]\s+[^\n]+\n?)+)/gm, (_, block) => {
+    const items = block.trim().split('\n').map((l: string) => l.replace(/^[-*]\s+/, '').trim());
+    return `<ul>${items.map((i: string) => `<li>${i}</li>`).join('')}</ul>\n`;
+  });
+
+  // Remaining line groups → paragraphs (only if not already inside a tag).
+  text = text.split(/\n\n+/).map(para => {
+    const trimmed = para.trim();
+    if (!trimmed) return '';
+    // Already HTML block?
+    if (/^<(h[1-6]|p|ul|ol|table|blockquote|div|hr)/i.test(trimmed)) return trimmed;
+    return `<p>${trimmed.replace(/\n/g, ' ')}</p>`;
+  }).join('\n');
+
+  return text;
+}
+
+
+function escapeHtmlLight(s: string): string {
+  return s
+    .replace(/&(?!(?:amp|lt|gt|quot|#\d+);)/g, '&amp;')
+    .replace(/<(?!\/?(?:strong|em|b|i|code|br)\b)/g, '&lt;');
 }
 
 
