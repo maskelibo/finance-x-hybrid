@@ -1,6 +1,7 @@
 import typer
 
 from financex.cli.db import db_app
+from financex.cli.sample import sample_app
 from financex.cli.schemas import schemas_app
 
 app = typer.Typer(
@@ -9,6 +10,7 @@ app = typer.Typer(
 )
 app.add_typer(db_app, name="db")
 app.add_typer(schemas_app, name="schemas")
+app.add_typer(sample_app, name="sample")
 
 
 @app.command()
