@@ -125,6 +125,7 @@ export const PYTHON_SENTIMENT_NEWS_ENABLED = (process.env.PYTHON_SENTIMENT_NEWS_
 export const PYTHON_ESG_ENABLED = (process.env.PYTHON_ESG_ENABLED || 'false') === 'true';
 export const PYTHON_EVENT_CLASSIFICATION_ENABLED = (process.env.PYTHON_EVENT_CLASSIFICATION_ENABLED || 'false') === 'true';
 export const PYTHON_EVENT_IMPACT_MAPPER_ENABLED = (process.env.PYTHON_EVENT_IMPACT_MAPPER_ENABLED || 'false') === 'true';
+export const PYTHON_EVENT_TIMELINE_ALERT_ENABLED = (process.env.PYTHON_EVENT_TIMELINE_ALERT_ENABLED || 'false') === 'true';
 export const PYTHON_VALUATION_ENABLED = (process.env.PYTHON_VALUATION_ENABLED || 'false') === 'true';
 export const PYTHON_STRATEGIC_SYNTHESIS_ENABLED = (process.env.PYTHON_STRATEGIC_SYNTHESIS_ENABLED || 'false') === 'true';
 export const PYTHON_QA_REVIEW_ENABLED = (process.env.PYTHON_QA_REVIEW_ENABLED || 'false') === 'true';
