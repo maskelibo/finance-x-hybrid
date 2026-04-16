@@ -1,12 +1,14 @@
 import typer
 
 from financex.cli.db import db_app
+from financex.cli.schemas import schemas_app
 
 app = typer.Typer(
     help="Finance X Python runners — data collection, parsing, financial math.",
     no_args_is_help=True,
 )
 app.add_typer(db_app, name="db")
+app.add_typer(schemas_app, name="schemas")
 
 
 @app.command()
