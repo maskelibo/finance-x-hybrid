@@ -312,8 +312,16 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     `## Current Task`,
     opts.taskPrompt,
     ``,
-    opts.context
-      ? `## Context\n\`\`\`json\n${JSON.stringify(opts.context, null, 2)}\n\`\`\``
+    // Context JSON dump is intentionally SKIPPED here. The taskPrompt
+    // already carries budget-capped upstream outputs via
+    // orchestrator.buildTaskPrompt(). Pasting accumulatedContext a
+    // second time — as the original code did — blew up the prompt
+    // to 400K+ chars on final_summary / report_formatter because it
+    // dumped every agent's full output unfiltered. If an agent needs
+    // a specific context key (e.g. delivery_check_mode), the orchestrator
+    // surfaces it through taskPrompt itself.
+    opts.context?.qa_revision_instruction
+      ? `## QA Revision Context\n${String(opts.context.qa_revision_instruction)}`
       : '',
     ``,
     `## Output Instructions`,
@@ -322,7 +330,6 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     `## Ortak Kurallar (Tüm Agent'lar İçin Geçerli)`,
     ``,
     getSharedDirectives(),
-    opts.context?.qa_revision_instruction ? `\n## QA REVİZYON TALİMATI\n${opts.context.qa_revision_instruction}` : '',
   ].filter(line => line !== '').join('\n');
 
   // Prompt size logging — detect oversized prompts before sending
