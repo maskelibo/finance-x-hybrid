@@ -25,11 +25,15 @@
 import {
   commentaryCashflow,
   commentaryClosing,
+  commentaryEsg,
   commentaryExecSummary,
   commentaryFinancialIntro,
   commentaryLeverage,
+  commentaryMacro,
   commentaryProfitability,
   commentaryRisk,
+  commentarySector,
+  commentaryTechnical,
   commentaryValuation,
 } from './auto_commentary.js';
 import { buildNarrativeBlocks } from './llm_narrative.js';
@@ -611,10 +615,43 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
         bankingWarn: Boolean(val?.banking_sector_warning),
       }),
     ),
-    narrative_sector: narrativeBlocks.sector ?? '',
-    narrative_macro: narrativeBlocks.macro ?? '',
-    narrative_technical: narrativeBlocks.technical ?? '',
-    narrative_esg: narrativeBlocks.esg ?? '',
+    narrative_sector: fallbackNarrative(
+      narrativeBlocks.sector,
+      commentarySector({
+        ticker, sectorTr: SECTOR_LABEL_TR[sectorRaw] ?? sectorRaw, sector: sectorRaw,
+        benchmarksCount: benchmarks.length,
+        peersCount: arrayFrom(sc?.peer_group ?? []).length,
+        strengthsCount: arrayFrom(sc?.strengths ?? []).length,
+        weaknessesCount: arrayFrom(sc?.weaknesses ?? []).length,
+      }),
+    ),
+    narrative_macro: fallbackNarrative(
+      narrativeBlocks.macro,
+      commentaryMacro({
+        ticker, sectorTr: SECTOR_LABEL_TR[sectorRaw] ?? sectorRaw,
+        usdTry: macroContext.usd_try,
+        policyRate: macroContext.policy_rate,
+        cpiYoy: macroContext.cpi_yoy,
+        gdpYoy: macroContext.gdp_yoy,
+      }),
+    ),
+    narrative_technical: fallbackNarrative(
+      narrativeBlocks.technical,
+      commentaryTechnical({
+        trend: trend,
+        rsi: rsi,
+        lastClose: tech?.last_close as number | null | undefined,
+        volumeAvg: tech?.volume_avg as number | null | undefined,
+      }),
+    ),
+    narrative_esg: fallbackNarrative(
+      narrativeBlocks.esg,
+      commentaryEsg({
+        sector: sectorRaw,
+        cbamTotalEur: esgCbam?.total_annual_cost_eur as number | null | undefined,
+        scope1: esgCbam?.scope1_tco2 as number | null | undefined,
+      }),
+    ),
     narrative_sentiment: narrativeBlocks.sentiment ?? '',
     narrative_risks: fallbackNarrative(
       narrativeBlocks.risks,
