@@ -61,31 +61,99 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
 }
 
 
+/** Find the matching close tag for a block opener at position `openEnd`.
+ *  Handles nesting: {{#each xs}} {{#if a}} ... {{/if}} {{/each}} resolves
+ *  the outer /each against the correct position, not the first close.
+ *  Returns [contentStart, contentEnd, fullCloseEnd]. */
+function findMatchingClose(
+  template: string,
+  searchFrom: number,
+  closeTag: string,
+  openPattern: RegExp,
+): [number, number, number] | null {
+  let depth = 1;
+  let pos = searchFrom;
+  const closeRe = new RegExp(`\\{\\{\\/${closeTag}\\}\\}`, 'g');
+  while (depth > 0 && pos < template.length) {
+    openPattern.lastIndex = pos;
+    closeRe.lastIndex = pos;
+    const nextOpen = openPattern.exec(template);
+    const nextClose = closeRe.exec(template);
+    if (!nextClose) return null;
+    if (nextOpen && nextOpen.index < nextClose.index) {
+      depth += 1;
+      pos = nextOpen.index + nextOpen[0].length;
+    } else {
+      depth -= 1;
+      if (depth === 0) {
+        return [searchFrom, nextClose.index, nextClose.index + nextClose[0].length];
+      }
+      pos = nextClose.index + nextClose[0].length;
+    }
+  }
+  return null;
+}
+
+
 function renderBlock(template: string, ctx: TemplateContext): string {
-  // 1. Resolve {{#each key}}...{{/each}} loops first (outermost left-to-right).
-  let out = template.replace(/\{\{#each\s+([\w.]+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (_, path, body) => {
-    const arr = resolvePath(ctx, path);
-    if (!Array.isArray(arr)) return '';
-    return arr.map(item => {
-      const subCtx: TemplateContext = { ...ctx, this: item };
-      return renderBlock(body, subCtx);
-    }).join('');
-  });
+  // Single-pass scanner that handles nested {{#each}}/{{#if}} blocks
+  // via depth tracking. Leaves simple {{placeholder}} for a final
+  // regex pass after blocks are resolved.
+  let result = '';
+  let i = 0;
+  const openRe = /\{\{#(each|if)\s+([\w.]+)\}\}/g;
 
-  // 2. Conditional blocks.
-  out = out.replace(/\{\{#if\s+([\w.]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_, path, body) => {
-    return truthy(resolvePath(ctx, path)) ? renderBlock(body, ctx) : '';
-  });
+  while (i < template.length) {
+    openRe.lastIndex = i;
+    const m = openRe.exec(template);
+    if (!m) {
+      result += template.slice(i);
+      break;
+    }
 
-  // 3. Raw (unescaped) placeholders: {{&key}}
-  out = out.replace(/\{\{&\s*([\w.]+)\s*\}\}/g, (_, path) => stringify(resolvePath(ctx, path)));
+    // Append anything before the opener untouched.
+    result += template.slice(i, m.index);
 
-  // 4. Escaped placeholders: {{key}}
-  out = out.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, path) => {
-    return escapeHtml(stringify(resolvePath(ctx, path)));
-  });
+    const tag = m[1];
+    const path = m[2];
+    const contentStart = m.index + m[0].length;
 
-  return out;
+    // Find matching close with the same tag type.
+    const sameTypeOpen = new RegExp(`\\{\\{#${tag}\\s+[\\w.]+\\}\\}`, 'g');
+    const match = findMatchingClose(template, contentStart, tag, sameTypeOpen);
+    if (!match) {
+      // Malformed template — emit the opener verbatim and move on.
+      result += m[0];
+      i = contentStart;
+      continue;
+    }
+    const [, bodyEnd, blockEnd] = match;
+    const body = template.slice(contentStart, bodyEnd);
+
+    if (tag === 'each') {
+      const arr = resolvePath(ctx, path);
+      if (Array.isArray(arr)) {
+        for (const item of arr) {
+          result += renderBlock(body, { ...ctx, this: item });
+        }
+      }
+    } else {
+      // if
+      if (truthy(resolvePath(ctx, path))) {
+        result += renderBlock(body, ctx);
+      }
+    }
+
+    i = blockEnd;
+  }
+
+  // Now resolve simple placeholders (no more blocks at this level).
+  // Raw (unescaped) first — {{&key}}.
+  result = result.replace(/\{\{&\s*([\w.]+)\s*\}\}/g, (_, path) => stringify(resolvePath(ctx, path)));
+  // Escaped — {{key}}.
+  result = result.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, path) => escapeHtml(stringify(resolvePath(ctx, path))));
+
+  return result;
 }
 
 

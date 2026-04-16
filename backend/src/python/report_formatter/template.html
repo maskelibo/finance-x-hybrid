@@ -365,7 +365,6 @@
     </table>
     {{/if}}
 
-    {{#if multi_year_has_data}}
     <h2>5 Yıllık Finansal Trend ({{multi_year_count}} dönem)</h2>
     <h3>Gelir ve Kârlılık</h3>
     <table>
@@ -422,6 +421,45 @@
       </tbody>
     </table>
     {{/if}}
+
+    {{#if multi_year_ratios_has}}
+    <h3>Oran Trendleri</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Oran</th>
+          {{#each multi_year_years}}<th class="num">{{this}}</th>{{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each multi_year_ratios}}
+        <tr>
+          <td class="label">{{this.label}}</td>
+          {{#each this.values}}<td class="num">{{this}}</td>{{/each}}
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
+    {{#if multi_year_dividends_has}}
+    <h3>Temettü Geçmişi</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:38%">Kalem</th>
+          {{#each multi_year_years}}<th class="num">{{this}}</th>{{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each multi_year_dividends}}
+        <tr>
+          <td class="label">{{this.label}}</td>
+          {{#each this.values}}<td class="num">{{this}}</td>{{/each}}
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
     {{/if}}
 
     {{#if narrative_profitability}}
@@ -692,7 +730,34 @@
       <div class="kpi-card"><div class="kpi-label">Dağılım</div><div class="kpi-value" style="font-size:12pt;">{{sentiment.distribution}}</div></div>
     </div>
 
+    {{#if news_items_has}}
+    <h2>Son Haber Özeti</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:13%">Tarih</th>
+          <th style="width:13%">Kaynak</th>
+          <th>Başlık</th>
+          <th style="width:10%">Sentiment</th>
+          <th style="width:12%">Tema</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each news_items}}
+        <tr>
+          <td>{{this.date}}</td>
+          <td>{{this.source}}</td>
+          <td>{{this.title}}</td>
+          <td>{{this.sentiment_label}}</td>
+          <td>{{this.theme}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
     {{#if narrative_sentiment}}
+    <h2>Sentiment Yorumu</h2>
     <div>{{&narrative_sentiment}}</div>
     {{/if}}
 

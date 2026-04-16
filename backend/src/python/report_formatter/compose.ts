@@ -292,6 +292,14 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   // ----- IX. Sentiment -----
 
   const sentimentDist = (news?.sentiment_distribution ?? {}) as Record<string, number>;
+  const newsItems = arrayFrom(news?.news_items ?? []).slice(0, 10).map((n: Record<string, unknown>) => ({
+    date: String(n.published_at ?? '').slice(0, 10),
+    source: String(n.source ?? '—'),
+    title: String(n.title ?? '').slice(0, 120),
+    sentiment_label: translateSentiment(n.sentiment_hint),
+    theme: String(n.theme ?? '—'),
+  }));
+
   const sentiment = news ? {
     news_count: Number(news.news_count ?? (news.news_items as unknown[] | undefined)?.length ?? 0),
     overall_label: String(news.overall_sentiment_score ?? '—').toUpperCase(),
@@ -458,6 +466,10 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     multi_year_revenue: multiYear.revenue_row as unknown as TemplateValue,
     multi_year_balance: multiYear.balance_row as unknown as TemplateValue,
     multi_year_cashflow: multiYear.cashflow_row as unknown as TemplateValue,
+    multi_year_ratios: multiYear.ratio_row as unknown as TemplateValue,
+    multi_year_dividends: multiYear.dividend_row as unknown as TemplateValue,
+    multi_year_ratios_has: multiYear.ratio_row.length > 0,
+    multi_year_dividends_has: multiYear.dividend_row.length > 0,
     multi_year_has_data: multiYear.has_data,
     multi_year_count: multiYear.years.length,
 
@@ -493,6 +505,8 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Section IX
     sentiment,
     sentiment_has: sentimentHas,
+    news_items: newsItems,
+    news_items_has: newsItems.length > 0,
 
     // Section X
     event_impacts: eventImpacts,
@@ -557,10 +571,16 @@ interface MultiYearTrend {
 }
 
 
+interface MultiYearTrendFull extends MultiYearTrend {
+  ratio_row: MultiYearRow[];
+  dividend_row: MultiYearRow[];
+}
+
+
 /** Build a 5-year pivot from parse_standardization.standardized_statements.
  *  Annual rows pivoted by metric so the template can render
  *  Metric | 2021 | 2022 | 2023 | 2024 | 2025 tables. */
-function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiYearTrend {
+function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiYearTrendFull {
   // Pick annual periods only (FY-YYYY) and sort ascending.
   const annual = statements
     .filter(s => {
@@ -569,7 +589,7 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
     })
     .sort((a, b) => Number(a.year ?? 0) - Number(b.year ?? 0));
 
-  if (annual.length === 0) return { years: [], revenue_row: [], balance_row: [], cashflow_row: [], has_data: false };
+  if (annual.length === 0) return { years: [], revenue_row: [], balance_row: [], cashflow_row: [], ratio_row: [], dividend_row: [], has_data: false };
 
   // Take last 5 years.
   const recent = annual.slice(-5);
@@ -613,12 +633,94 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
     pivotRow('cash_flow', 'dividends_paid', 'Temettü Ödemesi'),
   ].filter(r => r.values.some(v => v !== '—'));
 
+  // ---------- Ratio pivot ----------
+  const ratioRow: MultiYearRow[] = [];
+  function addRatio(label: string, compute: (s: Record<string, unknown>) => number | null, pct: boolean): void {
+    const values = recent.map(s => {
+      const v = compute(s);
+      if (v == null || !Number.isFinite(v)) return '—';
+      return pct ? formatPct(v, 1) : v.toFixed(2);
+    });
+    if (values.some(v => v !== '—')) ratioRow.push({ label, values });
+  }
+
+  const is = (s: Record<string, unknown>) => (s.income_statement as Record<string, unknown> | null) ?? {};
+  const bs = (s: Record<string, unknown>) => (s.balance_sheet as Record<string, unknown> | null) ?? {};
+  const cf = (s: Record<string, unknown>) => (s.cash_flow as Record<string, unknown> | null) ?? {};
+  const numFrom = (block: Record<string, unknown>, key: string): number | null => {
+    const v = block[key];
+    if (v == null || v === '') return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  addRatio('Brüt Marj', s => {
+    const r = numFrom(is(s), 'revenue');
+    const g = numFrom(is(s), 'gross_profit');
+    return r && g ? (g / r) * 100 : null;
+  }, true);
+  addRatio('FAVÖK Marjı', s => {
+    const r = numFrom(is(s), 'revenue');
+    const e = numFrom(is(s), 'ebitda');
+    return r && e ? (e / r) * 100 : null;
+  }, true);
+  addRatio('Net Marj', s => {
+    const r = numFrom(is(s), 'revenue');
+    const n = numFrom(is(s), 'net_income');
+    return r && n ? (n / r) * 100 : null;
+  }, true);
+  addRatio('ROE', s => {
+    const n = numFrom(is(s), 'net_income');
+    const e = numFrom(bs(s), 'total_equity');
+    return n && e ? (n / e) * 100 : null;
+  }, true);
+  addRatio('ROA', s => {
+    const n = numFrom(is(s), 'net_income');
+    const a = numFrom(bs(s), 'total_assets');
+    return n && a ? (n / a) * 100 : null;
+  }, true);
+  addRatio('Net Borç/FAVÖK', s => {
+    const std = numFrom(bs(s), 'short_term_debt') ?? 0;
+    const ltd = numFrom(bs(s), 'long_term_debt') ?? 0;
+    const cash = numFrom(bs(s), 'cash_and_equivalents') ?? 0;
+    const ebitda = numFrom(is(s), 'ebitda');
+    const netDebt = std + ltd - cash;
+    return ebitda ? netDebt / ebitda : null;
+  }, false);
+  addRatio('Cari Oran', s => {
+    const ca = numFrom(bs(s), 'current_assets');
+    const cl = numFrom(bs(s), 'current_liabilities');
+    return ca && cl ? ca / cl : null;
+  }, false);
+
+  // ---------- Dividend history ----------
+  const dividendRow: MultiYearRow[] = [];
+  const divVals = recent.map(s => numFrom(cf(s), 'dividends_paid'));
+  const revVals = recent.map(s => numFrom(is(s), 'revenue'));
+  const niVals = recent.map(s => numFrom(is(s), 'net_income'));
+  if (divVals.some(v => v != null)) {
+    dividendRow.push({
+      label: 'Temettü Ödemesi (mn TL)',
+      values: divVals.map(v => v != null ? formatTRY(Math.abs(v), 0) : '—'),
+    });
+    dividendRow.push({
+      label: 'Ciro Yüzdesi',
+      values: divVals.map((v, i) => v != null && revVals[i] ? formatPct((Math.abs(v) / revVals[i]!) * 100, 2) : '—'),
+    });
+    dividendRow.push({
+      label: 'Payout Ratio (Net Kar Yüzdesi)',
+      values: divVals.map((v, i) => v != null && niVals[i] ? formatPct((Math.abs(v) / niVals[i]!) * 100, 1) : '—'),
+    });
+  }
+
   return {
     years,
     revenue_row: revenueRow,
     balance_row: balanceRow,
     cashflow_row: cashflowRow,
-    has_data: revenueRow.length + balanceRow.length + cashflowRow.length > 0,
+    ratio_row: ratioRow,
+    dividend_row: dividendRow,
+    has_data: revenueRow.length + balanceRow.length + cashflowRow.length + ratioRow.length > 0,
   };
 }
 
@@ -773,5 +875,14 @@ function translateTiming(v: unknown): string {
   if (s === 'near_term') return 'Yakın';
   if (s === 'medium_term') return 'Orta';
   if (s === 'long_term') return 'Uzun';
+  return s || '—';
+}
+
+
+function translateSentiment(v: unknown): string {
+  const s = String(v ?? '').toLowerCase();
+  if (s === 'positive') return 'Pozitif';
+  if (s === 'negative') return 'Negatif';
+  if (s === 'neutral') return 'Nötr';
   return s || '—';
 }
