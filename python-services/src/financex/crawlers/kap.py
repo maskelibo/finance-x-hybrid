@@ -8,11 +8,19 @@ Endpoints actually used by kap.org.tr (April 2026):
 
 Legacy endpoints like `/tr/api/disclosures` and `/api/memberDisclosures`
 are dead; don't reach for them.
+
+Resilience: KAP occasionally returns 5xx / 429 — specifically we have
+seen `500 Internal Server Error` on byCriteria when two requests land
+close together from the same IP. All outbound HTTP calls go through
+`_retry` with exponential backoff (3 tries, 2s → 4s → 8s) for
+transient server errors and rate limits.
 """
 
 from __future__ import annotations
 
+import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from typing import Any
@@ -24,6 +32,47 @@ SEARCH_PATH = "/tr/api/search/combined"
 CRITERIA_PATH = "/tr/api/disclosure/members/byCriteria"
 PDF_PATH_TEMPLATE = "/tr/api/BildirimPdf/{index}"
 DEFAULT_TIMEOUT_S = 30.0
+
+# Transient status codes we retry on. 500/502/503/504 are server-side
+# transients; 429 is rate-limit. Anything else (401, 403, 404) is a
+# real error — don't waste attempts.
+_RETRYABLE_STATUS = frozenset({429, 500, 502, 503, 504})
+_RETRY_ATTEMPTS = 3
+_RETRY_BACKOFF_BASE_S = 2.0  # 2s, 4s, 8s
+
+
+def _retry(fn: Callable[[], httpx.Response], *, op_name: str = "KAP request") -> httpx.Response:
+    """Call `fn()` with exponential backoff on retryable HTTP errors.
+
+    Re-raises the last exception (or HTTPStatusError) if every attempt
+    fails — caller decides whether to treat that as a hard failure.
+    """
+    last_exc: Exception | None = None
+    for attempt in range(1, _RETRY_ATTEMPTS + 1):
+        try:
+            resp = fn()
+        except (httpx.ConnectError, httpx.ReadTimeout, httpx.RemoteProtocolError) as exc:
+            last_exc = exc
+            if attempt >= _RETRY_ATTEMPTS:
+                break
+            wait = _RETRY_BACKOFF_BASE_S * (2 ** (attempt - 1))
+            print(f"[KAP retry] {op_name}: {type(exc).__name__} — sleeping {wait:.0f}s (attempt {attempt}/{_RETRY_ATTEMPTS})")
+            time.sleep(wait)
+            continue
+
+        if resp.status_code in _RETRYABLE_STATUS and attempt < _RETRY_ATTEMPTS:
+            wait = _RETRY_BACKOFF_BASE_S * (2 ** (attempt - 1))
+            print(f"[KAP retry] {op_name}: HTTP {resp.status_code} — sleeping {wait:.0f}s (attempt {attempt}/{_RETRY_ATTEMPTS})")
+            time.sleep(wait)
+            continue
+
+        return resp
+
+    if last_exc is not None:
+        raise last_exc
+    # fn() returned but exhausted retries — surface the final response
+    # so the caller can raise_for_status() with accurate context.
+    return fn()
 
 
 @dataclass(frozen=True)
@@ -98,9 +147,12 @@ class HttpKapClient(KapClient):
         if upper in self._member_oid_cache:
             return self._member_oid_cache[upper]
 
-        resp = self._client.post(
-            SEARCH_PATH,
-            json={"keyword": upper, "discClass": "ALL", "lang": "tr", "channel": "WEB"},
+        resp = _retry(
+            lambda: self._client.post(
+                SEARCH_PATH,
+                json={"keyword": upper, "discClass": "ALL", "lang": "tr", "channel": "WEB"},
+            ),
+            op_name=f"resolve_member_oid({upper})",
         )
         resp.raise_for_status()
         payload = resp.json()
@@ -145,7 +197,10 @@ class HttpKapClient(KapClient):
             "year": "",
             "term": "",
         }
-        resp = self._client.post(CRITERIA_PATH, json=body)
+        resp = _retry(
+            lambda: self._client.post(CRITERIA_PATH, json=body),
+            op_name=f"fetch_disclosures({ticker})",
+        )
         resp.raise_for_status()
         rows = resp.json()
         return [_row_to_raw(r, fallback_ticker=ticker.upper(), base_url=self.base_url) for r in rows]
@@ -153,7 +208,10 @@ class HttpKapClient(KapClient):
     def download_pdf(self, disclosure_index: int | str) -> bytes:
         """Download the disclosure PDF. Returns raw bytes."""
         path = PDF_PATH_TEMPLATE.format(index=disclosure_index)
-        resp = self._client.get(path)
+        resp = _retry(
+            lambda: self._client.get(path),
+            op_name=f"download_pdf({disclosure_index})",
+        )
         resp.raise_for_status()
         return resp.content
 
