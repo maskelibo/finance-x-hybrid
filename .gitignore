@@ -10,6 +10,16 @@ output/pdfs/
 backend/finance_x.db
 backend/finance-x.db
 evals/results/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+uv.lock.backup
 drizzle/meta/
 .vite/
 coverage/
