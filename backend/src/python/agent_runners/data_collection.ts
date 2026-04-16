@@ -6,6 +6,9 @@
  * activity_report kinds, PDFs land in ../output/pdfs/ (repo-relative).
  */
 
+import { writeFileSync, unlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { nanoid } from 'nanoid';
 
 import { db } from '../../db.js';
@@ -14,6 +17,28 @@ import {
   adaptPythonDataCollectionForLegacy,
   type PythonDataCollectionManifest,
 } from '../adapters/data_collection.js';
+
+
+/** Write the kap_watch output to a temp file so data_collection can
+ *  reuse it via `--prefetched` and skip the byCriteria call. Returns
+ *  the tmp path, or null if upstream kap_watch is missing/unparseable. */
+function materialisePrefetched(accumulatedContext: Record<string, unknown>): string | null {
+  const raw = accumulatedContext['kap_watch_output'];
+  if (raw == null) return null;
+  let text: string;
+  if (typeof raw === 'string') {
+    text = raw;
+    // Validate it parses before committing a tempfile.
+    try { JSON.parse(text); } catch { return null; }
+  } else if (typeof raw === 'object') {
+    text = JSON.stringify(raw);
+  } else {
+    return null;
+  }
+  const tmpPath = path.join(tmpdir(), `finance-x-kapwatch-${nanoid()}.json`);
+  writeFileSync(tmpPath, text, 'utf-8');
+  return tmpPath;
+}
 
 
 export type RunOutcome = 'ok' | 'failed';
@@ -35,6 +60,13 @@ export async function runPythonDataCollection(
   const kinds = process.env.PYTHON_DATA_COLLECTION_KINDS || 'financial_report,activity_report';
   const pdfDir = process.env.PYTHON_DATA_COLLECTION_PDF_DIR;
 
+  // Reuse kap_watch's disclosure list if it's already in upstream —
+  // skips a duplicate KAP byCriteria POST that trips the rate-limit.
+  const prefetchedFile = materialisePrefetched(accumulatedContext);
+  if (prefetchedFile) {
+    console.log(`[PYTHON:data_collection] reusing kap_watch list (prefetched=${prefetchedFile})`);
+  }
+
   try {
     const res = await runDataCollect(
       ticker,
@@ -42,11 +74,13 @@ export async function runPythonDataCollection(
         years,
         kinds,
         ...(pdfDir ? { pdfDir } : {}),
+        ...(prefetchedFile ? { prefetchedFile } : {}),
       },
       { timeoutMs: 600_000 },  // 10 min for PDF downloads
     );
 
     if (!res.success) {
+      if (prefetchedFile) try { unlinkSync(prefetchedFile); } catch { /* ignore */ }
       const completedAt = new Date().toISOString();
       db.prepare(
         `UPDATE agent_runs SET status = 'failed', completed_at = ?, duration_ms = ?,
@@ -55,6 +89,8 @@ export async function runPythonDataCollection(
       console.warn(`[PYTHON:data_collection] failed — ${res.error}`);
       return 'failed';
     }
+
+    if (prefetchedFile) try { unlinkSync(prefetchedFile); } catch { /* ignore */ }
 
     const legacy = adaptPythonDataCollectionForLegacy(
       (res.data ?? {}) as PythonDataCollectionManifest,
