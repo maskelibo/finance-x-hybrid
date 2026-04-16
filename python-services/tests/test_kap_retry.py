@@ -41,10 +41,11 @@ def test_500_retries_and_then_succeeds() -> None:
     with patch.object(kap_module.time, "sleep") as mock_sleep:
         oid = client.resolve_member_oid("THYAO")
     assert oid == "oid-1"
-    # Two retries → two sleep calls with 2s and 4s
+    # Two retries → two sleep calls. Backoff base is 5s (tuned for
+    # KAP's rate-limit window) and doubles each attempt: 5s, 10s.
     assert mock_sleep.call_count == 2
-    assert mock_sleep.call_args_list[0].args[0] == pytest.approx(2.0)
-    assert mock_sleep.call_args_list[1].args[0] == pytest.approx(4.0)
+    assert mock_sleep.call_args_list[0].args[0] == pytest.approx(5.0)
+    assert mock_sleep.call_args_list[1].args[0] == pytest.approx(10.0)
 
 
 def test_429_is_retryable() -> None:
@@ -68,8 +69,9 @@ def test_404_fails_fast_no_retry() -> None:
     assert mock_sleep.call_count == 0  # non-retryable — fail fast
 
 
-def test_all_three_attempts_500_raises() -> None:
+def test_all_four_attempts_500_raises() -> None:
     client = _build_client_with_responses([
+        (500, b""),
         (500, b""),
         (500, b""),
         (500, b""),
