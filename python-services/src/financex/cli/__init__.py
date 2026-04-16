@@ -1,5 +1,6 @@
 import typer
 
+from financex.cli.analyst import analyst_app
 from financex.cli.analyze import analyze_app
 from financex.cli.data import data_app
 from financex.cli.db import db_app
@@ -27,6 +28,7 @@ app.add_typer(parse_app, name="parse")
 app.add_typer(reconcile_app, name="reconcile")
 app.add_typer(analyze_app, name="analyze")
 app.add_typer(macro_app, name="macro")
+app.add_typer(analyst_app, name="analyst")
 app.add_typer(macro_app, name="macro")
 
 
