@@ -3,8 +3,9 @@ import { db, ensureColumn } from './db.js';
 import { runAgent } from './agent-runner.js';
 import { getAgentMeta } from './agents.js';
 import { runFeedbackLoop } from './feedback-loop.js';
-import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED } from './config.js';
+import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED } from './config.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
+import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
 import { computeAll, type FinancialInputs, type EngineOutput } from './financial-engine.js';
 import { validateAgentOutput } from './schema-validator.js';
 import { captureSessionSnapshot } from './version-snapshot.js';
@@ -433,6 +434,10 @@ async function runSingleAgent(
   // the deterministic Python runner writes the agent_runs row.
   if (PYTHON_EVENT_TIMELINE_ALERT_ENABLED && agentId === 'event_timeline_alert') {
     const outcome = await runPythonEventTimelineAlert(sessionId, runId, ticker, accumulatedContext);
+    return outcome === 'ok' ? 'ok' : 'failed';
+  }
+  if (PYTHON_TECHNICAL_ANALYSIS_ENABLED && agentId === 'technical_analysis') {
+    const outcome = await runPythonTechnicalAnalysis(sessionId, runId, ticker, accumulatedContext);
     return outcome === 'ok' ? 'ok' : 'failed';
   }
 
