@@ -3,7 +3,7 @@ import { db, ensureColumn } from './db.js';
 import { runAgent } from './agent-runner.js';
 import { getAgentMeta } from './agents.js';
 import { runFeedbackLoop } from './feedback-loop.js';
-import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED } from './config.js';
+import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
 import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
 import { runPythonKapWatch } from './python/agent_runners/kap_watch.js';
@@ -22,6 +22,7 @@ import { runPythonStrategicSynthesis } from './python/agent_runners/strategic_sy
 import { runPythonValuation } from './python/agent_runners/valuation.js';
 import { runPythonAnalystConsensus } from './python/agent_runners/analyst_consensus.js';
 import { runPythonEsg } from './python/agent_runners/esg.js';
+import { runPythonReportFormatter } from './python/report_formatter/runner.js';
 import { computeAll, type FinancialInputs, type EngineOutput } from './financial-engine.js';
 import { validateAgentOutput } from './schema-validator.js';
 import { captureSessionSnapshot } from './version-snapshot.js';
@@ -518,6 +519,10 @@ async function runSingleAgent(
   }
   if (PYTHON_ESG_ENABLED && agentId === 'esg_agent') {
     const outcome = await runPythonEsg(sessionId, runId, ticker, accumulatedContext);
+    return outcome === 'ok' ? 'ok' : 'failed';
+  }
+  if (PYTHON_REPORT_FORMATTER_ENABLED && agentId === 'report_formatter') {
+    const outcome = await runPythonReportFormatter(sessionId, runId, ticker, accumulatedContext);
     return outcome === 'ok' ? 'ok' : 'failed';
   }
 

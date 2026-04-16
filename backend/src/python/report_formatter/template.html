@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>{{ticker}} — Finance X Analiz Raporu</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+           color: #222; line-height: 1.55; background: #fafafa; padding: 40px 20px; }
+    .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 60px 70px; box-shadow: 0 2px 20px rgba(0,0,0,.04); }
+    h1 { font-size: 32px; border-bottom: 3px solid #0066cc; padding-bottom: 16px; margin-bottom: 8px; }
+    h1 .subtitle { font-size: 16px; color: #888; display: block; margin-top: 6px; font-weight: 400; }
+    h2 { font-size: 22px; margin: 36px 0 14px; color: #0066cc; border-left: 4px solid #0066cc; padding-left: 12px; }
+    h3 { font-size: 16px; margin: 20px 0 10px; color: #444; }
+    p { margin: 10px 0; }
+    .score-card { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+    .score-card .box { border: 1px solid #e0e0e0; border-radius: 8px; padding: 18px; background: #fff; }
+    .score-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+    .score-card .value { font-size: 28px; font-weight: 700; color: #0066cc; margin-top: 6px; }
+    .score-card .subtext { font-size: 12px; color: #666; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+    th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #e8e8e8; }
+    th { background: #f5f5f5; font-weight: 600; font-size: 12px; text-transform: uppercase; color: #555; letter-spacing: .5px; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: ui-monospace, "SF Mono", monospace; }
+    .flag-list { list-style: none; padding: 0; }
+    .flag-list li { padding: 8px 12px; border-left: 4px solid #ccc; margin: 6px 0; background: #f9f9f9; }
+    .flag-list li.critical { border-left-color: #d93025; background: #fdf0ee; }
+    .flag-list li.warn { border-left-color: #f9ab00; background: #fef7e0; }
+    .flag-list li.ok { border-left-color: #1e8e3e; background: #e6f4ea; }
+    .warning-banner { background: #fff3cd; border: 1px solid #ffeeba; border-radius: 6px; padding: 14px 18px; margin: 16px 0; color: #856404; }
+    .disclaimer { margin-top: 60px; padding: 22px; background: #f5f5f5; border-radius: 6px; font-size: 12px; color: #666; line-height: 1.6; }
+    .meta { font-size: 11px; color: #999; text-align: right; margin-bottom: -10px; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    .badge-pass { background: #e6f4ea; color: #1e8e3e; }
+    .badge-fail { background: #fdf0ee; color: #d93025; }
+    .badge-warn { background: #fef7e0; color: #b47b00; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <p class="meta">Hazırlanma: {{report_date}} &middot; Python Hybrid &middot; {{engine_source}}</p>
+
+    <h1>
+      {{ticker}} — Analiz Raporu
+      <span class="subtitle">{{company_name}} &middot; {{sector_label}} &middot; {{period_label}}</span>
+    </h1>
+
+    <!-- ===================== Katman 1 — Yatırımcı Kartı ===================== -->
+    <h2>Yatırımcı Kartı</h2>
+
+    <div class="score-card">
+      <div class="box">
+        <div class="label">QA Skoru</div>
+        <div class="value">{{qa_score}}</div>
+        <div class="subtext">{{qa_decision_label}}</div>
+      </div>
+      <div class="box">
+        <div class="label">Sinyal Konverjansı</div>
+        <div class="value">{{convergence_score}}</div>
+        <div class="subtext">{{signal_confidence}} confidence</div>
+      </div>
+      <div class="box">
+        <div class="label">Reconciliation</div>
+        <div class="value">{{reconciliation_pass_rate}}</div>
+        <div class="subtext">{{reconciliation_passed}}/{{reconciliation_total}} check</div>
+      </div>
+    </div>
+
+    {{#if critical_findings}}
+    <h3>Kritik Bulgular</h3>
+    <ul class="flag-list">
+      {{#each critical_findings}}
+      <li class="critical">{{this}}</li>
+      {{/each}}
+    </ul>
+    {{/if}}
+
+    {{#if narrative_card_summary}}
+    <p>{{&narrative_card_summary}}</p>
+    {{/if}}
+
+    <!-- ===================== Finansal Panorama ===================== -->
+    <h2>Finansal Panorama</h2>
+
+    {{#if narrative_financial_intro}}
+    <p>{{&narrative_financial_intro}}</p>
+    {{/if}}
+
+    {{#if highlights}}
+    <table>
+      <thead>
+        <tr><th>Metrik</th><th class="num">Değer</th><th>Not</th></tr>
+      </thead>
+      <tbody>
+        {{#each highlights}}
+        <tr>
+          <td>{{this.label}}</td>
+          <td class="num">{{this.value_formatted}}</td>
+          <td>{{this.narrative_hint}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
+    <!-- ===================== Değerleme ===================== -->
+    <h2>Değerleme</h2>
+
+    {{#if valuation_warnings}}
+    <div class="warning-banner">
+      {{#each valuation_warnings}}
+      <p>⚠ {{this}}</p>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#if dcf_present}}
+    <table>
+      <thead><tr><th>Metrik</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        <tr><td>Teşebbüs Değeri</td><td class="num">{{dcf_ev_formatted}}</td></tr>
+        <tr><td>Özsermaye Değeri</td><td class="num">{{dcf_equity_formatted}}</td></tr>
+        <tr><td>Hisse Başına Değer</td><td class="num">{{dcf_per_share_formatted}}</td></tr>
+        <tr><td>Kullanılan WACC</td><td class="num">{{dcf_wacc_formatted}}</td></tr>
+        <tr><td>Terminal Büyüme</td><td class="num">{{dcf_terminal_g_formatted}}</td></tr>
+      </tbody>
+    </table>
+    {{/if}}
+
+    {{#if narrative_valuation}}
+    <p>{{&narrative_valuation}}</p>
+    {{/if}}
+
+    <!-- ===================== Sektör Karşılaştırması ===================== -->
+    {{#if benchmarks}}
+    <h2>Sektör Karşılaştırması</h2>
+
+    <table>
+      <thead>
+        <tr><th>Metrik</th><th class="num">Şirket</th><th class="num">Medyan</th><th class="num">Min/Max</th><th>Quartile</th></tr>
+      </thead>
+      <tbody>
+        {{#each benchmarks}}
+        <tr>
+          <td>{{this.label}}</td>
+          <td class="num">{{this.company_formatted}}</td>
+          <td class="num">{{this.median_formatted}}</td>
+          <td class="num">{{this.range_formatted}}</td>
+          <td>Q{{this.quartile}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
+    <!-- ===================== Olay Takvimi ===================== -->
+    {{#if event_impacts}}
+    <h2>Son KAP Olayları</h2>
+    <table>
+      <thead>
+        <tr><th>Olay</th><th>Tip</th><th>Etki</th><th>Zamanlama</th></tr>
+      </thead>
+      <tbody>
+        {{#each event_impacts}}
+        <tr>
+          <td>{{this.summary}}</td>
+          <td>{{this.type}}</td>
+          <td>{{this.direction}}</td>
+          <td>{{this.timing}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
+    <!-- ===================== Kapanış ===================== -->
+    <h2>Kapanış</h2>
+
+    {{#if narrative_closing}}
+    <p>{{&narrative_closing}}</p>
+    {{/if}}
+
+    <div class="disclaimer">
+      <strong>Uyarı:</strong> Bu rapor Finance X platformu tarafından otomatik üretilmiştir. Python deterministic
+      hesaplamalar + LLM narrative bloklar hibrit modeliyle hazırlanmış olup,
+      <strong>yatırım tavsiyesi değildir</strong>. Rapor veri kaynağı sınırlıdır ve profesyonel bir yatırım danışmanının yerini
+      tutmaz. Sermaye Piyasası Kurulu (SPK) düzenlemeleri çerçevesinde herhangi bir karar almadan önce profesyonel danışmanlık alınız.
+      <br><br>
+      Rapor ID: <code>{{report_id}}</code> &middot; Ticker: <code>{{ticker}}</code> &middot; Skor: <code>{{qa_score}}</code>
+    </div>
+
+  </div>
+</body>
+</html>
