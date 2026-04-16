@@ -303,6 +303,11 @@
     </table>
     {{/if}}
 
+    {{#if chart_ownership_pie_has}}
+    <h2>Ortaklık Yapısı</h2>
+    <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_ownership_pie}}</div>
+    {{/if}}
+
     {{#if narrative_segments}}
     <h2>Segment / İştirak Yapısı</h2>
     <div>{{&narrative_segments}}</div>
