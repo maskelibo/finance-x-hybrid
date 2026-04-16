@@ -35,6 +35,7 @@ import { runPythonStrategicSynthesis } from './agent_runners/strategic_synthesis
 import { runPythonValuation } from './agent_runners/valuation.js';
 import { runPythonAnalystConsensus } from './agent_runners/analyst_consensus.js';
 import { runPythonEsg } from './agent_runners/esg.js';
+import { runPythonReportFormatter } from './report_formatter/runner.js';
 
 
 const sessionId = `smoke-${nanoid()}`;
@@ -53,6 +54,7 @@ const AGENTS = [
   'valuation_agent',
   'analyst_consensus_agent',
   'esg_agent',
+  'report_formatter',
   'coo_delivery',
 ] as const;
 
@@ -366,9 +368,31 @@ describe('Pipeline smoke — reshape-only Python runners', () => {
     expect(ctx.esg_agent_output).toBeTruthy();
   });
 
+  it('09c — report_formatter renders template with full Python upstream chain', async () => {
+    const outcome = await runPythonReportFormatter(sessionId, runIds.report_formatter, ticker, ctx);
+    expect(outcome).toBe('ok');
+    const row = readRunRow(runIds.report_formatter);
+    expect(row.status).toBe('completed');
+    expect(row.output_text).toBeTruthy();
+    const envelope = JSON.parse(row.output_text!);
+    expect(envelope).toHaveProperty('formatted_html');
+    expect(envelope.source).toBe('python');
+    const html = envelope.formatted_html as string;
+    expect(html.length).toBeGreaterThan(4000);        // template + populated fields
+    expect(html).toContain('<html');
+    expect(html).toContain('yatırım tavsiyesi değildir');
+    expect(html).toContain('SMOKE');                  // ticker
+    // With Python upstream, structured fields must actually populate:
+    expect(html).toMatch(/QA Skoru/);
+    expect(html).toMatch(/0\.95/);                    // qa.overall_score from step 06
+    expect(html).toMatch(/Kâr Payı|Temettü|dividend/i); // dividend event bubbled to timeline
+    expect(ctx.report_formatter_html).toBeTruthy();
+  });
+
   it('09 — coo delivery consumes report_formatter_html', async () => {
     ctx.delivery_check_mode = true;
-    ctx.report_formatter_html = reportFormatterHtml;
+    // Prefer the Python-rendered template HTML from step 09c if present.
+    if (!ctx.report_formatter_html) ctx.report_formatter_html = reportFormatterHtml;
     const outcome = await runPythonCoo(sessionId, runIds.coo_delivery, ticker, ctx);
     expect(outcome).toBe('ok');
     const parsed = JSON.parse(readRunRow(runIds.coo_delivery).output_text!);
@@ -397,6 +421,8 @@ describe('Pipeline smoke — reshape-only Python runners', () => {
       'valuation_agent_output',
       'analyst_consensus_agent_output',
       'esg_agent_output',
+      'report_formatter_output',
+      'report_formatter_html',
     ];
     for (const k of expectedKeys) {
       expect(ctx[k], `ctx.${k} must be populated`).toBeTruthy();
