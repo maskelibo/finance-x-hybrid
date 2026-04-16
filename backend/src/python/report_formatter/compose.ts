@@ -3,11 +3,15 @@
  *
  * Reads the upstream Python-adapter outputs (or their LLM
  * equivalents, parsed leniently) and emits a flat object the
- * template engine can render directly. No LLM calls here — narrative
- * blocks are left as empty strings; a future wave will route them
- * through a small LLM call before final assembly.
+ * template engine can render directly. Narrative blocks are
+ * auto-extracted from upstream LLM agent outputs (final_summary,
+ * strategic_synthesis, valuation_agent, context_extraction) by
+ * llm_narrative.ts — section-anchor slicing, no additional LLM
+ * calls. If caller supplies `narrativeBlocks` explicitly, those
+ * win.
  */
 
+import { buildNarrativeBlocks } from './llm_narrative.js';
 import { formatPct, formatRatio, formatTRY, type TemplateContext } from './template_engine.js';
 
 
@@ -32,8 +36,19 @@ interface ComposeInputs {
 
 
 export function composeReportContext(inputs: ComposeInputs): TemplateContext {
-  const { ticker, reportId, accumulatedContext, narrativeBlocks = {} } = inputs;
+  const { ticker, reportId, accumulatedContext, narrativeBlocks: explicitBlocks } = inputs;
   const ctx = accumulatedContext;
+
+  // Auto-extract narrative blocks from upstream LLM agent outputs.
+  // Explicit blocks passed by caller (rare — mostly tests) override.
+  const extracted = buildNarrativeBlocks({
+    final_summary: ctx['final_summary_output'],
+    strategic_synthesis: ctx['strategic_synthesis_output'],
+    valuation_agent: ctx['valuation_agent_output'],
+    context_extraction: ctx['context_extraction_output'],
+    ceo: ctx['ceo_output'],
+  });
+  const narrativeBlocks = { ...extracted, ...(explicitBlocks ?? {}) };
 
   const fa = parseJson<{
     ticker?: string;
