@@ -1489,6 +1489,52 @@ function digestOutput(sourceAgentId: string, rawOutput: string, targetAgentId: s
     return digest.length > 1000 ? digest : null;
   }
 
+  // final_summary digest — strict per-upstream char budgets to keep the
+  // total prompt under ~80K. The live THYAO run shipped a 444K char
+  // prompt because 10 upstream outputs each carried their full raw
+  // payload; Claude CLI stalled for 7+ minutes. Priority order mirrors
+  // the final report's narrative weight: synthesis/analysis first,
+  // macro/peer/esg/sentiment smaller.
+  const FINAL_SUMMARY_BUDGETS: Record<string, { chars: number; keywords?: string[] }> = {
+    strategic_synthesis_output: { chars: 20000 },
+    financial_analysis_output: {
+      chars: 15000,
+      keywords: ['karlılık', 'profitability', 'kaldıraç', 'leverage', 'marjlar',
+                 'EBITDA', 'FAVÖK', 'ROE', 'ROCE', 'ROIC', 'nakit', 'cash',
+                 'net kar', 'net income', 'gelir', 'revenue', 'işletme sermayesi',
+                 'working capital', 'capex', 'özet', 'summary', 'sonuç'],
+    },
+    valuation_agent_output: { chars: 10000 },
+    context_extraction_output: {
+      chars: 10000,
+      keywords: ['iş modeli', 'business model', 'segment', 'yönetim',
+                 'management', 'strateji', 'strategy', 'ortaklık', 'ownership',
+                 'sotp', 'holding', 'marka', 'brand', 'guidance', 'rehber'],
+    },
+    qa_review_output: { chars: 5000 },
+    macro_analysis_output: {
+      chars: 5000,
+      keywords: ['TCMB', 'faiz', 'enflasyon', 'kur', 'USD/TRY', 'büyüme',
+                 'cari', 'risk', 'jeopolitik', 'transmisyon', 'transmission'],
+    },
+    technical_analysis_output: { chars: 5000 },
+    sector_competition_output: { chars: 5000 },
+    esg_agent_output: { chars: 3000 },
+    sentiment_news_agent_output: { chars: 3000 },
+  };
+
+  if (targetAgentId === 'final_summary') {
+    const key = `${sourceAgentId}_output`;
+    const budget = FINAL_SUMMARY_BUDGETS[key];
+    if (budget) {
+      // Keyword-filtered when keywords supplied, plain slice otherwise.
+      const digest = budget.keywords
+        ? extractByKeywords(rawOutput, budget.keywords, 2, budget.chars)
+        : rawOutput.slice(0, budget.chars);
+      return digest.length > 500 ? digest : rawOutput.slice(0, budget.chars);
+    }
+  }
+
   // technical_analysis → downstream: signal + levels only
   if (sourceAgentId === 'technical_analysis') {
     const digest = extractByKeywords(rawOutput, [
