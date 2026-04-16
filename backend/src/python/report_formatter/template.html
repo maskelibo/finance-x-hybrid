@@ -230,6 +230,13 @@
       <div class="kpi-card"><div class="kpi-label">Sektör</div><div class="kpi-value" style="font-size:12pt;">{{sector_label_tr}}</div><div class="kpi-sub">{{sector_source_label}}</div></div>
     </div>
 
+    <h3>Finansal Sağlık Skorları</h3>
+    <div class="kpi-grid-3">
+      <div class="kpi-card"><div class="kpi-label">Piotroski F-Score</div><div class="kpi-value">{{piotroski_f}}</div><div class="kpi-sub">{{piotroski_label}} (0-9 ölçek)</div></div>
+      <div class="kpi-card"><div class="kpi-label">Altman Z-Score</div><div class="kpi-value">{{altman_z}}</div><div class="kpi-sub">{{altman_label}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Net Borç/Özsermaye</div><div class="kpi-value" style="font-size:14pt;">Ratio</div><div class="kpi-sub">canonical numbers</div></div>
+    </div>
+
     {{#if critical_findings}}
     <h2>{{critical_findings.length}} Kritik Bulgu</h2>
     <ul class="bullet-list">
