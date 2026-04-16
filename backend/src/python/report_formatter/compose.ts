@@ -25,6 +25,7 @@
 import {
   commentaryCashflow,
   commentaryClosing,
+  commentaryCompanyProfile,
   commentaryEsg,
   commentaryExecSummary,
   commentaryFinancialIntro,
@@ -292,6 +293,28 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   // ----- VIII. ESG -----
 
   const esgCbam = esgOut?.cbam as Record<string, unknown> | null | undefined;
+  // CBAM 2026-2034 phase-in projection (standard EU schedule)
+  const cbamPhaseIn: Array<{ year: string; coverage: string; total_eur: string; total_try: string }> = [];
+  if (esgCbam?.scope1_tco2 != null) {
+    const scope1 = Number(esgCbam.scope1_tco2);
+    const price = Number(esgCbam.carbon_price_eur_per_t ?? 85);
+    const eurTry = numOrNull(macro?.eur_try);
+    const phaseSchedule: Array<[number, number]> = [
+      [2026, 0.485], [2027, 0.60], [2028, 0.70], [2029, 0.80],
+      [2030, 0.86], [2031, 0.90], [2032, 0.94], [2033, 0.97], [2034, 1.00],
+    ];
+    for (const [year, coverage] of phaseSchedule) {
+      const costEur = Math.round(scope1 * coverage * price);
+      const costTry = eurTry ? Math.round(costEur * eurTry) : null;
+      cbamPhaseIn.push({
+        year: String(year),
+        coverage: `%${(coverage * 100).toFixed(1)}`,
+        total_eur: '€ ' + formatTRY(costEur, 0),
+        total_try: costTry ? formatTRY(costTry, 0) + ' TL' : '—',
+      });
+    }
+  }
+
   const esg = esgCbam ? {
     scope1_formatted: esgCbam.scope1_tco2 != null ? formatTRY(esgCbam.scope1_tco2 as number, 0) + ' tCO₂' : '—',
     ets_eur: esgCbam.ets_annual_cost_eur != null ? '€ ' + formatTRY(esgCbam.ets_annual_cost_eur as number, 0) : '—',
@@ -515,6 +538,8 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Section VIII
     esg,
     esg_has: esgHas,
+    cbam_phase_in: cbamPhaseIn as unknown as TemplateValue,
+    cbam_phase_in_has: cbamPhaseIn.length > 0,
 
     // Section IX
     sentiment,
@@ -556,7 +581,17 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
         criticalFlagCount: criticalFindings.length,
       }),
     ),
-    narrative_company_profile: narrativeBlocks.company_profile ?? narrativeBlocks.card_summary ?? '',
+    narrative_company_profile: fallbackNarrative(
+      narrativeBlocks.company_profile,
+      commentaryCompanyProfile({
+        ticker, sectorTr: SECTOR_LABEL_TR[sectorRaw] ?? sectorRaw, sector: sectorRaw,
+        periodLabel: fa?.period_label as string | undefined,
+        totalAssets: canonicalNumbers.total_assets as number | null | undefined,
+        totalEquity: canonicalNumbers.total_equity as number | null | undefined,
+        revenue: canonicalNumbers.revenue as number | null | undefined,
+        netIncome: canonicalNumbers.net_income as number | null | undefined,
+      }),
+    ),
     narrative_segments: narrativeBlocks.segments ?? '',
     narrative_financial_intro: fallbackNarrative(
       narrativeBlocks.financial_intro,

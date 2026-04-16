@@ -707,6 +707,25 @@
     </table>
     {{/if}}
 
+    {{#if cbam_phase_in_has}}
+    <h2>CBAM Phase-in Projeksiyonu (2026–2034)</h2>
+    <table>
+      <thead>
+        <tr><th>Yıl</th><th>CBAM Coverage</th><th class="num">Yıllık Maliyet (EUR)</th><th class="num">Yıllık Maliyet (TRY)</th></tr>
+      </thead>
+      <tbody>
+        {{#each cbam_phase_in}}
+        <tr>
+          <td class="label">{{this.year}}</td>
+          <td>{{this.coverage}}</td>
+          <td class="num">{{this.total_eur}}</td>
+          <td class="num">{{this.total_try}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
     {{#if narrative_esg}}
     <div>{{&narrative_esg}}</div>
     {{/if}}
