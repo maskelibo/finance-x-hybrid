@@ -21,10 +21,15 @@ export async function runPythonValuation(
     `UPDATE agent_runs SET status = 'running', started_at = ?, error_message = NULL, provider_used = 'python' WHERE id = ?`,
   ).run(startedAt, runId);
 
-  const fa = extractFinancialAnalysis(accumulatedContext['financial_analysis_output']);
+  const faRaw = accumulatedContext['financial_analysis_output'];
+  const fa = extractFinancialAnalysis(faRaw);
   const sc = extractSectorCompetition(accumulatedContext['sector_competition_output']);
 
-  const legacy = adaptValuationForLegacy(fa, sc, ticker, `val-out-${nanoid()}`);
+  // If upstream fa is LLM markdown (mixed-flag mode), let the adapter
+  // sniff sector from the prose rather than silently defaulting to
+  // industrial. Stringify whatever faRaw is for the sniffer.
+  const llmMarkdownSource = typeof faRaw === 'string' ? faRaw : null;
+  const legacy = adaptValuationForLegacy(fa, sc, ticker, `val-out-${nanoid()}`, { llmMarkdownSource });
   const outputJson = JSON.stringify(legacy, null, 2);
 
   const status = fa ? 'completed' : 'failed';

@@ -9,6 +9,8 @@
  * Python subset is a rollback target for the deterministic rubric.
  */
 
+import { resolveSector } from './llm_fallback.js';
+
 export interface UpstreamFinancialAnalysis {
   ticker?: string;
   period_label?: string;
@@ -128,8 +130,8 @@ function mathConsistency(rec: UpstreamReconciliation | null): DimensionScore {
 }
 
 
-function completeness(fa: UpstreamFinancialAnalysis): DimensionScore {
-  const sector = (fa.sector ?? 'industrial').toLowerCase();
+function completeness(fa: UpstreamFinancialAnalysis, sectorOverride?: string): DimensionScore {
+  const sector = (sectorOverride ?? fa.sector ?? 'industrial').toLowerCase();
   const required = sector === 'banking'
     ? new Set(['NIM', 'BANK_ROE', 'COST_TO_INCOME'])
     : new Set(['NET_MARGIN', 'ROE']);
@@ -203,8 +205,14 @@ export function adaptQaReviewForLegacy(
   rec: UpstreamReconciliation | null,
   ticker: string,
   outputId: string,
+  opts: { llmMarkdownSource?: string | null } = {},
 ): LegacyQaOutput {
   const warnings: string[] = [];
+  const sectorResolution = resolveSector({
+    structuredSector: fa?.sector ?? null,
+    markdownSource: opts.llmMarkdownSource ?? null,
+    ticker,
+  });
   if (!fa) {
     warnings.push('No financial_analysis output supplied — qa_review scoring cannot run');
     return {
@@ -227,7 +235,7 @@ export function adaptQaReviewForLegacy(
   const dimensions: DimensionScore[] = [
     evidenceSufficiency(fa),
     mathConsistency(rec),
-    completeness(fa),
+    completeness(fa, sectorResolution.sector),
     flagAcknowledgement(fa),
     narrativeCoverage(fa),
   ];

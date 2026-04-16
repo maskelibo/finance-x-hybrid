@@ -21,10 +21,14 @@ export async function runPythonSectorCompetition(
     `UPDATE agent_runs SET status = 'running', started_at = ?, error_message = NULL, provider_used = 'python' WHERE id = ?`,
   ).run(startedAt, runId);
 
-  const fa = extractFinancialAnalysis(accumulatedContext['financial_analysis_output']);
+  const faRaw = accumulatedContext['financial_analysis_output'];
+  const fa = extractFinancialAnalysis(faRaw);
   const peers = extractPeers(accumulatedContext['sector_competition_peers']);
 
-  const legacy = adaptSectorCompetitionForLegacy(fa, peers, ticker, `sc-out-${nanoid()}`);
+  const llmMarkdownSource = typeof faRaw === 'string' ? faRaw : null;
+  const legacy = adaptSectorCompetitionForLegacy(
+    fa, peers, ticker, `sc-out-${nanoid()}`, { llmMarkdownSource },
+  );
   const outputJson = JSON.stringify(legacy, null, 2);
 
   const status = fa ? 'completed' : 'failed';

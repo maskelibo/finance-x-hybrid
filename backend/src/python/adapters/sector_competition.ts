@@ -13,6 +13,8 @@
  * purely arithmetic.
  */
 
+import { resolveSector as resolveSectorFallback } from './llm_fallback.js';
+
 type MetricCode = string;
 
 export interface UpstreamHighlight {
@@ -188,8 +190,21 @@ export function adaptSectorCompetitionForLegacy(
   peers: UpstreamFinancialAnalysis[],
   ticker: string,
   outputId: string,
+  opts: { llmMarkdownSource?: string | null } = {},
 ): LegacySectorCompetitionOutput {
   const warnings: string[] = [];
+
+  // Resolve sector even when upstream fa is null (mixed-flag mode):
+  // prefer structured, then LLM markdown cues, then ticker heuristic.
+  const sectorResolution = resolveSectorFallback({
+    structuredSector: company?.sector ?? null,
+    markdownSource: opts.llmMarkdownSource ?? null,
+    ticker,
+  });
+  if (sectorResolution.source !== 'structured') {
+    warnings.push(`Sector inferred via ${sectorResolution.source} fallback → ${sectorResolution.sector}; LLM should verify.`);
+  }
+
   if (!company) {
     warnings.push('No financial_analysis output — sector_competition cannot score');
     return {
@@ -197,7 +212,7 @@ export function adaptSectorCompetitionForLegacy(
       output_id: outputId,
       ticker: ticker.toUpperCase(),
       period_label: 'unknown',
-      sector: 'unknown',
+      sector: sectorResolution.sector,
       peer_group: [],
       benchmarks: [],
       strengths: [],
@@ -208,7 +223,7 @@ export function adaptSectorCompetitionForLegacy(
     };
   }
 
-  const sector = (company.sector ?? 'industrial').toLowerCase();
+  const sector = sectorResolution.sector;
   const metrics = metricsForSector(sector);
   const benchmarks: MetricBenchmark[] = [];
   const strengths: MetricCode[] = [];
