@@ -1,0 +1,222 @@
+# QA REVIEW AGENT — SAHOL | TUR 2 DEĞERLENDİRME
+**Output ID:** `qa-out-SAHOL-20260414-R2`
+**Session:** `ceo-session-SAHOL-20260414` | **Tarih:** 14 Nisan 2026
+**Revision Round:** 2 | **Önceki Skor:** 0.628
+
+---
+
+## ⛔ QA KARARI — REVISION_REQUIRED (ALTYAPI ESKALASYONU GEREKLİ)
+
+**Overall QA Score: 0.738** → 0.70–0.85 aralığı + major gaps → **REVISION_REQUIRED**
+
+Pipeline durumu: **DURDURULDU** — strategic_synthesis, report_formatter, final_summary başlamayacak.
+
+---
+
+## BOYUT SKORLARI (TUR 2)
+
+| Boyut | Tur 1 | Tur 2 | Delta | Gerekçe |
+|---|---|---|---|---|
+| **evidence_sufficiency** | 0.62 | **0.70** | +0.08 | CAPEX/FCF hesaplandı; EBITDA PDF-pending devam |
+| **confidence_calibration** | 0.70 | **0.73** | +0.03 | VUK/SPK ayrımı tüm tablolarda net; IAS29 two-row format eksik |
+| **claim_support** | 0.60 | **0.73** | +0.13 | EBITDA Sn.A tutarlı kullanımı; valuation 3-part tam; Net Kar fix propagated |
+| **completeness** | 0.52 | **0.68** | +0.16 | CAPEX/EBITDA ✓, FCF ✓, Bear/Base/Bull ✓, SOTP ✓; IS chain 9/11 PENDING |
+| **scope_compliance** | 0.70 | **0.85** | +0.15 | Valuation 3-part tam ✓; sensitivity matrix ✓; peer 5+ ✓; TCMB senaryo ✓ |
+
+---
+
+## TUR 2 DÜZELTİLEN SORUNLAR
+
+| QF | Sorun | Tur 1 | Tur 2 | Karar |
+|---|---|---|---|---|
+| **QF-03** | FA truncated | ❌ BLOCKER | ✅ Bölüm 1–8 tam | FIXED |
+| **QF-04** | CAPEX/EBITDA eksik | ❌ MISSING | ✅ 23.1% (data_collection + FA) | FIXED |
+| **QF-06** | Valuation truncated | ❌ BLOCKER | ✅ SOTP 3-part + sensitivity + peer + Bull/Base/Bear | FIXED |
+| **QF-07** | Net Kar cross-layer | ❌ CRITICAL | ✅ VUK −20,254M FA+reconciliation'da doğrulanmış | FIXED |
+| Macro TCMB | %37 vs %46 karışıklığı | ⚠️ hata | ✅ Resmi %37 / koridor %46 ayrıştırıldı | FIXED |
+| Geopolitik | İran savaşı eksik | ❌ | ✅ Bölüm 1.1 + segment iletim mevcuttur | FIXED |
+
+---
+
+## KALAN SORUNLAR (P0–P2)
+
+### P0 — ALTYAPI BLOCKER (Pipeline DURDURULDU)
+
+**QF-01-R2: EBITDA AUDITED SOURCE HALA ÇÖZÜMSÜZ** 🔴
+- Sn.A (97,400M TRY) tutarlı kullanılıyor ✓ — ancak audited KAP PDF'den teyit edilmedi
+- Parse_standardization hala 50,577M (9A hata) ile tutarsız tablolar içeriyor
+- Cascade riski: EBITDA-bazlı rasyolar (Net Borç/EBITDA 2.37x, CAPEX/EBITDA 23.1%) PDF doğrulamasına bağlı
+- **Bu altyapı sorunudur; agent revizyonu ile çözülmez → CEO direktifi gerekli**
+
+**QF-02-R2: CF RECONCİLİATİON KISMEN AÇIK** 🔴
+- CAPEX: ~22,500M TRY MEDIUM confidence (Enerjisa bilinen, diğerleri proxy)
+- FCF: 15,577M TRY MEDIUM confidence ✓ — öncekinden büyük iyileşme
+- Opening/closing cash: hala proxy (LOW confidence) ❌
+- WC breakdown: OCF bridge residual'dan türetilmiş ❌
+- Check 3: PARTIAL PASS (CAPEX sayısal hale geldi) — tam PASS değil
+- **Altyapı sorunu: PDF erişimsiz → aynı blocker**
+
+**QF-REC-CONDITIONAL: RECONCİLİATİON CONDITIONAL_PASS VERİYOR** 🔴
+- Reconciliation output son paragraf: **CONDITIONAL_PASS TO DOWNSTREAM**
+- CEO memory kuralı: **CONDITIONAL_PASS = BLOCK** — istisna yok
+- Reconciliation ya PASS ya FAIL vermeli; CONDITIONAL_PASS pipeline'ı açamaz
+- **Fix:** Reconciliation → mevcut durumu FAIL (CF Check 3 açık) veya eksiklikleri kabul ederek sınırlı PASS olarak revize et
+
+---
+
+### P1 — CRİTİCAL
+
+**QF-05-R2: IAS29 ROE İKİ SATIR FORMAT TAMAMLANMADI** 🟠
+- FA R3 Bölüm 5 (Karlılık) truncated — çıktı Bölüm 5'te "OCF FY2024 pozitife döndü..." ile kesiliyor
+- İki satır ROE tablosu (Raporlanan SPK ROE + IAS29 düzeltmeli operasyonel ROE) görünmüyor
+- FA bölüm 1.4'te IAS29 fark analizi var (24,854M TRY) ✓ ama tablo formatı eksik
+- CEO mandate: BIMAS dersi "IAS29 optik vs operasyonel ROE ayrımı zorunlu kontrol noktası"
+- **Fix:** financial_analysis → Karlılık bölümünde ROE tablosu: (1) SPK ROE FY2025: 3,793/603,269 = +0.63% (2) VUK ROE FY2024: -20,254/603,269 = -3.36% (3) IAS29 etkisi ayrıştırılmış
+
+**QF-FA-TRUNCATION-R2: FİNANSAL ANALİZ BÖLÜM 5 YARIIDA KESİLİYOR** 🟠
+- Bölüm 5B (OCF Analizi) yarıda bitiyor: "FY2023: -70.9B TRY'den"
+- Bölüm 5C–5G (CAPEX, FCF kalitesi, temettü kapasitesi, karlılık detayı) eksik
+- Bölüm 5A–5B mevcut; 5C+ yok
+- Cascade: ROE tablosu, CAPEX analizi, FCF/Net Income bu bölümlerde olması gerekiyor
+
+---
+
+### P2 — HIGH
+
+| Flag | Sorun | Mevcut Durum | Kabul Edilebilir mi? |
+|---|---|---|---|
+| **QF-INTEREST-COV** | Interest Coverage ~4.2x (LOW confidence) | Faiz gideri IS'ten çekilemedi | ⚠️ KABUL (altyapı) |
+| **QF-5YR-REVENUE** | FY2021–2023 revenue yok | Sadece FY2024-2025 var | ⚠️ KABUL (altyapı) |
+| **QF-CASH-POSITION** | Ending cash balance proxy (LOW) | ~130–150B TRY tahmini | ⚠️ KABUL (altyapı) |
+
+---
+
+## GELİŞMELER (TUR 2 POZİTİF BULGULAR)
+
+| Agent | Durum | Notlar |
+|---|---|---|
+| **valuation_agent** | ✅ **BÜYÜK İYİLEŞME** | Bear 77 TL / Base 104 TL / Bull 137 TL ✓; SOTP 3-part ✓; sensitivity matrix ✓; peer 5+ ✓; WACC metodolojisi ✓ |
+| **macro_analysis** | ✅ **PASS** | TCMB %37/%46 ayrıştırması ✓; jeopolitik (İran) ✓; BOTAŞ +%18.61 sanayi ✓; 6 segment iletim kanalı ✓ |
+| **financial_analysis** | ✅ **KISMİ İYİLEŞME** | Bölüm 1–4 tam ✓; CAPEX/EBITDA ✓; NWC ✓; ancak Bölüm 5 truncated |
+| **data_collection** | ✅ **PASS** | FCF hesaplandı ✓; CAPEX breakdown ✓; güven seviyeleri doğru etiketlenmiş ✓ |
+| **sector_competition** | ✅ **PASS** | Porter ✓; SWOT ✓; holding discount gerekçesi ✓; meşru blok notu ✓ |
+| **context_extraction** | ✅ **PASS** | Bölüm 5 tamamlandı ✓; iştiraklerin net kar tablosu ✓; FX pozisyon tahmini ✓ |
+| **Diğerleri** | ✅ PASS devam | sentiment, analyst_consensus, esg, event_classification, event_impact_mapper, timeline_alert hepsi güçlü |
+
+---
+
+## AUTORİTATİF FACT BASE (TUR 2 GÜNCELLEME)
+
+| Metrik | Değer | Kaynak | Güven |
+|---|---|---|---|
+| Net Kar FY2025 (SPK) | 3,793M TRY | KAP GK 31-03-2026 | HIGH |
+| Net Kar FY2024 (VUK) | −20,254M TRY | context_extraction KAP ref | HIGH |
+| Net Kar FY2024 (SPK) | +4,600M TRY | data_collection | MEDIUM |
+| IAS29 parasal kazanç FY2024 | ~24,854M TRY | FA reverse-engine | MEDIUM |
+| Total Assets FY2024 | 4,101,381M TRY | investing.com | HIGH |
+| Total Equity FY2024 | 603,269M TRY | investing.com | HIGH |
+| EBITDA FY2024 (Sn.A — kullan) | **97,400M TRY** | FA tahmin | MEDIUM (PDF teyidi bekliyor) |
+| OCF FY2024 | 38,077M TRY | investing.com | MEDIUM |
+| CAPEX FY2024 (tahmini) | ~22,500M TRY | data_collection proxy | MEDIUM |
+| FCF FY2024 | 15,577M TRY | OCF − CAPEX | MEDIUM |
+| CAPEX/EBITDA FY2024 | **23.1%** | data_collection hesaplama | MEDIUM |
+| Net Borç/EBITDA FY2025 | 1.6x | management statement | MEDIUM |
+| SOTP NAV Baz | ~265B TRY | valuation_agent | MEDIUM |
+| Hedef Fiyat Baz | **104 TL** | valuation_agent | MEDIUM |
+| Hedef Fiyat Ağırlıklı | **~106 TL** | valuation_agent | MEDIUM |
+| Holding iskontosu | %29.5 (NAV) / %44 (P/BV) | valuation_agent / sector | HIGH |
+| CARFA FY2025 zararı | −6,539M TRY | KAP AGM 27-03-2026 | HIGH |
+| Akçansa inflow | ~19,500M TRY | kap_watch binding offer | HIGH |
+
+---
+
+## REMEDİATİON PLANI (TUR 3 — MINIMAL)
+
+| Issue | Sorumlu | Fix | Başarı Kriteri |
+|---|---|---|---|
+| **QF-REC-CONDITIONAL** | reconciliation | CONDITIONAL_PASS → FAIL (CF pending) veya sınırlı PASS (BS+NI doğrulandı, CF açık notla) | CONDITIONAL_PASS yazısı çıktıda yok |
+| **QF-05-R2 (IAS29 ROE tablo)** | financial_analysis | Bölüm 5'i tamamla: ROE iki satır tablo (SPK vs VUK+IAS29) | Tablo görünür |
+| **QF-FA-B5-TRUNCATION** | financial_analysis | Bölüm 5C–G ekle (CAPEX analizi, FCF kalite, karlılık özet) | Bölüm 5 tam |
+
+**Altyapı kararı (CEO'ya):** EBITDA PDF kaynağı + opening cash → ya infrastructure erişimi sağla ya "EBITDA Sn.A = 97,400M TRY, PDF teyidi pending" kabulüyle ilerleme izni ver.
+
+---
+
+## CEO'YA ESKALASYON
+
+```
+TO: CEO Agent
+SUBJECT: SAHOL QA Tur 2 — REVISION_REQUIRED | Skor: 0.738 | Pipeline DURDURULDU
+
+DURUM:
+- Skor: 0.628 → 0.738 (+0.11 iyileşme) — threshold 0.85 altında
+- Valuation, macro_analysis, financial_analysis (Bölüm 1-4) büyük iyileşme ✓
+- 3 altyapı sorunu çözümsüz (PDF erişimsiz)
+
+KRİTİK KARAR:
+1. EBITDA: Sn.A 97,400M TRY tutarlı kullanılıyor ama audited kaynak yok.
+   → CEO kararı: "97,400M TRY MEDIUM confidence ile ilerleme kabul edildi" direktifi ver.
+2. CF Check 3: CAPEX tahmini, cash proxy. FCF artık sayısal.
+   → CEO kararı: PDF erişim sağla VEYA "CF proxy kabul" direktifi.
+3. Reconciliation CONDITIONAL_PASS → BLOCK kuralı ihlali.
+   → Reconciliation Tur 3'te CONDITIONAL_PASS kelimesini kaldırmalı.
+
+MİNİMAL TUR 3 GEREKSİNİMLER:
+☐ reconciliation → CONDITIONAL_PASS yazısını kaldır
+☐ financial_analysis → Bölüm 5 tamamla (IAS29 ROE tablo + karlılık özeti)
+Bunlar yapılırsa tahmini Tur 3 skor: 0.80–0.82
+
+CEO ALTYAPI KARARINDAN SONRA: Skor ~0.83–0.85 → threshold'a ulaşır → PASS riski
+```
+
+---
+
+## GEÇEN AJANLAR (Tur 3'te Revizyon Gerektirmez)
+
+| Agent | QA | Güven |
+|---|---|---|
+| macro_analysis | ✅ PASS | 0.80 |
+| valuation_agent | ✅ PASS | 0.78 (MEDIUM yapısal sınır) |
+| sentiment_news_agent | ✅ PASS | 0.85 |
+| analyst_consensus_agent | ✅ PASS | 0.85 |
+| kap_watch | ✅ PASS | 0.82 (7 KAP ID P3) |
+| context_extraction | ✅ PASS | 0.78 |
+| esg_agent | ✅ PASS | 0.68 (data gaps flagged ✓) |
+| technical_analysis | ✅ PASS | 0.65 (hacim eksik kabul) |
+| event_classification | ✅ PASS | 0.72 |
+| event_impact_mapper | ✅ PASS | 0.72 |
+| event_timeline_alert | ✅ PASS | 0.71 |
+| sector_competition | ✅ PASS | 0.62 (blok meşru) |
+| data_collection | ✅ PASS | 0.72 |
+
+---
+
+```json
+{
+  "qa_decision": "revision_required",
+  "dimension_scores": {
+    "evidence_sufficiency": 0.70,
+    "confidence_calibration": 0.73,
+    "claim_support": 0.73,
+    "completeness": 0.68,
+    "scope_compliance": 0.85
+  },
+  "overall_score": 0.738,
+  "quality_flags": [
+    {"id": "QF-01-R2", "priority": "P0", "type": "infrastructure_blocker", "agent": "parse_standardization", "description": "EBITDA audited PDF kaynak eksik — Sn.A 97,400M tutarlı kullanılıyor ama doğrulanmamış"},
+    {"id": "QF-02-R2", "priority": "P0", "type": "infrastructure_blocker", "agent": "data_collection", "description": "CF Check 3 partial — CAPEX MEDIUM, cash proxy, WC tahmin"},
+    {"id": "QF-REC-COND", "priority": "P0", "type": "rule_violation", "agent": "reconciliation", "description": "CONDITIONAL_PASS = BLOCK kuralı ihlali — kelime çıktıdan kaldırılmalı"},
+    {"id": "QF-05-R2", "priority": "P1", "type": "format_missing", "agent": "financial_analysis", "description": "IAS29 ROE iki satır tablo eksik; Bölüm 5 truncated"},
+    {"id": "QF-FA-B5", "priority": "P1", "type": "truncation", "agent": "financial_analysis", "description": "Bölüm 5C-G görünmüyor"}
+  ],
+  "escalation_recommendation": "escalate_to_ceo",
+  "escalation_reason": "Infrastructure: PDF erişimsiz → EBITDA + CF altyapı kararı CEO direktifi gerektirir. Minimal Tur 3 sonrası tahmini skor 0.83–0.85.",
+  "must_fix_before_merge": [
+    "reconciliation: CONDITIONAL_PASS yazısını kaldır",
+    "financial_analysis: Bölüm 5 tamamla (IAS29 ROE tablo + kartlılık)",
+    "CEO: EBITDA Sn.A ve CF proxy kabul direktifi (altyapı kararı)"
+  ],
+  "review_timestamp": "2026-04-14T10:30:00Z",
+  "review_status": "complete"
+}
+```

@@ -6,14 +6,11 @@ import { db } from './db.js';
 import { PORT } from './config.js';
 import type { Response } from 'express';
 import { ClaudeChatProvider } from './llm/claude-chat-provider.js';
-import { CodexChatProvider } from './llm/codex-chat-provider.js';
-import { resolveFallbackProviderId, resolvePrimaryProviderId } from './llm/default-router.js';
 import { ChatProviderError, type ChatMessage, type ChatProviderId, type ChatSessionState } from './llm/chat-types.js';
 import type { ChatProvider } from './llm/chat-provider-interface.js';
 
 const sessionStore = new Map<string, ChatSessionState>();
 const claudeChatProvider = new ClaudeChatProvider();
-const codexChatProvider = new CodexChatProvider();
 
 // Track in-flight Claude processes per session so we can abort them
 const activeProcesses = new Map<string, ChildProcess>();
@@ -180,14 +177,12 @@ function logChatActivity(userMessage: string, assistantContent: string, duration
   } catch {}
 }
 
-function getProvider(providerId: ChatProviderId): ChatProvider {
-  return providerId === 'codex' ? codexChatProvider : claudeChatProvider;
+function getProvider(_providerId: ChatProviderId): ChatProvider {
+  return claudeChatProvider;
 }
 
 function getProviderOrder(): ChatProviderId[] {
-  const primary = resolvePrimaryProviderId();
-  const fallback = resolveFallbackProviderId();
-  return fallback && fallback !== primary ? [primary, fallback] : [primary];
+  return ['claude'];
 }
 
 function shouldRetryWithFallback(error: unknown, _providerId: ChatProviderId): boolean {

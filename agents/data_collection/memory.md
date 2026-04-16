@@ -39,6 +39,22 @@
 - **"CONDITIONAL PASS" kararı verme** — Data quality kararı yalnızca QA/CEO verir. Sen yalnızca veriyi topla, downstream ile "bloker" veya "temiz" olarak paylaş.
 - **IFRS 16 havacılık şirketlerinde:** ROU varlıklar + lease borcu ayrı satırda çekilmeli; Net Borç formülü için finansal kiralama borcu ayrıştırılmalı.
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **FY2021-2023 IS/BS verileri "[VERİ ÇEKME]" ile bırakıldı** — Manifest'te 5 yıllık kapsam taahhüt edildi; ancak FY2021-2023 için gelir tablosu ve bilanço satirlari doldurulmadi. Sadece FY2025 ve kısmen FY2024 tam. 5 yıllık seri zorunludur.
+- **CF ve SE tabloları kısmi kaldı** — Reconciliation "CF/Özsermaye Tabloları ⚠️ KISMİ" olarak flagledi. OCF/FCF doğrulandı ama ICF, Finansman CF ve özsermaye hareket tablosu (SE) eksik kaldı.
+- **Quarterly data sunulmadı** — Deep dive = quarterly + 5 yıl zorunlu kuralına karşın Q1-Q4 2024/2025 quarterly breakdown gönderilmedi.
+- **Canonical fact pack net biçimde yayımlanmadı** — Downstream ajanlara tek onaylı fact pack sunulmadı; çelişen rakamlar (ticari borç 19,628 vs 68,762 mn) birden fazla agent tarafından farklı yorumlandı.
+- **İçeriden işlem taraması eksik** — KAP'ta yönetim işlemleri taraması zorunlu; çıktıda hiç değinilmedi.
+- **İsdemir (EREGL %94.87) finansal verileri ayrıca toplanmadı** — Konsolide + segment (Erdemir / İsdemir ayrımı) ayrı manifest kalemlerinde olmak zorunda.
+
+### Bundan Sonra:
+- **FY2021-2023 için minimum veri seti tamamla, bırakma** — KAP XBRL veya yıllık rapor PDF'ten en az Revenue/Net Profit/Total Assets/Net Debt 5 yıllık seri olmadan deep dive output gönderme.
+- **CF ve SE olmadan output gönderme** — Sadece OCF değil; ICF (yatırım CF), Finansman CF ve özsermaye hareket tablosu (SE) tam olmadan çıktı gönderilmez.
+- **Canonical fact pack zorunlu** — Her analizin sonunda FY başına tek onaylı anahtar rakam tablosu (Revenue/EBITDA/Net Profit/Net Debt/OCF) yayımla; downstream bu tabloya kilitlenir.
+- **İsdemir KAP ID'si ayrı tara** — EREGL konsolide ile İsdemir birleşik bağlı ortaklık bildirimleri segment ayrımı için zorunlu.
+
 ## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
 
 ### Eksikler:
@@ -121,3 +137,41 @@ Sektor ek checklists:
 - **IS zinciri %100 dolu olmadan canonical fact pack üretme:** COGS eksikse Gross Profit hesaplanamaz; D&A eksikse EBIT bridge kurulamaz. Eksik varsa CEO'ya escalate et.
 
 ---
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- Cikti yalnizca `Mock completed output for data_collection.` seviyesinde kaldi; KAP/SPK/XBRL veya faaliyet raporu PDF'den cekilmis tek bir ham veri, tablo ya da kaynak izi yok.
+- 5 yillik gelir tablosu, bilanço, nakit akisi, ozkaynak degisim tablosu ve Chairman'in zorunlu metriklerini destekleyecek satir bazli veri paketi downstream'e verilmedi.
+### Bundan Sonra:
+- Her raporda output icinde zorunlu olarak `kaynak dosya + tablo adi + satir kalemi + donem` bazli ham veri ozetini ver; mock/placeholder cikti YASAK.
+- Cash flow, working capital ve borc metrikleri icin gerekli satirlari toplamadan `completed` deme; eksik varsa upstream talep veya alternatif kaynak dene, sonra eskale et.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- DSO, DIO, DPO, CCC, NWC/hasilat, NWC gun, cari oran, asit-test, faiz karsilama ve Cash FAVOK icin gerekli alt satirlar ham veri paketine konmadi.
+- Faaliyet raporu/IR tarafindan yonetim rehberi, capex plani, abone/KPI seti ve telekom makro gecis mekanizmasini destekleyecek veri toplama izi olusmadi.
+### Bundan Sonra:
+- Chairman ratio coverage icin gerekli alt satirlari ayri `working_capital`, `liquidity`, `leverage`, `returns`, `cash_flow` bloklari halinde topla; downstream hesap beklemesin.
+- Her veri paketi, birincil kaynak linki veya belge kimligi olmadan `ready` ilan edilmeyecek; mock, summary veya ic platform referansi veri kaynagi sayilmayacak.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- Son 7 gun KAP filtre talebine ragmen veri toplama seti olay zincirini besleyecek dar pencereyi ayri manifestte vermedi.
+- Telekom icin abone, ARPU, churn, capex guidance, spektrum ve enerji maliyeti gecislerini destekleyecek operasyonel ham veri paketi olusmadi.
+### Bundan Sonra:
+- Data collection her raporda `mandatory ratio inputs` ve `sector KPI inputs` diye iki ayri ham veri bolumu yayinlayacak; finansal ve operasyonel girdiler karismayacak.
+- Mandate belirli bir pencere istiyorsa, genis arsiv ayri ek olabilir ama istenen pencere ayri authoritative output olarak zorunlu verilecek.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **Faaliyet Raporu 1561073 indirilmedi** — Solo bilanço, segment notları (IFRS 8) ve interest expense için birincil kaynak. İki tur boyunca "ESK-003 açık" olarak kaldı; bu eskalasyon çözüm değil, görevin taşınmasıdır. Rapor teslim edilmeden önce fetch edilmeliydi.
+- **KAP 1383079 (13 Mart 2026) detayları çözümsüz kaldı** — "Orta materyallik" denilerek geçildi; bu kalemin içeriği hâlâ [VERİ YOK]. Canonical fact pack'te kapsamsız olay var = eksik teslimat.
+- **Interest expense satır bazlı çekilmedi** — Faiz Karşılama Oranı için zorunlu. "TBD 1/21 (%4.8) — eşik altında" gerekçesiyle geçildi; eşik altında bile olmasa bu satır faiz karşılama hesabı için zorunlu.
+- **FY2023 CF/SE tablosu seri kırığı devam etti** — FY2021/2022/2024/2025 var; FY2023 eksik. 5 yıllık seri = zorunlu kuralını ihlal.
+- **WC kalem bazında kırılım downstream'e iletilmedi** — AR 240,073 mn TL çekildi ✓; stok ve ticari borç bireysel yıl kırılımları BS karşılaştırmasından tahmin bırakıldı (DISC-005). FY2024 AR "~185,000*" asteriskli; asterisksiz kaynak gerekiyor.
+
+### Bundan Sonra:
+- **Faaliyet raporu PDF = eskalasyon değil, görev** — Faaliyet raporu çekilemiyorsa fetch'i log göstererek CEO'ya raporla; sessizce "ESK" ile geçme. Çözüm gelmeden döngüyü kapatma.
+- **Interest expense her holding raporunda zorunlu satır** — Faiz Karşılama Oranı (EBIT/Faiz) Chairman metrik listesinde; "eşik altında" gerekçesi veri çekmeme sebebi değil. Doğrudan çek, canonical fact pack'e koy.
+- **KAP bildirimi çözümsüz kalırsa `unverified — upstream escalation açık` etiketiyle kayıt et** — "Orta materyallik" ile geçme; etiketle ve downstream'i uyar.

@@ -63,6 +63,20 @@
 | macro_analysis | 80% | Sektore ozgu bolumler bazen eksik |
 | kap_watch | 80% | Iyi calisiyor |
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **5 yıllık seri eksikliği teslim kontrolünden geçirilmedi** — FY2021-2023 verileri eksikti; COO teslim kontrol matrisinde "FY2021-2023 tarihsel seri" satırı yok. Bu eksiklik rapordaki 5 yıllık trend analizlerini ve büyüme skor kartını zayıflattı.
+- **Teknik analiz standart şablon kontrolü yapılmadı** — MACD/VWAP/Bollinger/Volume Profile "[VERİ YOK]" olarak çıktıda kaldı; COO teslim matrisi bunu flaglemedi.
+- **Header/footer kontrolü eksik** — Teslim matrisinde header/footer satırı yok; "Temiz" geçildi ama doğrulama kanıtı yok.
+- **Layout kalite kontrolü yüzeysel** — "page-break ihlali yok" kontrol edildi ✓ ama 60/40 yan yana layout oranı sayısal olarak doğrulanmadı.
+- **COO teslim kararı doğruydu: APPROVED ✓** — P0/P1 8/8 çözüldü, fact base kilitlendi, COND-1..4 karşılandı. Teslim onayı yerinde.
+
+### Bundan Sonra:
+- **COO teslim matrisi yeni satır ekle: "5 yıllık veri tamamlığı"** — FY(yıl-4) to FY(yıl) tüm yıllar için en az Revenue/EBITDA/Net Debt/OCF var mı? Tek satır kontrol.
+- **Teknik analiz standart şablon kontrolü COO listesine ekle** — Min 5 teknik kalem dolu olmalı (Fibonacci ✓, RSI ✓, MA ✓ + en az 2 diğer). "[VERİ YOK]" olan kalem sayısı ≥4 ise flag.
+- **Header/footer kontrolü COO listesine ekle** — HTML'de header CSS ve footer CSS varlığı string aramasıyla kontrol et; yoksa report_formatter'a geri gönder.
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
@@ -113,3 +127,47 @@
 - **Delivery check her analizin sonunda ZORUNLU:** CEO gate kapısını geçmeden rapor teslim edilemez. COO bu gate'i yönetir.
 
 ---
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- COO cikti, eksik hedef fiyat ve ayri `macro_analysis_output` yoklugunu dogru gordu ama Chairman'in zorunlu skor karti, gorsel/PDF ve son teslim checklistini satir satir kapatmadan durdu.
+- Delivery gate karari dogru yone gitse de "hangi blocker hangi agent'a ait" sorumluluk dagilimi finalde yeterince operasyonel yazilmadi.
+### Bundan Sonra:
+- Release gate sonucunda her blocker'i `agent_owner + fix + recheck condition` formatinda yaz; yalniz "blocked" demek yetmez.
+- COO kontrolde hedef fiyat, skor karti, PDF, 12 bolum, makro bolumu ve chart inventory ayri ayri `present/missing` olarak zorunlu listele.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- COO, teslim kontrolunde raporun 12 bolum, skor karti, Bear/Baz/Bull hedef fiyat, PDF artefakti, chart inventory ve makro-jeopolitik tamligini tek tek kapatmadi.
+- `blocked/revision_needed` karari verilse de blocker sahipligi net ayrismadi; hangi eksigin data_collection, FA, synthesis, formatter veya QA tarafinda cozulecegi operasyonel yazilmadi.
+### Bundan Sonra:
+- COO release gate'te her zorunlu teslim unsurunu `present/missing/contested` formatinda tek satirlik checklist olarak verecek; eksik kalan madde varsa rapor cikmayacak.
+- Her blocker icin `owner + due output + recheck rule` zorunlu olacak; ortak ve muallak blocker listesi artik kabul edilmeyecek.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- COO, final rapordaki OCF tanim catismasi, makro bolum boslugu ve PDF/deliverable kaniti eksigini gormesine ragmen bunlari tek teslim checklistine baglamadi.
+- Release karari verilirken `hangi agent neyi duzeltecek` ve `yeniden kontrol kosulu nedir` formatinda operasyonel takip listesi uretilmedi.
+### Bundan Sonra:
+- COO her teslimde `content gate` ve `artifact gate`i ayri calistiracak; sayi/fact pack catismasi varsa layout dogru olsa bile teslim duracak.
+- COO blocker ozeti her zaman `issue -> owner -> fix artifact -> recheck` matrisiyle yayinlanacak; bu format olmadan gate karari tamamlanmis sayilmayacak.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **BLOCKED kararı doğru ✓** — report_formatter DEGRADED + QA 0.658 < 0.75 ile delivery blocked. Karar yerinde.
+- **report_formatter exit 143 (context overflow) için sistematik çözüm önerisi sunulmadı** — Aynı hata KCHOL önceki turda da oluştu; COO'nun "formatter büyük input → parçalı gönder" direktifini sistematik olarak kayıt etmesi ve bir sonraki teslime hazırlaması gerekiyordu.
+- **SOTP tablosu eksikliği COO teslim kontrolünde önceden flaglenmedi** — "valuation_agent SOTP formal output yok" COO pre-delivery check'inde P0 olarak görünmedi; sadece QA bölümünde tespit edildi. COO holding analizlerinde SOTP varlığını ayrıca kontrol etmeli.
+- **7 kontrol "YAPILAMADI" durumu bloker matrisi yerine tek notla geçildi** — HTML boş → 7 kontrol yapılamadı. COO bu 7 kontrolü "PENDING — formatter fix sonrası yeniden kontrol edilecek" formatında ayrı matrise almalıydı.
+
+### Bundan Sonra:
+- **report_formatter büyük içerik → parçalı gönderim kuralı COO pre-brief'ine ekle** — Final summary > ~8000 token ise: "Formatter'a parçalı gönder: Bölüm 1-4 önce, 5-12 sonra." Bu direktif COO başlangıç briefine zorunlu girdi.
+- **Holding teslim kontrolüne yeni satır: SOTP Tablosu** — Kontrol: [valuation_agent SOTP tablosu (6 iştirak × NAV katkısı) downstream'e iletildi mi?] — EVET/HAYIR. HAYIR ise P0 bloker.
+- **"YAPILAMADI" kontroller için ikincil doğrulama** — HTML boş gelirse final_summary çıktısından metin QA'sı yapılacak; "HTML kontrol edilemedi, metin QA yapıldı" notu ile devam edilecek.
+
+## Agent Performans Güncellemesi — KCHOL Delta (16 Nisan 2026)
+- report_formatter: Exit 143 (2. kez KCHOL) → başarı %30
+- valuation_agent: SOTP formal output teslim etmedi → başarı %45
+- event_timeline_alert: 2 tur DEGRADED → başarı %30
+- data_collection: FY2025/2024 tam ✓, IAS29 ✓; FY2023/solo bilanço eksik → başarı %65
+- financial_analysis: Cash FAVÖK, FCF negatif analizi güçlü ✓; WC kalem bazı, solo analiz eksik → başarı %55

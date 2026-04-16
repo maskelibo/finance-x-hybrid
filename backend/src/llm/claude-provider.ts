@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { CLAUDE_PERMISSION_MODE, CLAUDE_SPAWN_OPTIONS } from '../config.js';
+import { CLAUDE_PERMISSION_MODE, CLAUDE_SPAWN_OPTIONS, PROVIDER_STALL_TIMEOUT_S } from '../config.js';
 import type { LLMProvider } from './provider-interface.js';
 import type { LLMErrorType, ProviderAvailability, ProviderRunInput, ProviderRunResult } from './types.js';
 
@@ -57,6 +57,8 @@ export class ClaudeProvider implements LLMProvider {
       let stdoutBuf = '';
       let stderrBuf = '';
       let timedOut = false;
+      let stalled = false;
+      let lastOutputAt = Date.now();
 
       const timeoutHandle = input.timeoutMs
         ? setTimeout(() => {
@@ -65,9 +67,29 @@ export class ClaudeProvider implements LLMProvider {
           }, input.timeoutMs)
         : null;
 
+      // Stall detection: progressive — warn at 3min, kill at stall timeout
+      const stallCheckInterval = setInterval(() => {
+        const silentSecs = (Date.now() - lastOutputAt) / 1000;
+
+        // Phase 1: Warning at 180s with 0 tokens
+        if (silentSecs > 180 && stdoutBuf.length === 0) {
+          console.warn(`[PROVIDER:claude] Warning — ${Math.round(silentSecs)}s with 0 output tokens`);
+        }
+
+        // Phase 2: Kill at stall timeout — but ONLY if truly no output
+        // Ignore stderr resets — only stdout matters for progress
+        if (silentSecs > PROVIDER_STALL_TIMEOUT_S && stdoutBuf.length === 0) {
+          stalled = true;
+          console.warn(`[PROVIDER:claude] Stall confirmed — no output for ${Math.round(silentSecs)}s, killing process`);
+          child.kill('SIGTERM');
+          clearInterval(stallCheckInterval);
+        }
+      }, 30000);
+
       child.stdout.on('data', (chunk: Buffer) => {
         const text = chunk.toString('utf8');
         stdoutBuf += text;
+        lastOutputAt = Date.now();
         input.onStdout?.(text);
       });
 
@@ -77,8 +99,10 @@ export class ClaudeProvider implements LLMProvider {
         input.onStderr?.(text);
       });
 
+
       child.on('error', (err) => {
         if (timeoutHandle) clearTimeout(timeoutHandle);
+        clearInterval(stallCheckInterval);
         resolve({
           success: false,
           output: '',
@@ -94,10 +118,11 @@ export class ClaudeProvider implements LLMProvider {
 
       child.on('close', (code) => {
         if (timeoutHandle) clearTimeout(timeoutHandle);
+        clearInterval(stallCheckInterval);
         const durationMs = Date.now() - startedAt;
 
         if (code !== 0) {
-          const errorType = timedOut || code === 143
+          const errorType = timedOut || stalled || code === 143
             ? 'timeout'
             : detectClaudeErrorType(stderrBuf, stdoutBuf);
           const timeoutSecs = input.timeoutMs ? Math.round(input.timeoutMs / 1000) : 0;

@@ -200,3 +200,7 @@ Sektöre özgü en önemli ESG konuları (SASB Materiality Map referansı)
 - Farazi/uydurulmuş veri üretme YASAK
 - Yatırım tavsiyesi (AL/SAT/TUT/BUY/SELL/HOLD) verme YASAK — analiz yap, tavsiye verme
 - Kaynaksız iddia ileri sürme YASAK
+
+
+---
+

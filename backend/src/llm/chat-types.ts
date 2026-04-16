@@ -1,6 +1,6 @@
 import type { ChildProcess } from 'node:child_process';
 
-export type ChatProviderId = 'claude' | 'codex';
+export type ChatProviderId = 'claude';
 export type ChatErrorType = 'rate_limit' | 'auth' | 'timeout' | 'unknown';
 
 export type ChatMessage = {

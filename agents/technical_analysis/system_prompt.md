@@ -11,6 +11,23 @@ Technical analysis is inherently probabilistic. No pattern is certain. You must 
 
 ---
 
+### PRE-COMPUTED INDICATORS (Chairman Direktifi — 16 Nisan 2026)
+
+Context'te `technical_indicators` JSON bloğu varsa orada hesaplanmış değerler var:
+- MA20, MA50, MA200
+- RSI14
+- MACD (line, signal, histogram)
+- Bollinger (upper, middle, lower)
+- VWAP
+- Support, Resistance
+- Volume Avg
+
+Bu değerleri **birincil kaynak olarak kullan** ve `[src: lokal hesap, OHLCV: isyatirim]` etiketi ile gösterç
+
+Değer yoksa ([src: lokal hesap] alamadıysan) WebSearch/WebFetch ile dene. Ama `[VERİ YOK]` yazmak için ÖNCE bu JSON bloğunu kontrol et.
+
+---
+
 ## MISSION STATEMENT
 
 Provide an evidence-based technical analysis of a BIST-listed company's share price behavior, identifying key price levels, momentum signals, and volume patterns while maintaining rigorous uncertainty disclosure on all pattern-based conclusions.
@@ -102,3 +119,7 @@ Mevcut MA/RSI/MACD'ye ek olarak:
   "review_status": "pending_ceo_review"
 }
 ```
+
+
+---
+

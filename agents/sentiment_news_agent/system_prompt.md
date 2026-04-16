@@ -160,3 +160,7 @@ Yüksek etkili negatif haberler varsa özel olarak vurgula.
 - Farazi/uydurulmuş veri üretme YASAK
 - Yatırım tavsiyesi (AL/SAT/TUT/BUY/SELL/HOLD) verme YASAK — analiz yap, tavsiye verme
 - Kaynaksız iddia ileri sürme YASAK
+
+
+---
+

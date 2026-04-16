@@ -37,6 +37,19 @@
 - `macro_regulatory_event` — EPDK/BOTAS tarife kararlari
 - `trade_regulatory_event` — AB Safeguard, CBAM, anti-dumping
 - `commodity_market_event` — HRC, demir cevheri, kok komuru fiyat soklari
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **EPDK gaz tarifesi (4 Nisan 2026) `macro_regulatory_event` olarak classify edilmedi** — CEO direktifinde "EPDK gaz tarifesi bildirimleri → IMMEDIATE flag" açıkça yazılıydı. Bu olayın macro_regulatory_event olarak sınıflandırılması zorunluydu; çıktıda yalnızca kap_watch tarafından geçildi, event_classification tarafından tam JSON ile işlenmedi.
+- **CBAM (AB Safeguard TRK −%47, 1 Temmuz 2026) `trade_regulatory_event` olarak classify edilmedi** — Bu çelik sektörü için kritik düzenleyici olay taxonomy'de mevcut; sınıflandırılması zorunluydu.
+- **AGM sub-event listesi tam değil** — AGM gündemindeki temettü onayı, yönetim kurulu seçimi, bağımsız üye seçimi ayrı sub-eventler olarak classify edildi ✓ ama ibra kararı ve denetçi seçimi alt eventleri eksik.
+- **Multi-event interaction analizi eksik** — EPDK tarifesi + CBAM + Kok Bataryası CAPEX → net combined EBITDA etkisi hesaplanmadı. Her olay ayrı ayrı analiz edildi.
+
+### Bundan Sonra:
+- **EPDK/BOTAŞ kararları her analizde macro_regulatory_event olarak ÖNCE classify et** — CEO direktifi olan acil tetikleyiciler listesinin başına koy; KAP bildirimi yoksa bile macro_event taxonomy'si ile işle.
+- **Çelik analizinde `trade_regulatory_event` zorunlu kontrol** — AB Safeguard, CBAM, anti-dumping kararları çelik sektörü için özellikle kritik; taxonomy'den bu kategoriye mutlaka bak.
+- **Multi-event portfolio: EPDK + CBAM + CAPEX net etkisi** — Aynı dönemde birden fazla maliyet etkisi varsa bunların combined EBITDA üzerindeki net etkisini cross-event interaction tablosunda göster.
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
@@ -138,3 +151,40 @@
 - **KAP ID eksik = confidence max 0.70:** KAP'tan doğrulanamayan bildirimlerde confidence 0.75 üstüne çıkılamaz.
 
 ---
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- Cikti `Mock completed output for event_classification.` seviyesinde kaldi; olaylar regule edici, operasyonel, finansal ve jeopolitik olarak siniflandirilmadi.
+- Telekom icin spektrum, fiyatlama, enerji, kur, vergi ve rekabet kaynakli event agaci kurulmadan downstream analiz baslatildi.
+### Bundan Sonra:
+- Her event'i `kategori + zaman ufku + kesinlik + finansal kanal` formatinda siniflandir; genel gecis cumlesi yetmez.
+- Jeopolitik ve duzenleyici olaylar sektor-spesifik alt siniflara ayrilacak; telekomda spektrum, BTK, enerji ve kurallar ayri izlenecek.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- Olaylar yalnizca var/yok seviyesinde kaldi; hangi olay kisa vadeli katalist, hangisi yapisal risk, hangisi tartismali veri kaynagi bunu ayirmadi.
+- Jeopolitik olaylar telekom icin ayri bir sinif agacina konmadi; Iran-ABD, Rusya-Ukrayna, enerji ve regule fiyatlama baglanti seti kurulmadı.
+### Bundan Sonra:
+- Event classification ciktilari her zaman `event_id + kategori + alt kategori + horizon + confidence + owner metric` alanlariyla gelecek.
+- Jeopolitik, makro ve duzenleyici olaylari sektor sozlugune gore alt siniflara ayir; telekomda BTK, spektrum, enerji, kur ve rekabet ayrimi zorunlu.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- Event seti, `katalist / risk / routine filing` olarak yatirim diline donusturulmedi; final raporun hangi olayi onde tasiyacagi belirsiz kaldi.
+- Telekom sektorunde spektrum, BTK, enerji, kur ve vergi etkileri ayni kategori altinda yeterince ayrismadi.
+### Bundan Sonra:
+- Event classification her raporda cikisina `investment meaning` alani ekleyecek; olay sadece adlandirilmayacak, katalist mi risk mi rutin mi net yazilacak.
+- Telekom event taxonomy'si ayri sabit set olarak uygulanacak; spektrum, BTK, enerji, kur, vergi ve rekabet olaylari birbiri yerine kullanilmayacak.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **KAP 1383079 "unclassified_due_to_missing_primary_source" doğru etiketlendi ✓** — Ancak materyallik değerlendirmesi "ORTA" olarak konuldu; içerik bilinmeden materyallik atamak doğru değil. "MATERYALLIK: BELİRSİZ" olmalıydı.
+- **Event JSON'ları truncated** — Event 2 JSON "classification_rationa..." ile kesildi; Event 3-7 tam JSON eksik. Özet tablo mevcut ✓ ama kural: her event için tam JSON.
+- **Multi-event interaction analizi yapılmadı** — TUPRS satışı (9,320 mn TL nakit) + temettü ödemesi (-17,320 mn TL) + Fitch downgrade → net NAV ve kümülatif nakit etkisi hesaplanmadı. KCHOL gibi 8 materyel olay varken cross-event tablo zorunlu.
+- **Koç Finansman satışı KAP bildirimi doğrulanmadı** — Haber kaynakları (Mynet Finans) kullanıldı; KAP'ta resmi bildirim ID'si yok. Bu confidence = MEDIUM olmaktan çıkıp LOW olmalıydı.
+
+### Bundan Sonra:
+- **Materyallik = içerik bilinmeden verilemez** — KAP bildirimi okunmadan "ORTA" atama yasak. İçerik bilinemiyorsa: "MATERYALLIK: BELİRSİZ — içerik doğrulaması gerekiyor".
+- **Holding analizinde cross-event NAV tablosu zorunlu** — 3+ materyel event varsa sonunda: Olay | P&L Etkisi (mn TL) | NAV Etkisi (TL/hisse) | Dönem | Net. Bu tablo event_impact_mapper'ın input'u.
+- **Event JSON truncation önlemi** — 5+ event varsa: Özet tablo → JSON Batch 1 (Event 1-3) → JSON Batch 2 (Event 4+). Tek mesajda kesme.

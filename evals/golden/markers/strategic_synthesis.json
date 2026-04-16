@@ -1,0 +1,25 @@
+{
+  "agent_id": "strategic_synthesis",
+  "description": "Stratejik sentez, skor karti, yatirim tezi metrikleri",
+  "required_metrics": [
+    "Skor",
+    "Risk"
+  ],
+  "optional_metrics": [
+    "SWOT",
+    "güçlü",
+    "zayıf",
+    "fırsat",
+    "tehdit",
+    "Yatırım Tezi",
+    "Boyut",
+    "Sentez"
+  ],
+  "required_sections": [],
+  "source_tags": [],
+  "forbidden_patterns": [
+    "tahmin ediyorum"
+  ],
+  "warning_patterns": [],
+  "min_output_length": 8000
+}

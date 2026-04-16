@@ -3,7 +3,7 @@ import { db } from './db.js';
 import { loadAgent } from './agents.js';
 import { readAgentMemory } from './memory.js';
 import { getModelForAgent } from './config.js';
-import { createDefaultProviderRouter, resolveFallbackProviderId } from './llm/default-router.js';
+import { createDefaultProviderRouter } from './llm/default-router.js';
 
 /**
  * CEO Feedback Loop — Post-Report Agent Review
@@ -95,13 +95,9 @@ export async function runFeedbackLoop(sessionId: string): Promise<string> {
     `- Türkçe yaz`,
   ].join('\n');
 
-  const primaryProvider = providerRouter.getPrimaryProvider().id;
   const result = await providerRouter.run({
     prompt,
-    model: getModelForAgent('ceo', primaryProvider),
-    fallbackModel: resolveFallbackProviderId()
-      ? getModelForAgent('ceo', resolveFallbackProviderId()!)
-      : undefined,
+    model: getModelForAgent('ceo'),
     timeoutMs: 15 * 60 * 1000,
   });
 

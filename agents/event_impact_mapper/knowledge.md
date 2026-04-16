@@ -198,3 +198,26 @@ Ornek: Hurmuz krizi → Crack spread genislemesi (7.0 → 10.5 $/bbl)
 - EREGL Ermaden ornegi: Possible Resource → spekulatif degerleme $729M (~32.5B TRY)
 
 ---
+
+## 11. EPDK Nisan 2026 Tarife Kararı
+
+- Yürürlük: 4 Nisan 2026
+- Elektrik genel +%25 | Sanayi ortalama +%20 | Doğalgaz santral +%24.2
+- Etki formülü: Tarife artışı × enerji/COGS payı = EBITDA etkisi
+- Çelik (enerji = COGS'un %25-30): Sanayi +%20 → EBITDA ~-4-5B TRY/yıl (EREGL ölçeği)
+- Rafineri (enerji = işleme maliyetinin %10-15): Elektrik +%25 → marjinal etki
+
+---
+
+## 12. Telekom — 4 Kanal Jeopolitik Etki Modeli
+
+Jeopolitik ve makro olayları telekom şirketi üzerinden 4 kanal:
+
+| Kanal | Transmisyon | TCELL Ölçeği |
+|---|---|---|
+| Enerji | Tarife artışı → baz istasyonu OPEX | Enerji = OPEX'in %8-12; tarife+%20 → EBITDA marjı ~-1-2pp |
+| Finansman | TCMB/ülke risk → borçlanma maliyeti | Net borç/EBITDA ~0.5x; sovereign spread +50bp → finansman +X B TRY |
+| Talep | Ekonomik yavaşlama → abone büyüme yavaşlaması | Postpaid churn artışı; kurumsal IT donması |
+| Regule Fiyatlama | BTK tarife kararı / spektrum yenileme | Tavan fiyat değişikliği → gelir tavanı; CAPEX zamanlaması |
+
+---

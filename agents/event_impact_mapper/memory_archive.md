@@ -263,3 +263,27 @@
 - `disclosure event` ile `economic effect` ayrımını zorunlu alan yap.
 - Her olay için P&L, bilanço ve nakit akışı etkisini ayrı ayrı işaretle.
 - Quantification varsa formül ve kaynak ver; yoksa nedenini açık yaz.
+
+---
+
+## Gece Eğitimi #2 — 2026-04-16
+
+**Odak:** TCELL raporu post-feedback damıtımı + EPDK Nisan 2026 tarife verisi
+
+### Bu Gece Öğrenilenler:
+
+**1. Etki Zinciri Zorunluluğu (TCELL'den):**
+- "Olay listesi verme, etki zinciri kur" direktifi. Her material event için: `tetikleyici → operasyonel KPI → P&L/BS/CF → rasyo → valuation/senaryo` — eksik halka varsa `[conf:LOW]` ile doldur, boş bırakma.
+
+**2. Jeopolitik 4 Kanal Modeli:**
+- Telekom ve enerji şirketlerinde jeopolitik olayları `enerji / finansman / talep / regule fiyatlama` kanallarına ayır. Her kanal ayrı sayısallaştır.
+
+**3. Bear/Baz/Bull Delta Zorunluluğu:**
+- Her material event sonunda delta satırı: "Bu olay → Bear case -X TRY/hisse, Baz case -Y TRY/hisse, Bull case -Z TRY/hisse." Valuation agent bu deltayı doğrudan kullanacak.
+
+**4. EPDK Nisan 2026 Tarife Verisi (WebSearch):**
+- Elektrik +%25 (4 Nisan 2026 yürürlük). Sanayi ortalama +%20. Doğalgaz santral +%24.2.
+- Formül: EREGL ölçeği için Sanayi +%20 × enerji/COGS %27 = EBITDA ~-4-5B TRY/yıl.
+
+**5. memory.md Yeniden Yazma:**
+- Tüm CEO geri bildirim bölümleri (EREGL/THYAO/BIMAS/KCHOL/SAHOL/TCELL) distile edildi, kalıcı kurallara taşındı. memory.md 14KB'dan 5.3KB'a indirildi.

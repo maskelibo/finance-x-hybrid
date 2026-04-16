@@ -397,6 +397,58 @@
       color: var(--fx-dark);
     }
 
+    /* === SAYFA KIRILMASI VE TİPOGRAFİ KURALLARI === */
+
+    /* Orphan/Widow kontrolü — minimum 4 satır */
+    p, li, td {
+      orphans: 4;
+      widows: 4;
+    }
+
+    /* Başlıklar asla sayfa sonunda tek kalmaz */
+    h1, h2, h3, h4 {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    /* Başlıktan sonra minimum 3 satır aynı sayfada kalmalı */
+    h1 + *, h2 + *, h3 + * {
+      page-break-before: avoid;
+      break-before: avoid;
+    }
+
+    /* Tablo ve grafik bölünmez */
+    table {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .chart-container, .kpi-grid, .swot-grid, .scenario-grid, .investor-card {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Bölüm geçişlerinde tutarlı boşluk */
+    h1 {
+      page-break-before: always;
+      break-before: always;
+      margin-top: 0;
+      padding-top: 20px;
+    }
+    h1:first-child, .page h1:first-child {
+      page-break-before: avoid;
+      break-before: avoid;
+    }
+
+    /* Devam eden içerik — sayfa başında "devamı" notu */
+    .page-continuation {
+      font-size: 8pt;
+      color: var(--fx-gray);
+      font-style: italic;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed var(--fx-border);
+      padding-bottom: 4px;
+    }
+
     /* === PRINT AYARLARI === */
     @media print {
       .page {
@@ -409,11 +461,15 @@
       table {
         page-break-inside: avoid;
       }
-      .chart-container {
+      .chart-container, .kpi-grid {
         page-break-inside: avoid;
       }
-      .kpi-grid {
-        page-break-inside: avoid;
+      p, li {
+        orphans: 4;
+        widows: 4;
+      }
+      h1, h2, h3 {
+        page-break-after: avoid;
       }
     }
   </style>

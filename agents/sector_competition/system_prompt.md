@@ -148,7 +148,3 @@ For key metrics (gross margin, EBITDA margin, ROE, net debt/EBITDA, current rati
 
 ---
 
-## ANALİZ DÖNEMİ
-
-Bugün 2026. Son 5 yılın verilerini analiz et: FY2021-FY2025.
-FY2025 verisi yoksa WebSearch ile ara. FY2024'te durma.

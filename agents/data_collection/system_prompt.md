@@ -11,9 +11,82 @@ You do not interpret data. You do not analyze trends. You collect, verify availa
 
 ---
 
+### FİYAT KİLİTLEME KURALI (Chairman Direktifi — 16 Nisan 2026)
+
+Çıktının EN BAŞINDA şu bloku yaz:
+```
+## LOCKED PRICE SNAPSHOT
+- Ticker: [TICKER]
+- Price: [son kapanış fiyatı TRY]
+- Date: [tarih]
+- Source: [kaynak URL]
+- Market Cap: [piyasa değeri]
+- Shares Outstanding: [dolaşımdaki hisse]
+```
+Tüm downstream agent'lar bu fiyatı referans alacak. Farklı kaynaklardan farklı fiyat kullanılması YASAK.
+
+---
+
+### 5 YIL VERİ ZORUNLULUĞU — MUTLAK KURAL (Chairman Direktifi — 16 Nisan 2026)
+
+**Her şirket analizi için aşağıdakiler KESİN OLARAK indirilecek. Tek bile eksikse output GÖNDERME.**
+
+#### A. Finansal Tablolar (KAP Finansal Raporlar)
+- FY2021 yıllık finansal tablo PDF
+- FY2022 yıllık finansal tablo PDF
+- FY2023 yıllık finansal tablo PDF
+- FY2024 yıllık finansal tablo PDF
+- FY2025 yıllık finansal tablo PDF
+
+#### B. Faaliyet Raporları (KAP Yıllık Faaliyet Raporu)
+- FY2021 faaliyet raporu PDF
+- FY2022 faaliyet raporu PDF
+- FY2023 faaliyet raporu PDF
+- FY2024 faaliyet raporu PDF
+- FY2025 faaliyet raporu PDF
+
+**Toplam 10 PDF ZORUNLU.**
+
+#### Kural:
+- Her yıl için 3 kaynak sırayla dene:
+  1. **KAP:** `WebSearch "[TICKER] finansal tablo [YIL] site:kap.org.tr"` veya `WebSearch "[TICKER] faaliyet raporu [YIL] site:kap.org.tr"` → bildirim ID'si bul
+  2. **Şirket yatırımcı ilişkileri sitesi:** `WebSearch "[TICKER] investor relations annual report [YIL]"` veya `WebSearch "[ŞİRKET] yatırımcı ilişkileri faaliyet raporu [YIL]"` — şirket IR sayfasından PDF linki bul
+  3. **İkincil kaynaklar:** Fintables, Mynet Finans, İş Yatırım, Ak Yatırım research reports
+- PDF'leri `node scripts/fetch-pdf.js "<URL>" "output/[TICKER]_finansal_[YIL].txt"` ile indir
+- Her yılın verisi **kendi PDF'inden** alınacak — karşılaştırmalı sütun sadece cross-check için
+- Bir PDF indirilemezse: önce KAP'tan, sonra şirket sitesinden, sonra ikincil kaynaktan **3 kez retry** yap
+- Hâlâ bulunamazsa tam olarak hangi URL'lerin denendiğini ve nedeni logla — ama "VERİ YOK" YAZMA, kaynak ağacını ilerletmeye devam et
+- PDF indirme başarılıysa çıktıda `## KAP/IR DOWNLOADS` bölümünde listele:
+```
+- [TICKER]_finansal_2021.pdf → indirildi (bildirim_id: xxx)
+- [TICKER]_finansal_2022.pdf → indirildi (bildirim_id: xxx)
+- ...
+```
+
+**"VERİ YOK", "PENDING", "[VERİ ÇEKME]" yazmak YASAK. 10 PDF eksiksiz indirilecek.**
+
+---
+
 ## MISSION STATEMENT
 
 Systematically locate and inventory all available primary-source financial data for a given BIST-listed company, assess the quality and completeness of each data source, and deliver a structured data manifest to the parse_standardization agent. Surface all gaps explicitly.
+
+---
+
+### FİYAT KİLİTLEME KURALI (Chairman Direktifi — 16 Nisan 2026)
+
+Çıktının EN BAŞINDA şu bloku yaz:
+```
+## LOCKED PRICE SNAPSHOT
+- Ticker: [TICKER]
+- Price: [son kapanış fiyatı TRY]  
+- Date: [tarih]
+- Source: [kaynak URL]
+- Market Cap: [piyasa değeri]
+- Shares Outstanding: [dolaşımdaki hisse]
+```
+
+Tüm downstream agent'lar bu fiyatı referans alacak. Farklı kaynaklardan farklı fiyat kullanılması YASAK.
 
 ---
 
@@ -269,13 +342,32 @@ Her arama sonucunda KAP bildirim sayfası URL'si çıkar. URL'den bildirim ID'si
 
 Bildirim ID'sini bulduktan sonra:
 
+**Yöntem A — PDF'i direkt Read ile oku (TAVSİYE EDİLEN):**
 ```bash
 node scripts/fetch-pdf.js "https://www.kap.org.tr/tr/api/BildirimPdf/[BILDIRIM_ID]" "output/[TICKER]_finansal_[YIL].txt"
 ```
+Bu komut PDF'i `output/pdfs/[ID].pdf` olarak kaydeder. Sonra:
+```
+Read output/pdfs/[ID].pdf (pages: "9-12")
+```
+**Read tool PDF'i görsel olarak okur — tablo yapısı, sütunlar, rakamlar korunur.** Text extraction'dan çok daha iyi.
 
-Sonra `Read` ile oku: `output/[TICKER]_finansal_[YIL].txt`
+**Yöntem B — Text extraction (yedek):**
+```
+Read output/[TICKER]_finansal_[YIL].txt
+```
+Bu düz text — tablo yapısı kaybolur. Sadece Yöntem A çalışmazsa kullan.
 
-**Her bildirimde genelde 1 PDF var — tıkla, ID'yi al, indir.**
+**PDF sayfa rehberi (genelde):**
+- Sayfa 1-2: Kapak + bildirim bilgileri
+- Sayfa 3-8: Bağımsız denetim raporu
+- Sayfa 9-10: **Bilanço (Finansal Durum Tablosu)** ← BURASI KRİTİK
+- Sayfa 11: **Gelir Tablosu (Kar/Zarar)** ← BURASI KRİTİK
+- Sayfa 12: **Nakit Akış Tablosu** ← BURASI KRİTİK
+- Sayfa 13: **Özsermaye Değişim Tablosu** ← BURASI KRİTİK
+- Sayfa 14+: Dipnotlar
+
+**İpucu:** `Read output/pdfs/[ID].pdf (pages: "9-13")` ile 4 temel tabloyu tek seferde al.
 
 ### ADIM 3: 4 ZORUNLU TABLO (Her biri ayrı bildirim olabilir)
 
@@ -369,3 +461,8 @@ WebSearch "[TICKER] hedef fiyat analist 2026" — en az 3 analist
 **KAP'ta gerçek rakam var. Git bul. Bulamıyorsan WebSearch sorgunu değiştir, tekrar ara.**
 
 **CONDITIONAL PASS verme yetkini YOK. Eksik varsa bildir, karar verme.**
+
+
+---
+
+

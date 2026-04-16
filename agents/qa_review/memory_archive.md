@@ -497,3 +497,29 @@ Score 0.84 + 28 mandatory metrics hesaplanmış + truncation issue = **CONDITION
 - Her kritik bulguyu bir sahiplikle eşle: hangi agent neyi düzeltecek.
 - Chairman zorunlu metrik checklist'ini QA içinde ayrıca denetle.
 - QA sonunda önerilen authoritative fact base'i tek paragrafta kilitle.
+
+---
+
+## Gece Eğitimi #2 — 2026-04-16
+
+**Odak:** TCELL raporu post-feedback + 4-kapı framework + QA fact lock
+
+### Bu Gece Öğrenilenler:
+
+**1. Real Artifact Check — İlk Adım:**
+- "Mock completed output for agent_X" veya placeholder görünce diğer skorlamaya geçmeden otomatik FAIL.
+- Sadece mock değil: truncation, kaynak izi yokluğu, placeholder metinler = artifact failure.
+
+**2. 4 Sert Kapı:**
+- Artifact Reality / Mandatory Metric Completeness / Fact Pack Consistency / Scope Compliance
+- Biri geçilmezse PASS YASAK. Skor 0.88 olsa bile 4 kapıdan biri kapanmamışsa FAIL.
+
+**3. QA Fact Lock Paragrafı:**
+- FAIL/BLOCK kararında authoritative sayı seti ve contested kalemler sabitlenmeli.
+- Format: authoritative değer (kaynak) + contested değer (çelişki) + blocked kalem.
+
+**4. Her FAIL'de Zorunlu Alanlar:**
+- `issue + owner + unblock condition + downstream impact` — dördü olmadan FAIL kararı eksik.
+
+**5. memory.md Yeniden Yazma:**
+- 15.4KB'dan 5.3KB'a indirildi. 8+ rapor CEO geri bildirimi distile edildi.

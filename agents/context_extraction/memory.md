@@ -19,6 +19,21 @@
 - **Celiskili metriklerde authoritative baglam setini ayrica kilitle.**
 - **Context extraction'da ilk is dogrulanmis baglamsal riskleri ve yonetim cikarimini one yaz.**
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **CEO mektubu / yönetim görüşü PDF'ten direkt çekilemedi** — IR HTML ve basın bültenlerinden yapıldı; birincil kaynak olan entegre faaliyet raporu PDF'i içeriği tam verilmedi. Taahhüt takip tablosu (CEO vaatler vs gerçekleşme) eksik kaldı.
+- **OYAK ilişkili taraf transfer fiyatlama metodolojisi belirtilmedi** — OYAK %81.49 hissedar; EREGL-OYAK enerji/lojistik/hammadde işlemlerinde CUP/RPM/CPM hangisi kullanıldığı KAP notlarından çekilmedi.
+- **Net FX pozisyonu sayısal hesap eksik** — USD gelir − USD maliyet − USD borç ödemesi = net USD pozisyon formülü uygulanmadı; "fonksiyonel para birimi USD" bilgisi verildi ama net pozisyon TRY etkisi hesaplanmadı.
+- **İsdemir / Erdemir segment kapasite ve üretim ayrımı** — "Erdemir ~4.5 mt/y, İsdemir ~3.8 mt/y" verildi ✓ ama FY2025 gerçekleşen üretim ve kapasite kullanımı segment bazında (değil sadece konsolide %81) ayrıştırılmadı.
+- **Yönetim rehberliği (guidance) eksik** — FY2026 CAPEX bütçesi, üretim hedefleri ve EBITDA bant yönetimi açıklaması context'e eklenmedi.
+
+### Bundan Sonra:
+- **CEO mektubu taahhüt takip tablosu Round 1'den itibaren zorunlu** — Önceki yıl vaatlerini vs. gerçekleşmeyi tabloda göster; sadece genel anlatı yetmez.
+- **OYAK ilişkisi için transfer fiyatlama Not'unu oku** — KAP "İlişkili Taraf" dipnotundan metodoloji çek. "Arm's length beyanı" yetmez.
+- **Net FX pozisyonu formülü standart** — USD net gelir − USD net maliyet − USD borç servisi = Net USD pozisyon → ×kur = TRY riske maruziyet. Her çelik şirketinde zorunlu.
+- **Çelik sektörü: hammadde fiyat-maliyet geçirgenliği sayısal** — "$1/ton demir cevheri değişimi → EBITDA TRY X mn etkisi" formatlı hesabı context çıktısına ekle; financial_analysis bu girdiyi bekler.
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
@@ -114,3 +129,40 @@ Sektor ek cikarimlar:
 - **İştirak EBITDA katkısı tablosu ZORUNLU:** Segment → SAHOL payı → katkı TRY. Eksikse [PENDING] ile escalate et; tablonu boş bırakma.
 
 ---
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- Cikti yalnizca `Mock completed output for context_extraction.` seviyesinde kaldi; sirket anlatisi, yonetim taahhutleri, sermaye tahsisi, rekabet konumu ve CEO mektubu icgoru paketi yok.
+- Telekom sektorune ozgu makro gecis mekanizmasi ve jeopolitik baglamin isletmeye nasil yansidigi cikariya donusturulmedi.
+### Bundan Sonra:
+- Her raporda yonetim anlatisi, stratejik oncelikler, sermaye tahsisi, rekabet avantaji ve son 12 ay taahhut takibini kaynakli context paketi olarak ver.
+- Makro/geopolitik olaylarin sirket gelir, maliyet, borclanma ve talep kanalina gecis mekanizmasini ayri alt baslikta zorunlu isle.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- Yonetim anlatisi ve faaliyet raporu okumasi olmadigi icin raporda CEO mektubu, hedefler, 5G monetization tezleri ve sermaye tahsisi disiplini kaynaksiz kaldi.
+- Iran-ABD, Rusya-Ukrayna, enerji maliyeti ve kur gecis kanallari telekom is modeline nasil baglaniyor sorusu acilmadi.
+### Bundan Sonra:
+- Context paketi her zaman `yonetim soylemi + stratejik hedef + gecmis taahhut/gerceklesme + rekabet pozisyonu` cekirdegi ile gelecek.
+- Makro-jeopolitik baglam yalniz haber ozetlenerek degil, gelir/maliyet/borclanma/talep kanalina gecis zinciri ile islenecek.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- Telekom is modeli icin core mobile, fixed fiber, data center/cloud, fintech ve uluslararasi ayaklar ayni stratejik haritada toparlanmadi.
+- Yonetim rehberligi ile gecmis teslim performansi guclu kaynakli bir `trust score` olarak verilmedi; bu yuzden ileriye donuk tez zayif kaldi.
+### Bundan Sonra:
+- Context extraction her telekom raporunda `is kolu haritasi + KPI + rekabet avatajı + yonetim rehberligi/gecmis teslim` paketini zorunlu verecek.
+- Yonetim mektubu ve guidance okumalari yalniz alinti degil, `taahhut -> gerceklesme -> yeni hedef` tablosu olarak sunulacak.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **Ortaklık yapısı tablosu kesildi** — Semahat Sevim Arsel (%6.15) satırında çıktı kesildi; yabancı yatırımcılar ve diğer hissedarlar görünmedi. Kural: tablo yarım bırakılamaz.
+- **Taahhüt takip tablosu görünür formatta sunulmadı** — CEO mektubu alıntısı var ✓ (Levent Çakıroğlu, koc.com.tr); ancak "2025 taahhüt → 2025 gerçekleşme" karşılaştırma tablosu JSON'a gömülü kaldı. Raporda ayrı tablo formatında olmalı.
+- **Net FX pozisyonu sayısal verilmedi** — TUPRS USD ihracat geliri + FROTO EUR ihracat geliri − KCHOL konsolide FX borç = net FX pozisyon hesabı yapılmadı. Holding için bu hesap zorunlu.
+- **EYAŞ→TUPRS dolaylı pay hâlâ aralık** — "~%36-40 dolaylı" verildi; KAP EYAŞ ortaklık bildirimi okunmadan kesin değer verilemez. Tahmini aralık downstream'e geçmemeli.
+
+### Bundan Sonra:
+- **Holding net FX pozisyonu formülü** — Sum(segment net FX pozisyon) = Σ[segment USD/EUR net gelir − segment FX borç servisi]. KCHOL için: TUPRS (USD gelir büyük) + FROTO (EUR ihracat ~%70) + ARCLK (ihracat) − konsolide FX debt. Her analizde bu tabloya yer ver.
+- **Efektif pay = KAP bildirimi** — EYAŞ sahiplik oranı KAP'ta EYAŞ ortaklık bildirimi sayfasından doğrudan çekilecek; tahmin aralığı verilmeyecek.
+- **Taahhüt takip tablosu her holding raporunda Round 1'den itibaren** — CEO mektubu → sütun 1: taahhüt, sütun 2: gerçekleşme, sütun 3: sapma/yorum. Gömülü JSON değil, ayrı rapor tablosu.

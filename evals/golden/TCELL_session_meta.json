@@ -1,0 +1,233 @@
+[
+  {
+    "agent_id": "ceo",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 7325,
+    "cost_usd": 0.1928148,
+    "duration_ms": 177742,
+    "output_length": 15155,
+    "provider_used": null
+  },
+  {
+    "agent_id": "data_collection",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 21360,
+    "cost_usd": 0.9501233,
+    "duration_ms": 221503,
+    "output_length": 7625,
+    "provider_used": null
+  },
+  {
+    "agent_id": "parse_standardization",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 11401,
+    "cost_usd": 0.08505845,
+    "duration_ms": 105226,
+    "output_length": 25322,
+    "provider_used": null
+  },
+  {
+    "agent_id": "reconciliation",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 10750,
+    "cost_usd": 0.0902047,
+    "duration_ms": 98988,
+    "output_length": 22362,
+    "provider_used": null
+  },
+  {
+    "agent_id": "context_extraction",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 11003,
+    "cost_usd": 0.7535973,
+    "duration_ms": 314922,
+    "output_length": 9297,
+    "provider_used": null
+  },
+  {
+    "agent_id": "financial_analysis",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 27544,
+    "cost_usd": 0.746235,
+    "duration_ms": 616333,
+    "output_length": 56734,
+    "provider_used": null
+  },
+  {
+    "agent_id": "sector_competition",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 16009,
+    "cost_usd": 0.79617905,
+    "duration_ms": 387749,
+    "output_length": 42325,
+    "provider_used": null
+  },
+  {
+    "agent_id": "macro_analysis",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 19790,
+    "cost_usd": 0.891597,
+    "duration_ms": 460782,
+    "output_length": 46943,
+    "provider_used": null
+  },
+  {
+    "agent_id": "technical_analysis",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 24032,
+    "cost_usd": 1.20571755,
+    "duration_ms": 505346,
+    "output_length": 32333,
+    "provider_used": null
+  },
+  {
+    "agent_id": "kap_watch",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 7465,
+    "cost_usd": 0.25197385,
+    "duration_ms": 66054,
+    "output_length": 12847,
+    "provider_used": null
+  },
+  {
+    "agent_id": "event_classification",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 8178,
+    "cost_usd": 0.1485003,
+    "duration_ms": 76085,
+    "output_length": 12255,
+    "provider_used": null
+  },
+  {
+    "agent_id": "event_impact_mapper",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 7134,
+    "cost_usd": 0.46146855,
+    "duration_ms": 167521,
+    "output_length": 20674,
+    "provider_used": null
+  },
+  {
+    "agent_id": "event_timeline_alert",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 10839,
+    "cost_usd": 0.1661303,
+    "duration_ms": 116419,
+    "output_length": 30793,
+    "provider_used": null
+  },
+  {
+    "agent_id": "qa_review",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 11491,
+    "cost_usd": 0.56402355,
+    "duration_ms": 241331,
+    "output_length": 28102,
+    "provider_used": null
+  },
+  {
+    "agent_id": "strategic_synthesis",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 18942,
+    "cost_usd": 0.69738105,
+    "duration_ms": 448603,
+    "output_length": 54298,
+    "provider_used": null
+  },
+  {
+    "agent_id": "final_summary",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 26603,
+    "cost_usd": 0.83495355,
+    "duration_ms": 602328,
+    "output_length": 51915,
+    "provider_used": null
+  },
+  {
+    "agent_id": "valuation_agent",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 24199,
+    "cost_usd": 0.65796105,
+    "duration_ms": 491682,
+    "output_length": 49000,
+    "provider_used": null
+  },
+  {
+    "agent_id": "sentiment_news_agent",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 11360,
+    "cost_usd": 0.38045925,
+    "duration_ms": 103000,
+    "output_length": 19893,
+    "provider_used": null
+  },
+  {
+    "agent_id": "analyst_consensus_agent",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 10253,
+    "cost_usd": 0.2669893,
+    "duration_ms": 96933,
+    "output_length": 12373,
+    "provider_used": null
+  },
+  {
+    "agent_id": "esg_agent",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 13084,
+    "cost_usd": 0.7193056,
+    "duration_ms": 320315,
+    "output_length": 20187,
+    "provider_used": null
+  },
+  {
+    "agent_id": "report_formatter",
+    "ticker": "TCELL",
+    "session_id": "qiffmHqTMj3eM_Cps0MUU",
+    "status": "completed",
+    "tokens_used": 39345,
+    "cost_usd": 0.7073604,
+    "duration_ms": 352883,
+    "output_length": 958,
+    "provider_used": null
+  }
+]

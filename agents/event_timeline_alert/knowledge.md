@@ -183,3 +183,19 @@ Ayni takvim ayina dusen ayri soklar BIR ARADA gorunur sekilde listelenmeli.
 - Best practice: Kritik gorevleri event'tan 10-14 gun once push et
 
 ---
+
+## 11. Near-Term Mandate-Specific Watch Window
+
+Her raporda near-term (30-90 gün) bölümü şunları içermeli:
+
+```
+WATCH WINDOW FORMAT:
+Tarih | Olay | Olası Surprise Yönü | Etkilenecek Metrik | Yeniden Hesaplanacak KPI | Aksiyon
+```
+
+- Son 7 gün KAP olayları + sonraki 30-90 gün catalystleri aynı takip zincirine bağla
+- Her catalyst: Bull/Baz/Bear hangi senaryoyu aktive eder? — net belirt
+- "EPDK Nisan 2026 +%20 sanayi" gibi geçmiş olayların henüz EBITDA revizesi yapılmadıysa watch window'a gir
+- Turkey Q1 2026 earnings window: Nisan-Mayıs 2026; KAP ~15 Mayıs son tarih
+
+---

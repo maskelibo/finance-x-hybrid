@@ -5,6 +5,106 @@ Tarih: 2026-04-10
 
 ---
 
+## HEARTBEAT #104 — 2026-04-16 TSİ (Otonom Döngü #104) — KAP JS-RENDER ENGEL / TÜRKİYE CDS İYİLEŞME / US-İRAN ATEŞKES / EREGL SON ALIM GÜNÜ
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, EREGL takvimi, kalıcı kurallar]. KAP JS-render engeli devam. BIST 100: ~14,252 / 13,934 (farklı zaman dilimi), USD/TRY 44.77, EUR/TRY 52.97, Altın 6,952 TRY/gr (+0.89%). Türkiye CDS savaş öncesi seviyelere döndü (AA ✓). US-Iran ateşkes umudu → Brent baskı → TUPRS marjı anlık pozitif. S&P 500 + Nikkei rekor, Çin GSYİH Q1 %5.0 ✓. Kardemir D +2.99%. EREGL son alım günü BUGÜN (ex-date 18 Nisan, 0.55 TRY avans temettü, earnings 23 Nisan). PPK 22 Nisan. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #103 — 2026-04-16 TSİ (Otonom Döngü #103) — KAP JS-RENDER ENGEL / TÜRKİYE CDS ÖNCESİ SEVIYELERE DÖNDÜ / US-İRAN ATEŞKES UMUDU
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, EREGL takvimi, kalıcı kurallar]. KAP JS-render engeli devam. Yeni bulgular: Türkiye CDS savaş öncesi seviyelerine döndü (AA, 16 Nisan ✓ — pozitif sovereign sinyal). US-Iran ateşkes umudu → petrol fiyatı baskı (TUPRS alakalı). Çin GSYİH Q1 %5.0 ✓. BIST 100: 14,252.38 (+0.35%), USD/TRY: 44.77, EUR/TRY: 52.97, Altın: 6,952 TRY/gr (+0.89%). Kardemir D +2.99% (çelik sektörü momentum, EREGL için pozitif). EREGL son alım günü BUGÜN (ex-date 18 Nisan, 0.55 TRY avans temettü). PPK 22 Nisan, EREGL earnings 23 Nisan. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #102 — 2026-04-16 TSİ (Otonom Döngü #102) — KAP JS-RENDER ENGEL / EREGL SON ALIM GÜNÜ BUGÜN / FİTCH SEKTÖR REVİZYON
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, EREGL takvimi, kalıcı kurallar]. KAP JS-render engeli devam. Hisse (stale — 15 Nisan kapanış): EREGL 31.64 (+0.57%), TUPRS 261.25 (-2.34%), TCELL 117.10 (+0.69%), KCHOL 207.80 (+0.73%), THYAO 319.25 (-1.47%). BIST 100: 14,252.38 (+0.35%). Fitch Türk finans sektörü görünüm revizyonu (15 Nis). EREGL son alım günü BUGÜN (16 Nisan), ex-date 18 Nisan (0.55 TRY). PPK 22 Nisan, EREGL earnings 23 Nisan. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #101 — 2026-04-16 TSİ (Otonom Döngü #101) — KAP JS-RENDER ENGEL / EREGL EX-DATE YARIN / STALE FİYATLAR
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, EREGL takvimi, kalıcı kurallar]. KAP JS-render engeli devam. Hisse (kapanış baz, stale — piyasa kapalı): EREGL 31.64 (+0.57%), TUPRS 261.25 (-2.34%), TCELL 117.10 (+0.69%), KCHOL 207.80 (+0.73%), THYAO 319.25 (-1.47%). Çin GSYİH Q1 %5.0 (pozitif sürpriz ✓). EREGL ex-date 18 Nisan (YARIN), son alım günü BUGÜN. PPK 22 Nisan, EREGL earnings 23 Nisan. THYAO CEO değişimi (10 Nisan) önceden kayıtlı. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #100 — 2026-04-16 TSİ (Otonom Döngü #100) — KAP JS-RENDER ENGEL / EREGL EX-DATE YARIN / ÇİN GSYİH POZİTİF SÜRPRİZ
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, EREGL takvimi, kalıcı kurallar]. KAP JS-render engeli devam. Hisse (kapanış baz, stale): EREGL 31.64 (+0.57%), TUPRS 261.25 (-2.34%), TCELL 117.10 (+0.69%), KCHOL 207.80 (+0.73%), THYAO 319.25 (-1.47%). Çin GSYİH Q1 %5.0 (beklenti %4.8 — pozitif sürpriz → çelik talebi sinyali). TCMB rezervleri açıklanmadı (önceki 58.42 mia $). EREGL ex-date 18 Nisan (YARIN), son alım günü BUGÜN (T+2). earnings 23 Nisan. PPK 22 Nisan. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #98 — 2026-04-16 TSİ (Otonom Döngü) — KAP JS-RENDER ENGEL / EREGL EX-DATE 2 GÜN / PPK 6 GÜN
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar, EREGL takvimi]. KAP JS-render engeli devam (8+ endpoint denendi). Hisse (kapanış baz, piyasa kapalı): EREGL 31.64 (+0.57%), TUPRS 261.25 (-2.34%), TCELL 117.10 (+0.69%), KCHOL 207.80 (+0.73%), THYAO 319.25 (-1.47%). EREGL ex-date 18 Nisan (2 gün), earnings 23 Nisan (7 gün). PPK 22 Nisan (6 gün). P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #97 — 2026-04-16 TSİ (Otonom Döngü) — KAP JS-RENDER ENGEL / EREGL EX-DATE YARIN / TAKVIM YOĞUN
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar]. KAP JS-render engeli devam — bildirim teyidi imkânsız. Hisse (kapanış baz, piyasa kapalı): EREGL 31.64 (+0.57%), TUPRS 261.25 (-2.34%), TCELL 117.10 (+0.69%), KCHOL 207.80 (+0.73%), THYAO 319.25 (-1.47%). EREGL temettü ex-date 18 Nisan (YARIN), earnings 23 Nisan (7 gün). PPK 22 Nisan (6 gün). THYAO CEO+YK değişimi #89'da kayıtlı. TUPRS -2.34%: IEA revizyon + ABD-İran baskısı. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #96 — 2026-04-16 TSİ (Otonom Döngü) — KAP JS-RENDER ENGEL / EREGL TEMETTÜ 2 GÜN / THYAO IAS29 NOT
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar]. KAP JS-render engeli devam — bildirim teyidi imkânsız. Hisse (kapanış baz): EREGL 31.64 (+0.57%), TUPRS 261.25 (-2.34%), TCELL 117.10 (+0.69%), KCHOL 207.80 (+0.73%), THYAO 319.25 (-1.47%). EREGL anomali: Trailing PE 395x (IAS29 EPS distorsiyonu), Forward PE 5.14x, P/B 0.65x. EREGL temettü 18 Nisan (2 gün), earnings 23 Nisan. PPK 22 Nisan. TUPRS -2.34%: IEA revizyon + ABD-İran baskısı. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #95 — 2026-04-17 TSİ ~Gece Geç — IEA REVİZYON + TUPRS İKİLİ BASKI / THYAO -1.47% / EREGL TEMETTÜ YARIN
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar]. KAP JS-render engeli devam — bildirim teyidi imkânsız. Hisse verileri önceki kapanış (piyasa kapalı): EREGL 31.64 (+0.57%), TUPRS 261.25 (-2.34%), TCELL 117.10 (+0.69%), KCHOL 207.80 (+0.73%), THYAO 319.25 (-1.47%). **Yeni gelişme:** IEA küresel petrol talep tahminini keskin biçimde düşürdü; ABD-İran barış müzakereleriyle birleşince TUPRS için ikili aşağı baskı oluştu. Brent $94.48 (-0.44%), WTI $90.65 (-0.70%) — ek geri çekilme. Türkiye CDS savaş öncesi seviyeye indi (makro pozitif). EREGL temettü YARIN (18 Nisan), earnings 23 Nisan, PPK 22 Nisan. THYAO -1.47% tek döngü — escalation yok. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #94 — 16 Nisan 2026 TSİ ~Gece — TUPRS DÜŞÜŞÜ MAKRO NEDENLE AÇIKLANDI / ABD-İRAN MÜZAKERELERİ
+
+**Ozet:** Checked memory: [veri kaynagi kurallari, heartbeat ozet limiti, kalici kurallar]. KAP JS-render engeli devam — bildirim teyidi teknik olarak imkânsız (kalıcı sorun). Piyasa kapanış verileri önceki heartbeat'le aynı (piyasa kapalı): EREGL 31.64 TRY (+0.57%), TUPRS 261.25 TRY (-2.34%), TCELL 117.10 TRY (+0.69%), KCHOL 207.80 TRY (+0.73%). **TUPRS -2.34% makro neden tespit edildi:** ABD-İran barış görüşmeleri petrol aşağı baskı (ateşkes umutları $94.87'yi frenledi); Hürmüz Boğazı ablukası ise $100+ yukarı riski — çift yönlü jeopolitik belirsizlik. EREGL temettü 18 Nisan (yarın, KAP teyit yok). EREGL Earnings 23 Nisan (7 gün). PPK 22 Nisan. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #93 — 16 Nisan 2026 TSİ ~Akşam — TUPRS -2.34% AYRIŞMA / SASA HAREKET / EREGL TEMETTÜ YARIN
+
+**Ozet:** Checked memory: [veri kaynagi kurallari, heartbeat ozet limiti, kalici kurallar]. KAP JS-render engeli devam, bildirim teyit edilemedi. Piyasa: EREGL +0.57% (31.64 TRY, stabil), TUPRS -2.34% (261.25 TRY) — Brent stabil iken ayrışıyor, şirket spesifik neden bilinmiyor, yarın 17 Nis KAP izleme kritik. TCELL +0.69%, KCHOL +0.73% normal. Dikkat: SASA Polyester +9.93% / 6.26B hacim (olağandışı). Brent $94.87 stabil, WTI $90.86 (-0.47%). PPK 22 Nis (6 gün). EREGL temettü 18 Nis YARIN, earnings 23 Nis. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #92 — 16 Nisan 2026 TSİ — İZLEME DÖNGÜSÜ / TUPRS YARIN / EREGL TEMETTÜ 2 GÜN / BRENT GERİLEDİ
+
+**Ozet:** Checked memory: [veri kaynagi kurallari, heartbeat ozet limiti, acik izleme listesi]. KAP JS-render engeli devam, bildirim teyit edilemedi. Piyasa snapshot: BIST 100 ~14.252 (+0.35%), USD/TRY 44.73, THYAO +2.56%, EREGL +0.57% (31.64 TRY, 52-hafta yüksek yakini), TUPRS -2.34% (261.25 TRY, onceki gun). Brent $94.94 — onceki heartbeat $97-98'den ~3% geri çekilme; TUPRS için hafif olumsuz ancak crack spread güçlü. TUPRS KAP izlemesi YARIN (17 Nisan) kritik. EREGL temettü ödeme tarihi 2 gün içinde (18 Nisan) ancak KAP'ta hala yok. TCMB PPK 22 Nisan (6 gün). P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #91 — 15 Nisan 2026 22:15 TSİ — SAKIN DÖNGÜ / KAP JS-RENDER KISITLAMASI SÜRÜYOR
+
+**Ozet:** Checked memory: [veri kaynagi kurallari, heartbeat ozet limiti, son operasyonel izlemeler]. KAP `/tr/` ve `/tr/bildirim-sorgu` her iki endpoint yine `Bildirim bulunamadi`; JS-render engeli devam ediyor. Son 1 saatte yeni KAP bildirimi teyit edilemedi (teknik kisitlama). Watchlist bos, aktif hedef yok. TUPRS 17 Nisan izlemesi YARIN kritik; EREGL/THYAO izlemeleri acik. Bu dongude yeni eskalasyon yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #90 — 15 Nisan 2026 21:01 TSİ — SAKIN DONGU / KAP BUGUN LISTELERI HALA BOS
+
+**Ozet:** Checked memory: [veri kaynagi kurallari, heartbeat ozet limiti, son operasyonel izleme]. KAP ana `Bugun Gelen Bildirimler` sayfasi 15 Nisan 2026 21:01 TSİ itibariyla hem sirket hem fon akisinda `Bildirim bulunamadi` gosteriyor; son 1 saatte yeni onemli KAP bildirimi yok. Watchlist bos, aktif hedef yok. TUPRS 17 Nisan izlemesi, EREGL temettu tarihi takibi ve THYAO kurumsal kaydi hafizada acik; bu dongude yeni eskalasyon yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #89 — 15 Nisan 2026 17:30 TSİ — THYAO CEO+TEMETTU IPTAL / TUPRS YARIN KRİTİK / EREGL 3 GUN
+
+**Özet:** KAP bildirimleri bu döngüde de "bulunamadı" + birden fazla KAP URL'si 404 (URL yapısı değişmiş olabilir). Investing.com'dan edinilen veriler: THYAO yönetim değişikliği + 2025 temettü iptali (9-10 Nisan kayıtlı, önceki heartbeat'lerde kayıt dışı kalmış — pre-flight için kritik). TUPRS -%2.34 (261.25 TRY), neden tespit edilemedi; 17 Nisan KAP izlemesi YARIN. EREGL +%0.57, temettü tarihi KAP'ta hâlâ yok, 18 Nisan 3 gün. BIST 100 genel pozitif. **Chairman ALERT: EVET.**
+
+---
+
+## HEARTBEAT #88 — 15 Nisan 2026 06:05 TSİ — SAKIN DONGU / KAP BUGUN LISTELERI HALA BOS
+
+**Ozet:** Checked memory: [veri kaynagi kurallari, otonomi, heartbeat ozet limiti]. KAP ana sayfasindaki canli “Bugun Gelen Bildirimler” ekraninda hem sirket hem fon listeleri yine bos gorunuyor. 15 Nisan 2026 05:05-06:05 TSİ araliginda onemli yeni KAP bildirimi sinyali yok. Watchlist bos, aktif hedef yok, olagandisi durum tespit edilmedi. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #87 — 15 Nisan 2026 05:34 TSİ — SAKIN DONGU / KAP BUGUN LISTELERI BOS
+
+**Ozet:** Checked memory: [veri kaynagi kurallari, otonomi, heartbeat ozet limiti]. KAP ana sayfasindaki canli “Bugun Gelen Bildirimler” ekraninda hem sirket hem fon listeleri bos gorunuyor. 15 Nisan 2026 04:34-05:34 TSİ araliginda onemli yeni KAP bildirimi sinyali yok. Watchlist bos, aktif hedef yok, olağandisi durum tespit edilmedi. **Chairman ALERT: HAYIR.**
+
 ## HEARTBEAT #77 — 14 Nisan 2026 (On Dokuzuncu Döngü) — SAKİN DÖNGÜ / BRENT $97-98 / TUPRS YARIN / EREGL TEMETTÜ BEKLİYOR
 
 **Özet:** Brent $97.45-98.05/bbl (gün aralığı $96.48-$98.68), $97-98 bandında konsolide, $102 altında. Hürmüz müzakereleri devam, piyasa sakin. TUPRS 17 Nisan (YARIN) KAP/crack spread izlemesi — yeni bildirim yok; 2. taksit temettü Eylül. EREGL YK temettü ödeme tarihi hâlâ KAP'ta YOK — 18 Nisan kritik (4 gün); brüt 0.55/net 0.4675 TRY onaylı. THYAO/KCHOL/BIMAS/SAHOL/TCELL: Özel durum açıklaması yok. TCMB PPK 22 Nisan (+300bp). **Chairman ALERT: HAYIR.**

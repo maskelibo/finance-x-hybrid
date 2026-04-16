@@ -157,3 +157,24 @@ F. Nakit Bazlı Borç Servis Kapasitesi
 G. Cash Flow Red Flags Kontrolü (7 madde tablo)
 
 ---
+
+## 11. 4-Kapı QA Framework (TCELL Raporu'ndan Damıtıldı)
+
+Her raporda bu 4 kapıdan geçmeden PASS verilemez:
+
+| Kapı | Kontrol | Fail Koşulu |
+|---|---|---|
+| 1. Artifact Reality | Mock/placeholder/truncation tespiti | "Mock completed output" veya placeholder → otomatik FAIL |
+| 2. Mandatory Metric Completeness | 45 metrik satır satır | >%40 eksik veya P0 Chairman metriği yoksa → FAIL |
+| 3. Fact Pack Consistency | Çelişen sayılar | Aynı metrikte 2 farklı değer → QA fact lock gerekli |
+| 4. Scope Compliance | KAP scope sapması, formatter artefaktı | Saf HTML değilse, scope sapması varsa → FAIL |
+
+**QA Fact Lock Paragrafı formatı (FAIL/BLOCK kararında zorunlu):**
+```
+QA FACT LOCK [Tarih]:
+- Authoritative: Net Borç = X TRY (KAP 2025-FY, Sayfa Y)
+- Contested: EBITDA = A TRY (parse) vs B TRY (financial_analysis) — financial_analysis kullan
+- Blocked: CF tablosu → FCF hesaplanamadı [PENDING]
+```
+
+---

@@ -445,3 +445,32 @@ Her major analysis section'ın sonunda:
   ```
 
 - **KURAL: Tüm sentez raporlarında divergence haritası ZORUNLU** (TUPRS standardı EREGL'de de uygulanacak).
+
+---
+
+## Gece Eğitimi #2 — 2026-04-16
+
+**Odak:** TCELL raporu post-feedback + Goldman Sachs yapısı + makro-jeopolitik geçiş mekanizması
+
+### Bu Gece Öğrenilenler:
+
+**1. Goldman Tipi İlk Sayfa Zorunluluğu:**
+- İlk blokta: `net tez + 3 yatırım sütunu + 3 nicel risk + hedef fiyat + skor kartı` — hepsi aynı fact pack sayılarıyla.
+- "TCELL operasyonel olarak güçlü" gibi genel cümleler YASAK; her yatırım sütunu sayı destekli.
+
+**2. Makro-Jeopolitik Mekanizması:**
+- Jeopolitik/makro değişkenlerini (faiz, jeopolitik kriz, enerji tarife) finansal oranlara bağlamadan skor verme.
+- Örnek zincir: "EPDK +%20 → EBITDA -X B TRY → Net Borç/EBITDA 2.1x → 2.7x → Fitch review risk → WACC +50bp → hedef fiyat -Y TL"
+
+**3. Divergence İlk Blokta:**
+- DIV-1/2/3 çıktının ilk yarısında. Çözümsüz conflict → otomatik `HOLD / INSUFFICIENT DATA`.
+
+**4. QA REVISION_REQUIRED = Sentez Başlamaz:**
+- CEO direktifi olmadan "upstream kısıtlamalar kabul edilerek" sentez üretme.
+
+**5. Goldman Sachs WebSearch Bulgusu:**
+- Building-block: Total return = earnings growth + valuation change + dividend yield.
+- GS SUSTAIN: Competitive advantage (mature) + structural growth (emerging) entegrasyonu.
+
+**6. memory.md Yeniden Yazma:**
+- 14.7KB'dan 5.2KB'a indirildi.

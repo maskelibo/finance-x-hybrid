@@ -131,9 +131,22 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_kap_events_ticker ON kap_events(ticker);
   CREATE INDEX IF NOT EXISTS idx_kap_events_published ON kap_events(published_at);
   CREATE INDEX IF NOT EXISTS idx_kap_events_type ON kap_events(event_type);
+
+  CREATE TABLE IF NOT EXISTS watchdog_events (
+    id TEXT PRIMARY KEY,
+    event_type TEXT NOT NULL,
+    agent_id TEXT,
+    session_id TEXT,
+    ticker TEXT,
+    details TEXT,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_watchdog_events_type ON watchdog_events(event_type);
+  CREATE INDEX IF NOT EXISTS idx_watchdog_events_created ON watchdog_events(created_at);
 `);
 
-function ensureColumn(tableName: string, columnName: string, columnDefinition: string) {
+export function ensureColumn(tableName: string, columnName: string, columnDefinition: string) {
   const columns = db.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>;
   const exists = columns.some((column) => column.name === columnName);
   if (!exists) {
@@ -144,6 +157,7 @@ function ensureColumn(tableName: string, columnName: string, columnDefinition: s
 ensureColumn('analysis_sessions', 'selected_layers', 'TEXT');
 ensureColumn('analysis_sessions', 'overall_score', 'REAL');
 ensureColumn('agent_runs', 'provider_used', 'TEXT');
+ensureColumn('agent_runs', 'retry_count', 'INTEGER DEFAULT 0');
 
 export type AnalysisSession = {
   id: string;
@@ -176,6 +190,7 @@ export type AgentRun = {
   error_message: string | null;
   tokens_used: number;
   cost_usd: number;
+  retry_count: number;
 };
 
 export type Report = {

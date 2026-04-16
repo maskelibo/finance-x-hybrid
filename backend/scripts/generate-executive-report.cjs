@@ -655,7 +655,7 @@ async function generatePDF() {
   // Grafiklerin render olması için bekle
   await new Promise(resolve => setTimeout(resolve, 2000));
 
-  const pdfPath = path.join(__dirname, '../../data/ASELS_Yonetim_Kurulu_Raporu_2026.pdf');
+  const pdfPath = path.join(__dirname, '../data/ASELS_Yonetim_Kurulu_Raporu_2026.pdf');
 
   await page.pdf({
     path: pdfPath,

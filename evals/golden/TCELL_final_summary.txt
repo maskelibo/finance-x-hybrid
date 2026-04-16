@@ -1,0 +1,1196 @@
+# TÜRKİYE İLETİŞİM HİZMETLERİ A.Ş. (TCELL)
+## KAPSAMLI ŞİRKET ANALİZİ RAPORU
+
+**Rapor Tarihi:** 11 Nisan 2026  
+**Analiz Türü:** Kapsamlı Şirket Analizi  
+**Hazırlayan:** Finance X Platform  
+**Gönderilen:** Yatırımcı
+
+---
+
+# İÇİNDEKİLER
+
+I. Yönetici Özeti ......................................................... 3  
+II. Şirket Profili ........................................................... 8  
+III. Finansal Analiz ....................................................... 12  
+IV. Değerleme .............................................................. 28  
+V. Sektör ve Rekabet Analizi ........................................ 35  
+VI. Makroekonomik Bağlam ........................................... 42  
+VII. Teknik Analiz ........................................................ 48  
+VIII. ESG Değerlendirmesi ............................................. 53  
+IX. Haber ve Sentiment Analizi ...................................... 58  
+X. KAP Olayları ve Etki Analizi ...................................... 62  
+XI. Risk Değerlendirmesi ............................................... 67  
+XII. Sonuç ve Değerlendirme ......................................... 72  
+Zorunlu Bildirimler ....................................................... 76
+
+---
+
+# I. YÖNETİCİ ÖZETİ
+
+## Genel Değerlendirme
+
+Turkcell İletişim Hizmetleri A.Ş., Türkiye telekomünikasyon sektöründe %40 pazar payı ile lider konumda bulunan, 62,3 milyon toplam aboneye sahip entegre bir operatördür. Şirket, 1 Nisan 2026 tarihinde gerçekleştirdiği 5G ticari lansmanı ile çok yıllı bir sermaye yatırımı döngüsünü tamamlamış ve gelir artışı odaklı bir döneme girmiştir.
+
+2025 tam yıl finansal sonuçları, %10,7 gelir büyümesi (241,5 milyar TL), %33,0 FAVÖK marjı ve 20,3 milyar TL net kar ile sektör beklentilerini karşılamıştır. Ancak şirket, 5G spektrum ödemesi (55 milyar TL) nedeniyle olumsuz serbest nakit akışı (-90,1 milyar TL) kaydetmiştir. Yönetim, 2026 yılı için %5-7 gelir büyümesi ve %40-42 FAVÖK marjı rehberliği vermiştir.
+
+## SKOR KARTI
+
+| Boyut | Puan (1-10) | Yorum | Güven Seviyesi |
+|-------|------------:|-------|----------------|
+| **Finansal Sağlık** | 7,5 | Güçlü operasyonel nakit akışı ancak yüksek kaldıraç | Yüksek |
+| **Büyüme Potansiyeli** | 7,0 | 5G ABOA primi beklentisi ancak uygulama riski mevcut | Orta |
+| **Sektör Pozisyonu** | 8,5 | Pazar lideri, marka gücü yüksek | Yüksek |
+| **Makro Uyumluluk** | 6,0 | Enerji maliyeti ve döviz kuru baskısı | Orta |
+| **Teknik Görünüm** | 6,5 | Fibonacci %50 seviyesinde, karar bölgesi | Orta |
+| **ESG** | 7,1 | Çevre alanında sektör lideri, sosyal alanda açıklama eksikliği | Orta-Yüksek |
+| **GENEL SKOR** | **7,1/10** | **Güçlü temeller, uygulama riskiyle dengelenmiş** | **Yüksek** |
+
+**Risk Seviyesi:** Orta-Yüksek  
+**Hedef Fiyat Aralığı:**  
+- Bear Senaryosu: 85-95 TL  
+- Baz Senaryo: 110-125 TL  
+- Bull Senaryosu: 145-165 TL
+
+## 5 Kritik Bulgu
+
+**1. İstisnai İşletme Sermayesi Verimliliği**
+
+Şirketin -11 günlük nakit dönüşüm döngüsü (CCC), müşterilerden tahsilatı tedarikçilere ödemeden önce tamamladığını göstermektedir. Bu metrik, telekomünikasyon sektöründe nadir görülen bir performanstır ve güçlü nakit yaratma kapasitesini yansıtmaktadır.
+
+**Kaynak:** Finansal analiz çıktısı, 2025 finansal tabloları  
+**Güven:** Yüksek (denetimli veriler)
+
+**2. 5G Abone Sayısı Tutarsızlığı - Kritik Belirsizlik**
+
+1 Nisan 2026 lansman açıklamasında belirtilen 15 milyon 5G abonesi, analist beklentisi olan 2 milyon ile çelişmektedir. 24 Nisan 2026 tarihli 1Ç 2026 kazanç açıklaması, gerçek ödeme yapan abone sayısını netleştirecektir. Bu tutarsızlık, 5G yatırım tezinin temelini oluşturmaktadır.
+
+**Kaynak:** Uzlaştırma ajansı çıktısı, KAP bildirimleri  
+**Güven:** Orta (doğrulama bekliyor)
+
+**3. Enerji Maliyet Baskısı Yapısal Risk Oluşturuyor**
+
+4 Nisan 2026 tarihinde yürürlüğe giren %5,8 endüstriyel elektrik zammı, 900 GWh yıllık tüketim bazında şirkete %1,0-1,5 FAVÖK marjı baskısı yaratmaktadır. 300 MW güneş enerjisi hedefi (2026 sonu) bu riski hafifletebilir ancak 213 MW kurulum açığı uygulama riskini yüksek tutmaktadır.
+
+**Kaynak:** Makro analiz çıktısı, enerji fiyat bildirimleri  
+**Güven:** Yüksek (hükümet kararnamesi)
+
+**4. Kaldıraç Yüksek Ancak Yönetilebilir Düzeyde**
+
+Net Borç/FAVÖK oranı 2,6x seviyesinde bulunmaktadır. Faiz karşılama oranı 2,06x ile kabul edilebilir ancak 2024 yılındaki 2,21x seviyesinden düşüş göstermektedir. Spektrum ödemelerinin (Aralık 2026 ve Mayıs 2027) tamamlanması ile kaldıraç azaltma yolu açılacaktır.
+
+**Kaynak:** Finansal analiz, bilanço verileri  
+**Güven:** Orta-Yüksek (hesaplama metodolojisi farklılıkları mevcut)
+
+**5. Analist Konsensüsü Tam Pozitif - Beklenti Riski**
+
+12 analistin tamamı "Al" tavsiyesi vermekte ve ortalama hedef fiyat 147,98 TL (%41 yukarı potansiyel) seviyesindedir. Bu derece uyumlu görüş, piyasanın yüksek beklentiye sahip olduğunu ve 5G başarısını fiyatlamış olabileceğini göstermektedir.
+
+**Kaynak:** Analist konsensüs verileri  
+**Güven:** Yüksek (12 analist veri seti)
+
+## Temel Değerleme Metrikleri
+
+| Metrik | Değer | Sektör Ortalaması | Yorum |
+|--------|------:|------------------:|-------|
+| **F/K (2025)** | 21,8x | 15-25x | Sektör içi normal aralık |
+| **FD/FAVÖK (2025)** | 1,58x | 3,5-4,5x (gelişen pazar) | Türkiye iskonto nedeniyle düşük |
+| **PD/DD** | 0,90 | 0,7-1,0x | Kabul edilebilir seviye |
+| **Temettü Verimi** | 3,48% | 3-5% | Sağlıklı getiri |
+
+**Kaynak:** Değerleme ajansı çıktısı, karşılaştırmalı analiz
+
+---
+
+# II. ŞİRKET PROFİLİ
+
+## Şirket Tanıtımı
+
+Turkcell İletişim Hizmetleri A.Ş., 1994 yılında kurulan Türkiye'nin ilk GSM operatörüdür. Şirket, entegre telekomünikasyon hizmetleri (mobil, sabit hat, internet, dijital platformlar) sunmakta ve Türkiye dışında Ukrayna (Lifecell), Kuzey Kıbrıs (KKTCELL) ve Almanya'da (Lifecell Digital) faaliyet göstermektedir.
+
+**Faaliyet Alanları:**
+- Mobil telekomünikasyon (GSM, 3G, 4.5G, 5G)
+- Sabit hat internet ve telefon
+- Kurumsal çözümler ve veri merkezi hizmetleri
+- Dijital platformlar (BiP, TV+, Paycell)
+- Uluslararası operasyonlar
+
+**Temel İstatistikler (2025 Yıl Sonu):**
+- Toplam Abone: 62,3 milyon
+- Türkiye Mobil Abone: 39,1 milyon (%40,1 pazar payı)
+- Sabit Hat Abone: 6,8 milyon
+- Lifecell (Ukrayna) Abone: 23,2 milyon
+
+**Kaynak:** Şirket faaliyet raporları, KAP bildirimleri
+
+## Ortaklık Yapısı
+
+[CHART:PIE] Ortaklık Yapısı (31 Aralık 2025)
+| Ortak | Yüzde |
+|-------|------:|
+| Türkiye Varlık Fonu (TVF) | 26,2 |
+| LetterOne/IMTIS | 24,8 |
+| Halka Açık | 48,95 |
+| Çukurova Holding | 0,05 |
+
+**Yorum:** TVF'nin %26,2 ile en büyük ortak olması devlet etkisi riskini beraberinde getirmektedir. Yabancı yatırımcı oranı yaklaşık %35 seviyesindedir.
+
+**Kaynak:** Şirket yatırımcı ilişkileri sayfası
+
+## Yönetim Kadrosu
+
+**Genel Müdür:** Ali Taha Koç (2024'ten itibaren)  
+**Mali İşler Genel Müdür Yardımcısı:** [Veri eksik]
+
+**Not:** Yönetim kurulu tam kompozisyonu ve bağımsız üye oranı kamuya açıklanmamıştır. Türkiye ortalaması %27,1 bağımsız üyedir.
+
+**Kaynak:** Şirket web sitesi, Sabancı Üniversitesi yönetişim araştırması
+
+## İş Modeli ve Gelir Kaynakları
+
+[CHART:BAR] Segment Bazlı Gelir Dağılımı 2025 (Milyar TL)
+| Segment | 2025 Gelir |
+|---------|----------:|
+| Mobil (Türkiye) | 156,9 |
+| Sabit Hat (Türkiye) | 60,3 |
+| Dijital ve Diğer | 24,3 |
+
+**Yorum:** Mobil segment gelirin %65'ini oluşturmaktadır. Dijital hizmetler (BiP, TV+, Paycell) %10 pay ile en hızlı büyüyen segmenttir (%16,4 yıllık büyüme).
+
+**Kaynak:** Parse standardizasyon çıktısı, segment verileri
+
+## İştirakler (Holding Yapısı)
+
+| İştirak | Ortaklık % | Faaliyet Alanı | 2025 Gelir Katkısı |
+|---------|----------:|----------------|-------------------:|
+| **Lifecell (Ukrayna)** | 100,0 | Mobil telekomünikasyon | ~36 milyar TL |
+| **Superonline** | 100,0 | Sabit internet | Konsolide |
+| **Paycell** | 51,0 | Ödeme sistemleri | 24,3 milyar TL dahil |
+| **TechFin** | 100,0 | Finansal teknoloji | Konsolide |
+
+**Kaynak:** Finansal tablolar, segment raporlaması
+
+---
+
+# III. FİNANSAL ANALİZ
+
+## A. Gelir Tablosu Analizi
+
+### 5 Yıllık Gelir Trendi
+
+| Yıl | Net Satışlar (milyar TL) | YoY Büyüme (%) | CAGR 21-25 |
+|-----|-------------------------:|---------------:|------------|
+| 2021 | 72,9 | - | - |
+| 2022 | 103,5 | 42,0 | - |
+| 2023 | 142,3 | 37,4 | - |
+| 2024 | 218,2 | 53,4 | - |
+| 2025 | 241,5 | 10,7 | 34,3% |
+
+**Bulgu:** Şirket 2021-2025 döneminde %34,3 bileşik yıllık büyüme oranı (CAGR) kaydetmiştir.
+
+**Açıklama:** 2022-2024 yüksek büyüme oranları (%37-53) IAS 29 hiperenflasyon muhasebesi düzeltmeleri ve TL enflasyonunu yansıtmaktadır. 2025 yılındaki %10,7 büyüme, organik büyüme ve fiyat artışlarının kombinasyonudur (telekomünikasyon TÜFE: %24,12, Mart 2026).
+
+**Risk Değerlendirmesi:** 2026 yılı için %5-7 büyüme rehberliği, makro belirsizlikler (enerji maliyetleri, TL zayıflığı) göz önüne alındığında konservatif ancak ulaşılabilir görünmektedir. 5G lansmanı 2Ç 2026'dan itibaren ABOA primini tetikleyebilir.
+
+**Öneri:** 1Ç 2026 kazanç açıklamasında (24 Nisan 2026) açıklanacak 5G abone sayısı ve ABOA verilerinin yakından takip edilmesi gerekmektedir.
+
+**Kaynak:** Parse standardizasyon çıktısı, gelir tablosu  
+**Güven Seviyesi:** Yüksek
+
+### Karlılık Metrikleri
+
+[CHART:LINE] Marj Trendi (%)
+| Yıl | Brüt Kar Marjı | FAVÖK Marjı | Net Kar Marjı |
+|-----|---------------:|------------:|--------------:|
+| 2021 | 57,1 | 34,6 | 7,8 |
+| 2022 | 57,4 | 33,7 | 8,0 |
+| 2023 | 56,9 | 31,8 | 8,2 |
+| 2024 | 57,6 | 33,8 | 9,2 |
+| 2025 | 56,7 | 33,0 | 8,4 |
+
+**Bulgu:** Brüt kar marjı 5 yıl boyunca %56,7-57,6 aralığında istikrarlı kalmıştır. FAVÖK marjı 2023 yılında %31,8'e düşmüş, sonrasında toparlanmış ancak 2025'te %33,0 ile yönetim hedefi (%40-42) altında kalmıştır.
+
+**Açıklama:** Yüksek brüt marj (%56,7), şirketin güçlü fiyatlama gücünü yansıtmaktadır. FAVÖK marjındaki -80 bps daralma (2024: %33,8 → 2025: %33,0), enerji maliyet şokuna (%5,8 endüstriyel elektrik artışı) ve 5G network deployment operasyonel maliyetlerine atfedilebilir.
+
+**Risk Değerlendirmesi:** Enerji maliyetleri artmaya devam ederse 2026 marjının %40 hedefine ulaşması zorlayıcı olabilir. Şirketin 300 MW güneş enerjisi hedefi bu riski hafifletebilir ancak uygulama riski yüksektir.
+
+**Öneri:** Üç aylık bazda marj takibi yapılmalı, enerji tarife geçişkenliği izlenmelidir. 2026 güneş enerjisi projesi ilerlemesi kritiktir.
+
+**Kaynak:** Finansal analiz çıktısı  
+**Güven Seviyesi:** Yüksek
+
+## B. İşletme Sermayesi Metrikleri
+
+| Metrik | 2024 | 2025 | Trend | Sektör Karşılaştırması |
+|--------|-----:|-----:|-------|------------------------|
+| **DSO (gün)** | 52 | 50 | ↓ İyileşme | Mükemmel (benchmark: 50-65) |
+| **DIO (gün)** | 25 | 24 | ↓ İyileşme | Mükemmel (benchmark: 20-35) |
+| **DPO (gün)** | 86 | 85 | ↓ Azalma | İyi (benchmark: 80-100) |
+| **CCC (gün)** | -9 | -11 | ↓ İyileşme | İstisnai (negatif nadir) |
+| **NWC/Gelir (%)** | 2,0 | 0,9 | ↓ İyileşme | Mükemmel (<5% hedef) |
+
+**Bulgu:** Şirketin -11 günlük nakit dönüşüm döngüsü, müşterilerden tahsilatı tedarikçilere ödemeden 11 gün önce tamamladığını göstermektedir.
+
+**Açıklama:** 
+- **DSO 50 gün:** Turkcell müşterilerinden 50 günde tahsilat yapıyor. Telekomünikasyon sektörü için mükemmeldir. %65 prepaid abone karışımı (ön ödeme) DSO'yu düşük tutmaktadır.
+- **DIO 24 gün:** Stok yönetiminde çok verimli. Just-In-Time envanter uygulamaları görünmektedir.
+- **DPO 85 gün:** Tedarikçilere 85 günde ödeme. Benchmark aralığında ama 2021'den beri azalma trendi (-14%) nakit akışı açısından olumsuz.
+- **CCC -11 gün:** Telekomünikasyon sektöründe nadir görülen bir performans. Nakit yaratma makinesi modeli.
+
+**Risk Değerlendirmesi:** DPO'nun daha fazla düşmesi nakit akışını olumsuz etkileyebilir. Ekonomik durgunluk durumunda postpaid müşterilerin ödeme gecikmesi DSO'yu artırabilir.
+
+**Öneri:** DPO'nun 90+ gün seviyesine geri dönmesi için tedarikçi müzakereleri güçlendirilmelidir. Prepaid/postpaid karışımının korunması DSO istikrarı için kritiktir.
+
+**Kaynak:** Finansal analiz, parse standardizasyon  
+**Güven Seviyesi:** Yüksek
+
+## C. Borç ve Kaldıraç Analizi
+
+| Metrik | 2024 | 2025 | Değişim | Sektör Benchmark |
+|--------|-----:|-----:|--------:|------------------|
+| **Toplam Borç (milyar TL)** | 77,4 | 99,9 | +29,0% | - |
+| **Net Borç (milyar TL)** | 65,0 | 85,0 | +30,8% | - |
+| **Net Borç/FAVÖK** | 0,88x | 1,07x | +0,19x | <2,0x sağlıklı |
+| **Borç/Özkaynak** | 0,85 | 0,90 | +0,05 | 0,7-1,0x kabul edilebilir |
+| **Faiz Karşılama (FAVÖK/Faiz)** | 2,21x | 2,06x | -0,15x | >2,5x sağlıklı |
+
+**Not:** Net Borç/FAVÖK hesaplamasında farklı metodolojiler nedeniyle finansal analiz çıktısında "2,6x" mention edilmiştir. QA review 1,07x hesaplamıştır. Yukarıdaki tablo QA hesaplamasını kullanmaktadır.
+
+**Bulgu:** Kaldıraç yükselmiş ancak yönetilebilir seviyede kalmıştır. Faiz karşılama oranı azalmaktadır.
+
+**Açıklama:** 
+- Borç artışı (%29) tamamen 5G spektrum finansmanından kaynaklanmaktadır ($1,224 milyar USD murabaha kredisi).
+- Net Borç/FAVÖK 1,07x, yatırım yapılabilir seviye olan 2,0x'in altındadır.
+- Faiz karşılama 2,06x, minimum 2,0x eşiğinin üstünde ancak sağlıklı seviye (2,5x+) altındadır ve düşme trendindedir.
+
+**Risk Değerlendirmesi:** 
+- Spektrum ödemeleri (Aralık 2026: ~11,2 milyar TL, Mayıs 2027: ~11,2 milyar TL) tamamlanana kadar kaldıraç yükselme riski mevcuttur.
+- Faiz oranları yükselirse (TCMB sıkılaşması) veya TL zayıflarsa (USD borç yükü artışı) faiz karşılama daha da daralabilir.
+
+**Öneri:** 
+- 2027 yılında capex yoğunluğunun %24-25'e düşmesi (rehberden) ile serbest nakit akışının pozitife dönmesi ve kaldıraç azaltma yolunun açılması kritiktir.
+- Yönetim, temettü sürdürülebilirliğini (mevcut %43,3 payout ratio) borç servisi kapasitesi ile dengelemelidir.
+
+**Kaynak:** Finansal analiz, uzlaştırma çıktısı  
+**Güven Seviyesi:** Orta (hesaplama metodolojisi belirsizliği)
+
+## D. Likidite Analizi
+
+| Metrik | 2024 | 2025 | Değişim | Benchmark |
+|--------|-----:|-----:|--------:|-----------|
+| **Cari Oran** | 1,03 | 1,04 | +0,01 | >1,0 kabul edilebilir |
+| **Asit-Test Oranı** | 0,92 | 0,93 | +0,01 | >0,8 sağlıklı |
+| **Nakit (milyar TL)** | 12,5 | 14,9 | +19,2% | - |
+
+**Bulgu:** Likidite oranları düşük ancak kabul edilebilir seviyededir. Nakit pozisyonu güçlenmiştir.
+
+**Açıklama:** Cari oran 1,04, şirketin kısa vadeli yükümlülüklerini karşılayabileceğini göstermektedir. Asit-test 0,93, stoklarsız likiditenin yeterli olduğunu teyit etmektedir.
+
+**Risk Değerlendirmesi:** 
+- Aralık 2026'da spektrum ödemesi (11,2 milyar TL) ve temettü ödemesi (8,8 milyar TL) aynı aya denk gelmektedir. Toplam 20 milyar TL nakit çıkışı, 14,9 milyar TL nakit pozisyonunu aşmaktadır.
+- İşletme nakit akışı (2025: 50,8 milyar TL) bu açığı kapatacak güçtedir ancak kısa vadeli kredi ihtiyacı oluşabilir.
+
+**Öneri:** Aralık 2026 nakit yönetimi dikkatle planlanmalı, gerekirse döner kredi tesisi kullanılmalıdır.
+
+**Kaynak:** Finansal analiz  
+**Güven Seviyesi:** Yüksek
+
+## E. Getiri Metrikleri
+
+| Metrik | Formül | 2025 | Sektör Benchmark |
+|--------|--------|-----:|------------------|
+| **ROE** | Net Kar / Ort. Özkaynak | 20,1% | 10-20% (TCELL güçlü) |
+| **ROCE** | FAVÖK / (Toplam Varlık - Kısa Vadeli Yük.) | 19,6% | 12-18% (TCELL mükemmel) |
+| **ROIC** | [Hesaplanmadı] | - | - |
+
+**Not:** ROE ve ROCE, QA review tarafından eksik olarak işaretlenmiş ve yukarıda hesaplanmıştır.
+
+**Hesaplamalar:**
+- **ROE:** 20.324 milyar TL / ((91.256 + 111.337)/2) = 20,1%
+- **ROCE:** 44.435 milyar TL / (286.147 - 60.000) = 19,6%
+
+**Bulgu:** Her iki getiri metriği de sektör ortalamasının üstündedir.
+
+**Açıklama:** %20,1 ROE, ortaklar için güçlü sermaye getirisi sağlandığını göstermektedir. %19,6 ROCE, şirketin kullandığı sermayeden verimli getiri elde ettiğini teyit etmektedir.
+
+**Risk Değerlendirmesi:** 5G yatırımlarının kısa vadede (2026-2027) ROE/ROCE'yi aşağı çekme riski mevcuttur çünkü sermaye artacak ancak getiriler gecikecektir.
+
+**Öneri:** 2027 sonrası 5G monetizasyonu ile ROE'nin %22-25 seviyesine yükselmesi beklenmektedir. Bu potansiyel izlenmelidir.
+
+**Kaynak:** Finansal tablolar, yeni hesaplamalar  
+**Güven Seviyesi:** Yüksek
+
+## F. Nakit Akışı Analizi
+
+| Metrik | 2024 | 2025 | Değişim | Yorum |
+|--------|-----:|-----:|--------:|-------|
+| **İşletme Nakit Akışı (milyar TL)** | 45,9 | 50,8 | +10,7% | Güçlü |
+| **Yatırım Nakit Akışı (milyar TL)** | -68,2 | -140,9 | +106,5% | Spektrum ödemesi |
+| **Finansman Nakit Akışı (milyar TL)** | 5,0 | 11,5 | +130,0% | Borçlanma artışı |
+| **Serbest Nakit Akışı (milyar TL)** | -22,3 | -90,1 | -304,0% | Spektrum etkisi |
+| **OCF/FAVÖK (%)** | 62,3 | 63,8 | +1,5pp | Sağlıklı dönüşüm |
+
+**Bulgu:** İşletme nakit akışı güçlü ancak spektrum ödemesi nedeniyle serbest nakit akışı büyük ölçüde negatiftir.
+
+**Açıklama:** 
+- İşletme nakit akışı %10,7 büyümüş, FAVÖK büyümesi (%8,1) ile uyumludur.
+- Yatırım nakit akışındaki 140,9 milyar TL çıkış, 55 milyar TL spektrum ödemesi (Ocak 2026) içermektedir. Spektrum hariç yatırım 85,9 milyar TL seviyesindedir.
+- Serbest nakit akışı -90,1 milyar TL, ancak spektrum hariç -35,1 milyar TL olup hala negatiftir.
+
+**Risk Değerlendirmesi:** Serbest nakit akışının 2027'ye kadar pozitife dönmemesi, temettü sürdürülebilirliği ve kaldıraç azaltma riskini artırmaktadır.
+
+**Öneri:** 2026 yılında capex'in %24-25 seviyesine düşmesi (2025: %35 normalize) kritiktir. Yönetim rehberliğinin takip edilmesi gerekmektedir.
+
+**Kaynak:** Nakit akış tablosu  
+**Güven Seviyesi:** Yüksek
+
+## G. Sermaye Yoğunluğu Metrikleri
+
+| Metrik | 2024 | 2025 | Trend | Yorum |
+|--------|-----:|-----:|-------|-------|
+| **CAPEX/Gelir (%)** | 31,3 | 58,3 | ↑ Spektrum etkisi | Normalize: %35 |
+| **CAPEX/FAVÖK (%)** | 92,6 | 176,9 | ↑ Spektrum etkisi | Normalize: %108 |
+| **Faiz Gideri/FAVÖK (%)** | 25,7 | 27,1 | ↑ Artış | Borç yükü göstergesi |
+
+**Bulgu:** Spektrum ödemesi metrikleri geçici olarak bozmuştur.
+
+**Açıklama:** 2025 yılında spektrum ödemesi hariç CAPEX/Gelir %35,6 seviyesindedir (normal %30-35 aralığında). Yönetim 2026 için %24-25 rehberi vermiştir. Faiz gideri/FAVÖK oranı %27,1, borç servis yükünün artmakta olduğunu göstermektedir.
+
+**Risk Değerlendirmesi:** Faiz oranları yükselirse veya FAVÖK marjı daralırsa bu oran %30'u aşabilir ve borç sürdürülebilirliği sorgulanabilir.
+
+**Öneri:** TCMB faiz politikası (22 Nisan PPK kararı) yakından takip edilmelidir. Faiz artışı şirket için olumsuz olacaktır.
+
+**Kaynak:** Finansal analiz  
+**Güven Seviyesi:** Yüksek
+
+---
+
+# IV. DEĞERLEME
+
+## Genel Değerleme Özeti
+
+**Güncel Piyasa Fiyatı:** 104,9 TL (7 Nisan 2026)  
+**Adil Değer Aralığı (Baz Senaryo):** 110-125 TL  
+**Hedef Fiyat (12 Ay):** 110-145 TL (+5% ila +38% yukarı potansiyel)
+
+| Senaryo | Değerleme Yöntemi | Hedef Fiyat (TL) | Potansiyel Getiri | İnanç |
+|---------|-------------------|------------------:|------------------:|-------|
+| **Bear** | DCF (WACC %21, büyüme %3) | 85-95 | -%19 ila -%9 | Orta |
+| **Baz** | DCF + Emsal Karma | 110-125 | +%5 ila +%19 | Yüksek |
+| **Bull** | DCF (WACC %18, büyüme %5) + 5G primi | 145-165 | +%38 ila +%57 | Orta-Düşük |
+
+**Sonuç:** TCELL mevcut seviyelerde **makul değerli** görünmektedir. Baz senaryo mütevazı yukarı potansiyel (+%5-19) öngörmektedir. Birincil katalizör, 24 Nisan 1Ç 2026 kazanç açıklamasında 5G ABOA yükselmesinin doğrulanmasıdır.
+
+**Kaynak:** Değerleme ajansı çıktısı  
+**Güven Seviyesi:** Orta (%0,72 - yüksek makro belirsizlik)
+
+## A. İndirgenmiş Nakit Akışı (DCF) Değerlemesi
+
+### WACC Hesaplaması
+
+| Bileşen | Değer | Açıklama |
+|---------|------:|----------|
+| **Risksiz Oran (Rf)** | %33,0 | Türkiye 10 yıllık tahvil getirisi tahmini |
+| **Özkaynak Risk Primi (ERP)** | %6,0 | Türkiye ülke risk primi |
+| **Beta (β)** | 0,85 | Telekomünikasyon sektörü, pazar liderliği ayarlaması |
+| **Özkaynak Maliyeti (Ke)** | %38,1 | CAPM: 33% + 0,85 × 6% |
+| **Borç Maliyeti (Kd, vergi sonrası)** | %10,5 | Karma TL/USD borç, %30 vergi etkisi |
+| **Özkaynak Ağırlığı (E/V)** | %32,7 | Piyasa değerleri bazında |
+| **Borç Ağırlığı (D/V)** | %67,3 | Piyasa değerleri bazında |
+| **WACC (Ağırlıklı Ortalama Sermaye Maliyeti)** | **%19,6** | Nihai değer |
+
+**Bulgu:** %19,6 WACC, Türkiye hiperenflasyon ortamı (TL enflasyon %30,87) nedeniyle yüksektir.
+
+**Açıklama:** Türkiye'de nominal risksiz oran %33 seviyesindedir (TCMB politika faizi %37). Bu, global standartlara göre (%2-4 ABD) son derece yüksektir ancak Türkiye şirketleri için gerçektir. WACC hesaplaması metodolojik olarak doğrudur.
+
+**Risk Değerlendirmesi:** WACC varsayımları (%±1 değişim) adil değeri ~9 TL değiştirebilir. Makro belirsizlik yüksektir.
+
+**Kaynak:** Değerleme ajansı  
+**Güven Seviyesi:** Orta
+
+### 5 Yıllık Serbest Nakit Akışı Projeksiyonu (2026-2030)
+
+| Yıl | Gelir (milyar TL) | FAVÖK (milyar TL) | Capex (milyar TL) | SNA (milyar TL) |
+|-----|------------------:|-------------------:|------------------:|----------------:|
+| 2026 | 256,0 | 105,0 | 61,4 | 5,8 |
+| 2027 | 270,1 | 112,1 | 64,8 | 6,9 |
+| 2028 | 283,6 | 119,1 | 65,2 | 11,0 |
+| 2029 | 296,5 | 124,5 | 68,2 | 11,5 |
+| 2030 | 308,4 | 129,5 | 67,8 | 15,1 |
+
+**Varsayımlar:**
+- Gelir büyümesi: %6,0 (2026) → %4,0 (2030), 5G ABOA primi dahil
+- FAVÖK marjı: %41,0 (2026) → %42,0 (2030), yönetim hedefi
+- Capex/Gelir: %24 (2026-2027) → %22 (2030), normalize
+
+**Kaynak:** Değerleme ajansı projeksiyonları
+
+### DCF Adil Değer Hesaplaması (Baz Senaryo)
+
+| Bileşen | Değer (milyar TL) |
+|---------|------------------:|
+| **Projeksiyon Dönemi SNA Bugünkü Değeri (2026-2030)** | 27,8 |
+| **Terminal Değer (2030 Çıkış)** | 252,0 |
+| **Terminal Değer Bugünkü Değeri** | 102,8 |
+| **Toplam İşletme Değeri** | 130,6 |
+| **Eksi: Net Borç** | -85,0 |
+| **Özkaynak Değeri** | 45,6 |
+| **Hisse Başına Adil Değer** | **116,0 TL** |
+
+**Güncel Fiyat:** 104,9 TL  
+**Potansiyel Yukarı Hareket:** +%10,6
+
+**Kaynak:** Değerleme ajansı  
+**Güven Seviyesi:** Orta
+
+### DCF Duyarlılık Analizi
+
+| WACC ↓ / Çıkış Getirisi → | %5,0 | %5,5 | **%6,0** | %6,5 | %7,0 |
+|---------------------------|-----:|-----:|--------:|-----:|-----:|
+| **%18,0** | 145 | 135 | 126 | 118 | 111 |
+| **%19,0** | 134 | 125 | 117 | 110 | 104 |
+| **%19,6 (Baz)** | 128 | 120 | **116** | 107 | 101 |
+| **%20,5** | 119 | 112 | 105 | 99 | 94 |
+| **%22,0** | 106 | 100 | 94 | 89 | 84 |
+
+**Adil Değer Aralığı (±%1 WACC, ±%0,5 Çıkış):** 105-126 TL
+
+**Bulgu:** Değerleme WACC ve çıkış varsayımlarına oldukça duyarlıdır. %1 WACC değişimi adil değeri ~9 TL (%±8) değiştirebilir.
+
+**Kaynak:** Değerleme ajansı  
+**Güven Seviyesi:** Orta
+
+## B. Emsal Değerleme (Karşılaştırmalı Çarpanlar)
+
+### TCELL Mevcut Çarpanlar (11 Nisan 2026)
+
+| Metrik | Değer | Hesaplama |
+|--------|------:|-----------|
+| **İşletme Değeri (FD)** | 126,2 milyar TL | Piyasa değeri 41,2B + Net borç 85,0B |
+| **FD/FAVÖK (TTM 2025)** | 1,58x | 126,2 / 79,7 |
+| **FD/FAVÖK (İleriye Dönük 2026)** | 1,20x | 126,2 / 105,0 |
+| **F/K (2025)** | 21,8x | Piyasa değeri / Net kar |
+
+**Bulgu:** TCELL, FD/FAVÖK bazında gelişen pazar telekomlarına göre büyük iskontoda (1,58x vs 3,5-4,5x) işlem görmektedir.
+
+**Açıklama:** Türkiye ülke riski primi nedeniyle iskonto uygundur. Ancak TCELL, Türk Telekom'a göre prim ile (TTKOM tahmini ~1,4x) işlem görmektedir, bu da pazar liderliği primini yansıtmaktadır.
+
+**Kaynak:** Değerleme ajansı  
+**Güven Seviyesi:** Yüksek
+
+### Emsal Karşılaştırma: TCELL vs TTKOM
+
+| Metrik | TCELL (2025) | TTKOM (2025) | Fark |
+|--------|-------------:|-------------:|-----:|
+| **FAVÖK Marjı** | %33,0 | %41,0 | -8,0pp |
+| **FD/FAVÖK (tahmini)** | 1,58x | ~1,4x | +0,18x |
+| **Gelir (milyar TL)** | 241,5 | 242,0 | -%0,2 |
+
+**Bulgu:** TCELL, daha düşük marjına rağmen daha yüksek çarpanda işlem görmektedir.
+
+**Açıklama:** Pazar liderliği (%40,1 vs %29,6 pazar payı), uluslararası çeşitlendirme (Lifecell Ukrayna) ve dijital hizmet büyüme potansiyeli primi yaratmaktadır.
+
+**Risk Değerlendirmesi:** FAVÖK marjı açığı (%8pp) kapanmazsa bu prim sürdürülemeyebilir.
+
+**Kaynak:** Sektör rekabet analizi  
+**Güven Seviyesi:** Orta-Yüksek
+
+### Emsal Bazlı Adil Değer (Alternatif Yöntemler)
+
+| Yöntem | Hedef Çarpan | Hesaplama | Adil Değer (TL/hisse) |
+|--------|-------------:|-----------|----------------------:|
+| **Tarihsel Ortalama** | 1,7x FD/FAVÖK | 105,0B × 1,7 - 85,0B / 0,393B | 238 |
+| **TTKOM Paritesi** | 1,4x FD/FAVÖK | 105,0B × 1,4 - 85,0B / 0,393B | 158 |
+| **Mevcut + Marj Primi** | 1,78x FD/FAVÖK | 105,0B × 1,78 - 85,0B / 0,393B | 259 |
+
+**Not:** Tarihsel ortalama (238 TL) çok yüksek görünmektedir, muhtemelen IAS29 düzeltmeleriyle şişmiş geçmiş çarpanlardan kaynaklanmaktadır.
+
+**Muhafazakar Emsal Adil Değeri:** 1,5x FD/FAVÖK kullanılarak ~165 TL hesaplanabilir.
+
+**Kaynak:** Değerleme ajansı  
+**Güven Seviyesi:** Düşük-Orta (metodoloji sınırlamaları)
+
+## C. Değerleme Senaryoları Özeti
+
+| Senaryo | Varsayımlar | Adil Değer | Mevcut Fiyata Göre |
+|---------|-------------|-----------:|-------------------:|
+| **Bear** | WACC %21, Gelir CAGR %4,5, FAVÖK marjı %39 | 85 TL | -%19 |
+| **Baz** | WACC %19,6, Gelir CAGR %5,0, FAVÖK marjı %42 | 116 TL | +%11 |
+| **Bull** | WACC %18, Gelir CAGR %6,0, FAVÖK marjı %43 | 152 TL | +%45 |
+
+**Kaynak:** Değerleme ajansı  
+**Güven Seviyesi:** Orta
+
+## D. Analist Konsensüsü Karşılaştırması
+
+**Takip Eden Analist:** 12  
+**Ortalama Hedef Fiyat:** 147,98 TL  
+**Aralık:** 126,4 TL - 176,0 TL  
+**Mevcut Fiyata Göre Potansiyel:** +%41,0
+
+**Tavsiye Dağılımı:**
+- Güçlü Al: 7 analist (%58)
+- Al: 5 analist (%42)
+- Tut/Sat: 0 analist
+
+**Bulgu:** Analist konsensüsü tam pozitiftir (%100 Al), ortalama hedef Finance X değerleme ile uyumludur.
+
+**Risk:** %100 Al tavsiyesi, beklentilerin yüksek olduğunu ve 5G başarısının fiyatlanmış olabileceğini göstermektedir. 1Ç kazançlar hayal kırıklığı yaratırsa keskin düzeltme riski mevcuttur.
+
+**Kaynak:** Analist konsensüs verileri  
+**Güven Seviyesi:** Yüksek
+
+---
+
+# V. SEKTÖR VE REKABET ANALİZİ
+
+## A. Sektör Genel Görünümü
+
+**Türkiye Telekomünikasyon Sektörü Profili:**
+- Pazar Yapısı: 3 oyunculu oligopol (Turkcell, Türk Telekom, Vodafone)
+- Toplam Pazar Payı (3 oyuncu): >%95
+- Mobil Penetrasyon: %95+ (81 milyon abone / 85 milyon nüfus)
+- Sektör Büyüme (2025-2030 tahmini): %3,8 CAGR
+
+**Kaynak:** Sektör rekabet analizi, Mordor Intelligence  
+**Güven Seviyesi:** Yüksek
+
+## B. Porter'ın Beş Gücü Analizi
+
+| Güç | Puan (1-5) | Şiddet | Temel Faktörler |
+|-----|----------:|--------|-----------------|
+| **Mevcut Rekabet Yoğunluğu** | 4/5 | Yüksek | 3 oyunculu oligopol, eşzamanlı 5G lansmanı, fiyat disiplini zayıflıyor |
+| **Yeni Girişim Tehdidi** | 1/5 | Çok Düşük | Spektrum maliyeti ($1B+), altyapı capex, düzenleyici engeller |
+| **İkame Ürün Tehdidi** | 2/5 | Düşük-Orta | OTT mesajlaşma (WhatsApp), VoIP (Zoom) ama veri talebi büyüyor |
+| **Tedarikçi Pazarlık Gücü** | 3/5 | Orta | Ekipman oligopolü (Ericsson, Huawei), enerji tedarikçileri fiyat artışı |
+| **Müşteri Pazarlık Gücü** | 3/5 | Orta | Numara taşınabilirliği, düşük geçiş maliyeti ama prepaid hakimiyeti |
+
+**Genel Rekabet Yoğunluğu:** Orta-Yüksek (3,2/5) — Olgun oligopol, disiplinli rekabet ama 5G dönemi rekabetin yenilenmesini tetikliyor.
+
+**Kaynak:** Sektör rekabet analizi  
+**Güven Seviyesi:** Yüksek
+
+## C. Sektör Yaşam Döngüsü
+
+**Mevcut Faz:** Olgun Büyüme (Geç Büyüme / Erken Olgunluk Geçişi)
+
+**Göstergeler:**
+- Penetrasyon: %95+ (olgun)
+- Gelir Büyümesi: %3,8 CAGR (yavaşlama)
+- Oyuncu Konsolidasyonu: 3 oyuncu (%95+ pay), 2000'lerden beri yeni giriş yok
+- İnovasyon Odağı: 5G dağıtımı (teknoloji yenileme, pazar genişlemesi değil)
+- Capex Yoğunluğu: %54 yatırım artışı (2025, 5G için)
+
+**Yorum:** Çekirdek mobil/sabit hizmetler OLGUN (yüksek penetrasyon, yavaş abone büyümesi, oligopol). 5G bindirmesi + dijital hizmetler BÜYÜME enjeksiyonu (yeni gelir akışları, ABOA yükselmesi, IoT/kurumsal fırsatlar).
+
+**Kaynak:** Sektör rekabet analizi  
+**Güven Seviyesi:** Yüksek
+
+## D. Emsal Karşılaştırma Tablosu
+
+| Metrik | TCELL | TTKOM | TCELL Sıralaması | Yorum |
+|--------|------:|------:|:----------------:|-------|
+| **Gelir (2025, milyar TL)** | 241,5 | 242,0 | 2/2 | Yakın büyüklük |
+| **Gelir Büyümesi (YoY %)** | 10,7 | 14,0 | 2/2 | TTKOM daha hızlı |
+| **FAVÖK Marjı (%)** | 33,0 | 41,0 | 2/2 | **800 bps açık kritik** |
+| **Toplam Abone (milyon)** | 62,3 | 56,6 | 1/2 | Lifecell dahil |
+| **Türkiye Mobil Pazar Payı (%)** | 40,1 | 29,6 | 1/2 | Lider |
+| **Sabit Hat Abone (milyon)** | 6,8 | 15,4 | 2/2 | TTKOM fiber avantajı |
+
+**Bulgu:** TCELL mobil liderlik ve toplam abone bazında güçlü. FAVÖK marjı açığı en büyük zayıflık.
+
+**Açıklama:** TTKOM'un %41 FAVÖK marjı, fiber altyapı varlığı (%54 LTE siteleri fiber bağlantılı) ve maliyet disiplini avantajını yansıtmaktadır. TCELL'in %33 marjı, uluslararası operasyonlar (Lifecell Ukrayna) ve dijital yatırımlar nedeniyle daha düşüktür.
+
+**Risk Değerlendirmesi:** Marj açığı kapanmazsa TCELL'in değerleme primi sürdürülemeyebilir.
+
+**Kaynak:** Sektör rekabet analizi  
+**Güven Seviyesi:** Yüksek
+
+## E. SWOT Analizi
+
+| GÜÇLÜ YÖNLER (S) | ZAYIF YÖNLER (W) |
+|------------------|------------------|
+| Pazar lideri (%40,1 mobil pazar payı) | FAVÖK marjı sektör ortalamasının altında (%33,0 vs %41,0) |
+| İstisnai işletme sermayesi verimliliği (CCC -11 gün) | Yüksek kaldıraç (Net Borç/FAVÖK 1,07x, yükseliyor) |
+| Güçlü marka bilinirliği ve müşteri sadakati | Faiz karşılama düşüyor (2,06x, sağlıklı seviyenin altında) |
+| Uluslararası çeşitlendirme (Lifecell Ukrayna) | Sabit hat pazar payı düşük (TTKOM'un gerisinde) |
+| Dijital hizmet portföyü (BiP, TV+, Paycell) | 5G abone sayısı doğrulanmamış belirsizlik |
+
+| FIRSATLAR (O) | TEHDİTLER (T) |
+|---------------|---------------|
+| 5G ABOA primi potansiyeli (+%12-15 analist konsensüsü) | Enerji maliyeti yapısal baskısı (+%5,8 elektrik, güneş hedefi riski) |
+| Google Cloud ortaklığı (veri merkezi, dijital hizmet büyümesi) | Türkiye makro belirsizliği (TL zayıflığı, enflasyon, jeopolitik) |
+| IoT ve kurumsal 5G çözümleri (network slicing) | 5G rekabet (TTKOM, Vodafone eşzamanlı lansman, fiyat savaşı riski) |
+| Güneş enerjisi ile maliyet düşürme (300 MW hedefi) | Düzenleyici risk (tarife tavanları, zorunlu yatırımlar) |
+| Sabit kablosuz erişim (5G Superbox, fiber alternatifi) | Lifecell jeopolitik riski (Rusya-Ukrayna savaşı devam ediyor) |
+
+**Kaynak:** Stratejik sentez  
+**Güven Seviyesi:** Yüksek
+
+---
+
+# VI. MAKROEKONOMİK BAĞLAM
+
+## A. Türkiye Makro Göstergeler Tablosu
+
+| Gösterge | Mevcut Değer | Tarih | Trend | Kaynak |
+|----------|-------------:|-------|-------|--------|
+| **TCMB Politika Faizi** | %37,00 | 12 Mart 2026 | Sabit tutuldu | TCMB |
+| **Enflasyon (TÜFE YoY)** | %30,87 | Mart 2026 | Azalıyor | TÜİK |
+| **TL/USD Kuru** | 44,63 | 11 Nisan 2026 | %3-5 YTD zayıflama | Piyasa verileri |
+| **GSYİH Büyüme Tahmini (2026)** | %3,7-3,8 | - | Istikrarlı | Dünya Bankası, Hükümet |
+| **Endüstriyel Elektrik Fiyatı Değişimi** | +%5,8 | 4 Nisan 2026 | Artış | Enerji Piyasası Düzenleme Kurumu |
+
+**Kaynak:** Makro analiz çıktısı  
+**Güven Seviyesi:** Yüksek
+
+## B. Jeopolitik Değerlendirme
+
+### İran-ABD Savaşı ve Türkiye Etkileri
+
+**Zaman Çizelgesi:**
+- 28 Şubat 2026: ABD-İsrail İran'a geniş çaplı saldırı başlattı
+- Mart-Nisan 2026: 4 İran balistik füzesi Türkiye hava sahasında NATO hava savunması tarafından imha edildi
+- 7 Nisan 2026: İran-ABD geçici 2 haftalık ateşkes açıkladı
+- 11 Nisan 2026: Ateşkes devam ediyor
+
+**Türkiye'ye Doğrudan Etki:**
+- Bölgesel koridor (füze güzergahı)
+- Enerji ithalatı kesintisi riski (İran/Rusya'dan gaz %20-25)
+- TL döviz kuru volatilitesi
+
+**TCELL'e Sektöre Özgü İletim:**
+
+**1. Enerji Maliyeti Şoku**
+- Nisan 2026 elektrik/gaz fiyat artışları (+%5,8 endüstriyel, +%25 konut) doğrudan İran savaşından kaynaklanmaktadır
+- TCELL ~900 GWh yıllık tüketim → +%1,0-1,5 FAVÖK marjı baskısı
+
+**2. Lifecell Ukrayna Operasyon Riski**
+- Rusya-Ukrayna savaşı 2022'den beri devam ediyor
+- Lifecell gelir katkısı ~36 milyar TL (%15 konsolide gelir)
+- İran savaşı coğrafi olarak ayrı, doğrudan etki düşük
+
+**Kaynak:** Makro analiz, jeopolitik kaynaklar  
+**Güven Seviyesi:** Orta-Yüksek
+
+## C. Sektöre Özgü Makro Etki
+
+### Enerji Fiyat Şoku İletimi
+
+**Neden:** 4 Nisan 2026 elektrik/gaz zammı (+%5,8 endüstriyel)  
+**Büyüklük:** 900 GWh × 75 TL/MWh → yıllık maliyet artışı ~4,5 milyar TL  
+**FAVÖK Etkisi:** 4,5 milyar TL / 241,5 milyar TL gelir = %1,9 FAVÖK marjı baskısı (eğer geçirilemezse)
+
+**Azaltma:**
+- 300 MW güneş hedefi (2026 sonu) → %50-60 enerji enflasyonu ofset edebilir
+- Tarife geçişkenliği (postpaid müşterilere yansıtma)
+
+**Risk:** Güneş projesinde gecikme olursa marj hedefi (%40-42) riske girer.
+
+**Kaynak:** Makro analiz  
+**Güven Seviyesi:** Yüksek
+
+### TCMB Faiz Politikası Etkisi
+
+**Sonraki Karar:** 22 Nisan 2026 (analiz tarihinden 11 gün sonra)  
+**Mevcut:** %37,00 (12 Mart sabit tutuldu)  
+**Piyasa Beklentisi:** %50 olasılıkla 50-100 bps indirim
+
+**TCELL Etkisi:**
+- Faiz indirimi → TL güçlenir → USD borç yükü (spektrum ödemeleri) azalır → POZİTİF
+- Faiz artışı → TL zayıflar → USD borç yükü artar → NEGATİF
+- Faiz sabit → Nötr
+
+**Kaynak:** Makro analiz  
+**Güven Seviyesi:** Orta (makro tahmin belirsizliği)
+
+## D. Düzenleyici Kararlara İlişkin
+
+### 5G Spektrum Düzenlemesi
+
+**BTK Yükümlülükleri:**
+- Tüm il merkezlerinde 1 Nisan 2026'ya kadar kapsama (KOMPLİ)
+- Ulusal tam kapsama 1 Nisan 2028'e kadar
+- Yerel ekipman kullanımı %40 minimum (Türk tedarikçiler)
+
+**Maliyet:** $1,224 milyar USD spektrum + altyapı capex
+
+**Kaynak:** Düzenleyici açıklamalar  
+**Güven Seviyesi:** Yüksek
+
+---
+
+# VII. TEKNİK ANALİZ
+
+## A. Fiyat ve Trend
+
+**Güncel Fiyat:** 104,90 TL (7 Nisan 2026 kapanış)  
+**52 Haftalık Aralık:** 84,55 - 129,60 TL  
+**Yüksekten Uzaklık:** -%19,1  
+**Düşükten Uzaklık:** +%24,1
+
+**Trend Değerlendirmesi:**
+- **Günlük (5-20 gün):** Düşüş trendinde (5G lansmanı sonrası klasik "söylentiyi al, haberi sat" paterni)
+- **Haftalık (50-100 gün):** Yatay/nötr (101-115 TL konsolidasyon bandı)
+- **Uzun Vadeli (200 gün):** Yükseliş trendi sağlam (200 günlük MA 108,37 TL üstünde)
+
+**Kaynak:** Teknik analiz çıktısı  
+**Güven Seviyesi:** Orta
+
+## B. Destek/Direnç Seviyeleri
+
+| Seviye (TL) | Tür | Güçlülük |
+|------------:|-----|----------|
+| **Direnç 3** | 114,28 | Güçlü (20 günlük MA) |
+| **Direnç 2** | 112,39 | Çok Güçlü (Fibonacci %61,8) |
+| **Direnç 1** | 109,33 | Güçlü (teknik direnç) |
+| **Mevcut** | 104,90 | - |
+| **Destek 1** | 102,67 | Güçlü (teknik destek) |
+| **Destek 2** | 101,76 | Güçlü (Fibonacci %38,2) |
+| **Destek 3** | 95,18 | Çok Güçlü (Fibonacci %23,6) |
+
+**Kritik Karar Bölgesi:** 101-107 TL (Fibonacci %38,2-%50 aralığı)
+
+**Yorum:** Mevcut fiyat Fibonacci %50 seviyesini (107,08 TL) test ediyor. Bu seviyenin tutması boğa trendinin devamı, kırılması 95-101 TL hedeflerini açabilir.
+
+**Kaynak:** Teknik analiz  
+**Güven Seviyesi:** Orta
+
+## C. Göstergeler
+
+| Gösterge | Değer | Sinyal | Yorum |
+|----------|-------|--------|-------|
+| **RSI (14)** | 48,23 | Nötr | Aşırı alım/satım bölgesi dışında |
+| **MACD** | Negatif (tahmini) | Düşüş | 12 EMA < 26 EMA |
+| **ADX (14)** | 74,39 | Güçlü Trend | Ancak yön düşüş |
+
+**Not:** MACD ve bazı göstergeler için ADR (NYSE: TKC) ve BİST TCELL veri çelişkisi tespit edilmiştir. Yukarıdaki değerler BİST verisi bazındadır.
+
+**Kaynak:** Teknik analiz  
+**Güven Seviyesi:** Düşük-Orta (veri çelişkisi)
+
+## D. Hacim Analizi
+
+**Son Hacim Gelişmeleri:**
+- 1 Nisan 2026 (5G lansman): 2,80 milyar TL (ortalama üstü %85)
+- 7-8 Nisan: 1,48-1,55 milyar TL (hala yüksek)
+
+**Yorum:** Yüksek hacim düşüş günlerinde (1 Nisan, 8 Nisan) dağıtım (distribution) fazını işaret ediyor. Gerçek dipler genellikle hacim tükenmesi (çok düşük hacim) veya toplanma günü (spike on reversal) gösterir.
+
+**Kaynak:** Teknik analiz  
+**Güven Seviyesi:** Orta
+
+## E. Teknik Senaryolar
+
+**Boğa Senaryosu:** Fiyat 107 TL üstünü kırarsa 112-115 TL hedeflenir (Fibonacci %61,8 + 50 günlük MA).
+
+**Ayı Senaryosu:** 101 TL desteği kırılırsa 95-96 TL (Fibonacci %23,6) test edilebilir.
+
+**Kaynak:** Teknik analiz  
+**Güven Seviyesi:** Orta
+
+---
+
+# VIII. ESG DEĞERLENDİRMESİ
+
+## A. Çevresel (E) Skor ve Bulgular
+
+**Puan:** 8,0/10 (**Sektör Lideri**)
+
+**Bulgu:** TCELL çevre alanında sektörde lider konumdadır.
+
+**Açıklama:**
+- MSCI ESG Rating: A (Kasım 2024, BBB'den yükseltildi)
+- SBTi (Science Based Targets initiative) Onaylı: %100 yenilenebilir enerji hedefi 2030
+- CDP Raporlaması: 2014'ten beri
+- Yenilenebilir Enerji: 87 MW mevcut (54 MW güneş kurulu, 8,2 MW aktif)
+- 2026 Hedefi: %65 yenilenebilir enerji (%21 mevcut tahmini → 213 MW açık)
+
+**Risk Değerlendirmesi:** 2026 yıl sonu 300 MW hedefine ulaşamama riski yüksek (213 MW 8 ayda kurulum agresif). Başarısızlık SBTi yol haritası güvenilirliğini sorgular, ESG notunu düşürebilir.
+
+**Öneri:** Üç aylık MW kurulum ilerlemesi takip edilmeli. Gerekirse geçici olarak Yenilenebilir Enerji Sertifikaları (REC) satın alınmalı.
+
+**Kaynak:** ESG ajansı, bağlam çıkarma  
+**Güven Seviyesi:** Yüksek
+
+## B. Sosyal (S) Skor ve Bulgular
+
+**Puan:** 5,5/10 (**Ortalama Altı**)
+
+**Bulgu:** Kritik açıklama boşluğu - cinsiyet çeşitliliği, çalışan güvenliği, toplumsal yatırım verisi YOK.
+
+**Açıklama:**
+- Yönetim kurulu cinsiyet çeşitliliği: Açıklanmamış (Türkiye ortalaması %17,5)
+- Çalışan güvenlik metrikleri: Açıklanmamış (LTIR, ölümcül kaza sayısı)
+- Toplum yatırımı: Açıklanmamış (CSR harcaması)
+
+**Risk Değerlendirmesi:** Türkiye CMB (Sermaye Piyasası Kurulu) zorunlu cinsiyet çeşitliliği açıklaması taslak hazırlıyor (2026-2027 bekleniyor). TCELL kötü performansı açıklamaya zorlanabilir.
+
+**Öneri:** 2026 3Ç'de kapsamlı çeşitlilik raporu yayınlanmalı. Hedefler konulmalı (örn. 2028'e kadar yönetim kurulunda %30 kadın).
+
+**Kaynak:** ESG ajansı  
+**Güven Seviyesi:** Orta (veri eksikliği belirsizlik yaratıyor)
+
+## C. Yönetişim (G) Skor ve Bulgular
+
+**Puan:** 7,5/10 (**Orta-İyi**)
+
+**Bulgu:** Standartları karşılıyor ancak TVF devlet sahipliği riski mevcut.
+
+**Açıklama:**
+- En büyük ortak: Türkiye Varlık Fonu (TVF) %26,2 (devlet kontrollü)
+- Yönetim kurulu bağımsızlığı: ~%33 (tahmini, Türkiye ortalaması %27,1)
+- BIST Sürdürülebilirlik Endeksi: 12+ yıldır üye (2014-2026)
+
+**Risk Değerlendirmesi:** TVF devlet müdahale riskini beraberinde getiriyor (kamu politikası önceliği > hissedar getirisi). Azınlık hissedarlar iskonto uygulayabilir.
+
+**Öneri:** Bağımsız yönetim kurulu üyelerini %50+'ya çıkarmak azınlık koruma sinyali verir. Yönetim kurulu kompozisyonu şeffaflığı artırılmalı.
+
+**Kaynak:** ESG ajansı  
+**Güven Seviyesi:** Orta-Yüksek
+
+## D. ESG Genel Skor
+
+| Boyut | Skor | Ağırlık | Ağırlıklı Skor |
+|-------|-----:|--------:|---------------:|
+| Çevre (E) | 8,0 | %30 | 2,40 |
+| Sosyal (S) | 5,5 | %30 | 1,65 |
+| Yönetişim (G) | 7,5 | %40 | 3,00 |
+| **TOPLAM** | **7,1** | **%100** | **7,05** |
+
+**Yorum:** Ortalama üstü ESG performansı. Çevre gücü (8,0) sosyal zayıflığını (5,5) dengeliyor.
+
+**Kaynak:** ESG ajansı  
+**Güven Seviyesi:** Orta-Yüksek
+
+---
+
+# IX. HABER VE SENTIMENT ANALİZİ
+
+## A. Son 30 Gün Haber Özeti
+
+| Tarih | Başlık | Kaynak | Sentiment | Tema |
+|-------|--------|--------|-----------|------|
+| 9 Nisan 2026 | Turkcell 5G Kampanyası Shaquille O'Neal ile Başlattı | GlobeNewswire | Pozitif | Büyüme/Pazarlama |
+| 1 Nisan 2026 | 5G Ticari Lansman (Ülke Çapında) | Developing Telecoms | Pozitif | Büyüme/Stratejik |
+| 17 Mart 2026 | Temettü Dağıtım Kararı Açıklandı (8,8 milyar TL) | CNBCE | Pozitif | Finansal |
+| 5 Mart 2026 | 2025 Tam Yıl Sonuçları: Gelir +%10,7 | BusinessWire | Pozitif | Finansal |
+| Şubat 2026 | Tüm 12 Analist 'Güçlü Al' Tavsiyesi | Investing.com | Pozitif | Değerleme |
+| Şubat 2026 | Ericsson Ortaklığı 5G-Advanced İçin Açıklandı | Ericsson | Pozitif | Stratejik |
+| Kasım 2025 | Google Cloud Ortaklığı ($1B Yatırım) | BusinessWire | Pozitif | Stratejik |
+| Mart 2026 | Yenilenebilir Enerji Genişlemesi: 300MW Hedefi 2026 Sonu | CIO, Daily Sabah | Nötr-Pozitif | Risk Azaltma |
+| Mart 2026 | Enerji Maliyeti Baskısı: Endüstriyel Elektrik 2x Ocak 2022 | Medium, CIO | Negatif | Risk |
+
+**Kaynak:** Sentiment ve haber ajansı  
+**Güven Seviyesi:** Yüksek
+
+## B. Tema Dağılımı
+
+| Tema | Haber Sayısı | Oran (%) | Baskınlık |
+|------|-------------:|---------:|-----------|
+| Büyüme (5G, Yeni Hizmetler) | 5 | %42 | Dominant |
+| Finansal (Sonuçlar, Temettü) | 4 | %33 | Yüksek |
+| Stratejik Ortaklık | 2 | %17 | Orta |
+| Risk (Enerji, Rekabet) | 2 | %17 | Kayda Değer |
+
+**Yorum:** 5G büyüme teması haberleri domine ediyor (%42). Finansal sonuçlar ve stratejik yatırımlar güçlü destek sağlıyor.
+
+**Kaynak:** Sentiment analizi  
+**Güven Seviyesi:** Yüksek
+
+## C. Genel Duygu Skoru
+
+**Değer:** +3,5 / 5,0 (**Pozitif**)
+
+**Gerekçe:** 5G ticari lansmanı (1 Nisan) ana katalizör. Güçlü 2025 finansal sonuçlar, 8,8 milyar TL temettü kararı, tüm analistlerin 'Güçlü Al' tavsiyeleri. Enerji maliyetleri ve 5G penetrasyon riskleri kısmen dengeliyor.
+
+**Trend:** İyileşiyor (yukarı)
+
+**Kaynak:** Sentiment ajansı  
+**Güven Seviyesi:** Yüksek
+
+---
+
+# X. KAP OLAYLARI VE ETKİ ANALİZİ
+
+## A. Son 12 Ay KAP Bildirimleri
+
+| Tarih | Açıklama Türü | Başlık | Önemlilik |
+|-------|---------------|--------|-----------|
+| 9 Nisan 2026 | Pazarlama Duyurusu | 5G Kampanyası (Shaq Ortaklığı) | Yüksek |
+| 1 Nisan 2026 | Özel Durum Açıklaması | 5G Hizmet Ticari Lansmanı | KRİTİK |
+| 17 Mart 2026 | Özel Durum Açıklaması | Temettü Dağıtımı Kararı (8,8 milyar TL) | Yüksek |
+| 5 Mart 2026 | Finansal Rapor | 2025 Tam Yıl Finansal Sonuçları | Yüksek |
+| 12 Kasım 2025 | Stratejik Ortaklık | Google Cloud Çok Yıllı Anlaşma | Yüksek |
+| 6 Kasım 2025 | Finansal Rapor | 3Ç 2025 Sonuçları | Orta |
+
+**Kaynak:** KAP izleme, olay sınıflandırma  
+**Güven Seviyesi:** Yüksek
+
+## B. Olay Etki Haritası
+
+### Olay 1: 5G Ticari Lansmanı
+
+**Sınıflandırma:** Capex Kararı Operasyonelleştirildi  
+**Tarih:** 1 Nisan 2026
+
+**Etkilenen Finansal Tablolar:**
+- Gelir Tablosu: Amortisman +35,2 milyar TL yıllık (5G varlıklarından), Gelir +2-5 milyar TL (spekülatif)
+- Bilanço: Maddi Duran Varlıklar artışı, Maddi Olmayan Varlıklar (spektrum lisansı)
+- Nakit Akışı: Yatırım nakit çıkışı (spektrum ödemesi)
+
+**Nicel Etki:**
+- Amortisman: Doğrulanmış +35,2 milyar TL (2025 bazından)
+- Gelir: Spekülatif +2-5 milyar TL (5G ABOA primine bağlı)
+- Capex Normalize (2027): -20-30 milyar TL yıllık azalma bekleniyor
+
+**Kaynak:** Olay etki haritalayıcı  
+**Güven Seviyesi:** Yüksek (amortisman), Düşük (gelir)
+
+### Olay 2: Temettü Dağıtımı
+
+**Sınıflandırma:** Temettü Ödemesi  
+**Tarih:** 17 Mart 2026 (Karar), 9 Aralık 2026 (Ödeme)
+
+**Etkilenen Finansal Tablolar:**
+- Bilanço: Nakit -8,8 milyar TL, Dağıtılmamış Karlar -8,8 milyar TL
+- Nakit Akışı: Finansman nakit çıkışı -8,8 milyar TL
+
+**Nicel Etki:** Tam olarak belirlenmiş (8,8 milyar TL)
+
+**Kaynak:** Olay etki haritalayıcı  
+**Güven Seviyesi:** Yüksek
+
+### Olay 3: Google Cloud Ortaklığı
+
+**Sınıflandırma:** Ortaklık + Capex Taahhüdü  
+**Tarih:** 12 Kasım 2025
+
+**Etkilenen Finansal Tablolar:**
+- Bilanço: Maddi Duran Varlıklar (veri merkezi) +~45 milyar TL (çok yıllı)
+- Gelir Tablosu: Gelir +3-8 milyar TL yıllık (2028-2030, spekülatif)
+
+**Nicel Etki:**
+- Capex: ~45 milyar TL ($1B @ 45 TL/USD)
+- Amortisman: +2,3-3,0 milyar TL yıllık (2028'den itibaren)
+- Gelir: Spekülatif, ortaklık gelir paylaşım şartları açıklanmadı
+
+**Kaynak:** Olay etki haritalayıcı  
+**Güven Seviyesi:** Orta (capex), Düşük (gelir)
+
+## C. Olay Zaman Çizelgesi
+
+**Yakın Dönem Kritik Tarihler (Önümüzdeki 12 Ay):**
+
+| Tarih | Olay | Önemlilik | Beklenen Etki |
+|-------|------|-----------|---------------|
+| **24 Nisan 2026** | 1Ç 2026 Kazanç Açıklaması | KRİTİK | 5G abone sayısı ve ABOA doğrulaması |
+| 7 Mayıs 2026 | Olağan Genel Kurul | Yüksek | Temettü onayı |
+| Aralık 2026 | 5G Spektrum Ödeme #2 | Orta | 11,2 milyar TL nakit çıkışı |
+| 9 Aralık 2026 | Temettü Ödemesi | Orta | 8,8 milyar TL nakit çıkışı |
+| Mayıs 2027 | 5G Spektrum Ödeme #3 | Orta | 11,2 milyar TL nakit çıkışı (son taksit) |
+
+**Kaynak:** Olay zaman çizelgesi ajansı  
+**Güven Seviyesi:** Yüksek
+
+---
+
+# XI. RİSK DEĞERLENDİRMESİ
+
+## A. Risk Matrisi
+
+| Risk | Olasılık | Etki | Risk Seviyesi | Azaltma |
+|------|----------|------|---------------|---------|
+| **5G Abone Beklentinin Altında** | Orta | Yüksek | **Yüksek** | Agresif pazarlama, cihaz sübvansiyonu |
+| **Enerji Maliyeti Artışı** | Yüksek | Orta | **Yüksek** | 300 MW güneş projesi, tarife geçişkenliği |
+| **Türkiye Makro Bozulma** | Orta | Yüksek | **Yüksek** | Doğal hedge (USD gelir Lifecell), maliyet kontrolü |
+| **5G Fiyat Savaşı** | Orta | Orta | **Orta** | Marka gücü, hizmet farklılaşması |
+| **Spektrum Borç Servisi** | Düşük | Orta | **Düşük-Orta** | Güçlü OCF, capex normalize |
+| **Lifecell Jeopolitik** | Düşük | Orta | **Düşük-Orta** | Rusya-Ukrayna savaşı devam ediyor ama operasyon sürdü |
+| **Düzenleyici Tarife Tavanı** | Düşük | Orta | **Düşük-Orta** | Sektör lobi, hizmet kalitesi savunması |
+
+**Kaynak:** Risk değerlendirmesi, stratejik sentez  
+**Güven Seviyesi:** Orta-Yüksek
+
+## B. Bull/Baz/Bear Senaryoları
+
+### Bear Senaryosu (%20 Olasılık)
+
+**Tetikleyiciler:**
+- 5G abone <5M (paying), ABOA premium <%8
+- Enerji maliyetleri kontrol dışı (+%10 ek artış)
+- Türkiye makro kriz (TL -%15-20 devalüasyon)
+
+**FAVÖK Etkisi:** 2026 FAVÖK marjı %39'a düşer (hedef %40-42 vs)  
+**Hedef Fiyat:** 85-95 TL (-%19 ila -%9)
+
+**Kaynak:** Değerleme ajansı  
+**Güven Seviyesi:** Orta
+
+### Baz Senaryo (%50 Olasılık)
+
+**Varsayımlar:**
+- 5G abone 8-10M, ABOA premium %10-12
+- Enerji maliyeti geçişkenliği kısmi başarı
+- Türkiye makro istikrarlı (%3-4 GSYİH, %25-30 enflasyon)
+
+**FAVÖK Etkisi:** 2026 FAVÖK marjı %41 (rehber içinde)  
+**Hedef Fiyat:** 110-125 TL (+%5 ila +%19)
+
+**Kaynak:** Değerleme ajansı  
+**Güven Seviyesi:** Yüksek
+
+### Bull Senaryo (%30 Olasılık)
+
+**Tetikleyiciler:**
+- 5G abone >12M, ABOA premium %15+
+- Güneş projesi 2026 hedefi aşıyor (325 MW+)
+- Türkiye makro olumlu sürpriz (TCMB erken faiz indirimi, TL güçleniyor)
+
+**FAVÖK Etkisi:** 2026 FAVÖK marjı %43 (hedefin üstünde)  
+**Hedef Fiyat:** 145-165 TL (+%38 ila +%57)
+
+**Kaynak:** Değerleme ajansı  
+**Güven Seviyesi:** Orta
+
+---
+
+# XII. SONUÇ VE DEĞERLENDİRME
+
+## Genel Değerlendirme
+
+Turkcell İletişim Hizmetleri A.Ş., Türkiye telekomünikasyon sektöründe pazar lideri konumu, istisnai işletme sermayesi verimliliği (nakit dönüşüm döngüsü -11 gün) ve güçlü operasyonel nakit akışı üreten sağlam bir operatördür. Şirket, 1 Nisan 2026 tarihindeki 5G ticari lansmanı ile çok yıllık bir sermaye yatırımı döngüsünü tamamlamış ve gelir artışı odaklı bir stratejiye geçiş yapmıştır.
+
+**Temel Güçlü Yönler:**
+- Pazar liderliği (%40,1 mobil pazar payı)
+- Nadir görülen negatif CCC (-11 gün), nakit yaratma makinesi
+- Güçlü marka ve müşteri sadakati
+- Uluslararası çeşitlendirme (Lifecell Ukrayna)
+- Sektör lideri ESG performansı (çevre alanında)
+
+**Temel Zayıflıklar:**
+- FAVÖK marjı sektör ortalamasının altında (%33,0 vs TTKOM %41,0)
+- Yükselen kaldıraç (Net Borç/FAVÖK 1,07x, trend yukarı)
+- Düşen faiz karşılama (2,06x, sağlıklı seviyenin altında)
+- 5G abone sayısı belirsizliği (15M iddiası vs 2M analist beklentisi)
+
+**Kritik Riskler:**
+- Enerji maliyet enflasyonu (%5,8 elektrik artışı Nisan 2026) yapısal baskı yaratıyor
+- 5G uygulama riski - ABOA primi gerçekleşmezse yatırım tezi zarar görür
+- Türkiye makro belirsizliği (hiperenflasyon, TL volatilitesi, jeopolitik)
+
+**Değerleme Görünümü:**
+- Mevcut fiyat (104,9 TL) adil değer aralığında (95-125 TL baz senaryo)
+- Analist konsensüsü (%100 Al, 147,98 TL ortalama hedef) yüksek beklenti yansıtıyor
+- 24 Nisan 1Ç 2026 kazanç açıklaması kritik katalizör (5G doğrulama)
+
+**Yatırım Önerisi:**
+TCELL, **güçlü temeller ancak uygulama riskiyle dengeli** bir yatırım fırsatıdır. Mevcut seviyeler **makul değerli** görünmektedir, **"göster bana" hikayesi** niteliğindedir - piyasa 5G yatırım getirisinin kanıtını talep etmektedir. 
+
+**Önerilen Pozisyon:** 
+- **Mevcut yatırımcılar:** TUT (1Ç 2026 kazançlarını bekle)
+- **Yeni yatırımcılar:** 1Ç 2026 kazanç doğrulaması sonrası değerlendir
+- **Agresif/Uzun Vadeli:** AL (5G uzun vadeli tez güçlü, kısa vadeli volatilite kabul edilebilir)
+
+## İzlenmesi Gereken Kritik Kilometre Taşları
+
+### Yakın Dönem (0-3 Ay)
+1. **24 Nisan 2026:** 1Ç 2026 Kazanç Açıklaması
+   - 5G gerçek ödeme yapan abone sayısı
+   - 5G ABOA premium gerçekleşmesi (%'si)
+   - 2026 rehberi revizyon (yukarı/aşağı?)
+   - Enerji maliyeti etkisi nicel açıklama
+
+2. **22 Nisan 2026:** TCMB Para Politikası Kurulu
+   - Faiz kararı (indirim/sabit/artış)
+   - TL/USD etki
+
+### Orta Dönem (3-9 Ay)
+3. **Mayıs 2026:** Güneş Enerjisi İlerleme Güncellemesi
+   - Kaç MW kurulum tamamlandı (213 MW hedefine karşı)
+
+4. **Ağustos/Eylül 2026:** 2Ç 2026 Sonuçları
+   - 5G penetrasyon trendi (kümülatif aboneler)
+   - FAVÖK marjı trendi (enerji geçişkenliği başarısı)
+
+5. **Aralık 2026:** Spektrum Ödeme #2 ve Temettü Ödemesi
+   - Toplam 20 milyar TL nakit çıkışı yönetimi
+
+### Uzun Dönem (9-12+ Ay)
+6. **2027 Rehberi (Ocak 2027):**
+   - Capex normalize (2026 %24 → 2027 %22 hedefi)
+   - Serbest nakit akışı pozitife dönüş
+   - Kaldıraç azaltma yolu
+
+## Bir Sonraki Analiz İçin Öneriler
+
+**Veri Boşlukları Kapatılmalı:**
+- Yönetim kurulu kompozisyonu ve bağımsızlık oranı
+- Cinsiyet çeşitliliği metrikleri (yönetim kurulu, üst yönetim, işgücü)
+- Çalışan güvenlik metrikleri (LTIR, ölümcül kazalar)
+- Segment bazlı detaylı finansaller (Lifecell, TDC, Paycell ayrı P&L)
+
+**İzleme Öncelikleri:**
+1. 1Ç 2026 kazanç açıklaması (en kritik)
+2. Üç aylık güneş MW ilerleme güncellemeleri
+3. TCMB faiz kararları ve TL/USD dinamikleri
+
+**Revizyon Tetikleyicileri:**
+- 1Ç kazançlar beklentiyi karşılamazsa → Bear senaryosu (85-95 TL)
+- 1Ç kazançlar beklentiyi aşarsa → Bull senaryosu (145-165 TL)
+- Jeopolitik şok veya makro çöküş → Anlık -%10-15 revizyon
+
+---
+
+# ZORUNLU BİLDİRİMLER
+
+## Sorumluluk Reddi
+
+**Bu analiz Finance X platformu tarafından otomatik olarak üretilmiştir.** Rapor, halka açık veriler, düzenleyici dosyalamalar (KAP, SEC Form 20-F), şirket açıklamaları ve üçüncü taraf piyasa verileri kullanılarak hazırlanmıştır. Hiçbir içsel bilgi veya tescilli veri kullanılmamıştır.
+
+**YATIRIM TAVSİYESİ NİTELİĞİ TAŞIMAZ.** Bu rapor, yatırım kararı vermeden önce bağımsız profesyonel danışmanlık alınması gereken bilgilendirme amaçlı bir belgedir. Finance X, kayıtlı bir yatırım danışmanı değildir ve hiçbir menkul kıymetin alım, satım veya elde tutma tavsiyesinde bulunmamaktadır.
+
+**Tüm sonuçlar, analiz tarihi itibariyle mevcut kanıtları yansıtmaktadır.** Güven seviyeleri rapor boyunca belirtilmiştir. İleri dönük tahminler, varsayımlara dayanmaktadır ve gerçek sonuçlar önemli ölçüde farklılık gösterebilir.
+
+## Veri Kaynakları
+
+**Birincil Kaynaklar:**
+- Kamuyu Aydınlatma Platformu (KAP) - finansal tablolar, özel durum açıklamaları
+- SEC Form 20-F (2024) - denetimli konsolide finansallar
+- Turkcell Entegre Faaliyet Raporu 2025
+- 3Ç 2025 Yatırımcı Sunumu
+- TCMB, TÜİK, EPDK resmi yayınları
+
+**İkincil Kaynaklar:**
+- Bloomberg, Investing.com, TradingView (piyasa verileri)
+- Analist konsensüs tahminleri (12 kurum)
+- S&P, Fitch kredi notları
+- LSEG, MSCI ESG derecelendirmeleri
+- SBTi (Science Based Targets initiative) doğrulamaları
+
+**Toplam Kaynak Sayısı:** 25+ birincil, 40+ ikincil kaynak
+
+## Analitik Kısıtlamalar
+
+**Kritik Veri Eksiklikleri:**
+- Yönetim kurulu kompozisyonu ve cinsiyet çeşitliliği (açıklanmamış)
+- Çalışan güvenlik metrikleri (LTIR, ölümcül kazalar)
+- Segment bazlı detaylı finansallar (Lifecell, TDC, Paycell ayrı P&L)
+- Moody's kredi notu (S&P BB, Fitch BB- mevcut, Moody's bulunamadı)
+
+**Metodolojik Sınırlamalar:**
+- DCF duyarlılığı: Türkiye makro varsayımları (WACC %19,6, terminal büyüme) yüksek belirsizlik taşıyor
+- Emsal değerleme: Sadece 1 tam karşılaştırılabilir BIST emsali (TTKOM)
+- 5G gelir tahminleri: Spekülatif (lansman 10 gün önce, ABOA primi henüz kanıtlanmadı)
+- IAS 29 etkisi: Hiperenflasyon muhasebesi 2021-2022 karşılaştırmalarını karmaşıklaştırıyor
+
+## Çıkar Çatışması Beyanı
+
+Finance X platformu ve bu raporu üreten analiz ajanları, Turkcell İletişim Hizmetleri A.Ş. veya ilgili taraflarla hiçbir ticari ilişkiye sahip değildir. Rapor tarafsız, bağımsız analize dayanmaktadır.
+
+---
+
+**Rapor Sonu**  
+**Toplam Sayfa:** 76  
+**Hazırlanma Süresi:** 11 Nisan 2026  
+**Versiyon:** 1.0 (Delta-Update - Kapsamlı Analiz)

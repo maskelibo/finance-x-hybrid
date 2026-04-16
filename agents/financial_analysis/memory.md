@@ -34,6 +34,23 @@
 - Celik: DIO vurgulu, buyume vs idame CAPEX ayrimi, hammadde maliyet gecirgenlik orani
 - Holding: Segment bazli ROIC/FAVOK margin/Net Debt/FAVOK + NAV hesabi + holding discount analizi
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **FY2021-2023 finansal serisi eksik** — Sadece FY2025 ve FY2024 tam; FY2021-2023 için en az Revenue/EBITDA/Net Debt/OCF serisi bulunmadığından 5 yıllık trend analizi yapılamadı. Skor kartı ve büyüme puanı bu yüzden zayıf kaldı.
+- **Büyüme vs. idame CAPEX ayrımı yapılmadı** — Çelik sektörü zorunlu metriği. Toplam CAPEX 15,338 mn TRY verildi ✓ ama ne kadarı büyüme (4. Kok Bataryası modernizasyonu), ne kadarı bakım CAPEX? Bu ayrım olmadan CAPEX/EBITDA yorumu eksik.
+- **Hammadde maliyet geçirgenlik oranı hesaplanmadı** — "$1/ton demir cevheri değişimi → EBITDA TRY X mn etkisi" formatında sayısal transmisyon eksik. CEO kontrol listesinde zorunlu.
+- **IAS29 adjusted EBITDA ayrışık tablo sunulmadı** — Yalnızca not olarak geçti; IAS29 öncesi/sonrası EBITDA karşılaştırma tablosu zorunlu çıktı formatına dahil edilmeli.
+- **Cash FAVÖK vs Reported FAVÖK karşılaştırma tablosu eksik** — 7 alt bölümden (D) Cash FAVÖK tablosu sunulmadı. OCF 65,056 mn TRY ile EBITDA 20,452 mn TRY arasındaki büyük fark analiz edilmedi.
+- **EBITDA tanım farkı (20,452 vs 21,248 mn) "DISC" flaglenmedi** — Seçim yapıldı (piyasa konvansiyonu 20,452 ✓) ama bu farkın kök nedeni (D&A tanımı?) açıklanmadı.
+
+### Bundan Sonra:
+- **Çelik sektörü zorunlu: büyüme vs idame CAPEX ayrımı** — KAP yatırım harcamaları dipnotundan proje bazlı ayrım yap; toplam CAPEX rakamı yetmez.
+- **Hammadde transmisyon parametresi zorunlu** — "$1/ton HRC fiyat değişimi → EBITDA etkisi" ve "$1/ton demir cevheri değişimi → COGS etkisi" her çelik raporunda yer almalı.
+- **IAS29 öncesi/sonrası EBITDA karşılaştırma tablosu zorunlu çıktı alanı** — "EBITDA reported = X, IAS29 parasal kazanç = Y, EBITDA adjusted = X−Y" formatında ayrı tablo.
+- **Cash FAVÖK tablosu (OCF vs EBITDA bridge) zorunlu** — OCF ile EBITDA arasındaki büyük fark varsa bridge tablosu sun (WC değişimi + vergi + faiz ödeme ayrımı).
+- **5 yıllık seri yoksa trend metrikleri "PARTIAL" flagle** — Skor kartı boyutlarında güven seviyesini düşür; tahmin yapmak yerine mevcut veriyle kısmi analiz + eksik yıl uyarısı ver.
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
@@ -116,3 +133,51 @@
 - **Bölüm truncation = output geçersiz:** Bölüm kesilirse ikiye böl, ikisini de gönder. Yarım bölüm YASAK.
 
 ---
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- Chairman'in zorunlu metrik listesi tamamlanmadi: DSO, DIO, DPO, NWC/Hasilat, NWC gun sayisi, Cari Oran, Asit-Test, ROE, ROCE, ROIC, Cash FAVOK, FCF ve CAPEX/FAVOK ya ciktiya girmedi ya da gorunen kisimda kapatilamadi.
+- Jeopolitik baglam ve telekom makro gecis mekanizmasi zayif kaldi; Iran-ABD, Rusya-Ukrayna, enerji ve faiz ortaminin TCELL ARPU, CAPEX, borclanma ve churn etkisi yeterince zincirleme anlatilmadi.
+- Cikti icinde sayi tutarliligi supheli: Net Debt/FAVOK 2.6x ifadesi, reconciliation ve HTML tarafindaki diger rakamlarla ayni fact pack'e oturmuyor.
+### Bundan Sonra:
+- Her raporda Chairman listesindeki tum metrikleri `formula + 5Y trend + benchmark + yorum` seklinde tek tek kapat; eksikse BLOCKED veya tahmini etiketi kullan ama bos birakma.
+- Jeopolitik ve makro bolumunu sektor gecis mekanizmasiyla bagla: olay -> operasyonel etki -> finansal metrik -> degerleme etkisi zinciri zorunlu olsun.
+- Ciktiyi gondermeden once reconciliation, synthesis ve formatter ile ortak fact pack sayilarini capraz kontrol et; ayni sirket icin farkli Net Borc/FAVOK veya OCF kullanma.
+### Eksikler:
+- Cash FAVOK, OCF/FAVOK, CAPEX/FAVOK ve faiz karsilama gibi Chairman icin kritik nakit bazli metrikler tum 5 yila yayilan tek tabloda sunulmadi.
+- Telekom-spesifik KPI'lar ile finansal oranlar ayni tez icinde baglanmadi; ARPU/churn/capex yogunlugu ile marj/nakit cevirimi kopuk kaldi.
+### Bundan Sonra:
+- Finansal analiz cikti acilisinda `Chairman mandatory metrics scoreboard` tablosu ver; her metrik icin hesaplandi/yorumlandi/kaynaklandi durumu net olsun.
+- Telecom analizlerinde operasyonel KPI'lari finansal oranlarla ayni paragrafta bagla: ARPU, churn, capex intensity ve spectrum amortization FAVOK, OCF ve ROIC'e nasil donusuyor acikla.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- Chairman'in zorunlu oran seti tam kapsanmadı veya tek tek yorumlanmadi: DSO, DIO, DPO, CCC, NWC/hasilat, NWC gun, Cash FAVOK, cari oran, asit-test, faiz karsilama, ROCE ve ROIC ya eksik ya da yorumsuz kaldı.
+- Net Borc/FAVOK, faiz karsilama ve FCF farkli metodolojilerle anlatildi; authoritative rasyo seti kullanılmadan yorum yapildi.
+- Makro ve jeopolitik baglam telekom sektorune gecis mekanizmasiyla baglanmadi; Iran-ABD, Rusya-Ukrayna, enerji ve kur etkisi finansal tezlere yeterince yansimadi.
+### Bundan Sonra:
+- Her finansal analizde Chairman checklist'i satir satir kapat: her rasyo icin `rakam + degisim + neden + benchmark + TRY etkisi` yorumu olmadan bolum tamamlanmis sayilmayacak.
+- Net Borc/FAVOK, faiz karsilama, OCF/FAVOK, FCF ve Cash FAVOK hesaplari reconciliation fact pack'indeki tek formulle alinacak; alternatif tanim kullaniliyorsa acikca ikinci tabloya ayrilacak.
+- Makro/jeopolitik bolum, sektor-spesifik gecis mekanizmasi ile finansal sonuca baglanacak; sadece genel risk paragrafi yazmak artik yeterli degil.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- Chairman'in istedigi scoreboard yapisi cikti basinda yoktu; hangi zorunlu metrik hesaplandi, hangisi blocked, hangisi tahmini netlesmedi.
+- Telekom KPI'lari ile finansal donusum bagi yeterince kurulmadigi icin ARPU/churn/capex yogunlugu marj ve ROIC tezine zayif baglandi.
+### Bundan Sonra:
+- Finansal analiz her raporda ilk tabloda `mandatory metric status board` verecek; hesaplandi, contested, blocked alanlari tek bakista gorunecek.
+- Telekom analizlerinde operasyonel KPI'dan finansala gecis zorunlu olacak: ARPU/churn/capex/spectrum amortization -> FAVOK/OCF/ROIC zinciri acik yazilacak.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **WC kalem bazında kırılım (DISC-005) çözülmedi** — Net WC değişimi -271,984 mn TL CF tablosundan alındı ✓. Ancak AR artışı (+55,073 tahmini), stok artışı (+40,089 tahmini) bireysel kalemler BS karşılaştırmasından *türetildi*; FY2024 AR "~185,000*" asteriskli. DSO/DIO/DPO güven seviyesi LOW. BS doğrudan satırları çekilmeliydi.
+- **Faiz Karşılama Oranı (EBIT/Faiz) hesaplanamadı** — Interest expense upstream'den gelmiyor; bu metrik Chairman listesinde zorunlu. "Interest expense veri yok" mazeret değil; tahmini olarak bile `[conf: LOW, EBITDA proxy]` formatında verilmeliydi.
+- **Solo/parent analizi eksik — 3 katlı analizin sadece konsolide kısmı yapıldı** — Holding zorunlu kuralı: (1) Parent-level, (2) Konsolide, (3) Segment. Parent-only gelir (temettü + yönetim ücreti ~2.757B TRY) vs konsolide 2.76T TRY ayrımı yapılmadı.
+- **IFRS 8 segment bazlı ROE/ROCE/ROIC eksik** — Holding zorunlu metriği; GCM SOTP'un segment katkıları EBITDA bazlıydı; ROIC segment bazında hesaplanmadı.
+- **Tekrarlayan FCF negatifliğinin sürdürülebilirlik analizi eksik** — FCF -204,862 mn TL tarihsel en kötü seviye; 3 yıllık projeksiyon (ne zaman normalize olur?) stratejik sentez için zorunlu girdi. "WC normalleşirse FCF pozitife döner" cümlesi var ✓ ama sayısallaştırılmadı.
+
+### Bundan Sonra:
+- **WC kalem BS doğrudan satırı** — FY2024 BS satırları asterisksiz çekilecek; yıl sonu BS farkı ile CF tablosu farkı arasında reconciliation yapılacak. Fark >5% → DISC flag.
+- **Interest expense eksikse proxy tahmini ver** — "Net finansal gider / debt × faiz oranı" yöntemiyle tahmini faiz gideri `[conf: LOW, proxy]` formatında hesaplanacak. Boş bırakma.
+- **Her holding raporunda parent-only satır zorunlu** — Solo gelir + solo borç + solo temettü ödemesi ayrı satırlarda canonical fact pack'te yer alacak.

@@ -10,6 +10,7 @@
 | Date | Agent | Session | Company | Issue Type | Severity | File | Status | Repeat Count |
 |------|-------|---------|---------|------------|----------|------|--------|--------------|
 | 2026-04-10 | macro_analysis | WPd5Q877 | ASELS | Scope Gap — Missing Geopolitical Analysis | CRITICAL | FEEDBACK_2026-04-10_ASELS.md | PENDING | 1 |
+| 2026-04-16 | parse_standardization | eregl-deep-dive-20260415 | EREGL | BS Ticari Borç Not 8 Dogrulaması Eksik (DISC-004) — 19,628mn vs 68,762mn TRY | HIGH | memory.md (CEO Geri Bildirimi 2026-04-16) | PENDING | 2 |
 
 ---
 

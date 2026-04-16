@@ -15,27 +15,9 @@ import { runFeedbackLoop } from './feedback-loop.js';
 import { ANALYSIS_LAYERS, ANALYSIS_MODES, VALID_ANALYSIS_LAYERS, VALID_RUNTIME_MODES, type AnalysisLayer, type RuntimeMode } from './analysis-config.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ALLOWED_ORIGINS, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_INTERVAL_MIN, NIGHT_TRAINING_HOUR_UTC } from './config.js';
-import { createDefaultProviderRouter } from './llm/default-router.js';
+import { ALLOWED_ORIGINS, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_INTERVAL_MIN, NIGHT_TRAINING_HOUR_UTC, LLM_PRIMARY_PROVIDER } from './config.js';
 
-void (async () => {
-  try {
-    const startupProviderRouter = createDefaultProviderRouter();
-    const startupAvailability = await startupProviderRouter.probeRoutedAvailability();
-    if (startupAvailability.available) {
-      console.log(`✅ LLM provider available: ${startupAvailability.provider}`);
-      return;
-    }
-
-    console.error('⚠️  No configured LLM provider is currently available.');
-    console.error(`   Reason: ${startupAvailability.reason || 'unknown'}`);
-    console.error('   Backend started anyway; analysis endpoints may fail until Claude/Codex auth is fixed.');
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`⚠️  LLM provider startup probe failed: ${message}`);
-    console.error('   Backend started anyway; analysis endpoints may fail until provider checks pass.');
-  }
-})();
+console.log(`ℹ️  LLM provider: ${LLM_PRIMARY_PROVIDER}`);
 
 const app = express();
 
@@ -599,6 +581,21 @@ app.post('/api/analysis/sessions/:id/resume', (req, res) => {
   const ok = resumeSession(req.params.id);
   res.json({ ok });
 });
+
+// Serve dashboard static files from ../dashboard/dist
+const dashboardPath = path.resolve(process.cwd(), '..', 'dashboard', 'dist');
+if (fs.existsSync(dashboardPath)) {
+  app.use(express.static(dashboardPath));
+  // SPA fallback — all non-API routes serve index.html
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(dashboardPath, 'index.html'));
+    }
+  });
+  console.log(`📊 Dashboard: http://localhost:${PORT} (static from dashboard/dist)`);
+} else {
+  console.log(`⚠️  Dashboard build not found at ${dashboardPath} — run: cd dashboard && npm run build`);
+}
 
 app.listen(PORT, () => {
   console.log(`\n🚀 Finance X Backend`);

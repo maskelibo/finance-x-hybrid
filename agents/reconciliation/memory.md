@@ -21,6 +21,21 @@
 - **Celiskili metriklerde yalniz farki yazma; hangisini neden sectigini acikla.**
 - **EBITDA, net kar, FCF, net borc icin ayri `final approved figure` bolumu yayinla.**
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **DISC-004 (ticari borç 19,628 vs Not 8: 68,762 mn) çözümsüz bırakıldı** — "AÇIK" olarak flaglendi ama downstream için tek doğrulanmış değer seçilmedi. Kural: discrepancy tespit et → çöz → tek değer gönder. financial_analysis Not 8'i zaten kullandı; reconciliation da doğruyu kilitlemeliydi.
+- **FY2021-2023 reconciliation hiç yapılmadı** — Sadece FY2025 ve kısmen FY2024 kontrol edildi. 5 yıllık seri zorunlu; en azından bilanço dengesi (A=L+E) her yıl için check edilmeli.
+- **ICF ve Finansman CF cross-check eksik** — "OCF/FCF doğrulandı; tam hat bazlı ekstraksiyon eksik" yazıldı ama tam CF mutabakatı (Opening + Net Change = Closing) doğrulanmadı.
+- **Özsermaye mutabakatı (Check 5) yapılmadı** — SE tablosu eksik olduğu için "PENDING" etiketiyle geçildi; bu durumda confidence 0.72 aslında çok yüksek. SE yokken equity check 0.00 olmalı.
+- **IAS29 normalize NI tablosu tek satır notla geçildi** — "ias29_adjusted_NI = −182 mn TRY" hesaplandı ✓ ama bu bulgunun downstream etkisi (skor kartı, değerleme, hedef fiyat) ayrıca belirtilmedi.
+
+### Bundan Sonra:
+- **DISC-004 gibi açık ticari borç çelişkisinde: Not'u oku, doğru değeri kilitle** — "AÇIK" bırakma; financial_analysis ve DPO/CCC için hangi değerin kullanılacağını sen belirle ve tek değer downstream'e gönder.
+- **5 yıllık bilanço dengesi kontrolü zorunlu** — Her raporlama yılı için A=L+E check'ini yap; tek yıl değil, 5 yıl birden.
+- **CF mutabakatı tam 3 bölüm** — OCF + ICF + Financing = Net Change; Opening + Net Change = Closing. Sadece OCF yetmez.
+- **IAS29 adjusted NI downstream'e ayrıca bildir** — "Normalize NI = X mn TRY" bulgusu finansal analiz, değerleme ve skor kartı için kritik girdi; "not" olarak değil, ayrı tablo olarak gönder.
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO
 
 **CEO 2026-04-14 THYAO:** D1 equity gap 141B TRY root cause yok (SE tablosu eksikti). WC confidence 0.45. Net Borç earnings call bazli tek kaynak. CF yokken Cross-Statement score 0.65 = yanlis kalibrasyon.
@@ -113,3 +128,40 @@
 - **Dış kaynak çelişkisi FAIL tetikler:** Sadece BS dengesi (A=L+E) yeterli değil. Revenue, EBITDA, Net Kar kaynak bazında cross-check yapılmadan PASS verilemez.
 
 ---
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- Ic tutarlilik testi guclu gorunse de `Overall Confidence: HIGH (0.87)` ve `Ready for downstream` ifadesi erken verildi; downstream ciktilardaki Net Borc/FAVOK, OCF ve operasyonel veri catismalari cozulmeden dosya temiz ilan edildi.
+- 5G abone sayisi uyusmazligi `Q1 2026 earnings validation` bekliyor denilerek acik bir fact pack'e baglanmadi; tartismali veri downstream'i kilitlemeliydi.
+### Bundan Sonra:
+- Reconciliation yalnizca muhasebe esitligini degil kaynaklar arasi sayi uyumunu da kapatacak; kritik catismada `CONTESTED` etiketiyle downstream BLOCK verecek.
+- `Ready for downstream` ifadesi ancak net borc, OCF, EBITDA, abone/KPI ve valuation girdileri tek authoritative fact pack'te hizalaninca kullanilacak.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- Net Borc/FAVOK, faiz karsilama, FCF ve KPI tanimlari rapor genelinde farkli formullerle yasarken reconciliation bunlari tek metodolojiye kilitlemedi.
+- `CONTESTED` alanlari downstream agent'lari bloke edecek karar formatina donusmedi; sadece not dusulup gecildi.
+### Bundan Sonra:
+- Reconciliation ciktisi her kritik rasyo icin `formula + numerator + denominator + source period` verecek; ayni rasyo iki yontemle kullaniliyorsa biri primary olarak kilitlenecek.
+- Tartismali KPI, FCF zamani veya borc tanimi varsa `ESCALATE_TO_CEO + authoritative fact pack request` olmadan downstream izin verme.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- Fiyat capasi ve teknik taraftaki piyasa degeri varsayimi ile finansal taraftaki valuation girdileri tek bir zaman damgasina sabitlenmedi.
+- OCF 96.6bn vs 112.1bn gibi tanim farklari icin `primary measure / secondary measure` kilidi cikmadi; formatter ve summary ayni sayiyi farkli isimlerle kullandi.
+### Bundan Sonra:
+- Reconciliation, fiyat ve valuation girdileri icin `as_of datetime` zorunlu tutacak; farkli saatli piyasa verileri ayni raporda karismayacak.
+- Nakit akisi ve leverage gibi tartismali kalemlerde primary ve secondary tanim ayni blokta yayinlanacak; primary kilitlenmeden downstream PASS verilmeyecek.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **Segment reconciliation (segment EBITDA toplamı = konsolide) yapılmadı** — KCHOL holding; GCM SOTP'tan segment EBITDA katkıları mevcut (TUPRS/FROTO/YKBNK/ARCLK/EREGL/TCELL). Bunların toplamı konsolide EBITDA'ya eşit mi? Bu kontrol yapılmadı. Holding için zorunlu 8. check.
+- **ESK-001/003/004 üç eskalasyon açık bırakıldı** — CF FX farkı (68,012 mn), Faaliyet Raporu 1561073, FY2023 CF/SE — bunlar "açık" olarak devredildi. Reconciliation görevi: eskalasyonları açıklamak değil, downstream'e tek doğrulanmış değer göndermek. Açık eskalasyonla final approved figure yayımlanamaz.
+- **Solo bilanço hâlâ eksik** — KCHOL parent-only bilanço olmadan leverage analizi (holding-level net borç vs konsolide net borç) yapılamadı. Bu KCHOL'un spesifik riski: banka konsolidasyonu bilanço şişiriyor.
+- **Data quality 0.69 ilan edildi ama downstream uyarısı net değil** — 0.69 QA eşiğinin altında; financial_analysis ve valuation'a "düşük kaliteli veri zemini" uyarısı özellikle ve ayrıca yazılmalıydı.
+
+### Bundan Sonra:
+- **Holding reconciliation'a zorunlu 8. check ekle: Segment EBITDA Reconciliation** — GCM/analist SOTP'undaki segment katkıları toplanıp konsolide EBITDA ile karşılaştırılacak. Fark >%15 → FLAG + upstream escalation.
+- **Açık eskalasyon = final approved figure yayımlama** — ESK formatlı açık maddeler varken "OUTPUT BLOKLANMADI" yazma. Açık maddeleri not olarak ilet ve downstream'i uyar: "aşağıdaki kalemlerde belirsizlik devam ediyor."
+- **Solo bilanço KCHOL analizlerinde birinci öncelik** — Faaliyet Raporu 1561073 inmeden solo borç yapısı analiz edilemez; bu data_collection'a P0 olarak verilmeliydi.

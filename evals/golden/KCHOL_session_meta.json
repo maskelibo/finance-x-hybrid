@@ -1,0 +1,233 @@
+[
+  {
+    "agent_id": "ceo",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 9816,
+    "cost_usd": 0.2494263,
+    "duration_ms": 224671,
+    "output_length": 24508,
+    "provider_used": null
+  },
+  {
+    "agent_id": "data_collection",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 13673,
+    "cost_usd": 0.74739345,
+    "duration_ms": 126865,
+    "output_length": 23119,
+    "provider_used": null
+  },
+  {
+    "agent_id": "parse_standardization",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 6977,
+    "cost_usd": 0.06359885,
+    "duration_ms": 59738,
+    "output_length": 15844,
+    "provider_used": null
+  },
+  {
+    "agent_id": "reconciliation",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 7716,
+    "cost_usd": 0.08090935,
+    "duration_ms": 72576,
+    "output_length": 19239,
+    "provider_used": null
+  },
+  {
+    "agent_id": "context_extraction",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 25141,
+    "cost_usd": 1.37976215,
+    "duration_ms": 477791,
+    "output_length": 48412,
+    "provider_used": null
+  },
+  {
+    "agent_id": "financial_analysis",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 30687,
+    "cost_usd": 1.45500665,
+    "duration_ms": 655460,
+    "output_length": 23691,
+    "provider_used": null
+  },
+  {
+    "agent_id": "sector_competition",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 21163,
+    "cost_usd": 0.75254965,
+    "duration_ms": 393569,
+    "output_length": 54389,
+    "provider_used": null
+  },
+  {
+    "agent_id": "macro_analysis",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 35323,
+    "cost_usd": 1.5515587,
+    "duration_ms": 676574,
+    "output_length": 22612,
+    "provider_used": null
+  },
+  {
+    "agent_id": "technical_analysis",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 13191,
+    "cost_usd": 0.87935355,
+    "duration_ms": 218876,
+    "output_length": 18220,
+    "provider_used": null
+  },
+  {
+    "agent_id": "kap_watch",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 12720,
+    "cost_usd": 1.1064354,
+    "duration_ms": 216014,
+    "output_length": 16877,
+    "provider_used": null
+  },
+  {
+    "agent_id": "event_classification",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 7585,
+    "cost_usd": 0.14360635,
+    "duration_ms": 68725,
+    "output_length": 23009,
+    "provider_used": null
+  },
+  {
+    "agent_id": "event_impact_mapper",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 10339,
+    "cost_usd": 0.50704605,
+    "duration_ms": 196055,
+    "output_length": 30852,
+    "provider_used": null
+  },
+  {
+    "agent_id": "event_timeline_alert",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 7908,
+    "cost_usd": 0.1508751,
+    "duration_ms": 87765,
+    "output_length": 20987,
+    "provider_used": null
+  },
+  {
+    "agent_id": "qa_review",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 12311,
+    "cost_usd": 0.5697648,
+    "duration_ms": 263216,
+    "output_length": 30332,
+    "provider_used": null
+  },
+  {
+    "agent_id": "strategic_synthesis",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 15918,
+    "cost_usd": 0.64559355,
+    "duration_ms": 375347,
+    "output_length": 43356,
+    "provider_used": null
+  },
+  {
+    "agent_id": "final_summary",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 27709,
+    "cost_usd": 0.84423855,
+    "duration_ms": 635781,
+    "output_length": 54359,
+    "provider_used": null
+  },
+  {
+    "agent_id": "valuation_agent",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 14946,
+    "cost_usd": 0.51639105,
+    "duration_ms": 297524,
+    "output_length": 38872,
+    "provider_used": null
+  },
+  {
+    "agent_id": "sentiment_news_agent",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 16581,
+    "cost_usd": 0.48140615,
+    "duration_ms": 133194,
+    "output_length": 19448,
+    "provider_used": null
+  },
+  {
+    "agent_id": "analyst_consensus_agent",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 6286,
+    "cost_usd": 0.17678785,
+    "duration_ms": 72860,
+    "output_length": 16397,
+    "provider_used": null
+  },
+  {
+    "agent_id": "esg_agent",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 11402,
+    "cost_usd": 0.9247936,
+    "duration_ms": 247719,
+    "output_length": 23158,
+    "provider_used": null
+  },
+  {
+    "agent_id": "report_formatter",
+    "ticker": "KCHOL",
+    "session_id": "Q-RgdwAckWG5H3MzfAUxd",
+    "status": "completed",
+    "tokens_used": 17071,
+    "cost_usd": 0.4253233,
+    "duration_ms": 162493,
+    "output_length": 98,
+    "provider_used": null
+  }
+]

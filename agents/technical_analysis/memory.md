@@ -45,6 +45,25 @@ Bollinger Bands:
 **Celik sektoru ek:** HRC Avrupa spot fiyati + demir cevheri + hurda + Cin ihracat + tarife etkisi
 **Stochastic RSI 80+ ise** "overbought risk" uyarisi ekle
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **MACD histogram "[VERİ YOK]"** — En kritik momentum göstergesi eksik. Web'den çekilemedi açıklaması yapıldı ama alternatif kaynak (Bigpara, İş Yatırım, TradingView API) denenmedi. MACD olmadan momentum analizi eksik kalır.
+- **Stochastic RSI "[VERİ YOK]"** — RSI 26.98 oversold ama Stochastic RSI durumu raporlanamadı. Overbought/oversold teyidi için şart.
+- **VWAP analizi eksik** — Standart şablon zorunlu kalemleri arasında; çıktıda görünmüyor.
+- **Volume Profile / POC eksik** — POC (Point of Control), Value Area (70%) çıktıda yok.
+- **Bollinger Bands eksik** — Fiyatın bantlar içindeki pozisyonu ve squeeze/expansion durumu belirtilmedi.
+- **İçeriden işlem (insider) KAP taraması yapılmadı** — KAP'ta yönetim alım/satım bildirimi taraması zorunlu; çıktıda hiç değinilmedi.
+- **RS vs BIST100 (12 ay + YTD) eksik** — İki zaman dilimi karşılaştırması standart şablonda zorunlu.
+- **Yabancı yatırımcı payı ve flow verisi eksik** — Net alım/satım ve yabancı pay trendi belirtilmedi.
+- **Volume spike analizi "[VERİ YOK]"** — Son 30 günlük hacim anomalileri ve fiyat etkisi raporlanmadı.
+- **Çelik sektörü ek bölüm eksik** — HRC Avrupa spot fiyatı + demir cevheri + hurda teknik durumu ve EREGL fiyat korelasyonu sunulmadı.
+
+### Bundan Sonra:
+- **MACD için alternatif kaynak dene** — TradingView → Bigpara → İş Yatırım teknik sayfa → Mynet Finans. Dört kaynak başarısız olursa "MACD mevcut değil — 4 kaynak denendi [conf: LOW]" yaz, bölümü atlama.
+- **Standart şablon 8 kaleminin hepsi zorunlu** — Volume + Fibonacci + VWAP + Volume Profile + Insider + RS vs BIST100 + Bollinger + Momentum. Herhangi biri "[VERİ YOK]" ise "4 kaynak denendi, bulunamadı" formatında yaz.
+- **Çelik sektörü ek bölüm her analizde zorunlu** — HRC Avrupa spot + demir cevheri fiyat teknik görünümü + EREGL fiyatı korelasyon notu.
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
@@ -91,6 +110,19 @@ Bollinger Bands:
 - **Investing.com KCHOL teknik analiz sayfasını dene** — TradingView screenshot çekilemiyorsa Investing.com teknik göstergeler (RSI, MACD, MA özeti) okunabilir HTML formatında sunuluyor; WebFetch ile çekilebilir.
 - **Delta-update'de 4 günlük mum analizi** — 10, 11, 12, 13, 14 Nisan kapanış fiyatları ve hacimlerini tablo olarak sun; yön ve momentum bunu gösteriyor. 4 gün için mevcut veri KAP veya Bigpara'dan çekilebilir.
 
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update (2. Tur)
+
+### Eksikler:
+- **MACD/VWAP/Bollinger tekrar [VERİ YOK]** — KCHOL'da bu sorun artık 2. tur. "4 kaynak denendi" protokolü uygulanmadı; Investing.com ve Bigpara KCHOL teknik sayfaları WebFetch ile çekilmedi. Tekrarlayan hata artık sistematik.
+- **RSI 72.07 verildi ✓ ama "overbought risk" uyarısı skor kartına bağlanmadı** — RSI >70 → Stochastic RSI 80+ → "overbought risk" uyarısı kural gereği eklenmeli; sadece tablo olarak kalmadı, skor kartı etki analizi yapılmadı.
+- **Teknik skor 3/5 olarak kaldı** — COO teslim kontrol matrisinde "min 5 teknik kalem" kuralı var; bu FAIL anlamına gelir. 3/5 durumu açıkça "eşik altı" olarak flaglenmedi.
+- **RS vs BIST100 (12 ay + YTD) hâlâ eksik** — İkinci turda da verilmedi; "YTD +27.71%" var ✓ ama 12 ay relatif performans hesabı yok.
+
+### Bundan Sonra:
+- **KCHOL için Investing.com teknik göstergeler sayfası zorunlu ilk kaynak** — uzmanpara.milliyet.com.tr ✓ bu turda kullanıldı (RSI 72.07); aynı kaynak MACD ve Bollinger için de dene. 4 kaynak tüketilmeden "[VERİ YOK]" yazmak YASAK.
+- **Teknik kalem < 5 = COO'ya FLAG** — 3 teknik kalemle gönderilen çıktı "INCOMPLETE TECHNICAL" etiketiyle işaretlenecek ve COO teslim kontrolünde tespit edilecek.
+- **RSI > 70 → Stochastic RSI kontrolü zorunlu** — RSI overbought bölgesindeyken Stochastic RSI 80+ kontrolü yapılacak ve skor kartına "kısa vadeli düzeltme riski" olarak yazılacak.
+
 ## Bilinen Hatalar (Bir Daha Yapma)
 
 - AKBNK: Volume analysis, RS time-series, institutional flow, short interest, Fibonacci, insider trading — TAMAMEN EKSIK
@@ -130,3 +162,27 @@ Bollinger Bands:
 - **Tahmin vs gerçek ayrımı netleştirilecek:** Tüm tahmin değerleri "[TAHMİN]" tag'i taşımalı; gerçek piyasa verisi "[VERİ: kaynak]" formatında belirtilmeli.
 
 ---
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- Cikti yalnizca `Mock completed output for technical_analysis.` seviyesinde kaldi; trend, destek/direnc, hacim, momentum ve senaryo seviyeleri yok.
+- Teknik analiz, ana rapordaki yatirim teziyle ve Bear/Baz/Bull fiyat patikalariyla baglanmadi.
+### Bundan Sonra:
+- Her raporda en az trend, destek/direnc, hacim, RSI/MACD ve olasi fiyat patikalari ver; bunlari zaman ufku ve stop invalidation seviyesiyle birlikte yorumla.
+- Teknik analiz bolumu stratejik tezle hizalanacak; yalniz indikator listelemek yerine hangi senaryoyu destekledigini acikla.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- TCELL cikti mock seviyesinde kaldigi icin fiyat yapisi, hacim, MA/Fibonacci, RS vs BIST100 ve 5G lansman price action analizi görünmedi.
+- Teknik gorunum, makro ve event takvimiyle baglanmadi; kritik fiyat seviyeleri icin hacim teyidi ve zaman damgasi yoktu.
+### Bundan Sonra:
+- Teknik analiz, output kisa olsa bile minimum sablonu tam dolduracak: fiyat seviyesi, tarih/saat, kaynak, hacim teyidi ve trend yorumu birlikte gelecek.
+- Sirket-ozel olaylarin fiyat etkisi ayri alt baslikta yazilacak; telekom icin 5G lansmani, BTK/BIST akisi ve piyasa momentumu birbirine baglanacak.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- Teknik katman, rapordaki Bear/Baz/Bull fiyat patikalariyla hizalanmadi; hangi seviye hangi senaryoyu invalid ediyor net degildi.
+- Hacim teyidi, fiyat zamani ve kaynak damgasi olmadan `uptrend` benzeri nitel yorumlar downstream'e yeterince savunulabilir veri vermedi.
+### Bundan Sonra:
+- Teknik analiz her raporda senaryo bagli calisacak; Bear/Baz/Bull icin ayri invalidation ve tetik seviyeleri yazilacak.
+- Fiyat yorumu ancak `price + timestamp + source + volume quality` dordlusu ile birlikte verilecek; bu set yoksa yalnizca zayif gorunum notu dusulecek.

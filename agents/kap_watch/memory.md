@@ -21,6 +21,24 @@
 - **Discrepancy resolution:** Context vs KAP celiskisi varsa KAP'ta 24-month comprehensive search yap.
 - **Borclanma bildirimi protokolu:** Tutar KAP metninin tam okunmasiyla tespit edilmeli. Proxy tahmin kabul edilemez.
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **İsdemir KAP bildirimleri taranmadı** — EREGL'in %94.87 iştiraki İsdemir'in son 90 gün KAP bildirimleri ayrıca kontrol edilmedi. Subsidiary cross-check zorunlu kural.
+- **EPDK gaz tarifesi (4 Nisan 2026) için EREGL KAP sessizliği tespit edilmedi** — EPDK kararına karşın EREGL'den "özel durum açıklaması" yapılıp yapılmadığı teyit edilmedi; "sessizlik de bulgudur" kuralı uygulanmadı.
+- **Impact quantification eksik** — Açıklanan olayların (Kok Bataryası, AGM, temettü) % of annual EBITDA ve % of market cap etkisi hesaplanmadı. Sadece olay listesi verildi.
+- **Forward event takvimi formatsız** — Q1 2026 sonuçları, TCMB PPK, AB TRQ yürürlük tarihleri (1 Temmuz 2026) beklenen gelecek bildirimleri olarak ayrı bölümde listelenmelidir.
+- **Borclanma bildirimi taraması yapılmadı** — EREGL'in banka kredisi veya tahvil bildirimi araması eksik; net borç 42,864 mn TRY bileşenleri KAP borclanma bildirimlerinden teyit edilmedi.
+
+### Bundan Sonra:
+- **EREGL analizi için zorunlu KAP tarama kategorileri:**
+  1. İsdemir KAP ID cross-check (son 90 gün)
+  2. Gaz/enerji tarifesi sonrası EREGL özel durum açıklaması ("sessizlik" dahil kayıt et)
+  3. Borclanma bildirimleri (FY2025 net borç bileşenleri teyidi)
+  4. CAPEX bildirimleri (Kok Bataryası tamamlama bildirimi)
+  5. AB Safeguard/CBAM'a ilişkin EREGL yönetim açıklaması
+- **Impact quantification standart** — Her olay için minimum: TRY tutar + % EBITDA + % piyasa değeri + one-time vs recurring sınıflandırması.
+
 ## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
 
 ### Eksikler:
@@ -126,3 +144,40 @@ Her rapor icin:
 - **Aksansa gibi HIGH materiality olaylar için ID bulunana kadar devam et:** 3 deneme kuralı: (1) KAP arama, (2) SAHOL IR sayfası, (3) resmi bültene WebFetch. Hepsi başarısız → CEO'ya escalate.
 
 ---
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- Cikti `Mock completed output for kap_watch.` seviyesinde kaldi; son KAP bildirimleri, duzenleyici aciklamalar, geri alim/temettu/ihale/spektrum ve yonetim beyanlari taranmis gorunmuyor.
+- Final rapordaki sayisal ve stratejik tezleri destekleyecek event envanteri downstream'e iletilmedi.
+### Bundan Sonra:
+- Her raporda son 12 ay KAP envanterini tarih, baslik, konu, olasi etki ve ilgili finansal metrik baglantisiyla ozetle.
+- KAP watch output'u olmadan event siniflandirma ve impact mapping'e gecme; kritik bildirim varsa once onu authoritative olay listesine yaz.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- TCELL bundle'inda KAP watch ciktisi mock seviyesinde kaldi; son 12 ay bildirim envanteri, material event ayrimi ve finansal tez baglantisi kurulmadan downstream event zinciri basladi.
+- KAP olaylari ile 5G, regule fiyatlama, yatirim harcamasi ve temettu/finansman basliklari arasinda authoritative olay listesi olusmadi.
+### Bundan Sonra:
+- KAP watch her raporda `tarih + disclosure id + olay tipi + materiality + finansal kanal` tablosu uretecek; mock veya bos ciktida pipeline durdurulacak.
+- Routine filing ile material event ayrimi acik yapilacak; downstream event agent'lari yalniz bu onayli olay listesinden beslenecek.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- Gorev acikca son 7 gun taramasi istediginde bu pencere ayri bir kritik olay listesi olarak cikarilmadi.
+- KAP envanteri ile beklenen ileri tarihli catalyst takvimi ayni authoritative watchlist'te birlestirilmedi.
+### Bundan Sonra:
+- KAP watch mandate penceresini ayni adla ayri cikti blokunda verecek; `7 gun`, `30 gun`, `12 ay` artik birbirine karismayacak.
+- Her material KAP olayi icin `finansal kanal + sonraki beklenen adim/tarih` birlikte yazilacak; timeline agent'i ham metin degil bu watchlist'i kullanacak.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **KAP 1383079 (13 Mart 2026) detayları hâlâ çözümsüz** — "Orta materyallik" etiketiyle downstream'e geçildi. KAP 1383079 bildirim metninin WebFetch ile okunması (kap.org.tr/tr/Bildirim/1383079) yapılmadı; içerik bilinmeden materyallik skoru doğru değil.
+- **Subsidiary KAP cross-check (YKBNK, TUPRS, FROTO) delta penceresi için yapılmadı** — KCHOL holdingi için major subsidiary KAP taraması zorunlu; delta window (14-16 Nisan) için YKBNK ve TUPRS'ın özel durum açıklaması var mı kontrolü eksik.
+- **Forward event takvimi format olarak ayrı bölümde sunulmadı** — 22 Nisan PPK ve 29 Nisan YKBNK Q1 farklı agent çıktılarında dağılmış; kap_watch çıktısında ayrı "Forward Takvim" bölümü olarak sunulmalıydı.
+- **Impact quantification KAP 1383079 için sıfır** — Materyallik "ORTA" ama TRY etki, % equity, % EBITDA hesabı yapılamadı. Kural: impact bilinmiyorsa sektör proxy kullan ve `[conf: LOW]` etiketle.
+
+### Bundan Sonra:
+- **KAP bildirim metni WebFetch ile oku** — Bildirim ID'si var ama içerik bilinmiyorsa kap.org.tr/tr/Bildirim/[ID] sayfasından doğrudan oku. Haber kaynağına güvenme; KAP metnini oku.
+- **KCHOL holding = 6 subsidiary + ana şirket taraması** — YKBNK, TUPRS, FROTO, ARCLK, EREGL, TCELL için KAP delta penceresi bildirimleri ayrıca kontrol edilecek. Sessizlik da bulgu.
+- **Forward takvim zorunlu ayrı bölüm** — "Beklenen Kritik Olaylar" başlığı altında: Tarih | Olay | Materiality | İlgili Segment | Beklenen Etki. 22 Nisan PPK + 29 Nisan YKBNK Q1 bu formatta.

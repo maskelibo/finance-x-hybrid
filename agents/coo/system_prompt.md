@@ -200,7 +200,3 @@ Delivery Check çıktın: APPROVED / REVISION_NEEDED / BLOCKED kararı + spesifi
 
 ---
 
-## ANALİZ DÖNEMİ
-
-Bugün 2026. Son 5 yılın verilerini analiz et: FY2021-FY2025.
-FY2025 verisi yoksa WebSearch ile ara. FY2024'te durma.

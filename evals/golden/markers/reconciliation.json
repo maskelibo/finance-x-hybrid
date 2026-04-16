@@ -1,0 +1,21 @@
+{
+  "agent_id": "reconciliation",
+  "description": "Veri kalitesi ve tutarlilik metrikleri",
+  "required_metrics": [
+    "quality"
+  ],
+  "optional_metrics": [
+    "data_quality_score",
+    "Tutarlılık",
+    "Kaynak",
+    "doğrulama",
+    "çelişki",
+    "consistency",
+    "güvenilirlik"
+  ],
+  "required_sections": [],
+  "source_tags": [],
+  "forbidden_patterns": [],
+  "warning_patterns": [],
+  "min_output_length": 3000
+}

@@ -3,7 +3,7 @@ import { db } from './db.js';
 import { loadAgent } from './agents.js';
 import { readCEOMemory } from './memory.js';
 import { getModelForAgent } from './config.js';
-import { createDefaultProviderRouter, resolveFallbackProviderId } from './llm/default-router.js';
+import { createDefaultProviderRouter } from './llm/default-router.js';
 
 let nightTrainingTimer: NodeJS.Timeout | null = null;
 let isRunning = false;
@@ -170,13 +170,9 @@ export function isNightTrainingRunning(): boolean {
 }
 
 async function runClaude(prompt: string, timeoutMs: number): Promise<string> {
-  const primaryProvider = providerRouter.getPrimaryProvider().id;
   const result = await providerRouter.run({
     prompt,
-    model: getModelForAgent('ceo', primaryProvider),
-    fallbackModel: resolveFallbackProviderId()
-      ? getModelForAgent('ceo', resolveFallbackProviderId()!)
-      : undefined,
+    model: getModelForAgent('ceo'),
     timeoutMs,
   });
 

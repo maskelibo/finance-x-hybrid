@@ -1,0 +1,23 @@
+{
+  "agent_id": "final_summary",
+  "description": "Yonetici ozeti, hedef fiyat, skor metrikleri",
+  "required_metrics": [
+    "Skor",
+    "Bear",
+    "Bull"
+  ],
+  "optional_metrics": [
+    "Hedef Fiyat",
+    "hedef fiyat",
+    "target price",
+    "Yönetici Özeti",
+    "Özet"
+  ],
+  "required_sections": [],
+  "source_tags": [],
+  "forbidden_patterns": [
+    "tahmin ediyorum"
+  ],
+  "warning_patterns": [],
+  "min_output_length": 5000
+}
