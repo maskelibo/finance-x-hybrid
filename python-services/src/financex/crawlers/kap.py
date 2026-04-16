@@ -1,14 +1,13 @@
-"""KAP (Kamuyu Aydınlatma Platformu) disclosure fetcher.
+"""KAP (Kamuyu Aydınlatma Platformu) disclosure fetcher — live against the
+current KAP API surface (discovered via browser network inspection).
 
-Two layers:
-  - KapClient  (abstract) : fetches raw disclosure dicts.
-  - HttpKapClient         : real httpx implementation, used in production.
-  - MockKapClient         : in-memory, used in tests and anywhere offline.
+Endpoints actually used by kap.org.tr (April 2026):
+  POST /tr/api/search/combined              → ticker → memberOid (UUID)
+  POST /tr/api/disclosure/members/byCriteria → filtered disclosure list
+  GET  /tr/api/BildirimPdf/{disclosureIndex} → the disclosure PDF
 
-The real endpoint/HTML layout varies and KAP does not publish a stable
-documented API. HttpKapClient keeps the base URL configurable so we can
-point it at the correct endpoint once verified, without touching the
-rest of the pipeline.
+Legacy endpoints like `/tr/api/disclosures` and `/api/memberDisclosures`
+are dead; don't reach for them.
 """
 
 from __future__ import annotations
@@ -21,15 +20,17 @@ from typing import Any
 import httpx
 
 DEFAULT_KAP_BASE_URL = "https://www.kap.org.tr"
-DEFAULT_DISCLOSURE_LIST_PATH = "/tr/api/disclosure"
+SEARCH_PATH = "/tr/api/search/combined"
+CRITERIA_PATH = "/tr/api/disclosure/members/byCriteria"
+PDF_PATH_TEMPLATE = "/tr/api/BildirimPdf/{index}"
 DEFAULT_TIMEOUT_S = 30.0
 
 
 @dataclass(frozen=True)
 class RawDisclosure:
-    """Raw disclosure record as returned by a KAP source.
+    """Raw disclosure record as returned by KAP.
 
-    Fields are deliberately optional — parsers will graciously handle
+    Fields are deliberately optional — parsers will gracefully handle
     whatever KAP gives and surface gaps through QualityControl.
     """
 
@@ -60,30 +61,58 @@ class KapClient(ABC):
 
 
 class HttpKapClient(KapClient):
-    """Real KAP client over HTTPS.
+    """Live KAP client.
 
-    The exact endpoint/query shape is fragile — KAP's public API is not
-    officially documented. The plumbing is in place; we point at the
-    correct path in a follow-up once verified against a live ticker.
+    Two-step request: resolve ticker → memberOid (UUID) via /search/combined,
+    then POST that OID into /disclosure/members/byCriteria along with the
+    date window.
     """
+
+    _HEADERS = {
+        "User-Agent": "Mozilla/5.0 (FinanceX/0.1)",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+    }
 
     def __init__(
         self,
         *,
         base_url: str = DEFAULT_KAP_BASE_URL,
-        disclosure_list_path: str = DEFAULT_DISCLOSURE_LIST_PATH,
         timeout_s: float = DEFAULT_TIMEOUT_S,
         http_client: httpx.Client | None = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
-        self.disclosure_list_path = disclosure_list_path
-        self.timeout_s = timeout_s
         self._owns_client = http_client is None
         self._client = http_client or httpx.Client(
             base_url=self.base_url,
             timeout=timeout_s,
-            headers={"User-Agent": "FinanceX/0.1 (KapWatch)"},
+            headers=self._HEADERS,
         )
+        # Simple per-instance cache; ticker → memberOid lookups are stable.
+        self._member_oid_cache: dict[str, str] = {}
+
+    def resolve_member_oid(self, ticker: str) -> str | None:
+        """Return KAP's internal UUID for a ticker, or None if unknown."""
+        upper = ticker.upper()
+        if upper in self._member_oid_cache:
+            return self._member_oid_cache[upper]
+
+        resp = self._client.post(
+            SEARCH_PATH,
+            json={"keyword": upper, "discClass": "ALL", "lang": "tr", "channel": "WEB"},
+        )
+        resp.raise_for_status()
+        payload = resp.json()
+        for category in payload:
+            if category.get("category") == "companyOrFunds":
+                for item in category.get("results", []):
+                    if str(item.get("cmpOrFundCode", "")).upper() == upper:
+                        oid = item.get("memberOrFundOid")
+                        if oid:
+                            self._member_oid_cache[upper] = oid
+                            return oid
+        return None
 
     def fetch_disclosures(
         self,
@@ -92,15 +121,41 @@ class HttpKapClient(KapClient):
         since: date,
         until: date | None = None,
     ) -> list[RawDisclosure]:
-        params = {
-            "ticker": ticker,
-            "from": since.isoformat(),
-            "to": (until or date.today()).isoformat(),
+        ceiling = until or date.today()
+        member_oid = self.resolve_member_oid(ticker)
+        if member_oid is None:
+            raise ValueError(f"KAP: unknown ticker {ticker!r} (search/combined returned no match)")
+
+        body = {
+            "fromDate": since.isoformat(),
+            "toDate": ceiling.isoformat(),
+            "memberType": "IGS",
+            "mkkMemberOidList": [member_oid],
+            "inactiveMkkMemberOidList": [],
+            "disclosureClass": "",
+            "subjectList": [],
+            "isLate": "",
+            "mainSector": "",
+            "sector": "",
+            "subSector": "",
+            "marketOid": "",
+            "index": "",
+            "bdkReview": "",
+            "bdkMemberOidList": [],
+            "year": "",
+            "term": "",
         }
-        resp = self._client.get(self.disclosure_list_path, params=params)
+        resp = self._client.post(CRITERIA_PATH, json=body)
         resp.raise_for_status()
-        payload = resp.json()
-        return [_raw_from_kap_payload(item) for item in payload]
+        rows = resp.json()
+        return [_row_to_raw(r, fallback_ticker=ticker.upper(), base_url=self.base_url) for r in rows]
+
+    def download_pdf(self, disclosure_index: int | str) -> bytes:
+        """Download the disclosure PDF. Returns raw bytes."""
+        path = PDF_PATH_TEMPLATE.format(index=disclosure_index)
+        resp = self._client.get(path)
+        resp.raise_for_status()
+        return resp.content
 
     def close(self) -> None:
         if self._owns_client:
@@ -124,39 +179,50 @@ class MockKapClient(KapClient):
         return [
             d
             for d in self.fixtures
-            if d.ticker == ticker
+            if d.ticker == ticker.upper()
             and since <= d.announced_at.date() <= ceiling
         ]
 
 
 # ---------------------------------------------------------------------
-# Helpers
+# Row → RawDisclosure projection
 # ---------------------------------------------------------------------
 
-def _raw_from_kap_payload(item: dict[str, Any]) -> RawDisclosure:
-    """Project a KAP JSON record into our RawDisclosure shape.
+_TR_DATETIME_FMTS = (
+    "%d.%m.%Y %H:%M:%S",
+    "%d.%m.%Y %H:%M",
+    "%d.%m.%Y",
+)
 
-    KAP fields vary across endpoints; we accept the common superset and
-    fall through to None when a field is absent.
-    """
-    announced = item.get("publishDate") or item.get("announcedAt") or item.get("date")
-    announced_dt: datetime
-    if isinstance(announced, datetime):
-        announced_dt = announced
-    elif isinstance(announced, str):
-        announced_dt = datetime.fromisoformat(announced.replace("Z", "+00:00"))
-    else:
-        announced_dt = datetime.now(timezone.utc)
 
+def _parse_kap_datetime(raw: str) -> datetime:
+    """Parse KAP's Turkish-format timestamps. Falls back to UTC now on error."""
+    if not raw:
+        return datetime.now(timezone.utc)
+    for fmt in _TR_DATETIME_FMTS:
+        try:
+            naive = datetime.strptime(raw, fmt)
+            # KAP timestamps are Turkey local time; we store them naive-as-UTC
+            # to keep things simple — consumers compare dates, not tz.
+            return naive.replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+    return datetime.now(timezone.utc)
+
+
+def _row_to_raw(row: dict[str, Any], *, fallback_ticker: str, base_url: str) -> RawDisclosure:
+    """Map the flat dict returned by byCriteria into RawDisclosure."""
+    idx = row.get("disclosureIndex")
+    ticker = (row.get("stockCodes") or fallback_ticker or "").split(",")[0].upper().strip()
     return RawDisclosure(
-        disclosure_id=str(item.get("disclosureIndex") or item.get("id") or item.get("disclosureId") or ""),
-        ticker=str(item.get("ticker") or item.get("stockCode") or "").upper(),
-        announced_at=announced_dt,
-        title=str(item.get("title") or item.get("subject") or ""),
-        url=str(item.get("url") or item.get("link") or ""),
-        category=item.get("disclosureClass") or item.get("category"),
-        subcategory=item.get("disclosureType") or item.get("subcategory"),
-        summary=item.get("summary"),
-        full_text=item.get("content") or item.get("body"),
-        raw=item,
+        disclosure_id=str(idx) if idx is not None else "",
+        ticker=ticker,
+        announced_at=_parse_kap_datetime(row.get("publishDate") or ""),
+        title=row.get("subject") or row.get("kapTitle") or "",
+        url=f"{base_url}/tr/Bildirim/{idx}" if idx is not None else "",
+        category=row.get("disclosureCategory"),
+        subcategory=row.get("disclosureClass"),
+        summary=row.get("summary"),
+        full_text=None,
+        raw=row,
     )
