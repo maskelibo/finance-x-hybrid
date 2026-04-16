@@ -508,6 +508,31 @@
     <div>{{&narrative_leverage}}</div>
     {{/if}}
 
+    {{#if working_capital_has}}
+    <h2>İşletme Sermayesi Metrikleri</h2>
+    <p style="font-size:9.5pt;">Aşağıdaki tablo şirketin operasyonel sermaye verimliliğini değerlendirir; tahsilat/stok/ödeme sürelerinin birlikte okunması, nakit dönüşüm döngüsünün kalitesini gösterir.</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:25%">Metrik</th>
+          <th class="num" style="width:15%">Değer</th>
+          <th style="width:25%">Formül</th>
+          <th>Yorum</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each working_capital_rows}}
+        <tr>
+          <td class="label">{{this.metric}}</td>
+          <td class="num">{{this.value}}</td>
+          <td style="font-family:var(--font-mono); font-size:9pt;">{{this.formula}}</td>
+          <td>{{this.interpretation}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
     {{#if narrative_cashflow}}
     <h2>Nakit Akışı Yorumu</h2>
     <div>{{&narrative_cashflow}}</div>
@@ -629,7 +654,9 @@
 
     {{#if peer_list_has}}
     <h2>Sektördeki Emsal Şirketler</h2>
-    <p style="font-size:9pt; color:var(--fx-gray); margin-bottom:8px;">Aşağıdaki emsal listesi {{peer_sub_sector}} alt-sektöründe işlem gören BIST şirketlerinden derlenmiştir. {{peer_notes}}</p>
+    <div class="note" style="background:#fef3c7; border-left-color:var(--fx-warning); color:#78350f; margin-bottom:12px;">
+      <strong>⚠ Metodoloji Notu:</strong> Aşağıdaki emsal listesi <strong>{{peer_sub_sector}}</strong> alt-sektöründe işlem gören BIST şirketlerinden derlenmiştir. Şirket rakamları gerçek parse edilmiş finansal tablolardan gelir; emsal medyan değerleri ise <strong>sektör bazlı directional tahminlerdir</strong> (2025-2026 yaklaşık) — her bir emsalin canlı filer verisi için ayrı finansal analiz çalıştırılmadı. Kesin karşılaştırma için her emsal ticker üzerinden bağımsız analiz önerilir.
+    </div>
     <table>
       <thead><tr><th style="width:20%">Ticker</th><th>Şirket Unvanı</th></tr></thead>
       <tbody>

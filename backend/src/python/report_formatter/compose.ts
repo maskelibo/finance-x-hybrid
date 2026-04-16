@@ -39,6 +39,7 @@ import {
 } from './auto_commentary.js';
 import { buildNarrativeBlocks } from './llm_narrative.js';
 import { resolvePeerBundle } from './peer_sets.js';
+import { resolveSwot } from './swot_analysis.js';
 import { barChart, columnChart, gaugeChart, horizontalBarChart, lineChart, pieChart, priceBandChart, radarChart, stackedAreaChart, timelineChart } from './svg_charts.js';
 import { formatPct, formatRatio, formatTRY, type TemplateContext, type TemplateValue } from './template_engine.js';
 
@@ -203,6 +204,10 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     ['net_income', 'Net Dönem Karı'],
   ]);
 
+  // ----- İşletme Sermayesi Metrikleri (her zaman hesaplansın) -----
+
+  const workingCapitalTable = buildWorkingCapitalTable(canonicalNumbers, standardizedStatementsForWC(parsed));
+
   const canonicalCashFlow = buildCanonicalTable(canonicalNumbers, [
     ['operating_cash_flow', 'Operasyonel Nakit Akışı (OCF)'],
     ['capex', 'Yatırım Harcaması (CAPEX)'],
@@ -266,18 +271,11 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
       quartile_badge: b.quartile != null ? `Q${b.quartile}` : '—',
     }));
 
-  // SWOT — adapted from strategic_synthesis buckets + context_extraction.
-  const swot = {
-    strengths: strengths.slice(0, 4),
-    weaknesses: weaknesses.slice(0, 4),
-    opportunities: arrayFrom(signalBuckets.neutral).slice(0, 3)
-      .map((s: Record<string, unknown>) => String(s.label ?? ''))
-      .filter(Boolean),
-    threats: arrayFrom(fa?.red_flags ?? [])
-      .filter((f: Record<string, unknown>) => ['warning', 'critical'].includes(String(f.severity ?? '').toLowerCase()))
-      .slice(0, 4)
-      .map((f: Record<string, unknown>) => String(f.message ?? f.code ?? '')),
-  };
+  // SWOT — sektör ve ticker-özel, gerçek iş analizi (swot_analysis.ts'ten).
+  // Signal buckets'tan dökülen "Top quartile: ROE" gibi otomatik
+  // etiketler yerine hand-curated Turkish cümleler.
+  const swotSector = String(fa?.sector ?? val?.sector ?? 'industrial').toLowerCase();
+  const swot = resolveSwot(ticker, swotSector);
   const swotHas = swot.strengths.length + swot.weaknesses.length + swot.opportunities.length + swot.threats.length > 0;
 
   // ----- VI. Makro -----
@@ -678,6 +676,10 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     multi_year_has_data: multiYear.has_data,
     multi_year_count: multiYear.years.length,
 
+    // İşletme Sermayesi
+    working_capital_rows: workingCapitalTable.rows as unknown as TemplateValue,
+    working_capital_has: workingCapitalTable.has,
+
     // Section IV
     valuation_warnings: valuationWarnings,
     dcf_present: dcfPresent,
@@ -693,7 +695,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
     // Section V
     benchmarks,
-    swot,
+    swot: swot as unknown as TemplateValue,
     swot_has: swotHas,
 
     // Section VI
@@ -975,6 +977,35 @@ function mdToHtml(md: string): string {
     return `<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> ${label.trim()} <em style="color:#94a3b8;">(${kind.toLowerCase()})</em></div>`;
   });
 
+  // LLM bazen "[src: ...]" gibi kaynak markerları bırakır — iyileştir.
+  text = text.replace(/\[src:\s*([^\]]+)\]/gi, '<sup style="color:#94a3b8; font-size:0.85em;">[kaynak: $1]</sup>');
+
+  // Common Turkish character issues — Claude bazen ASCII fallback
+  // kullanıyor ("guclu" yerine "güçlü" olmalı). Düzeltmek zor ama
+  // bilinen kalıpları normalize et.
+  const turkishFixes: Array<[RegExp, string]> = [
+    [/\bguclu\b/g, 'güçlü'],
+    [/\bGuclu\b/g, 'Güçlü'],
+    [/\bzayif\b/g, 'zayıf'],
+    [/\bZayif\b/g, 'Zayıf'],
+    [/\bekonomi\s+sikinti\b/gi, 'ekonomi sıkıntı'],
+    [/\bOzet\b/g, 'Özet'],
+    [/\bOzsermaye\b/g, 'Özsermaye'],
+    [/\bYonetici\s+Ozeti\b/g, 'Yönetici Özeti'],
+    [/\bSirket\b/g, 'Şirket'],
+    [/\bFinancsal\b/gi, 'Finansal'],
+    [/\bAgirlikli\b/g, 'Ağırlıklı'],
+    [/\bBuyume\b/g, 'Büyüme'],
+    [/\bdegerleme\b/g, 'değerleme'],
+    [/\bDegerleme\b/g, 'Değerleme'],
+    [/\bKarliik\b/g, 'Kârlılık'],
+    [/\bKarlilik\b/g, 'Kârlılık'],
+    [/\bSurdurulebilir\b/g, 'Sürdürülebilir'],
+  ];
+  for (const [re, replacement] of turkishFixes) {
+    text = text.replace(re, replacement);
+  }
+
   // Convert markdown tables to HTML tables.
   text = text.replace(/(?:^|\n)((?:\|[^\n]+\|\n)+\|[\s|:-]+\|(?:\n\|[^\n]+\|)+)/g, (_, block) => {
     const rows = block.trim().split('\n').map((r: string) => r.trim());
@@ -1227,6 +1258,171 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
 function getDcfField(dcf: Record<string, unknown> | null, key: string): unknown {
   if (!dcf) return undefined;
   return (dcf as Record<string, unknown>)[key];
+}
+
+
+function standardizedStatementsForWC(parsed: Record<string, unknown> | null): Array<Record<string, unknown>> {
+  const list = arrayFrom(parsed?.standardized_statements ?? []);
+  if (list.length === 0) return [];
+  // Prefer FY-YYYY annual, else latest available
+  const annual = list.filter(s => /^FY-\d{4}$/.test(String(s.period_label ?? '')));
+  return annual.length > 0 ? annual : list;
+}
+
+
+interface WCRow {
+  metric: string;
+  value: string;
+  formula: string;
+  interpretation: string;
+}
+
+
+function buildWorkingCapitalTable(
+  canonicalNumbers: Record<string, unknown>,
+  annual: Array<Record<string, unknown>>,
+): { rows: WCRow[]; has: boolean } {
+  if (annual.length === 0) return { rows: [], has: false };
+  const latest = annual[annual.length - 1];
+  const bs = (latest.balance_sheet as Record<string, unknown> | null) ?? {};
+  const is = (latest.income_statement as Record<string, unknown> | null) ?? {};
+
+  const numFrom = (block: Record<string, unknown>, key: string): number | null => {
+    const v = block[key];
+    if (v == null || v === '') return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  const currentAssets = numFrom(bs, 'current_assets');
+  const currentLiab = numFrom(bs, 'current_liabilities');
+  const cash = numFrom(bs, 'cash_and_equivalents');
+  const receivables = numFrom(bs, 'trade_receivables');
+  const inventory = numFrom(bs, 'inventories');
+  const payables = numFrom(bs, 'trade_payables');
+  const revenue = numFrom(is, 'revenue');
+  const cogs = Math.abs(numFrom(is, 'cost_of_sales') ?? 0);
+
+  const fmtB = (v: number): string => `${(v / 1_000_000_000).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} milyar TL`;
+  const fmtD = (v: number): string => `${Math.round(v).toLocaleString('tr-TR')} gün`;
+
+  const rows: WCRow[] = [];
+
+  // NWC (Net Working Capital)
+  if (currentAssets != null && currentLiab != null) {
+    const nwc = currentAssets - currentLiab;
+    const interp = nwc > 0
+      ? `Dönen varlıklar kısa vadeli yükümlülükleri ${fmtB(nwc)} fazlayla karşılıyor — sağlıklı likidite tamponu.`
+      : `Dönen varlıklar kısa vadeli yükümlülüklerin ${fmtB(Math.abs(nwc))} altında — kısa vadeli likidite baskısı mevcut.`;
+    rows.push({
+      metric: 'Net İşletme Sermayesi (NWC)',
+      value: fmtB(nwc),
+      formula: 'Dönen Varlık − KV Yükümlülük',
+      interpretation: interp,
+    });
+  }
+
+  // Cari oran
+  if (currentAssets != null && currentLiab != null && currentLiab > 0) {
+    const cr = currentAssets / currentLiab;
+    const interp = cr >= 1.5 ? 'Güçlü likidite' : cr >= 1 ? 'Sınırda likidite' : 'Likidite baskısı — KV yükümlülüklerin karşılanması kritik';
+    rows.push({
+      metric: 'Cari Oran (Current Ratio)',
+      value: `${cr.toFixed(2)}x`,
+      formula: 'Dönen Varlık / KV Yükümlülük',
+      interpretation: interp,
+    });
+  }
+
+  // Asit-test oranı (Quick Ratio) — stoklar hariç
+  if (currentAssets != null && inventory != null && currentLiab != null && currentLiab > 0) {
+    const quick = (currentAssets - inventory) / currentLiab;
+    const interp = quick >= 1 ? 'Stok hariç KV yükümlülük karşılanabilir' : 'Stoksuz likidite yetersiz — stok döngüsüne bağımlı';
+    rows.push({
+      metric: 'Asit-Test Oranı (Quick Ratio)',
+      value: `${quick.toFixed(2)}x`,
+      formula: '(Dönen Varlık − Stoklar) / KV Yükümlülük',
+      interpretation: interp,
+    });
+  }
+
+  // Nakit oranı
+  if (cash != null && currentLiab != null && currentLiab > 0) {
+    const cashR = cash / currentLiab;
+    const interp = cashR >= 0.2 ? 'Sağlıklı nakit tampon' : 'Düşük nakit karşılama — kısa vadeli borçlanma esnekliği kısıtlı';
+    rows.push({
+      metric: 'Nakit Oranı (Cash Ratio)',
+      value: `${cashR.toFixed(2)}x`,
+      formula: 'Nakit / KV Yükümlülük',
+      interpretation: interp,
+    });
+  }
+
+  // DSO — Days Sales Outstanding
+  if (receivables != null && revenue != null && revenue > 0) {
+    const dso = (receivables / revenue) * 360;
+    const interp = dso < 30 ? 'Hızlı tahsilat — nakit dönüşüm güçlü' : dso < 60 ? 'Normal tahsilat süresi' : dso < 90 ? 'Yavaş tahsilat — işletme sermayesi baskısı' : 'Kritik — müşteri ödeme gecikmeleri yaygın';
+    rows.push({
+      metric: 'DSO (Ticari Alacak Tahsil Süresi)',
+      value: fmtD(dso),
+      formula: '(Ticari Alacaklar / Hasılat) × 360',
+      interpretation: interp,
+    });
+  }
+
+  // DIO — Days Inventory Outstanding
+  if (inventory != null && cogs > 0) {
+    const dio = (inventory / cogs) * 360;
+    const interp = dio < 30 ? 'Hızlı stok devri — operasyonel verimlilik' : dio < 60 ? 'Ortalama stok devri' : dio < 90 ? 'Yavaş stok devri — sermaye bağlanması' : 'Kritik stok birikimi';
+    rows.push({
+      metric: 'DIO (Stok Devir Süresi)',
+      value: fmtD(dio),
+      formula: '(Stoklar / SMM) × 360',
+      interpretation: interp,
+    });
+  }
+
+  // DPO — Days Payable Outstanding
+  if (payables != null && cogs > 0) {
+    const dpo = (payables / cogs) * 360;
+    const interp = dpo > 60 ? 'Uzun ödeme süresi — tedarikçilere yük bindiriliyor' : dpo > 30 ? 'Normal ödeme süresi' : 'Hızlı ödeme — tedarikçi memnuniyeti yüksek, nakit sıkıntısı yok';
+    rows.push({
+      metric: 'DPO (Ticari Borç Ödeme Süresi)',
+      value: fmtD(dpo),
+      formula: '(Ticari Borçlar / SMM) × 360',
+      interpretation: interp,
+    });
+  }
+
+  // CCC — Cash Conversion Cycle
+  if (receivables != null && inventory != null && payables != null && revenue != null && cogs > 0) {
+    const dso = (receivables / revenue) * 360;
+    const dio = (inventory / cogs) * 360;
+    const dpo = (payables / cogs) * 360;
+    const ccc = dso + dio - dpo;
+    const interp = ccc < 0 ? 'Negatif CCC — tedarikçi-finansmanlı büyüme, istisnai güçlü pozisyon' : ccc < 30 ? 'Kısa CCC — nakit akışı hızlı' : ccc < 60 ? 'Normal CCC' : ccc < 90 ? 'Uzun CCC — işletme sermayesi büyüme ile birlikte büyüyor' : 'Kritik uzun CCC';
+    rows.push({
+      metric: 'CCC (Nakit Dönüşüm Süresi)',
+      value: fmtD(ccc),
+      formula: 'DSO + DIO − DPO',
+      interpretation: interp,
+    });
+  }
+
+  // NWC / Hasılat
+  if (currentAssets != null && currentLiab != null && revenue != null && revenue > 0) {
+    const nwcRev = ((currentAssets - currentLiab) / revenue) * 100;
+    rows.push({
+      metric: 'NWC / Hasılat',
+      value: `%${nwcRev.toFixed(1)}`,
+      formula: 'NWC / Hasılat',
+      interpretation: nwcRev > 20 ? 'Yüksek sermaye bağlanması — büyüme yeni NWC ihtiyacı yaratır' : nwcRev > 10 ? 'Normal bağlanma oranı' : nwcRev > 0 ? 'Düşük bağlanma — operasyonel sermaye verimliliği' : 'Negatif NWC — tedarikçi bağımlı yapı',
+    });
+  }
+
+  // Sadece hesaplananları göster, boş satır yok
+  void canonicalNumbers;
+  return { rows, has: rows.length > 0 };
 }
 
 
