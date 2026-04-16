@@ -382,6 +382,17 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     ...valuationWarnings.slice(0, 2),
   ].filter(Boolean).slice(0, 8);
 
+  // ----- Sektör-spesifik Chairman uyarı banner'ı -----
+  const sectorRawForBanner = String(fa?.sector ?? val?.sector ?? 'industrial').toLowerCase();
+  const chairmanBanner = buildChairmanBanner(sectorRawForBanner, {
+    ticker,
+    criticalFlagCount: arrayFrom(fa?.red_flags ?? []).filter(f => String(f.severity ?? '').toLowerCase() === 'critical').length,
+    tryWaccWarning: Boolean(val?.try_wacc_warning),
+    holdingSotp: Boolean(val?.holding_sotp_required),
+    bankingWarn: Boolean(val?.banking_sector_warning),
+    subSector: peerBundle?.subSector ?? sectorRawForBanner,
+  });
+
   // ----- Scenarios (Bull/Base/Bear) -----
   // If valuation agent provided DCF, derive scenarios from its
   // per_share_value ± sensitivity. Otherwise leave empty.
@@ -656,6 +667,10 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
     // Section X
     event_impacts: eventImpacts,
+
+    // Chairman sektör uyarı banner
+    chairman_banner_html: chairmanBanner,
+    chairman_banner_has: chairmanBanner.length > 0,
 
     // Section V — Peer bundle (hardcoded sector medians for now)
     peer_list: (peerBundle?.peers ?? []) as unknown as TemplateValue,
@@ -1179,6 +1194,73 @@ function buildPeerBenchmarkRows(
     });
   }
   return rows;
+}
+
+
+interface BannerInputs {
+  ticker: string;
+  criticalFlagCount: number;
+  tryWaccWarning: boolean;
+  holdingSotp: boolean;
+  bankingWarn: boolean;
+  subSector: string;
+}
+
+
+function buildChairmanBanner(sectorRaw: string, inputs: BannerInputs): string {
+  const items: string[] = [];
+
+  if (inputs.bankingWarn) {
+    items.push('🏦 <strong>Bankacılık</strong>: FCF-DCF uygun değil; DDM / excess return metodolojisi ile tekrar değerlendirin.');
+  }
+  if (inputs.holdingSotp) {
+    items.push('🏢 <strong>Holding</strong>: SOTP analizi ZORUNLU. Konsolide DCF üst sınır; her iştirak ayrı değerlenmelidir.');
+  }
+  if (inputs.tryWaccWarning) {
+    items.push('⚠️ <strong>TRY WACC Tuzağı</strong>: Kullanılan WACC TRY bazlı görünüyor; USD WACC ile tekrar hesaplayın.');
+  }
+  if (inputs.criticalFlagCount > 0) {
+    items.push(`🚩 <strong>${inputs.criticalFlagCount} Kritik Bulgu</strong>: Aşağıdaki Yönetici Özeti'nde detaylar mevcut.`);
+  }
+
+  // Sektör-spesifik sabit uyarılar
+  const sectorAlerts: Record<string, string[]> = {
+    aviation: [
+      '✈️ <strong>Havacılık</strong>: Yakıt hedging, yolcu trafiği (RPK/ASK), load factor izlenmeli.',
+      '🌍 Jeopolitik riskler (Orta Doğu/Rusya hava sahası) kısa vadeli kâr üzerinde doğrudan etkili.',
+    ],
+    refinery: [
+      '⛽ <strong>Rafineri</strong>: Crack spread (3-2-1), brent-urals diff, sürdürülebilirlik yakıt mevzuatı izlenmeli.',
+    ],
+    steel: [
+      '🏗️ <strong>Çelik</strong>: EPDK enerji tarifesi, demir cevheri fiyatı, AB Safeguard + CBAM kritik.',
+    ],
+    banking: [
+      '💰 <strong>Bankacılık</strong>: TCMB sıkılaşma, BDDK NPL + CET1, kredi/mevduat oranı yakın izlenmeli.',
+    ],
+    holding: [
+      '📊 <strong>Holding</strong>: İştirak portföy performansı, konglomerat indirimi, sermaye dağıtım politikası.',
+    ],
+    telecom: [
+      '📱 <strong>Telekom</strong>: ARPU trend, 5G CAPEX programı, spektrum lisansı yenilenme takvimi.',
+    ],
+    defense: [
+      '🛡️ <strong>Savunma</strong>: Bakanlık sipariş akışı, ihracat onayları, teknoloji transferi kısıtları.',
+    ],
+    retail: [
+      '🛒 <strong>Perakende</strong>: SSS (same-store sales), mağaza sayısı büyümesi, online pay, envanter devir.',
+    ],
+  };
+
+  const key = Object.keys(sectorAlerts).find(k =>
+    inputs.subSector === k ||
+    (k === 'aviation' && sectorRaw === 'industrial' && inputs.ticker === 'THYAO') ||
+    (k === 'aviation' && sectorRaw === 'industrial' && inputs.ticker === 'PGSUS')
+  );
+  if (key) items.push(...sectorAlerts[key]);
+
+  if (items.length === 0) return '';
+  return items.map(i => `<div style="margin:4px 0;">${i}</div>`).join('');
 }
 
 
