@@ -217,6 +217,13 @@
 
     <h1>I. Yönetici Özeti</h1>
 
+    {{#if chairman_banner_has}}
+    <div class="note" style="background: #eef2ff; border-left-color: var(--brand-primary); color: #1e40af; margin-bottom: 16px;">
+      <strong style="color: var(--brand-primary);">Chairman Sektörel Dikkat Noktaları</strong>
+      {{&chairman_banner_html}}
+    </div>
+    {{/if}}
+
     {{#if narrative_executive_summary}}
     <h2>Temel Değerlendirme</h2>
     <div>{{&narrative_executive_summary}}</div>
