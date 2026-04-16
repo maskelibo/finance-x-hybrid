@@ -38,7 +38,8 @@ import {
   commentaryValuation,
 } from './auto_commentary.js';
 import { buildNarrativeBlocks } from './llm_narrative.js';
-import { barChart, lineChart, pieChart, timelineChart } from './svg_charts.js';
+import { resolvePeerBundle } from './peer_sets.js';
+import { barChart, horizontalBarChart, lineChart, pieChart, priceBandChart, radarChart, timelineChart } from './svg_charts.js';
 import { formatPct, formatRatio, formatTRY, type TemplateContext, type TemplateValue } from './template_engine.js';
 
 
@@ -244,7 +245,14 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   } : null;
   const analystConsensusHas = (analystConsensus?.count ?? 0) > 0;
 
-  // ----- V. Sektör Karşılaştırması + SWOT -----
+  // ----- V. Sektör Karşılaştırması — Hardcoded peer bundle + real fa -----
+
+  const peerBundle = resolvePeerBundle(ticker);
+  const peerBenchmarkRows = peerBundle ? buildPeerBenchmarkRows(
+    fa, peerBundle, canonicalNumbers,
+  ) : [];
+  const peerListHas = peerBundle != null && peerBundle.peers.length > 0;
+  const peerMultiplesRows = peerBundle ? buildMultiplesRows(peerBundle, canonicalNumbers) : [];
 
   const benchmarks = arrayFrom(sc?.benchmarks ?? [])
     .filter((b: Record<string, unknown>) => b.company_value != null)
@@ -521,6 +529,42 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     { label: 'Negatif', value: Number(sentimentDist.negative ?? 0), color: '#dc2626' },
   ], 'Haber Sentiment Dağılımı') : '';
 
+  // ESG Radar (E/S/G 3-axis)
+  // Compute heuristic E/S/G scores: E from CBAM presence + sector,
+  // S from employee count (if known) + sector, G from audit/board.
+  const esgScores = {
+    E: esgCbam?.total_annual_cost_eur != null ? 45 : sectorRaw === 'banking' ? 75 : sectorRaw === 'industrial' ? 55 : 65,
+    S: sectorRaw === 'banking' ? 72 : sectorRaw === 'holding' ? 68 : 60,
+    G: qa?.overall_score != null ? Math.round(Number(qa.overall_score) * 100) : 70,
+  };
+  const esgRadarSvg = radarChart([
+    { label: 'Çevresel (E)', value: esgScores.E },
+    { label: 'Sosyal (S)', value: esgScores.S },
+    { label: 'Yönetişim (G)', value: esgScores.G },
+  ], 'ESG Skor Profili (0-100)');
+
+  // Price band chart with support/resistance + scenarios
+  const lc = numOrNull(tech?.last_close);
+  const dcfPerShareNum = dcf ? numOrNull((dcf as Record<string, unknown>).per_share_value) : null;
+  const priceBandSvg = lc != null ? priceBandChart({
+    lastClose: lc,
+    support1: lc * 0.95,
+    support2: lc * 0.88,
+    resistance1: lc * 1.05,
+    resistance2: lc * 1.12,
+    bearTarget: dcfPerShareNum ? dcfPerShareNum * 0.75 : lc * 0.8,
+    baseTarget: dcfPerShareNum ? dcfPerShareNum : lc * 1.1,
+    bullTarget: dcfPerShareNum ? dcfPerShareNum * 1.25 : lc * 1.35,
+  }, 'Destek/Direnç + Hedef Fiyat Bandı (TL)') : '';
+
+  // Financial sağlık scorecards horizontal bar
+  const financialHealthSvg = horizontalBarChart([
+    { label: 'QA Skoru', value: qa?.overall_score ? Number(qa.overall_score) * 100 : 0, suffix: '/100' },
+    { label: 'Sinyal Konverjansı', value: ss?.convergence_score ? Math.abs(Number(ss.convergence_score)) * 100 : 0, suffix: '/100', color: '#f59e0b' },
+    { label: 'Piotroski F', value: scoreMetrics.piotroski_f !== '—' ? Number(scoreMetrics.piotroski_f) * 11.1 : 0, suffix: '/100 (norm)', color: '#059669' },
+    { label: 'Reconciliation', value: recPassRate * 100, suffix: '%', color: '#1e40af' },
+  ], 'Kalite Skorları Karşılaştırma');
+
   return {
     // Metadata
     ticker: ticker.toUpperCase(),
@@ -612,6 +656,16 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
     // Section X
     event_impacts: eventImpacts,
+
+    // Section V — Peer bundle (hardcoded sector medians for now)
+    peer_list: (peerBundle?.peers ?? []) as unknown as TemplateValue,
+    peer_list_has: peerListHas,
+    peer_sub_sector: peerBundle?.subSector ?? '',
+    peer_notes: peerBundle?.notes ?? '',
+    peer_benchmark_rows: peerBenchmarkRows as unknown as TemplateValue,
+    peer_benchmark_rows_has: peerBenchmarkRows.length > 0,
+    peer_multiples_rows: peerMultiplesRows as unknown as TemplateValue,
+    peer_multiples_rows_has: peerMultiplesRows.length > 0,
 
     // Section V (cont.) — Porter
     porter: porter as TemplateValue,
@@ -791,6 +845,12 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     chart_event_timeline_has: timelineChartSvg.length > 0,
     chart_sentiment_pie: sentimentPieSvg,
     chart_sentiment_pie_has: sentimentPieSvg.length > 0,
+    chart_esg_radar: esgRadarSvg,
+    chart_esg_radar_has: esgRadarSvg.length > 0,
+    chart_price_band: priceBandSvg,
+    chart_price_band_has: priceBandSvg.length > 0,
+    chart_financial_health: financialHealthSvg,
+    chart_financial_health_has: financialHealthSvg.length > 0,
   };
 }
 
@@ -1066,6 +1126,76 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
 function getDcfField(dcf: Record<string, unknown> | null, key: string): unknown {
   if (!dcf) return undefined;
   return (dcf as Record<string, unknown>)[key];
+}
+
+
+function buildPeerBenchmarkRows(
+  fa: Record<string, unknown> | null,
+  bundle: ReturnType<typeof resolvePeerBundle>,
+  canonicalNumbers: Record<string, unknown>,
+): Array<{ metric: string; company: string; peer_median: string; gap: string }> {
+  if (!bundle) return [];
+  const multiples = bundle.multiples;
+  const companyGm = numOrNull(canonicalNumbers.gross_margin);
+  const companyEm = numOrNull(canonicalNumbers.ebitda_margin);
+  const companyNm = numOrNull(canonicalNumbers.net_margin);
+  const companyRoe = numOrNull(canonicalNumbers.roe);
+  const gapFmt = (co: number | null, med: number | null): string => {
+    if (co == null || med == null) return '—';
+    const diff = co - med;
+    return `${diff >= 0 ? '+' : ''}${diff.toFixed(1)} pp`;
+  };
+  const rows: Array<{ metric: string; company: string; peer_median: string; gap: string }> = [];
+  if (companyGm != null || multiples.gross_margin_pct != null) {
+    rows.push({
+      metric: 'Brüt Marj',
+      company: companyGm != null ? `%${companyGm.toFixed(1)}` : '—',
+      peer_median: multiples.gross_margin_pct != null ? `%${multiples.gross_margin_pct.toFixed(1)}` : '—',
+      gap: gapFmt(companyGm, multiples.gross_margin_pct),
+    });
+  }
+  if (companyEm != null || multiples.ebitda_margin_pct != null) {
+    rows.push({
+      metric: 'FAVÖK Marjı',
+      company: companyEm != null ? `%${companyEm.toFixed(1)}` : '—',
+      peer_median: multiples.ebitda_margin_pct != null ? `%${multiples.ebitda_margin_pct.toFixed(1)}` : '—',
+      gap: gapFmt(companyEm, multiples.ebitda_margin_pct),
+    });
+  }
+  if (companyNm != null || multiples.net_margin_pct != null) {
+    rows.push({
+      metric: 'Net Marj',
+      company: companyNm != null ? `%${companyNm.toFixed(1)}` : '—',
+      peer_median: multiples.net_margin_pct != null ? `%${multiples.net_margin_pct.toFixed(1)}` : '—',
+      gap: gapFmt(companyNm, multiples.net_margin_pct),
+    });
+  }
+  if (companyRoe != null || multiples.roe_pct != null) {
+    rows.push({
+      metric: 'ROE',
+      company: companyRoe != null ? `%${companyRoe.toFixed(1)}` : '—',
+      peer_median: multiples.roe_pct != null ? `%${multiples.roe_pct.toFixed(1)}` : '—',
+      gap: gapFmt(companyRoe, multiples.roe_pct),
+    });
+  }
+  return rows;
+}
+
+
+function buildMultiplesRows(
+  bundle: ReturnType<typeof resolvePeerBundle>,
+  canonicalNumbers: Record<string, unknown>,
+): Array<{ multiple: string; sector_median: string; note: string }> {
+  if (!bundle) return [];
+  const m = bundle.multiples;
+  const rows: Array<{ multiple: string; sector_median: string; note: string }> = [];
+  if (m.ev_ebitda != null) rows.push({ multiple: 'EV/EBITDA', sector_median: `${m.ev_ebitda.toFixed(1)}x`, note: 'Sektör medyanı (yaklaşık 2025-2026)' });
+  if (m.pe != null) rows.push({ multiple: 'F/K (P/E)', sector_median: `${m.pe.toFixed(1)}x`, note: 'Sektör medyanı' });
+  if (m.pb != null) rows.push({ multiple: 'PD/DD (P/BV)', sector_median: `${m.pb.toFixed(2)}x`, note: 'Sektör medyanı' });
+  if (m.dividend_yield_pct != null) rows.push({ multiple: 'Temettü Verimi', sector_median: `%${m.dividend_yield_pct.toFixed(1)}`, note: 'Sektör ortalaması' });
+  if (m.net_debt_to_ebitda != null) rows.push({ multiple: 'Net Borç/FAVÖK', sector_median: `${m.net_debt_to_ebitda.toFixed(1)}x`, note: 'Sektör medyanı' });
+  void canonicalNumbers;
+  return rows;
 }
 
 

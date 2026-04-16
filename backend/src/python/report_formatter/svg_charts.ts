@@ -341,6 +341,183 @@ export function pieChart(slices: PieSlice[], title = ''): string {
 }
 
 
+/** Radar chart (spider web) — n dimensions with 0-100 scale. */
+export interface RadarAxis {
+  label: string;
+  value: number;             // 0-100
+}
+
+
+export function radarChart(axes: RadarAxis[], title = ''): string {
+  if (axes.length < 3) return '';
+
+  const width = 440;
+  const height = 340;
+  const cx = width / 2;
+  const cy = height / 2 + (title ? 10 : 0);
+  const r = 110;
+  const n = axes.length;
+  const angleStep = (Math.PI * 2) / n;
+
+  const parts: string[] = [];
+  parts.push(`<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${width}px;height:auto">`);
+  if (title) parts.push(`<text x="${cx}" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="${COLORS.text}">${escapeSvg(title)}</text>`);
+
+  // Grid circles (25/50/75/100)
+  [25, 50, 75, 100].forEach(level => {
+    const rr = (r * level) / 100;
+    const pts = Array.from({ length: n }, (_, i) => {
+      const a = -Math.PI / 2 + i * angleStep;
+      return `${(cx + Math.cos(a) * rr).toFixed(1)},${(cy + Math.sin(a) * rr).toFixed(1)}`;
+    }).join(' ');
+    parts.push(`<polygon points="${pts}" fill="none" stroke="${COLORS.grid}" stroke-width="0.5"/>`);
+  });
+
+  // Axis lines + labels
+  axes.forEach((ax, i) => {
+    const a = -Math.PI / 2 + i * angleStep;
+    const x2 = cx + Math.cos(a) * r;
+    const y2 = cy + Math.sin(a) * r;
+    parts.push(`<line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${COLORS.grid}" stroke-width="0.5"/>`);
+    const labelX = cx + Math.cos(a) * (r + 20);
+    const labelY = cy + Math.sin(a) * (r + 20);
+    parts.push(`<text x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" font-size="10" font-weight="600" fill="${COLORS.text}">${escapeSvg(ax.label)}</text>`);
+  });
+
+  // Data polygon
+  const dataPts = axes.map((ax, i) => {
+    const a = -Math.PI / 2 + i * angleStep;
+    const rr = (r * Math.min(100, Math.max(0, ax.value))) / 100;
+    return `${(cx + Math.cos(a) * rr).toFixed(1)},${(cy + Math.sin(a) * rr).toFixed(1)}`;
+  }).join(' ');
+  parts.push(`<polygon points="${dataPts}" fill="${COLORS.primary}" fill-opacity="0.25" stroke="${COLORS.primary}" stroke-width="2"/>`);
+
+  // Data points
+  axes.forEach((ax, i) => {
+    const a = -Math.PI / 2 + i * angleStep;
+    const rr = (r * Math.min(100, Math.max(0, ax.value))) / 100;
+    const x = cx + Math.cos(a) * rr;
+    const y = cy + Math.sin(a) * rr;
+    parts.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${COLORS.primary}"/>`);
+    parts.push(`<text x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="600" fill="${COLORS.primary}">${ax.value.toFixed(0)}</text>`);
+  });
+
+  parts.push('</svg>');
+  return parts.join('');
+}
+
+
+/** Price band chart — horizontal current/support/resistance layout. */
+export interface PriceBandInput {
+  lastClose: number;
+  support1?: number;
+  support2?: number;
+  resistance1?: number;
+  resistance2?: number;
+  bearTarget?: number;
+  baseTarget?: number;
+  bullTarget?: number;
+}
+
+
+export function priceBandChart(input: PriceBandInput, title = ''): string {
+  const values = [
+    input.lastClose, input.support1, input.support2,
+    input.resistance1, input.resistance2,
+    input.bearTarget, input.baseTarget, input.bullTarget,
+  ].filter((v): v is number => v != null && Number.isFinite(v));
+  if (values.length < 2) return '';
+
+  const width = 780;
+  const height = 180;
+  const padL = 40;
+  const padR = 40;
+  const padT = title ? 40 : 20;
+  const padB = 40;
+  const plotW = width - padL - padR;
+  const axisY = padT + (height - padT - padB) / 2;
+
+  const min = Math.min(...values) * 0.95;
+  const max = Math.max(...values) * 1.05;
+  const xScale = (v: number) => padL + ((v - min) / (max - min)) * plotW;
+
+  const parts: string[] = [];
+  parts.push(`<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${width}px;height:auto">`);
+  if (title) parts.push(`<text x="${width/2}" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="${COLORS.text}">${escapeSvg(title)}</text>`);
+
+  // Axis line
+  parts.push(`<line x1="${padL}" y1="${axisY}" x2="${width - padR}" y2="${axisY}" stroke="${COLORS.text}" stroke-width="1"/>`);
+
+  const mark = (v: number | undefined, label: string, color: string, above: boolean): void => {
+    if (v == null) return;
+    const x = xScale(v);
+    const tickY1 = above ? axisY - 6 : axisY + 6;
+    const tickY2 = above ? axisY - 30 : axisY + 30;
+    parts.push(`<line x1="${x.toFixed(1)}" y1="${axisY}" x2="${x.toFixed(1)}" y2="${tickY2}" stroke="${color}" stroke-width="1.5"/>`);
+    parts.push(`<circle cx="${x.toFixed(1)}" cy="${axisY}" r="4" fill="${color}"/>`);
+    const lblY = above ? tickY2 - 6 : tickY2 + 12;
+    parts.push(`<text x="${x.toFixed(1)}" y="${lblY}" text-anchor="middle" font-size="9" font-weight="600" fill="${color}">${escapeSvg(label)}</text>`);
+    parts.push(`<text x="${x.toFixed(1)}" y="${lblY + 11}" text-anchor="middle" font-size="9" fill="${COLORS.textMuted}">${v.toFixed(2)} TL</text>`);
+    void tickY1;
+  };
+
+  mark(input.support2, 'S2', COLORS.success, false);
+  mark(input.support1, 'S1', COLORS.success, false);
+  mark(input.lastClose, 'Son Kapanış', COLORS.text, true);
+  mark(input.resistance1, 'R1', COLORS.danger, true);
+  mark(input.resistance2, 'R2', COLORS.danger, true);
+  if (input.bearTarget) mark(input.bearTarget, 'Bear', COLORS.danger, false);
+  if (input.baseTarget) mark(input.baseTarget, 'Base', COLORS.primary, true);
+  if (input.bullTarget) mark(input.bullTarget, 'Bull', COLORS.success, true);
+
+  parts.push('</svg>');
+  return parts.join('');
+}
+
+
+/** Horizontal bar chart — per-row comparison (e.g. segment income).
+ *  Good for ownership %, segment revenue share, category contrib. */
+export interface HBarRow {
+  label: string;
+  value: number;
+  color?: string;
+  suffix?: string;
+}
+
+
+export function horizontalBarChart(rows: HBarRow[], title = ''): string {
+  if (rows.length === 0) return '';
+
+  const width = 700;
+  const rowHeight = 32;
+  const padL = 160;
+  const padR = 80;
+  const padT = title ? 40 : 20;
+  const padB = 20;
+  const height = padT + padB + rows.length * rowHeight;
+  const plotW = width - padL - padR;
+  const max = Math.max(...rows.map(r => r.value), 1);
+
+  const parts: string[] = [];
+  parts.push(`<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${width}px;height:auto">`);
+  if (title) parts.push(`<text x="${width/2}" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="${COLORS.text}">${escapeSvg(title)}</text>`);
+
+  const defaultColors = [COLORS.primary, COLORS.accent, COLORS.success, COLORS.warning, '#7c3aed', '#0891b2'];
+  rows.forEach((r, i) => {
+    const y = padT + i * rowHeight;
+    const barW = (r.value / max) * plotW;
+    const color = r.color || defaultColors[i % defaultColors.length];
+    parts.push(`<text x="${padL - 8}" y="${y + rowHeight / 2 + 4}" text-anchor="end" font-size="10" fill="${COLORS.text}">${escapeSvg(r.label)}</text>`);
+    parts.push(`<rect x="${padL}" y="${y + 6}" width="${barW.toFixed(1)}" height="${rowHeight - 12}" fill="${color}" rx="3"/>`);
+    const valStr = `${r.value.toLocaleString('tr-TR')}${r.suffix ?? ''}`;
+    parts.push(`<text x="${padL + barW + 8}" y="${y + rowHeight / 2 + 4}" font-size="10" font-weight="600" fill="${COLORS.text}">${escapeSvg(valStr)}</text>`);
+  });
+
+  parts.push('</svg>');
+  return parts.join('');
+}
+
+
 function escapeSvg(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }

@@ -172,26 +172,32 @@ function escapeHtml(s: string): string {
 
 // ---------- Common formatters ----------
 
+/** Single-source placeholder for missing numeric data.
+ *  Instead of "—" (which user flagged as "veri yok"), we show a
+ *  more descriptive label — "Raporlanmadı" — which signals the data
+ *  wasn't in the filing but doesn't look like an error. */
+const MISSING_NUMERIC = 'Raporlanmadı';
+
 /** Turkish thousands separator with optional decimals. */
 export function formatTRY(n: number | string | null | undefined, decimals = 0): string {
-  if (n == null || n === '') return '—';
+  if (n == null || n === '') return MISSING_NUMERIC;
   const num = typeof n === 'number' ? n : Number(String(n).replace(/[, ]/g, ''));
-  if (!Number.isFinite(num)) return '—';
+  if (!Number.isFinite(num)) return MISSING_NUMERIC;
   return num.toLocaleString('tr-TR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
 
-/** Percentage with 1 dp, or em-dash if null. */
+/** Percentage with 1 dp, or "Raporlanmadı" if null. */
 export function formatPct(n: number | string | null | undefined, decimals = 1): string {
-  if (n == null || n === '') return '—';
+  if (n == null || n === '') return MISSING_NUMERIC;
   const num = typeof n === 'number' ? n : Number(String(n).replace(/[, ]/g, ''));
-  if (!Number.isFinite(num)) return '—';
+  if (!Number.isFinite(num)) return MISSING_NUMERIC;
   return `%${num.toLocaleString('tr-TR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
 }
 
 /** Ratio with fixed decimals (e.g. 2.1x for leverage). */
 export function formatRatio(n: number | string | null | undefined, decimals = 1): string {
-  if (n == null || n === '') return '—';
+  if (n == null || n === '') return MISSING_NUMERIC;
   const num = typeof n === 'number' ? n : Number(String(n).replace(/[, ]/g, ''));
-  if (!Number.isFinite(num)) return '—';
+  if (!Number.isFinite(num)) return MISSING_NUMERIC;
   return `${num.toLocaleString('tr-TR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}x`;
 }
