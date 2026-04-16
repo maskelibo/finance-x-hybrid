@@ -39,7 +39,7 @@ import {
 } from './auto_commentary.js';
 import { buildNarrativeBlocks } from './llm_narrative.js';
 import { resolvePeerBundle } from './peer_sets.js';
-import { barChart, horizontalBarChart, lineChart, pieChart, priceBandChart, radarChart, timelineChart } from './svg_charts.js';
+import { barChart, columnChart, gaugeChart, horizontalBarChart, lineChart, pieChart, priceBandChart, radarChart, stackedAreaChart, timelineChart } from './svg_charts.js';
 import { formatPct, formatRatio, formatTRY, type TemplateContext, type TemplateValue } from './template_engine.js';
 
 
@@ -573,6 +573,51 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     bullTarget: dcfPerShareNum ? dcfPerShareNum * 1.25 : lc * 1.35,
   }, 'Destek/Direnç + Hedef Fiyat Bandı (TL)') : '';
 
+  // QA Score gauge meter
+  const qaGaugeSvg = qa?.overall_score != null
+    ? gaugeChart(Number(qa.overall_score), 1, 'QA Skoru (0-1)', 'Kalite Göstergesi')
+    : '';
+
+  // Reconciliation pass rate gauge
+  const recGaugeSvg = recTotal > 0
+    ? gaugeChart(recPassRate, 1, `Reconciliation (${recPassed}/${recTotal})`, 'Veri Doğrulama')
+    : '';
+
+  // 5-year net income column chart (YoY comparison)
+  const netIncomeColumns: Array<{ label: string; value: number }> = [];
+  for (const row of multiYear.revenue_row) {
+    if (row.label === 'Net Kar') {
+      multiYear.years.forEach((yr, i) => {
+        const raw = row.values[i];
+        if (raw !== '—') {
+          const n = Number(String(raw).replace(/[.,]/g, ''));
+          if (Number.isFinite(n)) netIncomeColumns.push({ label: yr, value: Math.round(n / 1_000_000) });
+        }
+      });
+    }
+  }
+  const netIncomeColumnSvg = netIncomeColumns.length > 1
+    ? columnChart(netIncomeColumns, 'Yıllık Net Kar Trendi (mn TL)', '')
+    : '';
+
+  // Stacked area: revenue composition over years
+  const revenueAreaSeries: Array<{ name: string; values: Array<number | null> }> = [];
+  for (const row of multiYear.revenue_row) {
+    if (['Hasılat', 'Brüt Kar', 'Net Kar'].includes(row.label)) {
+      revenueAreaSeries.push({
+        name: row.label,
+        values: row.values.map(v => {
+          if (v === '—') return null;
+          const n = Number(String(v).replace(/[.,]/g, ''));
+          return Number.isFinite(n) ? n : null;
+        }),
+      });
+    }
+  }
+  const revenueAreaSvg = multiYear.years.length > 1 && revenueAreaSeries.length > 0
+    ? stackedAreaChart(multiYear.years, revenueAreaSeries, 'Gelir-Brüt Kar-Net Kar Dağılımı')
+    : '';
+
   // Financial sağlık scorecards horizontal bar
   const financialHealthSvg = horizontalBarChart([
     { label: 'QA Skoru', value: qa?.overall_score ? Number(qa.overall_score) * 100 : 0, suffix: '/100' },
@@ -873,6 +918,14 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     chart_financial_health_has: financialHealthSvg.length > 0,
     chart_ownership_pie: ownershipPieSvg,
     chart_ownership_pie_has: ownershipPieSvg.length > 0,
+    chart_qa_gauge: qaGaugeSvg,
+    chart_qa_gauge_has: qaGaugeSvg.length > 0,
+    chart_rec_gauge: recGaugeSvg,
+    chart_rec_gauge_has: recGaugeSvg.length > 0,
+    chart_net_income_column: netIncomeColumnSvg,
+    chart_net_income_column_has: netIncomeColumnSvg.length > 0,
+    chart_revenue_area: revenueAreaSvg,
+    chart_revenue_area_has: revenueAreaSvg.length > 0,
   };
 }
 
@@ -895,6 +948,32 @@ function mdToHtml(md: string): string {
 
   // Strip Claude wrapper fence if present.
   let text = md.replace(/^\s*---\s*\n/, '').trim();
+
+  // Clean up LLM's ugly "[VERI YOK — ...]" / "[VERİ YOK — ...]"
+  // placeholders — transform into muted <em> with Turkish label.
+  text = text.replace(/\[VER[İI]\s*YOK\s*[—\-]?\s*([^\]]*)\]/gi, (_, reason) => {
+    const cleanReason = reason.trim();
+    return cleanReason
+      ? `<em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — ${cleanReason})</em>`
+      : `<em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em>`;
+  });
+
+  // Clean up plain "VERİ YOK" / "VERI YOK" phrases inside table cells.
+  text = text.replace(/\bVER[İI]\s*YOK\b/gi, '<em style="color:#94a3b8;">Raporlanmadı</em>');
+
+  // Clean up [Hesaplanamadi — ...] / [Hesaplanamadı — ...] placeholders.
+  text = text.replace(/\[Hesaplanamad[ıi][^\]]*\]/gi, (m) => {
+    const reason = m.replace(/^\[Hesaplanamad[ıi]\s*[—\-]?\s*/i, '').replace(/\]$/, '').trim();
+    return reason
+      ? `<em style="color:#94a3b8; font-weight:500;">(Hesaplanamadı — ${reason})</em>`
+      : `<em style="color:#94a3b8; font-weight:500;">(Hesaplanamadı)</em>`;
+  });
+
+  // Replace bracketed chart placeholders [CHART:LINE], [CHART:PIE] etc.
+  // (LLM uses these as graphic placeholder markers).
+  text = text.replace(/\[CHART:(LINE|PIE|BAR|TIMELINE|RADAR|AREA|DONUT)\]\s*([^\n]*)/gi, (_, kind, label) => {
+    return `<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> ${label.trim()} <em style="color:#94a3b8;">(${kind.toLowerCase()})</em></div>`;
+  });
 
   // Convert markdown tables to HTML tables.
   text = text.replace(/(?:^|\n)((?:\|[^\n]+\|\n)+\|[\s|:-]+\|(?:\n\|[^\n]+\|)+)/g, (_, block) => {

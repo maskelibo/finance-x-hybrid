@@ -248,6 +248,13 @@
     <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_financial_health}}</div>
     {{/if}}
 
+    {{#if chart_qa_gauge_has}}
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; page-break-inside:avoid;">
+      <div>{{&chart_qa_gauge}}</div>
+      {{#if chart_rec_gauge_has}}<div>{{&chart_rec_gauge}}</div>{{/if}}
+    </div>
+    {{/if}}
+
     {{#if critical_findings}}
     <h2>{{critical_findings.length}} Kritik Bulgu</h2>
     <ul class="bullet-list">
@@ -385,6 +392,14 @@
 
     {{#if chart_financial_trend_has}}
     <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_financial_trend}}</div>
+    {{/if}}
+
+    {{#if chart_revenue_area_has}}
+    <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_revenue_area}}</div>
+    {{/if}}
+
+    {{#if chart_net_income_column_has}}
+    <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_net_income_column}}</div>
     {{/if}}
 
     <h3>Gelir ve Kârlılık</h3>
