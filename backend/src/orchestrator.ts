@@ -352,7 +352,10 @@ export function resumeAllPausedSessions(): number {
 const EXECUTION_PHASES: Array<{ name: string; agents: string[][] }> = [
   { name: 'Mandate', agents: [['ceo']] },
   { name: 'Pre-Flight', agents: [['coo']] },
-  { name: 'Data Acquisition', agents: [['data_collection', 'kap_watch']] },
+  // kap_watch önce çalışır — data_collection onun disclosure listesini
+  // --prefetched ile reuse eder; böylece KAP'a ikinci byCriteria çağrısı
+  // yapılmaz ve rate-limit (~60-90s) tetiklenmez.
+  { name: 'Data Acquisition', agents: [['kap_watch'], ['data_collection']] },
   { name: 'Parsing', agents: [['parse_standardization']] },
   // reconciliation + context_extraction paralel (ikisi de parse+data_collection'a bağlı)
   { name: 'Data Quality & Context', agents: [['reconciliation', 'context_extraction']] },

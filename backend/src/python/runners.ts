@@ -51,6 +51,7 @@ export interface DataCollectOptions {
   years?: number;
   pdfDir?: string;
   kinds?: string;          // 'financial_report,activity_report'
+  prefetchedFile?: string; // kap_watch output JSON — skips byCriteria
 }
 
 export function runDataCollect(
@@ -64,6 +65,7 @@ export function runDataCollect(
   if (opts.until) args.push('--until', opts.until);
   if (opts.pdfDir) args.push('--pdf-dir', opts.pdfDir);
   if (opts.kinds) args.push('--kinds', opts.kinds);
+  if (opts.prefetchedFile) args.push('--prefetched', opts.prefetchedFile);
   // data_collection PDF downloads can run long on slow links; give it headroom.
   const withTimeout = { timeoutMs: 300_000, ...(runOpts ?? {}) };
   return runFinancexJson(args, withTimeout);

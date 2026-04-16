@@ -33,12 +33,11 @@ from financex.crawlers.kap import HttpKapClient, KapClient, RawDisclosure
 from financex.schemas.base import SourceRef
 from financex.schemas.data_collection import CollectedDocument, DataCollectionManifest
 
-# kap_watch + data_collection land in the same orchestrator phase and
-# both hit KAP byCriteria within a second of each other. KAP rate-limits
-# that pattern for ~20s. This cold-start delay is a belt-and-suspenders
-# pair to the retry backoff in crawlers/kap.py — the orchestrator calls
-# us right after kap_watch, so we yield for a few seconds before touching
-# KAP. Override via FINANCEX_KAP_COOLDOWN_S=0 in tests / fixture runs.
+# Only used when we DO have to go back to KAP (no prefetched list).
+# kap_watch + data_collection land in the same orchestrator phase, so
+# without a disclosure-list handoff we trip KAP's per-IP rate limit.
+# Default is generous; the orchestrator now passes a prefetched list
+# via CollectedDisclosuresList and the cooldown is bypassed entirely.
 _KAP_COOLDOWN_S = float(os.environ.get("FINANCEX_KAP_COOLDOWN_S", "4"))
 
 
@@ -135,9 +134,15 @@ def run_data_collection(
     client: KapClient | None = None,
     pdf_dir: Path,
     kinds_to_download: tuple[str, ...] = ("financial_report", "activity_report"),
+    prefetched_disclosures: list[RawDisclosure] | None = None,
 ) -> DataCollectionManifest:
     """Collect all interesting disclosures for a ticker, downloading PDFs
     for the chosen `kinds_to_download`.
+
+    If `prefetched_disclosures` is supplied (typically piped from the
+    orchestrator after kap_watch already fetched the list), we skip the
+    byCriteria POST entirely and go straight to PDF downloads. This
+    avoids tripping KAP's back-to-back rate-limit.
     """
     http_client = client or HttpKapClient()
     _owns_client = client is None
@@ -149,17 +154,22 @@ def run_data_collection(
     errors: list[str] = []
     warnings: list[str] = []
 
-    # Cool-down in case the orchestrator just ran kap_watch against the
-    # same ticker — KAP rate-limits back-to-back byCriteria calls.
-    if _KAP_COOLDOWN_S > 0:
-        time.sleep(_KAP_COOLDOWN_S)
+    if prefetched_disclosures is not None:
+        # Orchestrator already has the list from kap_watch — reuse it
+        # and skip the byCriteria call (plus its cooldown).
+        raw_list = prefetched_disclosures
+    else:
+        # Cool-down in case the orchestrator just ran kap_watch against the
+        # same ticker — KAP rate-limits back-to-back byCriteria calls.
+        if _KAP_COOLDOWN_S > 0:
+            time.sleep(_KAP_COOLDOWN_S)
 
-    try:
-        raw_list: list[RawDisclosure] = http_client.fetch_disclosures(
-            ticker, since=since, until=ceiling
-        )
-    except Exception as exc:
-        raise RuntimeError(f"KAP fetch_disclosures failed for {ticker}: {exc}") from exc
+        try:
+            raw_list = http_client.fetch_disclosures(
+                ticker, since=since, until=ceiling
+            )
+        except Exception as exc:
+            raise RuntimeError(f"KAP fetch_disclosures failed for {ticker}: {exc}") from exc
 
     for raw in raw_list:
         kind = classify_kind(raw.title, raw.category, raw.summary)
