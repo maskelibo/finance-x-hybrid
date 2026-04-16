@@ -4,6 +4,7 @@ from financex.cli.data import data_app
 from financex.cli.db import db_app
 from financex.cli.kap import kap_app
 from financex.cli.parse import parse_app
+from financex.cli.reconcile import reconcile_app
 from financex.cli.sample import sample_app
 from financex.cli.schemas import schemas_app
 from financex.cli.technical import technical_app
@@ -21,6 +22,7 @@ app.add_typer(technical_app, name="technical")
 app.add_typer(kap_app, name="kap")
 app.add_typer(data_app, name="data")
 app.add_typer(parse_app, name="parse")
+app.add_typer(reconcile_app, name="reconcile")
 
 
 @app.command()

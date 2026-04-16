@@ -41,6 +41,7 @@ from financex.schemas.market import MarketData, MarketSnapshot, OhlcvBar
 from financex.schemas.meta import MetaInfo
 from financex.schemas.package import TickerPackage
 from financex.schemas.quality import QualityControl, QualityFlag, Severity
+from financex.schemas.reconciliation import ReconciliationCheck, ReconciliationReport
 from financex.schemas.timeline import (
     EventForTimeline,
     Phase,
@@ -88,6 +89,8 @@ __all__ = [
     "Ratio",
     "RatingAgency",
     "RatioValue",
+    "ReconciliationCheck",
+    "ReconciliationReport",
     "Recommendation",
     "ReportingPeriod",
     "Severity",
