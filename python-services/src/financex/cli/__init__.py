@@ -4,6 +4,7 @@ from financex.cli.analyst import analyst_app
 from financex.cli.analyze import analyze_app
 from financex.cli.data import data_app
 from financex.cli.db import db_app
+from financex.cli.esg import esg_app
 from financex.cli.kap import kap_app
 from financex.cli.macro import macro_app
 from financex.cli.news import news_app
@@ -31,6 +32,7 @@ app.add_typer(analyze_app, name="analyze")
 app.add_typer(macro_app, name="macro")
 app.add_typer(analyst_app, name="analyst")
 app.add_typer(news_app, name="news")
+app.add_typer(esg_app, name="esg")
 app.add_typer(macro_app, name="macro")
 
 
