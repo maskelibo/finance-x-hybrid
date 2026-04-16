@@ -68,9 +68,9 @@ describe('composeReportContext — reads from accumulatedContext JSON', () => {
 
   it('formats qa + reconciliation + convergence scorecards', () => {
     expect(result.qa_score).toBe('0.88');
-    expect(result.qa_decision_label).toBe('pass');
+    expect(result.qa_decision_label).toBe('Geçer');        // translated to TR
     expect(result.convergence_score).toBe('+0.32');
-    expect(result.signal_confidence).toBe('medium');
+    expect(result.signal_confidence).toBe('orta');           // translated to TR
     expect(result.reconciliation_pass_rate).toBe('%75');
     expect(result.reconciliation_passed).toBe(3);
     expect(result.reconciliation_total).toBe(4);
@@ -98,20 +98,20 @@ describe('composeReportContext — reads from accumulatedContext JSON', () => {
   });
 
   it('benchmarks formatted with labels and quartile', () => {
-    const bm = result.benchmarks as Array<{ label: string; quartile: unknown }>;
+    const bm = result.benchmarks as Array<{ label: string; quartile_badge: string }>;
     expect(bm.length).toBe(1);
-    expect(bm[0].quartile).toBe(2);
+    expect(bm[0].quartile_badge).toBe('Q2');
   });
 
   it('event impacts formatted', () => {
     const ev = result.event_impacts as Array<{ type: string; direction: string }>;
     expect(ev.length).toBe(1);
     expect(ev[0].type).toBe('dividend');
-    expect(ev[0].direction).toBe('negative');
+    expect(ev[0].direction).toBe('Negatif');               // translated
   });
 
   it('narrative blocks empty when not supplied', () => {
-    expect(result.narrative_card_summary).toBe('');
+    expect(result.narrative_executive_summary).toBe('');
     expect(result.narrative_valuation).toBe('');
   });
 });
@@ -165,7 +165,8 @@ describe('composeReportContext — resilient to missing upstream', () => {
         valuation: 'DCF değerleme makul.',
       },
     });
-    expect(out.narrative_card_summary).toBe('Şirket güçlü sinyaller veriyor.');
+    // card_summary key maps to narrative_executive_summary slot.
+    expect(out.narrative_executive_summary).toBe('Şirket güçlü sinyaller veriyor.');
     expect(out.narrative_valuation).toBe('DCF değerleme makul.');
     expect(out.narrative_closing).toBe('');
   });

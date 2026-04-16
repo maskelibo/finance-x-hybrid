@@ -1,101 +1,243 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8">
-  <title>{{ticker}} — Finance X Analiz Raporu</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ticker}} — Finance X Kapsamlı Analiz Raporu</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-           color: #222; line-height: 1.55; background: #fafafa; padding: 40px 20px; }
-    .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 60px 70px; box-shadow: 0 2px 20px rgba(0,0,0,.04); }
-    h1 { font-size: 32px; border-bottom: 3px solid #0066cc; padding-bottom: 16px; margin-bottom: 8px; }
-    h1 .subtitle { font-size: 16px; color: #888; display: block; margin-top: 6px; font-weight: 400; }
-    h2 { font-size: 22px; margin: 36px 0 14px; color: #0066cc; border-left: 4px solid #0066cc; padding-left: 12px; }
-    h3 { font-size: 16px; margin: 20px 0 10px; color: #444; }
-    p { margin: 10px 0; }
-    .score-card { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
-    .score-card .box { border: 1px solid #e0e0e0; border-radius: 8px; padding: 18px; background: #fff; }
-    .score-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-    .score-card .value { font-size: 28px; font-weight: 700; color: #0066cc; margin-top: 6px; }
-    .score-card .subtext { font-size: 12px; color: #666; margin-top: 4px; }
-    table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
-    th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #e8e8e8; }
-    th { background: #f5f5f5; font-weight: 600; font-size: 12px; text-transform: uppercase; color: #555; letter-spacing: .5px; }
-    td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: ui-monospace, "SF Mono", monospace; }
-    .flag-list { list-style: none; padding: 0; }
-    .flag-list li { padding: 8px 12px; border-left: 4px solid #ccc; margin: 6px 0; background: #f9f9f9; }
-    .flag-list li.critical { border-left-color: #d93025; background: #fdf0ee; }
-    .flag-list li.warn { border-left-color: #f9ab00; background: #fef7e0; }
-    .flag-list li.ok { border-left-color: #1e8e3e; background: #e6f4ea; }
-    .warning-banner { background: #fff3cd; border: 1px solid #ffeeba; border-radius: 6px; padding: 14px 18px; margin: 16px 0; color: #856404; }
-    .disclaimer { margin-top: 60px; padding: 22px; background: #f5f5f5; border-radius: 6px; font-size: 12px; color: #666; line-height: 1.6; }
-    .meta { font-size: 11px; color: #999; text-align: right; margin-bottom: -10px; }
-    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
-    .badge-pass { background: #e6f4ea; color: #1e8e3e; }
-    .badge-fail { background: #fdf0ee; color: #d93025; }
-    .badge-warn { background: #fef7e0; color: #b47b00; }
+    @page { size: A4 portrait; margin: 20mm 15mm 20mm 15mm; }
+    :root {
+      --brand-primary: #1e40af;
+      --brand-secondary: #1a1a2e;
+      --brand-accent: #f59e0b;
+      --fx-dark: #1e293b;
+      --fx-gray: #6b7280;
+      --fx-light-gray: #f3f4f6;
+      --fx-border: #e5e7eb;
+      --fx-success: #059669;
+      --fx-warning: #d97706;
+      --fx-danger: #dc2626;
+      --fx-white: #ffffff;
+      --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: ui-monospace, 'SF Mono', 'Consolas', monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-main); font-size: 10pt; line-height: 1.55; color: var(--fx-dark); background: var(--fx-white); }
+
+    .page { page-break-before: always; min-height: 257mm; padding: 0 0 30px; position: relative; }
+    .page:first-child { page-break-before: avoid; }
+    .page-inner { padding: 0 8mm; }
+
+    .page-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 2px solid var(--brand-primary); margin-bottom: 16px; font-size: 8pt; color: var(--fx-gray); }
+    .page-header-left { display: flex; align-items: center; gap: 12px; }
+    .company-ticker { font-weight: 700; color: var(--brand-primary); font-size: 10pt; }
+    .brand-mark { background: var(--brand-primary); color: #fff; padding: 3px 8px; border-radius: 3px; font-weight: 700; font-size: 9pt; }
+    .page-footer { position: absolute; bottom: 4px; left: 8mm; right: 8mm; display: flex; justify-content: space-between; font-size: 7pt; color: var(--fx-gray); border-top: 1px solid var(--fx-border); padding-top: 4px; }
+
+    .cover-page { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 257mm; text-align: center; background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%); color: #fff; padding: 40mm 20mm; }
+    .cover-page .cover-ticker { font-size: 54pt; font-weight: 800; letter-spacing: 4px; margin-bottom: 8px; }
+    .cover-page .cover-company { font-size: 16pt; font-weight: 300; margin-bottom: 8px; opacity: 0.9; }
+    .cover-page .cover-exchange { font-size: 11pt; font-weight: 400; opacity: 0.7; margin-bottom: 40px; }
+    .cover-page .cover-title { font-size: 14pt; font-weight: 600; margin-bottom: 8px; }
+    .cover-page .cover-date { font-size: 11pt; opacity: 0.85; }
+    .cover-page .cover-badge { margin-top: 50px; padding: 8px 24px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; font-size: 9pt; opacity: 0.8; }
+    .cover-divider { width: 80px; height: 3px; background: rgba(255,255,255,0.5); margin: 24px auto; }
+    .cover-meta { display: flex; gap: 40px; margin-top: 24px; font-size: 9pt; opacity: 0.85; }
+    .cover-meta-item { text-align: center; }
+    .cover-meta-item .cv-val { font-size: 14pt; font-weight: 700; display: block; margin-bottom: 2px; }
+
+    h1 { font-size: 16pt; font-weight: 700; color: var(--brand-primary); margin: 20px 0 10px; border-bottom: 2px solid var(--brand-primary); padding-bottom: 6px; page-break-after: avoid; }
+    h2 { font-size: 13pt; font-weight: 600; color: var(--fx-dark); margin: 16px 0 8px; page-break-after: avoid; }
+    h3 { font-size: 11pt; font-weight: 600; color: var(--brand-primary); margin: 14px 0 6px; page-break-after: avoid; }
+    p { margin: 7px 0; text-align: justify; orphans: 4; widows: 4; }
+    ul, ol { margin: 7px 0 7px 20px; }
+    li { margin-bottom: 4px; orphans: 4; widows: 4; }
+    strong { font-weight: 600; }
+    em { font-style: italic; }
+
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9pt; table-layout: fixed; page-break-inside: avoid; }
+    table th { background: var(--brand-primary); color: #fff; font-weight: 600; padding: 7px 9px; text-align: left; border: 1px solid var(--brand-primary); }
+    table td { padding: 6px 9px; border: 1px solid var(--fx-border); vertical-align: top; word-wrap: break-word; }
+    table tr:nth-child(even) { background: var(--fx-light-gray); }
+    table td.num, table th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    table td.label { font-weight: 600; color: var(--fx-dark); }
+    table tr.subtotal td { background: #eef2ff; font-weight: 600; }
+    table tr.total td { background: var(--brand-primary); color: #fff; font-weight: 700; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .kpi-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .kpi-card { border: 1px solid var(--fx-border); border-radius: 6px; padding: 12px; background: #fff; }
+    .kpi-card .kpi-label { font-size: 8pt; color: var(--fx-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .kpi-card .kpi-value { font-size: 18pt; font-weight: 700; color: var(--brand-primary); font-family: var(--font-mono); }
+    .kpi-card .kpi-sub { font-size: 8pt; color: var(--fx-gray); margin-top: 4px; }
+    .kpi-card.positive .kpi-value { color: var(--fx-success); }
+    .kpi-card.negative .kpi-value { color: var(--fx-danger); }
+    .kpi-card.warning .kpi-value { color: var(--fx-warning); }
+
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 9pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-pass { background: #d1fae5; color: #047857; }
+    .badge-fail { background: #fee2e2; color: #b91c1c; }
+    .badge-warn { background: #fef3c7; color: #b45309; }
+    .badge-info { background: #dbeafe; color: #1d4ed8; }
+    .badge-neutral { background: var(--fx-light-gray); color: var(--fx-gray); }
+
+    .bullet-list { list-style: none; padding: 0; margin: 10px 0; }
+    .bullet-list li { padding: 8px 12px; border-left: 3px solid var(--fx-border); margin: 6px 0; background: var(--fx-light-gray); font-size: 10pt; }
+    .bullet-list li.critical { border-left-color: var(--fx-danger); background: #fef2f2; }
+    .bullet-list li.warn { border-left-color: var(--fx-warning); background: #fffbeb; }
+    .bullet-list li.ok { border-left-color: var(--fx-success); background: #ecfdf5; }
+
+    .swot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .swot-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 12px; background: #fff; }
+    .swot-box h4 { font-size: 10pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 2px solid; }
+    .swot-box.strengths h4 { color: var(--fx-success); border-color: var(--fx-success); }
+    .swot-box.weaknesses h4 { color: var(--fx-danger); border-color: var(--fx-danger); }
+    .swot-box.opportunities h4 { color: var(--brand-primary); border-color: var(--brand-primary); }
+    .swot-box.threats h4 { color: var(--fx-warning); border-color: var(--fx-warning); }
+    .swot-box ul { list-style: none; padding: 0; }
+    .swot-box li { font-size: 9pt; padding: 4px 0; border-bottom: 1px dotted var(--fx-border); }
+    .swot-box li:last-child { border-bottom: none; }
+
+    .note { background: #fffbeb; border-left: 4px solid var(--fx-warning); padding: 10px 14px; margin: 12px 0; font-size: 9pt; color: #78350f; border-radius: 3px; }
+    .note strong { color: #92400e; }
+
+    .disclaimer { margin-top: 40px; padding: 22px; background: var(--fx-light-gray); border-radius: 6px; font-size: 8pt; color: var(--fx-gray); line-height: 1.7; }
+    .disclaimer strong { color: var(--fx-dark); }
+    .method-list { font-size: 9pt; }
+
+    .score-gauge { display: inline-block; width: 100%; height: 10px; background: var(--fx-light-gray); border-radius: 5px; overflow: hidden; margin: 4px 0; }
+    .score-gauge-fill { height: 100%; background: linear-gradient(90deg, var(--fx-success) 0%, var(--brand-primary) 100%); }
+
+    @media screen {
+      body { background: #e5e7eb; padding: 20px; }
+      .page { max-width: 210mm; margin: 0 auto 10px; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 16mm 10mm 30px; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
 
-    <p class="meta">Hazırlanma: {{report_date}} &middot; Python Hybrid &middot; {{engine_source}}</p>
+  <!-- =========================== COVER ============================ -->
+  <div class="page cover-page">
+    <div class="cover-ticker">{{ticker}}</div>
+    <div class="cover-company">{{company_name}}</div>
+    <div class="cover-exchange">Borsa İstanbul · {{sector_label_tr}}</div>
+    <div class="cover-divider"></div>
+    <div class="cover-title">Kapsamlı Şirket Analiz Raporu</div>
+    <div class="cover-date">{{report_date}}</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><span class="cv-val">{{qa_score}}</span>QA Skoru</div>
+      <div class="cover-meta-item"><span class="cv-val">{{convergence_score}}</span>Sinyal Konverjansı</div>
+      <div class="cover-meta-item"><span class="cv-val">{{reconciliation_pass_rate}}</span>Reconciliation</div>
+    </div>
+    <div class="cover-badge">Finance X Platform · Python Hybrid · {{report_id}}</div>
+  </div>
 
-    <h1>
-      {{ticker}} — Analiz Raporu
-      <span class="subtitle">{{company_name}} &middot; {{sector_label}} &middot; {{period_label}}</span>
-    </h1>
+  <!-- ============= I. YÖNETİCİ ÖZETİ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
 
-    <!-- ===================== Katman 1 — Yatırımcı Kartı ===================== -->
-    <h2>Yatırımcı Kartı</h2>
+    <h1>I. Yönetici Özeti</h1>
 
-    <div class="score-card">
-      <div class="box">
-        <div class="label">QA Skoru</div>
-        <div class="value">{{qa_score}}</div>
-        <div class="subtext">{{qa_decision_label}}</div>
-      </div>
-      <div class="box">
-        <div class="label">Sinyal Konverjansı</div>
-        <div class="value">{{convergence_score}}</div>
-        <div class="subtext">{{signal_confidence}} confidence</div>
-      </div>
-      <div class="box">
-        <div class="label">Reconciliation</div>
-        <div class="value">{{reconciliation_pass_rate}}</div>
-        <div class="subtext">{{reconciliation_passed}}/{{reconciliation_total}} check</div>
-      </div>
+    {{#if narrative_executive_summary}}
+    <h2>Temel Değerlendirme</h2>
+    <div>{{&narrative_executive_summary}}</div>
+    {{/if}}
+
+    <h2>Skor Kartı</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">QA Skoru</div><div class="kpi-value">{{qa_score}}</div><div class="kpi-sub">{{qa_decision_label}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sinyal</div><div class="kpi-value">{{convergence_score}}</div><div class="kpi-sub">{{signal_confidence}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Rec.</div><div class="kpi-value">{{reconciliation_pass_rate}}</div><div class="kpi-sub">{{reconciliation_passed}}/{{reconciliation_total}} check</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sektör</div><div class="kpi-value" style="font-size:12pt;">{{sector_label_tr}}</div><div class="kpi-sub">{{sector_source_label}}</div></div>
     </div>
 
     {{#if critical_findings}}
-    <h3>Kritik Bulgular</h3>
-    <ul class="flag-list">
+    <h2>{{critical_findings.length}} Kritik Bulgu</h2>
+    <ul class="bullet-list">
       {{#each critical_findings}}
       <li class="critical">{{this}}</li>
       {{/each}}
     </ul>
     {{/if}}
 
-    {{#if narrative_card_summary}}
-    <p>{{&narrative_card_summary}}</p>
+    {{#if strengths}}
+    <h3>Güçlü Yönler</h3>
+    <ul class="bullet-list">
+      {{#each strengths}}
+      <li class="ok">{{this}}</li>
+      {{/each}}
+    </ul>
     {{/if}}
 
-    <!-- ===================== Finansal Panorama ===================== -->
-    <h2>Finansal Panorama</h2>
+    {{#if weaknesses}}
+    <h3>Zayıf Yönler</h3>
+    <ul class="bullet-list">
+      {{#each weaknesses}}
+      <li class="warn">{{this}}</li>
+      {{/each}}
+    </ul>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>1</span></div>
+  </div></div>
+
+  <!-- ============= II. ŞİRKET PROFİLİ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>II. Şirket Profili</h1>
+
+    {{#if narrative_company_profile}}
+    <div>{{&narrative_company_profile}}</div>
+    {{/if}}
+
+    {{#if company_highlights}}
+    <h2>Kurumsal Özet</h2>
+    <table>
+      <thead><tr><th style="width:35%">Gösterge</th><th>Değer</th></tr></thead>
+      <tbody>
+        {{#each company_highlights}}
+        <tr><td class="label">{{this.label}}</td><td>{{this.value}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
+    {{#if narrative_segments}}
+    <h2>Segment / İştirak Yapısı</h2>
+    <div>{{&narrative_segments}}</div>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>2</span></div>
+  </div></div>
+
+  <!-- ============= III. FİNANSAL ANALİZ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>III. Finansal Analiz</h1>
 
     {{#if narrative_financial_intro}}
-    <p>{{&narrative_financial_intro}}</p>
+    <div>{{&narrative_financial_intro}}</div>
     {{/if}}
 
-    {{#if highlights}}
+    <h2>Temel Finansal Göstergeler — {{period_label}}</h2>
+    {{#if highlights_has}}
     <table>
-      <thead>
-        <tr><th>Metrik</th><th class="num">Değer</th><th>Not</th></tr>
-      </thead>
+      <thead><tr><th style="width:30%">Metrik</th><th class="num" style="width:20%">Değer</th><th>Yorum</th></tr></thead>
       <tbody>
         {{#each highlights}}
         <tr>
-          <td>{{this.label}}</td>
+          <td class="label">{{this.label}}</td>
           <td class="num">{{this.value_formatted}}</td>
           <td>{{this.narrative_hint}}</td>
         </tr>
@@ -104,63 +246,285 @@
     </table>
     {{/if}}
 
-    <!-- ===================== Değerleme ===================== -->
-    <h2>Değerleme</h2>
+    {{#if canonical_balance_sheet}}
+    <h2>Konsolide Bilanço (mn TL) — {{period_label}}</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        {{#each canonical_balance_sheet}}
+        <tr><td class="label">{{this.label}}</td><td class="num">{{this.value}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
+    {{#if canonical_income_statement}}
+    <h2>Konsolide Gelir Tablosu (mn TL) — {{period_label}}</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        {{#each canonical_income_statement}}
+        <tr><td class="label">{{this.label}}</td><td class="num">{{this.value}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
+    {{#if canonical_cash_flow}}
+    <h2>Nakit Akış Özeti (mn TL)</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        {{#each canonical_cash_flow}}
+        <tr><td class="label">{{this.label}}</td><td class="num">{{this.value}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
+    {{#if narrative_profitability}}
+    <h2>Karlılık Analizi</h2>
+    <div>{{&narrative_profitability}}</div>
+    {{/if}}
+
+    {{#if narrative_leverage}}
+    <h2>Bilanço ve Borçluluk</h2>
+    <div>{{&narrative_leverage}}</div>
+    {{/if}}
+
+    {{#if narrative_cashflow}}
+    <h2>Nakit Akışı Yorumu</h2>
+    <div>{{&narrative_cashflow}}</div>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>3</span></div>
+  </div></div>
+
+  <!-- ============= IV. DEĞERLEME & HEDEF FİYAT ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>IV. Değerleme & Hedef Fiyat</h1>
 
     {{#if valuation_warnings}}
-    <div class="warning-banner">
+    <div class="note">
       {{#each valuation_warnings}}
-      <p>⚠ {{this}}</p>
+      <div>⚠ {{this}}</div>
       {{/each}}
     </div>
     {{/if}}
 
     {{#if dcf_present}}
+    <h2>DCF Değerleme</h2>
     <table>
-      <thead><tr><th>Metrik</th><th class="num">Değer</th></tr></thead>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
       <tbody>
-        <tr><td>Teşebbüs Değeri</td><td class="num">{{dcf_ev_formatted}}</td></tr>
-        <tr><td>Özsermaye Değeri</td><td class="num">{{dcf_equity_formatted}}</td></tr>
-        <tr><td>Hisse Başına Değer</td><td class="num">{{dcf_per_share_formatted}}</td></tr>
-        <tr><td>Kullanılan WACC</td><td class="num">{{dcf_wacc_formatted}}</td></tr>
-        <tr><td>Terminal Büyüme</td><td class="num">{{dcf_terminal_g_formatted}}</td></tr>
+        <tr><td class="label">Teşebbüs Değeri (EV)</td><td class="num">{{dcf_ev_formatted}}</td></tr>
+        <tr><td class="label">Özsermaye Değeri</td><td class="num">{{dcf_equity_formatted}}</td></tr>
+        <tr class="total"><td class="label">Hisse Başına Değer</td><td class="num">{{dcf_per_share_formatted}}</td></tr>
+        <tr><td class="label">Kullanılan WACC</td><td class="num">{{dcf_wacc_formatted}}</td></tr>
+        <tr><td class="label">Terminal Büyüme</td><td class="num">{{dcf_terminal_g_formatted}}</td></tr>
+      </tbody>
+    </table>
+    {{/if}}
+
+    {{#if peer_ev_ebitda}}
+    <h2>Emsal Çarpanları</h2>
+    <table>
+      <thead><tr><th>Çarpan</th><th class="num">Şirket</th><th class="num">Emsal Medyan</th><th class="num">Q1 / Q3</th></tr></thead>
+      <tbody>
+        <tr><td class="label">EBITDA Margin</td><td class="num">{{peer_ev_ebitda.company_formatted}}</td><td class="num">{{peer_ev_ebitda.median_formatted}}</td><td class="num">{{peer_ev_ebitda.q1_q3}}</td></tr>
+        {{#if peer_pe}}<tr><td class="label">Net Margin</td><td class="num">{{peer_pe.company_formatted}}</td><td class="num">{{peer_pe.median_formatted}}</td><td class="num">{{peer_pe.q1_q3}}</td></tr>{{/if}}
       </tbody>
     </table>
     {{/if}}
 
     {{#if narrative_valuation}}
-    <p>{{&narrative_valuation}}</p>
+    <h2>Senaryo Analizi</h2>
+    <div>{{&narrative_valuation}}</div>
     {{/if}}
 
-    <!-- ===================== Sektör Karşılaştırması ===================== -->
-    {{#if benchmarks}}
-    <h2>Sektör Karşılaştırması</h2>
+    {{#if analyst_consensus_has}}
+    <h2>Analist Konsensüsü</h2>
+    <div class="kpi-grid-3">
+      <div class="kpi-card"><div class="kpi-label">Hedef Ort.</div><div class="kpi-value" style="font-size:14pt;">{{analyst_consensus.target_price_mean_formatted}}</div><div class="kpi-sub">{{analyst_consensus.count}} analist</div></div>
+      <div class="kpi-card"><div class="kpi-label">BUY / HOLD / SELL</div><div class="kpi-value" style="font-size:12pt;">{{analyst_consensus.distribution}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Revize Trendi</div><div class="kpi-value" style="font-size:12pt;">{{analyst_consensus.revision_trend}}</div></div>
+    </div>
+    {{/if}}
 
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>4</span></div>
+  </div></div>
+
+  <!-- ============= V. SEKTÖR & REKABET ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>V. Sektör & Rekabet Analizi</h1>
+
+    {{#if narrative_sector}}
+    <div>{{&narrative_sector}}</div>
+    {{/if}}
+
+    {{#if benchmarks}}
+    <h2>Emsal Karşılaştırma Tablosu</h2>
     <table>
-      <thead>
-        <tr><th>Metrik</th><th class="num">Şirket</th><th class="num">Medyan</th><th class="num">Min/Max</th><th>Quartile</th></tr>
-      </thead>
+      <thead><tr><th>Metrik</th><th class="num">Şirket</th><th class="num">Medyan</th><th class="num">Min/Max</th><th>Quartile</th></tr></thead>
       <tbody>
         {{#each benchmarks}}
         <tr>
-          <td>{{this.label}}</td>
+          <td class="label">{{this.label}}</td>
           <td class="num">{{this.company_formatted}}</td>
           <td class="num">{{this.median_formatted}}</td>
           <td class="num">{{this.range_formatted}}</td>
-          <td>Q{{this.quartile}}</td>
+          <td>{{this.quartile_badge}}</td>
         </tr>
         {{/each}}
       </tbody>
     </table>
     {{/if}}
 
-    <!-- ===================== Olay Takvimi ===================== -->
-    {{#if event_impacts}}
-    <h2>Son KAP Olayları</h2>
+    {{#if swot_has}}
+    <h2>SWOT Analizi</h2>
+    <div class="swot-grid">
+      <div class="swot-box strengths"><h4>Strengths</h4><ul>{{#each swot.strengths}}<li>{{this}}</li>{{/each}}</ul></div>
+      <div class="swot-box weaknesses"><h4>Weaknesses</h4><ul>{{#each swot.weaknesses}}<li>{{this}}</li>{{/each}}</ul></div>
+      <div class="swot-box opportunities"><h4>Opportunities</h4><ul>{{#each swot.opportunities}}<li>{{this}}</li>{{/each}}</ul></div>
+      <div class="swot-box threats"><h4>Threats</h4><ul>{{#each swot.threats}}<li>{{this}}</li>{{/each}}</ul></div>
+    </div>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>5</span></div>
+  </div></div>
+
+  <!-- ============= VI. MAKRO ORTAM ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>VI. Makroekonomik Bağlam</h1>
+
+    <h2>Kritik Makro Göstergeler</h2>
     <table>
-      <thead>
-        <tr><th>Olay</th><th>Tip</th><th>Etki</th><th>Zamanlama</th></tr>
-      </thead>
+      <thead><tr><th>Gösterge</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        <tr><td class="label">USD/TRY</td><td class="num">{{macro.usd_try}}</td></tr>
+        <tr><td class="label">EUR/TRY</td><td class="num">{{macro.eur_try}}</td></tr>
+        <tr><td class="label">TCMB Politika Faizi</td><td class="num">{{macro.policy_rate}}</td></tr>
+        <tr><td class="label">TCMB 10Y Tahvil</td><td class="num">{{macro.tcmb_10y}}</td></tr>
+        <tr><td class="label">TÜFE (YoY)</td><td class="num">{{macro.cpi_yoy}}</td></tr>
+        <tr><td class="label">GDP (YoY)</td><td class="num">{{macro.gdp_yoy}}</td></tr>
+        <tr><td class="label">BIST-100 YTD</td><td class="num">{{macro.bist100_ytd_return}}</td></tr>
+      </tbody>
+    </table>
+
+    {{#if narrative_macro}}
+    <h2>Sektör-Spesifik Transmisyon</h2>
+    <div>{{&narrative_macro}}</div>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>6</span></div>
+  </div></div>
+
+  <!-- ============= VII. TEKNİK ANALİZ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>VII. Teknik Analiz</h1>
+
+    {{#if technical_has}}
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Trend</div><div class="kpi-value" style="font-size:14pt;">{{technical.trend_label}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">RSI (14)</div><div class="kpi-value">{{technical.rsi}}</div><div class="kpi-sub">{{technical.rsi_zone}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Son Kapanış</div><div class="kpi-value">{{technical.last_close}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Hacim (7g ort.)</div><div class="kpi-value" style="font-size:12pt;">{{technical.volume_avg}}</div></div>
+    </div>
+    {{/if}}
+
+    {{#if narrative_technical}}
+    <h2>Trend Analizi</h2>
+    <div>{{&narrative_technical}}</div>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>7</span></div>
+  </div></div>
+
+  <!-- ============= VIII. ESG ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>VIII. ESG Değerlendirmesi</h1>
+
+    {{#if esg_has}}
+    <h2>CBAM + ETS Karbon Maliyeti</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">EUR</th><th class="num">TRY</th></tr></thead>
+      <tbody>
+        <tr><td class="label">Scope 1 Emisyon</td><td class="num">{{esg.scope1_formatted}}</td><td class="num">—</td></tr>
+        <tr><td class="label">ETS Yıllık Maliyet</td><td class="num">{{esg.ets_eur}}</td><td class="num">{{esg.ets_try}}</td></tr>
+        <tr><td class="label">CBAM Yıllık Maliyet</td><td class="num">{{esg.cbam_eur}}</td><td class="num">{{esg.cbam_try}}</td></tr>
+        <tr class="total"><td class="label">Toplam</td><td class="num">{{esg.total_eur}}</td><td class="num">{{esg.total_try}}</td></tr>
+      </tbody>
+    </table>
+    {{/if}}
+
+    {{#if narrative_esg}}
+    <div>{{&narrative_esg}}</div>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>8</span></div>
+  </div></div>
+
+  <!-- ============= IX. HABER & SENTIMENT ============= -->
+  {{#if sentiment_has}}
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>IX. Haber & Sentiment Analizi</h1>
+
+    <div class="kpi-grid-3">
+      <div class="kpi-card"><div class="kpi-label">Haber Sayısı</div><div class="kpi-value">{{sentiment.news_count}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Genel Sentiment</div><div class="kpi-value" style="font-size:14pt;">{{sentiment.overall_label}}</div><div class="kpi-sub">{{sentiment.overall_score}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Dağılım</div><div class="kpi-value" style="font-size:12pt;">{{sentiment.distribution}}</div></div>
+    </div>
+
+    {{#if narrative_sentiment}}
+    <div>{{&narrative_sentiment}}</div>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>9</span></div>
+  </div></div>
+  {{/if}}
+
+  <!-- ============= X. KAP OLAYLARI ============= -->
+  {{#if event_impacts}}
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>X. KAP Olayları & Etki Analizi</h1>
+
+    <table>
+      <thead><tr><th style="width:40%">Olay</th><th>Tip</th><th>Etki</th><th>Zamanlama</th><th>Etkilenen</th></tr></thead>
       <tbody>
         {{#each event_impacts}}
         <tr>
@@ -168,28 +532,92 @@
           <td>{{this.type}}</td>
           <td>{{this.direction}}</td>
           <td>{{this.timing}}</td>
+          <td>{{this.statements}}</td>
         </tr>
         {{/each}}
       </tbody>
     </table>
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>10</span></div>
+  </div></div>
+  {{/if}}
+
+  <!-- ============= XI. RİSK ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>XI. Risk Değerlendirmesi</h1>
+
+    {{#if risks}}
+    <h2>Temel Risk Faktörleri</h2>
+    <ul class="bullet-list">
+      {{#each risks}}
+      <li class="warn">{{this}}</li>
+      {{/each}}
+    </ul>
     {{/if}}
 
-    <!-- ===================== Kapanış ===================== -->
-    <h2>Kapanış</h2>
+    {{#if narrative_risks}}
+    <div>{{&narrative_risks}}</div>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>11</span></div>
+  </div></div>
+
+  <!-- ============= XII. SONUÇ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>XII. Sonuç & Öneriler</h1>
 
     {{#if narrative_closing}}
-    <p>{{&narrative_closing}}</p>
+    <h2>Analitik Sonuç</h2>
+    <div>{{&narrative_closing}}</div>
     {{/if}}
 
+    {{#if narrative_investment_thesis}}
+    <h2>Yatırım Tezi</h2>
+    <div>{{&narrative_investment_thesis}}</div>
+    {{/if}}
+
+    {{#if catalysts}}
+    <h2>Ana Katalizörler</h2>
+    <ul class="bullet-list">
+      {{#each catalysts}}
+      <li class="ok">{{this}}</li>
+      {{/each}}
+    </ul>
+    {{/if}}
+
+    <h2>Zorunlu Bildirim</h2>
     <div class="disclaimer">
       <strong>Uyarı:</strong> Bu rapor Finance X platformu tarafından otomatik üretilmiştir. Python deterministic
       hesaplamalar + LLM narrative bloklar hibrit modeliyle hazırlanmış olup,
       <strong>yatırım tavsiyesi değildir</strong>. Rapor veri kaynağı sınırlıdır ve profesyonel bir yatırım danışmanının yerini
       tutmaz. Sermaye Piyasası Kurulu (SPK) düzenlemeleri çerçevesinde herhangi bir karar almadan önce profesyonel danışmanlık alınız.
-      <br><br>
-      Rapor ID: <code>{{report_id}}</code> &middot; Ticker: <code>{{ticker}}</code> &middot; Skor: <code>{{qa_score}}</code>
+      <div class="method-list" style="margin-top:14px;">
+        <strong>Metodoloji:</strong> Python kap_watch → event_classification (kural tabanlı) → event_impact_mapper (template tablosu) |
+        parse_standardization (pdfplumber) → reconciliation (BS/IS/CF identity) → financial_analysis (engine DCF, ratios) |
+        macro_analysis (TCMB) → technical_analysis (TradingView/yfinance fallback) →
+        qa_review (rubric scoring) → strategic_synthesis (signal convergence) → report_formatter (template render).
+        Narrative blokları LLM (Claude) üzerinden enjekte edilir.
+      </div>
+      <div style="margin-top:10px;">
+        <strong>Rapor ID:</strong> <code>{{report_id}}</code> ·
+        <strong>Ticker:</strong> <code>{{ticker}}</code> ·
+        <strong>Dönem:</strong> <code>{{period_label}}</code> ·
+        <strong>QA Skor:</strong> <code>{{qa_score}}</code>
+      </div>
     </div>
 
-  </div>
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>12</span></div>
+  </div></div>
+
 </body>
 </html>
