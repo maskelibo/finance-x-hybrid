@@ -282,6 +282,65 @@
     </table>
     {{/if}}
 
+    {{#if multi_year_has_data}}
+    <h2>5 Yıllık Finansal Trend ({{multi_year_count}} dönem)</h2>
+    <h3>Gelir ve Kârlılık</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (mn TL)</th>
+          {{#each multi_year_years}}<th class="num">{{this}}</th>{{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each multi_year_revenue}}
+        <tr>
+          <td class="label">{{this.label}}</td>
+          {{#each this.values}}<td class="num">{{this}}</td>{{/each}}
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <h3>Bilanço Kalemleri</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (mn TL)</th>
+          {{#each multi_year_years}}<th class="num">{{this}}</th>{{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each multi_year_balance}}
+        <tr>
+          <td class="label">{{this.label}}</td>
+          {{#each this.values}}<td class="num">{{this}}</td>{{/each}}
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    {{#if multi_year_cashflow}}
+    <h3>Nakit Akışı</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (mn TL)</th>
+          {{#each multi_year_years}}<th class="num">{{this}}</th>{{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each multi_year_cashflow}}
+        <tr>
+          <td class="label">{{this.label}}</td>
+          {{#each this.values}}<td class="num">{{this}}</td>{{/each}}
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+    {{/if}}
+
     {{#if narrative_profitability}}
     <h2>Karlılık Analizi</h2>
     <div>{{&narrative_profitability}}</div>
@@ -295,6 +354,16 @@
     {{#if narrative_cashflow}}
     <h2>Nakit Akışı Yorumu</h2>
     <div>{{&narrative_cashflow}}</div>
+    {{/if}}
+
+    {{#if narrative_investments}}
+    <h2>Yatırım Programı ve Büyüme Planı</h2>
+    <div>{{&narrative_investments}}</div>
+    {{/if}}
+
+    {{#if narrative_dividend}}
+    <h2>Temettü Politikası ve Sürdürülebilirliği</h2>
+    <div>{{&narrative_dividend}}</div>
     {{/if}}
 
     <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>3</span></div>

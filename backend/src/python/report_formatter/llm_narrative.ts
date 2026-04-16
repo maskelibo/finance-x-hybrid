@@ -188,8 +188,17 @@ export function buildNarrativeBlocks(inputs: NarrativeInputs): Record<string, st
     || sliceSection(finalText, ['Borç', 'Debt'], 1400);
 
   const cashflow =
-    sliceSection(finalText, ['Nakit Akış', 'Nakit Akisi', 'Cash Flow', 'CAPEX', 'FCF', 'OCF', 'İşletme Sermayesi', 'Working Capital'], 1800)
-    || sliceSection(finalText, ['Capex', 'Dividend'], 1200);
+    sliceSection(finalText, ['Nakit Akış', 'Nakit Akisi', 'Cash Flow', 'İşletme Sermayesi', 'Working Capital'], 1800)
+    || sliceSection(finalText, ['OCF', 'FCF'], 1200);
+
+  // --- Yatırım Programı (CAPEX planı, kapasite genişleme, iştirakler) ---
+  const investments =
+    sliceSection(finalText, ['Yatırım', 'Yatirim', 'CAPEX', 'Kapasite', 'Capacity', 'Büyüme Planı', 'Growth Plan', 'Investment Program'], 2000)
+    || sliceSection(ctxText, ['Yatırım', 'CAPEX', 'Kapasite', 'Filo Yatırımı', 'Tesis Yatırımı'], 1800);
+
+  // --- Temettü politikası ---
+  const dividend =
+    sliceSection(finalText, ['Temettü', 'Temettu', 'Dividend', 'Kar Payı', 'Payout'], 1600);
 
   // --- IV. Değerleme ---
   const valuationBlock =
@@ -242,6 +251,8 @@ export function buildNarrativeBlocks(inputs: NarrativeInputs): Record<string, st
     profitability,
     leverage,
     cashflow,
+    investments,
+    dividend,
     valuation: valuationBlock,
     sector,
     macro,
