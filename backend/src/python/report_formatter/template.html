@@ -87,6 +87,42 @@
     .bullet-list li.warn { border-left-color: var(--fx-warning); background: #fffbeb; }
     .bullet-list li.ok { border-left-color: var(--fx-success); background: #ecfdf5; }
 
+    .porter-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .porter-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 10px 14px; background: #fff; }
+    .porter-box h4 { font-size: 10pt; font-weight: 700; color: var(--brand-primary); margin-bottom: 6px; }
+    .porter-box .intensity { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8pt; margin-bottom: 6px; font-weight: 600; }
+    .porter-box .intensity.high { background: #fee2e2; color: #b91c1c; }
+    .porter-box .intensity.medium { background: #fef3c7; color: #b45309; }
+    .porter-box .intensity.low { background: #d1fae5; color: #047857; }
+
+    .risk-matrix { display: grid; grid-template-columns: 80px repeat(3, 1fr); gap: 6px; margin: 14px 0; page-break-inside: avoid; font-size: 9pt; }
+    .risk-cell { padding: 10px; text-align: center; border-radius: 4px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+    .risk-axis { font-weight: 700; color: var(--fx-gray); font-size: 8pt; text-transform: uppercase; }
+    .risk-low { background: #d1fae5; color: #047857; }
+    .risk-med { background: #fef3c7; color: #b45309; }
+    .risk-high { background: #fee2e2; color: #b91c1c; }
+
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .scenario-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 14px; background: #fff; text-align: center; }
+    .scenario-box h4 { font-size: 11pt; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .scenario-box.bear h4 { color: var(--fx-danger); }
+    .scenario-box.base h4 { color: var(--brand-primary); }
+    .scenario-box.bull h4 { color: var(--fx-success); }
+    .scenario-box .scn-price { font-size: 20pt; font-weight: 800; font-family: var(--font-mono); color: var(--fx-dark); margin: 6px 0; }
+    .scenario-box .scn-sub { font-size: 8pt; color: var(--fx-gray); }
+    .scenario-box ul { list-style: none; padding: 0; margin-top: 10px; text-align: left; }
+    .scenario-box li { font-size: 8.5pt; padding: 3px 0; border-bottom: 1px dotted var(--fx-border); }
+
+    .esg-bars { margin: 14px 0; }
+    .esg-bars .bar-row { display: grid; grid-template-columns: 80px 1fr 40px; gap: 10px; align-items: center; margin: 6px 0; font-size: 9pt; }
+    .esg-bars .bar-track { height: 14px; background: var(--fx-light-gray); border-radius: 7px; overflow: hidden; }
+    .esg-bars .bar-fill { height: 100%; background: linear-gradient(90deg, var(--fx-success) 0%, var(--brand-primary) 100%); }
+
+    .toc { background: var(--fx-light-gray); padding: 20px; border-radius: 6px; margin-bottom: 24px; }
+    .toc ul { list-style: none; padding: 0; columns: 2; gap: 24px; }
+    .toc li { padding: 4px 0; border-bottom: 1px dotted var(--fx-border); font-size: 10pt; }
+    .toc li .toc-num { display: inline-block; width: 36px; font-weight: 700; color: var(--brand-primary); }
+
     .swot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
     .swot-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 12px; background: #fff; }
     .swot-box h4 { font-size: 10pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 2px solid; }
@@ -131,6 +167,46 @@
     </div>
     <div class="cover-badge">Finance X Platform · Python Hybrid · {{report_id}}</div>
   </div>
+
+  <!-- ============= İÇİNDEKİLER ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>İçindekiler</h1>
+    <div class="toc">
+      <ul>
+        <li><span class="toc-num">I.</span>Yönetici Özeti</li>
+        <li><span class="toc-num">II.</span>Şirket Profili</li>
+        <li><span class="toc-num">III.</span>Finansal Analiz</li>
+        <li><span class="toc-num">IV.</span>Değerleme &amp; Hedef Fiyat</li>
+        <li><span class="toc-num">V.</span>Sektör &amp; Rekabet</li>
+        <li><span class="toc-num">VI.</span>Makroekonomik Bağlam</li>
+        <li><span class="toc-num">VII.</span>Teknik Analiz</li>
+        <li><span class="toc-num">VIII.</span>ESG Değerlendirmesi</li>
+        <li><span class="toc-num">IX.</span>Haber &amp; Sentiment</li>
+        <li><span class="toc-num">X.</span>KAP Olayları</li>
+        <li><span class="toc-num">XI.</span>Risk Değerlendirmesi</li>
+        <li><span class="toc-num">XII.</span>Sonuç &amp; Öneriler</li>
+      </ul>
+    </div>
+
+    <h2>Raporun Kapsamı</h2>
+    <p>Bu rapor {{company_name}} ({{ticker}}) için Finance X platformunun 22 özel ajanıyla otomatik olarak üretilmiştir. Python deterministic hesaplamalar (bilanço, nakit akışı, ratio, DCF, Altman Z, Piotroski F) ile LLM narrative bloklar (yorum, strateji, sentez) hibrit olarak bir araya getirilmiştir. Veriler {{period_label}} dönemine aittir ve KAP resmi bildirimleri, TCMB, TradingView/Yahoo Finance ile Google News RSS kaynaklarından çekilmiştir.</p>
+
+    <h2>Hızlı Göstergeler</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">QA Skoru</div><div class="kpi-value">{{qa_score}}</div><div class="kpi-sub">{{qa_decision_label}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sinyal</div><div class="kpi-value">{{convergence_score}}</div><div class="kpi-sub">{{signal_confidence}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Rec.</div><div class="kpi-value">{{reconciliation_pass_rate}}</div><div class="kpi-sub">{{reconciliation_passed}}/{{reconciliation_total}}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sektör</div><div class="kpi-value" style="font-size:12pt;">{{sector_label_tr}}</div><div class="kpi-sub">{{sector_source_label}}</div></div>
+    </div>
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>i</span></div>
+  </div></div>
+
 
   <!-- ============= I. YÖNETİCİ ÖZETİ ============= -->
   <div class="page"><div class="page-inner">
@@ -411,8 +487,32 @@
     </table>
     {{/if}}
 
+    {{#if scenarios_has}}
+    <h2>Bear / Base / Bull Senaryoları</h2>
+    <div class="scenario-grid">
+      <div class="scenario-box bear">
+        <h4>Bear</h4>
+        <div class="scn-price">{{scenarios.bear_price}}</div>
+        <div class="scn-sub">{{scenarios.bear_upside}}</div>
+        {{#if scenarios.bear_triggers}}<ul>{{#each scenarios.bear_triggers}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+      </div>
+      <div class="scenario-box base">
+        <h4>Base</h4>
+        <div class="scn-price">{{scenarios.base_price}}</div>
+        <div class="scn-sub">{{scenarios.base_upside}}</div>
+        {{#if scenarios.base_triggers}}<ul>{{#each scenarios.base_triggers}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+      </div>
+      <div class="scenario-box bull">
+        <h4>Bull</h4>
+        <div class="scn-price">{{scenarios.bull_price}}</div>
+        <div class="scn-sub">{{scenarios.bull_upside}}</div>
+        {{#if scenarios.bull_triggers}}<ul>{{#each scenarios.bull_triggers}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+      </div>
+    </div>
+    {{/if}}
+
     {{#if narrative_valuation}}
-    <h2>Senaryo Analizi</h2>
+    <h2>Senaryo Analizi — Yorumlu</h2>
     <div>{{&narrative_valuation}}</div>
     {{/if}}
 
@@ -459,13 +559,24 @@
     </table>
     {{/if}}
 
+    {{#if porter_has}}
+    <h2>Porter's 5 Forces</h2>
+    <div class="porter-grid">
+      <div class="porter-box"><h4>Rakipler Arası Rekabet</h4><span class="intensity {{porter.rivalry_class}}">{{porter.rivalry}}</span><p>{{porter.rivalry_note}}</p></div>
+      <div class="porter-box"><h4>Yeni Giren Tehdidi</h4><span class="intensity {{porter.entrants_class}}">{{porter.entrants}}</span><p>{{porter.entrants_note}}</p></div>
+      <div class="porter-box"><h4>İkame Ürün/Hizmet</h4><span class="intensity {{porter.substitutes_class}}">{{porter.substitutes}}</span><p>{{porter.substitutes_note}}</p></div>
+      <div class="porter-box"><h4>Tedarikçi Pazarlık Gücü</h4><span class="intensity {{porter.suppliers_class}}">{{porter.suppliers}}</span><p>{{porter.suppliers_note}}</p></div>
+      <div class="porter-box" style="grid-column: span 2;"><h4>Alıcı Pazarlık Gücü</h4><span class="intensity {{porter.buyers_class}}">{{porter.buyers}}</span><p>{{porter.buyers_note}}</p></div>
+    </div>
+    {{/if}}
+
     {{#if swot_has}}
     <h2>SWOT Analizi</h2>
     <div class="swot-grid">
-      <div class="swot-box strengths"><h4>Strengths</h4><ul>{{#each swot.strengths}}<li>{{this}}</li>{{/each}}</ul></div>
-      <div class="swot-box weaknesses"><h4>Weaknesses</h4><ul>{{#each swot.weaknesses}}<li>{{this}}</li>{{/each}}</ul></div>
-      <div class="swot-box opportunities"><h4>Opportunities</h4><ul>{{#each swot.opportunities}}<li>{{this}}</li>{{/each}}</ul></div>
-      <div class="swot-box threats"><h4>Threats</h4><ul>{{#each swot.threats}}<li>{{this}}</li>{{/each}}</ul></div>
+      <div class="swot-box strengths"><h4>Güçlü Yönler</h4><ul>{{#each swot.strengths}}<li>{{this}}</li>{{/each}}</ul></div>
+      <div class="swot-box weaknesses"><h4>Zayıf Yönler</h4><ul>{{#each swot.weaknesses}}<li>{{this}}</li>{{/each}}</ul></div>
+      <div class="swot-box opportunities"><h4>Fırsatlar</h4><ul>{{#each swot.opportunities}}<li>{{this}}</li>{{/each}}</ul></div>
+      <div class="swot-box threats"><h4>Tehditler</h4><ul>{{#each swot.threats}}<li>{{this}}</li>{{/each}}</ul></div>
     </div>
     {{/if}}
 
@@ -620,6 +731,29 @@
 
     <h1>XI. Risk Değerlendirmesi</h1>
 
+    <h2>Risk Matrisi (Etki × Olasılık)</h2>
+    <div class="risk-matrix">
+      <div class="risk-axis">Etki ↑</div>
+      <div class="risk-axis">Düşük Olasılık</div>
+      <div class="risk-axis">Orta Olasılık</div>
+      <div class="risk-axis">Yüksek Olasılık</div>
+
+      <div class="risk-axis">Yüksek</div>
+      <div class="risk-cell risk-med">{{risk_matrix.high_low}}</div>
+      <div class="risk-cell risk-high">{{risk_matrix.high_med}}</div>
+      <div class="risk-cell risk-high">{{risk_matrix.high_high}}</div>
+
+      <div class="risk-axis">Orta</div>
+      <div class="risk-cell risk-low">{{risk_matrix.med_low}}</div>
+      <div class="risk-cell risk-med">{{risk_matrix.med_med}}</div>
+      <div class="risk-cell risk-high">{{risk_matrix.med_high}}</div>
+
+      <div class="risk-axis">Düşük</div>
+      <div class="risk-cell risk-low">{{risk_matrix.low_low}}</div>
+      <div class="risk-cell risk-low">{{risk_matrix.low_med}}</div>
+      <div class="risk-cell risk-med">{{risk_matrix.low_high}}</div>
+    </div>
+
     {{#if risks}}
     <h2>Temel Risk Faktörleri</h2>
     <ul class="bullet-list">
@@ -630,6 +764,7 @@
     {{/if}}
 
     {{#if narrative_risks}}
+    <h2>Detaylı Risk Yorumu</h2>
     <div>{{&narrative_risks}}</div>
     {{/if}}
 

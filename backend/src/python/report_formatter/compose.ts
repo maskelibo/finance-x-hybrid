@@ -304,6 +304,84 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     ...valuationWarnings.slice(0, 2),
   ].filter(Boolean).slice(0, 8);
 
+  // ----- Scenarios (Bull/Base/Bear) -----
+  // If valuation agent provided DCF, derive scenarios from its
+  // per_share_value ± sensitivity. Otherwise leave empty.
+
+  const dcfPerShare = numOrNull(dcf?.per_share_value);
+  const lastClose = numOrNull(tech?.last_close);
+  const scenarios = dcfPerShare != null ? {
+    bear_price: formatTRY(dcfPerShare * 0.75, 2) + ' TL',
+    bear_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare * 0.75 / lastClose - 1) * 100), 1)}` : '−25% DCF',
+    bear_triggers: [
+      'WACC +200bps artış',
+      'Terminal g -150bps düşüş',
+      'Jeopolitik risk materyalizasyonu',
+    ],
+    base_price: formatTRY(dcfPerShare, 2) + ' TL',
+    base_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare / lastClose - 1) * 100), 1)}` : 'DCF Orta',
+    base_triggers: [
+      'Mevcut WACC + terminal varsayımı',
+      'Yönetim guidance tutması',
+      'Makro ortamda büyük değişim yok',
+    ],
+    bull_price: formatTRY(dcfPerShare * 1.25, 2) + ' TL',
+    bull_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare * 1.25 / lastClose - 1) * 100), 1)}` : '+25% DCF',
+    bull_triggers: [
+      'WACC -100bps düşüş',
+      'Güçlü kapasite genişleme',
+      'Pozitif sektör katalizörleri',
+    ],
+  } : null;
+  const scenariosHas = !!scenarios;
+
+  // ----- Porter 5 Forces (derived heuristically from sector) -----
+
+  const porterPresets: Record<string, Record<string, unknown>> = {
+    banking: {
+      rivalry: 'Yüksek', rivalry_class: 'high', rivalry_note: 'Kamu + özel + yabancı banka 30+ oyuncu, fiyat ve hizmet rekabeti.',
+      entrants: 'Düşük', entrants_class: 'low', entrants_note: 'BDDK lisansı, yüksek sermaye yeterliliği bariyeri.',
+      substitutes: 'Orta', substitutes_class: 'medium', substitutes_note: 'Fintech, kripto, yatırım fonları gelişiyor.',
+      suppliers: 'Düşük', suppliers_class: 'low', suppliers_note: 'Mevduat sahibi çok sayıda, pazarlık gücü dağılmış.',
+      buyers: 'Orta', buyers_class: 'medium', buyers_note: 'Kurumsal müşteri fiyat hassas, bireysel daha az.',
+    },
+    holding: {
+      rivalry: 'Orta', rivalry_class: 'medium', rivalry_note: 'İştiraklerin kendi sektörlerinde rekabet; holding seviyesinde konglomerat discount etkisi.',
+      entrants: 'Düşük', entrants_class: 'low', entrants_note: 'Ölçek ve sermaye bariyeri yüksek; yeni holding kurmak zor.',
+      substitutes: 'Düşük', substitutes_class: 'low', substitutes_note: 'Holding yapısı doğrudan ikame edilemez; segment bazlı ikame mümkün.',
+      suppliers: 'Düşük', suppliers_class: 'low', suppliers_note: 'Holding toplam satın alma gücü ile bireysel şirketlerden üstün.',
+      buyers: 'Orta', buyers_class: 'medium', buyers_note: 'Yatırımcılar holding discount’a karşı hassas.',
+    },
+    industrial: {
+      rivalry: 'Orta', rivalry_class: 'medium', rivalry_note: 'Sektör olgun, yerel ve küresel rakipler aktif.',
+      entrants: 'Düşük', entrants_class: 'low', entrants_note: 'Sermaye yoğunluğu + marka bariyeri.',
+      substitutes: 'Orta', substitutes_class: 'medium', substitutes_note: 'Teknoloji değişimi ve alternatif malzemeler tehdit.',
+      suppliers: 'Orta', suppliers_class: 'medium', suppliers_note: 'Hammadde fiyat hareketleri maliyet yapısını etkiliyor.',
+      buyers: 'Orta', buyers_class: 'medium', buyers_note: 'B2B müşteriler fiyat hassas; B2C marka gücüne bağlı.',
+    },
+    insurance: {
+      rivalry: 'Yüksek', rivalry_class: 'high', rivalry_note: 'Çok sayıda şirket, prim fiyatlama rekabeti.',
+      entrants: 'Düşük', entrants_class: 'low', entrants_note: 'SEDDK lisansı ve sermaye yeterliliği bariyeri.',
+      substitutes: 'Düşük', substitutes_class: 'low', substitutes_note: 'Zorunlu ürünlerde alternatif yok; ihtiyari ürünlerde tasarruf tercihleri.',
+      suppliers: 'Düşük', suppliers_class: 'low', suppliers_note: 'Reasürör sayısı sınırlı ama büyük şirketler çok reasürörle çalışabilir.',
+      buyers: 'Orta', buyers_class: 'medium', buyers_note: 'Kurumsal müşteri pazarlık gücü yüksek; bireysel dağılmış.',
+    },
+    reit: {
+      rivalry: 'Orta', rivalry_class: 'medium', rivalry_note: 'GYO piyasası dar, yatırımcı tercihine göre rekabet.',
+      entrants: 'Düşük', entrants_class: 'low', entrants_note: 'SPK GYO lisansı ve portföy gereksinimleri.',
+      substitutes: 'Yüksek', substitutes_class: 'high', substitutes_note: 'Konut/ofis yatırımı fon/hisse ikamesi yaygın.',
+      suppliers: 'Düşük', suppliers_class: 'low', suppliers_note: 'İnşaat şirketleri çok sayıda, pazarlık gücü dağılmış.',
+      buyers: 'Orta', buyers_class: 'medium', buyers_note: 'Kiracı/alıcı pazarlık gücü lokasyona göre değişir.',
+    },
+  };
+  const porterSector = String(fa?.sector ?? val?.sector ?? 'industrial').toLowerCase();
+  const porter = porterPresets[porterSector] ?? porterPresets.industrial;
+  const porterHas = true;
+
+  // ----- Risk Matrix (populated from red_flags + divergences) -----
+
+  const riskMatrix = buildRiskMatrix(fa, ss);
+
   // ----- XII. Catalysts -----
 
   const catalysts: string[] = [
@@ -397,8 +475,17 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Section X
     event_impacts: eventImpacts,
 
+    // Section V (cont.) — Porter
+    porter: porter as TemplateValue,
+    porter_has: porterHas,
+
+    // Section IV (cont.) — Scenarios
+    scenarios: scenarios as TemplateValue,
+    scenarios_has: scenariosHas,
+
     // Section XI
     risks,
+    risk_matrix: riskMatrix as TemplateValue,
 
     // Section XII
     catalysts,
@@ -517,6 +604,49 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
 function getDcfField(dcf: Record<string, unknown> | null, key: string): unknown {
   if (!dcf) return undefined;
   return (dcf as Record<string, unknown>)[key];
+}
+
+
+/** Place red_flags and divergences on the 3×3 impact × likelihood grid.
+ *  Heuristic: severity=critical → high impact, warning → medium, info → low.
+ *  Likelihood inferred by keyword matching (kesin/beklenen = high,
+ *  olası = medium, potansiyel/spekülatif = low). */
+function buildRiskMatrix(
+  fa: Record<string, unknown> | null,
+  ss: Record<string, unknown> | null,
+): Record<string, string> {
+  const cells: Record<string, string[]> = {
+    high_low: [], high_med: [], high_high: [],
+    med_low: [], med_med: [], med_high: [],
+    low_low: [], low_med: [], low_high: [],
+  };
+
+  const classify = (label: string, severity: string): [string, string] => {
+    const impactLevel = severity === 'critical' ? 'high' : severity === 'warning' ? 'med' : 'low';
+    const l = label.toLowerCase();
+    let likelihood: string;
+    if (/kesin|beklenen|certain|expected|already/.test(l)) likelihood = 'high';
+    else if (/olası|olasi|likely|probable/.test(l)) likelihood = 'med';
+    else likelihood = 'low';
+    return [impactLevel, likelihood];
+  };
+
+  for (const f of arrayFrom(fa?.red_flags ?? [])) {
+    const label = String(f.code ?? f.message ?? '').slice(0, 30);
+    const [imp, lik] = classify(label, String(f.severity ?? '').toLowerCase());
+    const key = `${imp}_${lik}`;
+    if (cells[key]) cells[key].push(label);
+  }
+  for (const d of arrayFrom(ss?.divergences ?? [])) {
+    const s = String(d).slice(0, 30);
+    cells.med_med.push(s);   // divergences default to center cell
+  }
+
+  const out: Record<string, string> = {};
+  for (const [k, list] of Object.entries(cells)) {
+    out[k] = list.length === 0 ? '—' : list.slice(0, 2).join(' / ');
+  }
+  return out;
 }
 
 
