@@ -347,6 +347,45 @@ export function commentaryRisk(inputs: RiskInputs): string {
 }
 
 
+interface CompanyProfileInputs {
+  ticker: string;
+  sectorTr: string;
+  sector: string;
+  periodLabel?: string;
+  totalAssets?: number | null;
+  totalEquity?: number | null;
+  revenue?: number | null;
+  netIncome?: number | null;
+}
+
+
+export function commentaryCompanyProfile(inputs: CompanyProfileInputs): string {
+  const parts: string[] = [];
+
+  const rev = numOrNull(inputs.revenue);
+  const eq = numOrNull(inputs.totalEquity);
+  const ta = numOrNull(inputs.totalAssets);
+
+  if (rev != null && eq != null && ta != null) {
+    parts.push(`${inputs.ticker}, Borsa İstanbul'da işlem gören ${inputs.sectorTr} sektöründen bir şirket olup ${inputs.periodLabel ?? 'son dönem'} itibarıyla ${(rev / 1_000_000_000).toFixed(1)} milyar TL hasılat, ${(eq / 1_000_000_000).toFixed(1)} milyar TL özsermaye ve ${(ta / 1_000_000_000).toFixed(1)} milyar TL bilanço büyüklüğüne ulaşmıştır.`);
+  }
+
+  const sectorDesc: Record<string, string> = {
+    industrial: `Faaliyet alanı sanayi ve üretim odaklı olup; kapasite kullanım oranı, hammadde tedariki ve ihracat performansı operasyonel temel göstergeler arasında. Yerel pazar dinamiklerinin yanı sıra uluslararası talep ve rekabet koşulları doğrudan kâr yapısını şekillendirmektedir.`,
+    banking: `Bankacılık ana faaliyet alanı olup mevduat tabanı, kredi portföyü, sermaye yeterliliği ve net faiz marjı üzerinden performans sergilemekte. TCMB para politikası ve BDDK düzenlemeleri sektör dinamiklerini belirleyen temel unsurlar arasında yer alıyor.`,
+    holding: `Holding yapısında faaliyet gösteren şirket, birden fazla iştirak aracılığıyla farklı sektörlerde konumlanmakta. Portföy kompozisyonu, iştirak seviyesindeki operasyonel performanslar ve sermaye dağıtım politikası yatırımcı değerini şekillendiren başlıca faktörler.`,
+    insurance: `Sigorta ana faaliyet kolu olan şirket, prim üretimi, rezerv yönetimi ve yatırım portföyü performansı üzerinden değer yaratmakta. SEDDK düzenlemeleri ve reasürans piyasası koşulları operasyonel dinamikleri etkileyen dış faktörler arasında.`,
+    reit: `Gayrimenkul Yatırım Ortaklığı (GYO) yapısında faaliyet gösteren şirket, portföyündeki gayrimenkuller üzerinden kira ve değerleme geliri üretmekte. NAV (net aktif değer), portföy çeşitliliği ve kira doluluk oranı ana performans göstergeleri.`,
+  };
+
+  parts.push(sectorDesc[inputs.sector] ?? sectorDesc.industrial);
+
+  parts.push(`Şirket Profili bölümü, yatırımcının şirketi doğru değerlendirebilmesi için gerekli kurumsal yapı, iş modeli ve segment bilgisini sunmayı amaçlamaktadır. Aşağıdaki tabloda temel kurumsal göstergeler özetlenmiş olup, ileride detaylandırılacak segment analizi ve yönetim kadrosu bilgisi bu bölümü tamamlayacaktır.`);
+
+  return parts.join(' ');
+}
+
+
 interface ClosingInputs {
   ticker: string;
   convergenceScore?: number | null;
