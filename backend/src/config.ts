@@ -133,6 +133,7 @@ export const PYTHON_STRATEGIC_SYNTHESIS_ENABLED = (process.env.PYTHON_STRATEGIC_
 export const PYTHON_QA_REVIEW_ENABLED = (process.env.PYTHON_QA_REVIEW_ENABLED || 'false') === 'true';
 export const PYTHON_COO_ENABLED = (process.env.PYTHON_COO_ENABLED || 'false') === 'true';
 export const PYTHON_REPORT_FORMATTER_ENABLED = (process.env.PYTHON_REPORT_FORMATTER_ENABLED || 'false') === 'true';
+export const PYTHON_SECTOR_COMPETITION_ENABLED = (process.env.PYTHON_SECTOR_COMPETITION_ENABLED || 'false') === 'true';
 
 // Stall detection: if provider produces no output for this many seconds, kill
 export const PROVIDER_STALL_TIMEOUT_S = parseInt(process.env.PROVIDER_STALL_TIMEOUT_S || '900', 10);
