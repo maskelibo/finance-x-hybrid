@@ -38,6 +38,7 @@ import {
   commentaryValuation,
 } from './auto_commentary.js';
 import { buildNarrativeBlocks } from './llm_narrative.js';
+import { barChart, lineChart, pieChart, timelineChart } from './svg_charts.js';
 import { formatPct, formatRatio, formatTRY, type TemplateContext, type TemplateValue } from './template_engine.js';
 
 
@@ -466,6 +467,60 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const sectorRaw = String(fa?.sector ?? val?.sector ?? 'industrial').toLowerCase();
   const sectorSourceLabel = String(val?.sector_source ?? 'structured');
 
+  // ----- SVG Charts -----
+
+  // Financial trend line chart (5-year revenue/EBITDA/net_income)
+  const trendChartYears = multiYear.years;
+  const trendSeries: Array<{ name: string; color?: string; values: Array<number | null> }> = [];
+  for (const row of multiYear.revenue_row) {
+    if (['Hasılat', 'FAVÖK', 'Net Kar'].includes(row.label)) {
+      trendSeries.push({
+        name: row.label,
+        values: row.values.map(v => {
+          if (v === '—') return null;
+          const n = Number(String(v).replace(/[.,]/g, ''));
+          return Number.isFinite(n) ? n : null;
+        }),
+      });
+    }
+  }
+  const financialTrendSvg = trendChartYears.length > 1 && trendSeries.length > 0
+    ? lineChart(trendChartYears, trendSeries, 'Gelir / FAVÖK / Net Kar Trendi (mn TL)')
+    : '';
+
+  // Sector benchmark bar chart
+  const benchmarkGroups = benchmarks.slice(0, 6).map(b => ({
+    label: b.label,
+    companyValue: numOrNull(b.company_formatted?.replace(/[%.,a-zA-Z ]/g, '')),
+    medianValue: numOrNull(b.median_formatted?.replace(/[%.,a-zA-Z ]/g, '')),
+  }));
+  const benchmarkChartSvg = benchmarkGroups.length > 0
+    ? barChart(benchmarkGroups, 'Emsal Benchmark (Şirket vs Medyan)')
+    : '';
+
+  // KAP event timeline
+  const timelineEvents = arrayFrom(ev?.event_impacts ?? []).slice(0, 15).map(e => {
+    const disclosureRef = String(e.disclosure_reference ?? '');
+    // pull announced_at from event_classification upstream if possible
+    const events = parseJson<{ classified_events?: Array<Record<string, unknown>> }>(ctx['event_classification_output']);
+    const match = events?.classified_events?.find(c => c.disclosure_id === disclosureRef);
+    return {
+      date: String(match?.announced_at ?? '').slice(0, 10),
+      label: String(e.event_summary ?? '').slice(0, 40),
+      direction: String(e.impact_direction ?? 'neutral') as 'positive' | 'negative' | 'neutral' | 'mixed' | 'uncertain',
+    };
+  }).filter(e => e.date);
+  const timelineChartSvg = timelineEvents.length > 1
+    ? timelineChart(timelineEvents, 'Son 12 Ay KAP Olay Zaman Çizelgesi')
+    : '';
+
+  // Sentiment distribution pie
+  const sentimentPieSvg = sentimentHas && sentiment ? pieChart([
+    { label: 'Pozitif', value: Number(sentimentDist.positive ?? 0), color: '#059669' },
+    { label: 'Nötr', value: Number(sentimentDist.neutral ?? 0), color: '#94a3b8' },
+    { label: 'Negatif', value: Number(sentimentDist.negative ?? 0), color: '#dc2626' },
+  ], 'Haber Sentiment Dağılımı') : '';
+
   return {
     // Metadata
     ticker: ticker.toUpperCase(),
@@ -726,6 +781,16 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     narrative_dividend: narrativeBlocks.dividend ?? '',
     full_narrative_html: fullNarrativeHtml,
     full_narrative_has: fullNarrativeHtml.length > 500,
+
+    // SVG charts
+    chart_financial_trend: financialTrendSvg,
+    chart_financial_trend_has: financialTrendSvg.length > 0,
+    chart_benchmark: benchmarkChartSvg,
+    chart_benchmark_has: benchmarkChartSvg.length > 0,
+    chart_event_timeline: timelineChartSvg,
+    chart_event_timeline_has: timelineChartSvg.length > 0,
+    chart_sentiment_pie: sentimentPieSvg,
+    chart_sentiment_pie_has: sentimentPieSvg.length > 0,
   };
 }
 
@@ -833,13 +898,34 @@ interface MultiYearTrendFull extends MultiYearTrend {
  *  Annual rows pivoted by metric so the template can render
  *  Metric | 2021 | 2022 | 2023 | 2024 | 2025 tables. */
 function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiYearTrendFull {
-  // Pick annual periods only (FY-YYYY) and sort ascending.
-  const annual = statements
-    .filter(s => {
-      const lbl = String(s.period_label ?? '');
-      return /^FY-\d{4}$/.test(lbl);
-    })
+  // Pick annual periods only (FY-YYYY), sort ascending, then dedupe
+  // by year — some parse_standardization runs emit multiple PDFs for
+  // the same year (interim + activity + financial report). Keep the
+  // one with the most populated balance_sheet, giving priority to
+  // entries with non-null total_assets.
+  const annualAll = statements
+    .filter(s => /^FY-\d{4}$/.test(String(s.period_label ?? '')))
     .sort((a, b) => Number(a.year ?? 0) - Number(b.year ?? 0));
+
+  const byYear = new Map<number, Record<string, unknown>>();
+  for (const s of annualAll) {
+    const y = Number(s.year ?? 0);
+    if (!y) continue;
+    const existing = byYear.get(y);
+    if (!existing) {
+      byYear.set(y, s);
+    } else {
+      // Prefer the statement with more populated fields (richer data).
+      const score = (stmt: Record<string, unknown>) => {
+        const bs = (stmt.balance_sheet as Record<string, unknown> | null) ?? {};
+        const is = (stmt.income_statement as Record<string, unknown> | null) ?? {};
+        return Object.values(bs).filter(v => v != null && v !== '').length
+             + Object.values(is).filter(v => v != null && v !== '').length;
+      };
+      if (score(s) > score(existing)) byYear.set(y, s);
+    }
+  }
+  const annual = [...byYear.values()].sort((a, b) => Number(a.year ?? 0) - Number(b.year ?? 0));
 
   if (annual.length === 0) return { years: [], revenue_row: [], balance_row: [], cashflow_row: [], ratio_row: [], dividend_row: [], has_data: false };
 

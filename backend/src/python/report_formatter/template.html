@@ -366,6 +366,11 @@
     {{/if}}
 
     <h2>5 Yıllık Finansal Trend ({{multi_year_count}} dönem)</h2>
+
+    {{#if chart_financial_trend_has}}
+    <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_financial_trend}}</div>
+    {{/if}}
+
     <h3>Gelir ve Kârlılık</h3>
     <table>
       <thead>
@@ -586,6 +591,10 @@
     <div>{{&narrative_sector}}</div>
     {{/if}}
 
+    {{#if chart_benchmark_has}}
+    <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_benchmark}}</div>
+    {{/if}}
+
     {{#if benchmarks}}
     <h2>Emsal Karşılaştırma Tablosu</h2>
     <table>
@@ -749,6 +758,10 @@
       <div class="kpi-card"><div class="kpi-label">Dağılım</div><div class="kpi-value" style="font-size:12pt;">{{sentiment.distribution}}</div></div>
     </div>
 
+    {{#if chart_sentiment_pie_has}}
+    <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_sentiment_pie}}</div>
+    {{/if}}
+
     {{#if news_items_has}}
     <h2>Son Haber Özeti</h2>
     <table>
@@ -793,6 +806,10 @@
     </div>
 
     <h1>X. KAP Olayları & Etki Analizi</h1>
+
+    {{#if chart_event_timeline_has}}
+    <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_event_timeline}}</div>
+    {{/if}}
 
     <table>
       <thead><tr><th style="width:40%">Olay</th><th>Tip</th><th>Etki</th><th>Zamanlama</th><th>Etkilenen</th></tr></thead>
