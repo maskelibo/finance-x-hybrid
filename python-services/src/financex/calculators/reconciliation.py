@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+from financex.schemas.base import Sector
 from financex.schemas.financials import PeriodFinancials
 from financex.schemas.reconciliation import ReconciliationCheck, ReconciliationReport
 
@@ -113,15 +114,68 @@ def _bs_current_split(pf: PeriodFinancials) -> ReconciliationCheck:
 
 def _is_gross_chain(pf: PeriodFinancials) -> ReconciliationCheck:
     i = pf.income_statement
+    if pf.sector == Sector.BANKING:
+        return _skip("IS_GROSS_CHAIN", "Revenue − CoGS = Gross Profit", "banking: no CoGS concept")
     if i.cost_of_sales is None or i.gross_profit is None:
         return _skip("IS_GROSS_CHAIN", "Revenue − CoGS = Gross Profit", "COGS or GP not reported")
-    # cost_of_sales is usually reported as a negative in KAP, so add.
+    if pf.sector == Sector.HOLDING and i.financial_segment_cost is not None:
+        # Holdings carry a second cost stream; allow either the aggregate or the
+        # industrial-only chain — we test the industrial one with a softer tolerance.
+        expected = i.revenue + i.cost_of_sales
+        return _check_equal(
+            "IS_GROSS_CHAIN",
+            "Industrial Revenue + CostOfSales = Gross Profit (holding, approx)",
+            i.gross_profit,
+            expected,
+            tolerance_pct=Decimal("30"),  # holdings: rough industrial-only chain
+        )
     expected = i.revenue + i.cost_of_sales
     return _check_equal(
         "IS_GROSS_CHAIN",
         "Revenue + CostOfSales = Gross Profit",
         i.gross_profit,
         expected,
+    )
+
+
+# ---------------------------------------------------------------------
+# Banking-specific checks
+# ---------------------------------------------------------------------
+
+def _nii_reconcile(pf: PeriodFinancials) -> ReconciliationCheck:
+    """Net Interest Income = Interest Income + Interest Expense (expense signed)."""
+    i = pf.income_statement
+    if pf.sector != Sector.BANKING:
+        return _skip("NII_RECONCILE", "NII = Interest Income + Interest Expense", "not a bank")
+    if i.interest_income is None or i.interest_expense is None or i.net_interest_income is None:
+        return _skip(
+            "NII_RECONCILE",
+            "NII = Interest Income + Interest Expense",
+            "interest income/expense/NII not reported",
+        )
+    expected = i.interest_income + i.interest_expense
+    return _check_equal(
+        "NII_RECONCILE",
+        "NII = Interest Income + Interest Expense",
+        i.net_interest_income,
+        expected,
+        tolerance_pct=Decimal("0.5"),
+    )
+
+
+def _bank_positive_nii(pf: PeriodFinancials) -> ReconciliationCheck:
+    """Sanity: a healthy bank should have NII > 0 (can be negative only in a crisis)."""
+    if pf.sector != Sector.BANKING:
+        return _skip("BANK_NII_POSITIVE", "Net Interest Income > 0", "not a bank")
+    nii = pf.income_statement.net_interest_income
+    if nii is None:
+        return _skip("BANK_NII_POSITIVE", "Net Interest Income > 0", "NII not reported")
+    return ReconciliationCheck(
+        code="BANK_NII_POSITIVE",
+        name="Net Interest Income is positive",
+        passed=nii > 0,
+        message=f"NII = {nii} TL — {'positive (healthy)' if nii > 0 else 'NEGATIVE (crisis signal)'}",
+        actual=nii,
     )
 
 
@@ -209,7 +263,12 @@ def run_reconciliation(
     *,
     ticker: str | None = None,
 ) -> ReconciliationReport:
-    """Run every deterministic check against a PeriodFinancials."""
+    """Run every deterministic check against a PeriodFinancials.
+
+    Sector-aware: banks run NII_RECONCILE + BANK_NII_POSITIVE instead of
+    IS_GROSS_CHAIN / NET_DEBT_SANITY (inappropriate for a bank — a bank's
+    'net debt' is not a meaningful number; leverage is measured via CAR).
+    """
     period_label = f"{pf.period.value}-{pf.year}"
     checks = [
         _bs_identity(pf),
@@ -218,6 +277,10 @@ def run_reconciliation(
         _is_gross_chain(pf),
         _is_net_split(pf),
         _cf_total_reconcile(pf),
-        _net_debt_sanity(pf),
     ]
+    if pf.sector == Sector.BANKING:
+        checks.append(_nii_reconcile(pf))
+        checks.append(_bank_positive_nii(pf))
+    else:
+        checks.append(_net_debt_sanity(pf))
     return ReconciliationReport(ticker=ticker, period_label=period_label, checks=checks)

@@ -27,8 +27,8 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 from financex.parsers.label_mapping import lookup, normalize_label
-from financex.parsers.pdf_tables import ExtractedTable, extract_tables
-from financex.schemas.base import Currency, SourceRef
+from financex.parsers.pdf_tables import ExtractedTable, extract_page_text, extract_tables
+from financex.schemas.base import Currency, Sector, SourceRef
 from financex.schemas.financials import (
     BalanceSheet,
     CashFlowStatement,
@@ -49,7 +49,37 @@ STATEMENT_KEYWORDS = {
     "cash_flow": ("nakit akis tablosu", "nakit akım tablosu"),
     "equity_change": ("ozkaynak degisim tablosu", "ozkaynaklardaki degisim"),
     "comprehensive_income": ("diger kapsamli gelir",),
+    # Off-balance-sheet items (banking) — must NOT be absorbed as balance_sheet.
+    "off_balance_sheet": ("nazim hesaplar", "bilanco disi"),
 }
+
+
+# Off-balance-sheet data must not sneak into balance_sheet totals — banks
+# use this table for contingent liabilities (guarantees, commitments).
+_SKIP_KINDS = {"off_balance_sheet", "comprehensive_income"}
+
+
+# ---------------------------------------------------------------------
+# Sector detection from the PDF header
+# ---------------------------------------------------------------------
+
+_SECTOR_HINTS: list[tuple[str, Sector]] = [
+    ("banka finansal rapor", Sector.BANKING),
+    ("bddk", Sector.BANKING),
+    ("bankacilik kanunu", Sector.BANKING),
+    ("holding finansal rapor", Sector.HOLDING),
+    ("sigorta finansal rapor", Sector.INSURANCE),
+    ("gayrimenkul yatirim ortakligi", Sector.REIT),
+]
+
+
+def detect_sector(pdf_path: Path | str) -> Sector:
+    """Peek at the first page text and guess the sector."""
+    head = normalize_label(extract_page_text(pdf_path, 1)[:2_000])
+    for hint, sector in _SECTOR_HINTS:
+        if hint in head:
+            return sector
+    return Sector.INDUSTRIAL
 
 
 def _classify_table(tbl: ExtractedTable) -> str | None:
@@ -184,7 +214,12 @@ class _Bag:
 
 
 def _absorb_table(
-    bag: _Bag, tbl: ExtractedTable, kind: str, *, multiplier: Decimal = Decimal("1")
+    bag: _Bag,
+    tbl: ExtractedTable,
+    kind: str,
+    *,
+    multiplier: Decimal = Decimal("1"),
+    sector: str = "industrial",
 ) -> None:
     layout = _detect_columns(tbl.rows)
     target = {
@@ -196,23 +231,33 @@ def _absorb_table(
     if target is None:
         return  # comprehensive_income etc. — nothing to map yet
 
-    # When a continuation table has no dated header we inherit the
-    # previously-seen layout heuristically: scan columns for the first
-    # one that parses as a number on data rows. For the first table we
-    # need a layout; bail if none.
-    if layout is None:
-        bag.flags.append(
-            QualityFlag(
-                code="NO_DATE_COLUMN_CONTINUATION",
-                severity=Severity.INFO,
-                message=f"Continuation table on page {tbl.page} ({kind}) — scanning numeric columns.",
-            )
-        )
-        current_col = _first_numeric_column(tbl.rows)
-        if current_col is None:
-            return
+    # Column layout:
+    #   - non-banking: first dated column (or first large-value column)
+    #   - banking: BS uses 8-col layout [label, Dipnot, TP, YP, Toplam,
+    #     TP_prev, YP_prev, Toplam_prev]; "Toplam" is col 4 (0-indexed).
+    #     IS/CF use 6-col layout [label, Dipnot, current_9M, prev_9M,
+    #     current_3M, prev_3M]; col 2 is the current 9-month column.
+    if sector == "banking" and kind == "balance_sheet":
+        current_col = 4 if _has_wide_banking_layout(tbl.rows) else None
+    elif sector == "banking" and kind in {"income_statement", "cash_flow"}:
+        current_col = 2 if _has_narrow_banking_layout(tbl.rows) else None
     else:
-        current_col = layout.current_col
+        current_col = None
+
+    if current_col is None:
+        if layout is None:
+            bag.flags.append(
+                QualityFlag(
+                    code="NO_DATE_COLUMN_CONTINUATION",
+                    severity=Severity.INFO,
+                    message=f"Continuation table on page {tbl.page} ({kind}) — scanning numeric columns.",
+                )
+            )
+            current_col = _first_numeric_column(tbl.rows)
+            if current_col is None:
+                return
+        else:
+            current_col = layout.current_col
 
     for row in tbl.rows:
         if len(row) <= current_col:
@@ -220,13 +265,30 @@ def _absorb_table(
         label = row[0]
         if not label:
             continue
-        field_name = lookup(kind, label)
+        field_name = lookup(kind, label, sector=sector)
         if field_name is None:
             continue
         value = _parse_tr_number(row[current_col])
         if value is None:
             continue
         target[field_name] = (value * multiplier).quantize(Decimal("1"))
+
+
+def _has_wide_banking_layout(rows: list[list[str]]) -> bool:
+    """Banking BS tables usually have exactly 8 columns."""
+    widths = [len(r) for r in rows if r]
+    if not widths:
+        return False
+    return max(widths) >= 8
+
+
+def _has_narrow_banking_layout(rows: list[list[str]]) -> bool:
+    """Banking IS/CF tables usually have 6 columns (9M + 3M comparatives)."""
+    widths = [len(r) for r in rows if r]
+    if not widths:
+        return False
+    mx = max(widths)
+    return 4 <= mx <= 7
 
 
 def _first_numeric_column(rows: list[list[str]]) -> int | None:
@@ -271,8 +333,23 @@ class ParsedFinancials:
     tables_seen: int
 
 
-def parse_kap_pdf(pdf_path: Path | str, *, source_id: str = "kap") -> ParsedFinancials:
-    """Extract a PeriodFinancials from a KAP financial-report PDF."""
+def parse_kap_pdf(
+    pdf_path: Path | str,
+    *,
+    source_id: str = "kap",
+    sector: Sector | str | None = None,
+) -> ParsedFinancials:
+    """Extract a PeriodFinancials from a KAP financial-report PDF.
+
+    `sector` selects which label map + column layout applies. When None,
+    we auto-detect from the PDF's first-page header. Banks in particular
+    need this — their labels and column layout are entirely different.
+    """
+    if sector is None:
+        sector = detect_sector(pdf_path)
+    sector_obj: Sector = sector if isinstance(sector, Sector) else Sector(str(sector).lower())
+    sector_value: str = sector_obj.value
+
     tables = extract_tables(pdf_path)
     bag = _Bag()
     current_end: date | None = None
@@ -289,6 +366,11 @@ def parse_kap_pdf(pdf_path: Path | str, *, source_id: str = "kap") -> ParsedFina
     last_kind: str | None = None
     for tbl in tables:
         kind = _classify_table(tbl)
+        if kind in _SKIP_KINDS:
+            # Clear sticky kind so the following continuation rows don't
+            # accidentally land in another statement.
+            last_kind = None
+            continue
         # Sticky classification — a data table that lacks a header title
         # (continuation of the previous statement across a page break)
         # keeps the last known kind, unless this table is clearly a
@@ -304,10 +386,10 @@ def parse_kap_pdf(pdf_path: Path | str, *, source_id: str = "kap") -> ParsedFina
         layout = _detect_columns(tbl.rows)
         if layout and layout.current_period_end and current_end is None:
             current_end = layout.current_period_end
-        _absorb_table(bag, tbl, kind, multiplier=pdf_multiplier)
+        _absorb_table(bag, tbl, kind, multiplier=pdf_multiplier, sector=sector_value)
 
     # ---- Build the nested schema objects --------------------------------
-    balance_kwargs = _with_fallbacks_for_balance(bag.balance)
+    balance_kwargs = _with_fallbacks_for_balance(bag.balance, sector=sector_value)
     try:
         balance = BalanceSheet(**balance_kwargs)
     except Exception as exc:
@@ -342,6 +424,7 @@ def parse_kap_pdf(pdf_path: Path | str, *, source_id: str = "kap") -> ParsedFina
         period=period,
         year=year,
         currency=Currency.TRY,
+        sector=sector_obj,
         balance_sheet=balance,
         income_statement=income,
         cash_flow=cashflow,
@@ -365,19 +448,25 @@ def parse_kap_pdf(pdf_path: Path | str, *, source_id: str = "kap") -> ParsedFina
 # Helpers for filling required fields with safe defaults
 # ---------------------------------------------------------------------
 
-def _with_fallbacks_for_balance(b: dict[str, Decimal]) -> dict[str, Decimal]:
+def _with_fallbacks_for_balance(b: dict[str, Decimal], *, sector: str = "industrial") -> dict[str, Decimal]:
     # Required: total_assets, total_liabilities, total_equity
     ta = b.get("total_assets")
     tl = b.get("total_liabilities")
     te = b.get("total_equity")
+
     # If assets missing but liabilities + equity present → derive (accounting identity)
     if ta is None and tl is not None and te is not None:
         ta = tl + te
     # If equity missing but we have parent_equity + minority → sum
     if te is None and "parent_equity" in b:
         te = b["parent_equity"] + b.get("minority_interest", Decimal("0"))
-    # If nothing landed, zero-fill so the model validates — but caller will see
-    # a BALANCE_INVALID flag via QC if these are all zero.
+
+    # Banking-specific: BDDK reports a balancing total that already INCLUDES
+    # equity. We only harvest assets + equity in banking mode; compute pure
+    # liabilities here.
+    if sector == "banking" and tl is None and ta is not None and te is not None:
+        tl = ta - te
+
     b2 = dict(b)
     b2.setdefault("total_assets", ta if ta is not None else Decimal("0"))
     b2.setdefault("total_liabilities", tl if tl is not None else Decimal("0"))
@@ -389,6 +478,10 @@ def _with_fallbacks_for_income(i: dict[str, Decimal]) -> dict[str, Decimal]:
     i2 = dict(i)
     i2.setdefault("revenue", Decimal("0"))
     i2.setdefault("net_income", Decimal("0"))
+    # Banking: derive net_interest_income if only the two legs were parsed.
+    if "interest_income" in i2 and "interest_expense" in i2 and "net_interest_income" not in i2:
+        # interest_expense is typically reported negative.
+        i2["net_interest_income"] = i2["interest_income"] + i2["interest_expense"]
     return i2
 
 

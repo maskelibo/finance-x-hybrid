@@ -50,6 +50,22 @@ class ReportingPeriod(str, Enum):
     H1 = "H1"
 
 
+class Sector(str, Enum):
+    """High-level sector profile. Drives which label maps, column layouts
+    and reconciliation checks apply. Pipeline elements read this off
+    CompanyInfo.sector or let the parser auto-detect from the PDF header.
+    """
+
+    INDUSTRIAL = "industrial"   # manufacturing, retail, services (default)
+    HOLDING = "holding"         # dual-stream P&L (sanayi + finans)
+    BANKING = "banking"         # BDDK format, TP/YP/Toplam columns
+    INSURANCE = "insurance"     # premium/claims P&L
+    REIT = "reit"               # GYO
+    UTILITY = "utility"         # EPDK-regulated
+    AVIATION = "aviation"       # RPK/ASK/CASK metrics
+    UNKNOWN = "unknown"
+
+
 class Confidence(str, Enum):
     HIGH = "high"
     MEDIUM = "medium"
