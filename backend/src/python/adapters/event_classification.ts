@@ -17,6 +17,11 @@ export interface LegacyClassifiedEvent {
   classification_confidence: string;
   is_material: boolean | null;
   source_url: string;
+  // Carried through from kap_watch when the rule-based classifier
+  // extracted an explicit TRY figure (dividend amount, contract value,
+  // capex size, etc.). event_impact_mapper turns this into
+  // quantification_possible=true.
+  quantitative_impact_try: number | string | null;
 }
 
 export interface LegacyEventClassificationOutput {
@@ -45,6 +50,7 @@ export interface UpstreamDisclosure {
   event_type_hint?: string | null;
   confidence_hint?: string;
   is_material?: boolean | null;
+  quantitative_impact_try?: number | string | null;
 }
 
 
@@ -80,6 +86,7 @@ export function adaptDisclosuresToClassification(
       classification_confidence: confidence,
       is_material: d.is_material ?? null,
       source_url: d.url,
+      quantitative_impact_try: d.quantitative_impact_try ?? null,
     });
   }
 
