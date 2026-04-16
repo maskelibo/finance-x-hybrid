@@ -37,27 +37,25 @@ export async function runPythonStrategicSynthesis(
   );
   const outputJson = JSON.stringify(legacy, null, 2);
 
-  const status = fa ? 'completed' : 'failed';
-  const errorMsg = fa ? null : 'strategic_synthesis: missing financial_analysis_output in upstream';
-
+  // Soft-fail on upstream gap — adapter still emits a valid empty
+  // bucket (convergence_score=0, confidence='low', warnings flag the
+  // data gap). Let downstream LLMs pick it up.
   const completedAt = new Date().toISOString();
   db.prepare(
-    `UPDATE agent_runs SET status = ?, completed_at = ?, duration_ms = ?,
-     output_text = ?, tokens_used = 0, cost_usd = 0, input_prompt = ?, error_message = ?,
+    `UPDATE agent_runs SET status = 'completed', completed_at = ?, duration_ms = ?,
+     output_text = ?, tokens_used = 0, cost_usd = 0, input_prompt = ?, error_message = NULL,
      provider_used = 'python' WHERE id = ?`,
   ).run(
-    status,
     completedAt,
     Date.now() - startedAtMs,
     outputJson,
-    `python:strategic_synthesis — signals=${legacy.signals.positive.length}p/${legacy.signals.negative.length}n/${legacy.signals.neutral.length}=, score=${legacy.convergence_score}`,
-    errorMsg,
+    `python:strategic_synthesis — fa=${fa ? 'ok' : 'null'} signals=${legacy.signals.positive.length}p/${legacy.signals.negative.length}n/${legacy.signals.neutral.length}=, score=${legacy.convergence_score}`,
     runId,
   );
 
   accumulatedContext['strategic_synthesis_output'] = outputJson;
   console.log(
-    `[PYTHON:strategic_synthesis] score=${legacy.convergence_score} confidence=${legacy.confidence} divergences=${legacy.divergences.length}`,
+    `[PYTHON:strategic_synthesis] ok fa=${fa ? 'ok' : 'null'} score=${legacy.convergence_score} confidence=${legacy.confidence} divergences=${legacy.divergences.length}`,
   );
-  return status === 'completed' ? 'ok' : 'failed';
+  return 'ok';
 }

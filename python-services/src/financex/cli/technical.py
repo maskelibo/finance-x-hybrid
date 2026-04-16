@@ -56,18 +56,27 @@ def fetch(
         "'bars' → emit raw OHLCV list.",
     ),
 ) -> None:
-    """Fetch bars from TradingView and emit either raw bars or indicators."""
-    from financex.crawlers.tradingview import TradingViewClient, TradingViewFetchParams
+    """Fetch bars (TradingView primary → yfinance fallback) and emit bars or indicators."""
+    from financex.crawlers.tradingview import (
+        TradingViewFetchParams,
+        build_default_ohlcv_client,
+    )
 
-    client = TradingViewClient()
+    client = build_default_ohlcv_client()
     bars = client.fetch(
         TradingViewFetchParams(
             symbol=ticker.upper(), exchange=exchange, interval=interval, n_bars=n_bars
         )
     )
     if not bars:
-        typer.echo(f"error: no data returned for {exchange}:{ticker}", err=True)
+        typer.echo(
+            f"error: no data returned for {exchange}:{ticker} from either TradingView or yfinance",
+            err=True,
+        )
         raise typer.Exit(code=3)
+
+    source = getattr(client, "last_source", "unknown")
+    typer.echo(f"[tv] source={source} bars={len(bars)}", err=True)
 
     if output == "bars":
         typer.echo(json.dumps([b.model_dump(mode="json") for b in bars], default=str))

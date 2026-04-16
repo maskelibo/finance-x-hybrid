@@ -31,27 +31,26 @@ export async function runPythonSectorCompetition(
   );
   const outputJson = JSON.stringify(legacy, null, 2);
 
-  const status = fa ? 'completed' : 'failed';
-  const errorMsg = fa ? null : 'sector_competition: missing financial_analysis_output in upstream';
-
+  // Soft-fail: empty-upstream is a legitimate degraded-mode output —
+  // the adapter already emitted valid JSON with a warning. Marking it
+  // 'completed' lets downstream agents + governance see that we
+  // reported cleanly rather than treating a data gap as a hard failure.
   const completedAt = new Date().toISOString();
   db.prepare(
-    `UPDATE agent_runs SET status = ?, completed_at = ?, duration_ms = ?,
-     output_text = ?, tokens_used = 0, cost_usd = 0, input_prompt = ?, error_message = ?,
+    `UPDATE agent_runs SET status = 'completed', completed_at = ?, duration_ms = ?,
+     output_text = ?, tokens_used = 0, cost_usd = 0, input_prompt = ?, error_message = NULL,
      provider_used = 'python' WHERE id = ?`,
   ).run(
-    status,
     completedAt,
     Date.now() - startedAtMs,
     outputJson,
-    `python:sector_competition (peers=${peers.length}, benchmarks=${legacy.benchmarks.length})`,
-    errorMsg,
+    `python:sector_competition (fa=${fa ? 'ok' : 'null'}, peers=${peers.length}, benchmarks=${legacy.benchmarks.length})`,
     runId,
   );
 
   accumulatedContext['sector_competition_output'] = outputJson;
   console.log(
-    `[PYTHON:sector_competition] ${status} — peers=${peers.length}, strengths=${legacy.strengths.length}, weaknesses=${legacy.weaknesses.length}`,
+    `[PYTHON:sector_competition] ok — fa=${fa ? 'ok' : 'null'}, peers=${peers.length}, strengths=${legacy.strengths.length}, weaknesses=${legacy.weaknesses.length}, warnings=${legacy.warnings.length}`,
   );
-  return status === 'completed' ? 'ok' : 'failed';
+  return 'ok';
 }
