@@ -81,6 +81,39 @@ export async function runPythonDataCollection(
 
     if (!res.success) {
       if (prefetchedFile) try { unlinkSync(prefetchedFile); } catch { /* ignore */ }
+
+      // KAP live fetch failed — fall back to last successful
+      // data_collection output (<24h) for this ticker if we have
+      // the PDFs on disk. PDFs are content-hashed; reusing them is
+      // safe as long as no new financial filings landed between runs.
+      const cached = db.prepare(
+        `SELECT ar.output_text FROM agent_runs ar
+         JOIN analysis_sessions s ON s.id = ar.session_id
+         WHERE s.ticker = ? AND ar.agent_id = 'data_collection' AND ar.status = 'completed'
+           AND ar.output_text IS NOT NULL
+           AND ar.completed_at > datetime('now', '-24 hours')
+         ORDER BY ar.completed_at DESC LIMIT 1`,
+      ).get(ticker.toUpperCase()) as { output_text: string } | undefined;
+
+      if (cached?.output_text) {
+        const completedAt = new Date().toISOString();
+        db.prepare(
+          `UPDATE agent_runs SET status = 'completed', completed_at = ?, duration_ms = ?,
+           output_text = ?, tokens_used = 0, cost_usd = 0, input_prompt = ?, error_message = ?,
+           provider_used = 'python-cache' WHERE id = ?`,
+        ).run(
+          completedAt,
+          Date.now() - startedAtMs,
+          cached.output_text,
+          `python:data_collection FALLBACK — KAP 500, <24h cached manifest for ${ticker}`,
+          'Canlı KAP erişimi başarısız; son 24 saatteki manifest cache kullanıldı',
+          runId,
+        );
+        accumulatedContext['data_collection_output'] = cached.output_text;
+        console.warn(`[PYTHON:data_collection] ⚠ KAP live fetch failed — using 24h cached manifest for ${ticker}`);
+        return 'ok';
+      }
+
       const completedAt = new Date().toISOString();
       db.prepare(
         `UPDATE agent_runs SET status = 'failed', completed_at = ?, duration_ms = ?,

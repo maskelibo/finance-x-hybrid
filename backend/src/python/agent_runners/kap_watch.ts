@@ -44,6 +44,38 @@ export async function runPythonKapWatch(
     const res = await runKapWatch(ticker, { since }, { timeoutMs: 120_000 });
 
     if (!res.success) {
+      // KAP live fetch failed — try to fall back to a cached successful
+      // kap_watch output from the last 24h for the same ticker. KAP's
+      // 500s are often transient; a ≤24h old disclosure list still
+      // captures all material events we'd need for a same-day report.
+      const cached = db.prepare(
+        `SELECT ar.output_text FROM agent_runs ar
+         JOIN analysis_sessions s ON s.id = ar.session_id
+         WHERE s.ticker = ? AND ar.agent_id = 'kap_watch' AND ar.status = 'completed'
+           AND ar.output_text IS NOT NULL
+           AND ar.completed_at > datetime('now', '-24 hours')
+         ORDER BY ar.completed_at DESC LIMIT 1`,
+      ).get(ticker.toUpperCase()) as { output_text: string } | undefined;
+
+      if (cached?.output_text) {
+        const completedAt = new Date().toISOString();
+        db.prepare(
+          `UPDATE agent_runs SET status = 'completed', completed_at = ?, duration_ms = ?,
+           output_text = ?, tokens_used = 0, cost_usd = 0, input_prompt = ?, error_message = ?,
+           provider_used = 'python-cache' WHERE id = ?`,
+        ).run(
+          completedAt,
+          Date.now() - startedAtMs,
+          cached.output_text,
+          `python:kap_watch FALLBACK — KAP 500, using <24h cached disclosure list for ${ticker}`,
+          'Canlı KAP erişimi başarısız; son 24 saatteki cache kullanıldı',
+          runId,
+        );
+        accumulatedContext['kap_watch_output'] = cached.output_text;
+        console.warn(`[PYTHON:kap_watch] ⚠ KAP live fetch failed — using 24h cache for ${ticker}`);
+        return 'ok';
+      }
+
       const completedAt = new Date().toISOString();
       db.prepare(
         `UPDATE agent_runs SET status = 'failed', completed_at = ?, duration_ms = ?,
