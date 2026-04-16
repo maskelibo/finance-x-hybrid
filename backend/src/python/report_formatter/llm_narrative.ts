@@ -47,21 +47,34 @@ export function stripToNarrative(raw: unknown): string {
 export function sliceSection(
   md: string,
   headingPatterns: string[],
-  maxChars = 1600,
+  maxChars = 3000,
 ): string {
   if (!md) return '';
 
-  // Build a regex that matches any heading line containing ANY of the
-  // anchor keywords. We match the whole line so we can find its end.
-  const anchors = headingPatterns.map(escapeRegex).join('|');
-  const startRe = new RegExp(
-    `(^|\\n)\\s*(#{1,4}|\\*\\*)\\s*.*?(?:${anchors}).*?(?:\\*\\*)?\\s*(?:\\n|$)`,
-    'i',
-  );
-  const startMatch = md.match(startRe);
-  if (!startMatch) return '';
+  // JS /i flag is ASCII-only — Turkish Ş/İ don't match ş/i. Do a
+  // Turkish-aware lowercased search line-by-line for headings that
+  // contain any anchor keyword.
+  const anchorsLower = headingPatterns.map(p => p.toLocaleLowerCase('tr-TR'));
+  const lines = md.split('\n');
+  let startIdx = -1;
+  let startLineLen = 0;
+  let cursor = 0;
 
-  const sliceStart = (startMatch.index ?? 0) + startMatch[0].length;
+  for (const line of lines) {
+    const isHeading = /^\s*(#{1,4}\s|\*\*[^\n]+\*\*\s*$)/.test(line);
+    if (isHeading) {
+      const lineLower = line.toLocaleLowerCase('tr-TR');
+      if (anchorsLower.some(a => lineLower.includes(a))) {
+        startIdx = cursor;
+        startLineLen = line.length + 1;
+        break;
+      }
+    }
+    cursor += line.length + 1;
+  }
+
+  if (startIdx < 0) return '';
+  const sliceStart = startIdx + startLineLen;
 
   // End: next heading-line (h1–h4 or bold-line) after our start.
   const endRe = /\n\s*(#{1,4}|\*\*[^*\n]{3,80}\*\*)\s*.*?\n/;
@@ -161,87 +174,87 @@ export function buildNarrativeBlocks(inputs: NarrativeInputs): Record<string, st
 
   // --- I. Yönetici Özeti ---
   const cardSummary =
-    sliceSection(finalText, ['Yönetici Özeti', 'Yonetici Ozeti', 'Yatırımcı Kartı', 'Executive Summary', 'Temel Değerlendirme'], 2000)
-    || sliceSection(finalText, ['Yatırım Tezi', 'Investment Thesis', 'Özet', 'Summary'], 1600)
-    || sliceSection(ctxText, ['Şirket Özeti', 'Company Overview'], 1400);
+    sliceSection(finalText, ['Yönetici Özeti', 'Yonetici Ozeti', 'Yatırımcı Kartı', 'Executive Summary', 'Temel Değerlendirme'], 4000)
+    || sliceSection(finalText, ['Yatırım Tezi', 'Investment Thesis', 'Özet', 'Summary'], 3200)
+    || sliceSection(ctxText, ['Şirket Özeti', 'Company Overview'], 2800);
 
   // --- II. Şirket Profili ---
   const companyProfile =
-    sliceSection(ctxText, ['Şirket Profili', 'Company Profile', 'Şirket Tanıtımı', 'Kurumsal Yapı'], 2400)
-    || sliceSection(ctxText, ['İş Modeli', 'Business Model'], 2000);
+    sliceSection(ctxText, ['Şirket Profili', 'Company Profile', 'Şirket Tanıtımı', 'Kurumsal Yapı'], 4800)
+    || sliceSection(ctxText, ['İş Modeli', 'Business Model'], 4000);
 
   const segments =
-    sliceSection(ctxText, ['Segment', 'İştirak', 'Subsidiary', 'Portföy', 'SOTP'], 1800)
-    || sliceSection(finalText, ['Segment', 'İştirak', 'SOTP'], 1400);
+    sliceSection(ctxText, ['Segment', 'İştirak', 'Subsidiary', 'Portföy', 'SOTP'], 3600)
+    || sliceSection(finalText, ['Segment', 'İştirak', 'SOTP'], 2800);
 
   // --- III. Finansal Analiz ---
   const financialIntro =
-    sliceSection(finalText, ['Finansal Analiz', 'Finansal Panorama', 'Finansal Performans', 'Financial Analysis', 'Financial Performance'], 2000)
-    || sliceSection(finalText, ['Finansal Göstergeler', 'Financial Overview'], 1400);
+    sliceSection(finalText, ['Finansal Analiz', 'Finansal Panorama', 'Finansal Performans', 'Financial Analysis', 'Financial Performance'], 4000)
+    || sliceSection(finalText, ['Finansal Göstergeler', 'Financial Overview'], 2800);
 
   const profitability =
-    sliceSection(finalText, ['Karlılık', 'Kârlılık', 'Profitability', 'Marj Analizi', 'Margin Analysis'], 1800)
-    || sliceSection(ssText, ['Karlılık', 'Kârlılık', 'Profitability'], 1400);
+    sliceSection(finalText, ['Karlılık', 'Kârlılık', 'Profitability', 'Marj Analizi', 'Margin Analysis'], 3600)
+    || sliceSection(ssText, ['Karlılık', 'Kârlılık', 'Profitability'], 2800);
 
   const leverage =
-    sliceSection(finalText, ['Bilanço', 'Borçluluk', 'Kaldıraç', 'Leverage', 'Balance Sheet', 'Liquidity', 'Likidite'], 1800)
-    || sliceSection(finalText, ['Borç', 'Debt'], 1400);
+    sliceSection(finalText, ['Bilanço', 'Borçluluk', 'Kaldıraç', 'Leverage', 'Balance Sheet', 'Liquidity', 'Likidite'], 3600)
+    || sliceSection(finalText, ['Borç', 'Debt'], 2800);
 
   const cashflow =
-    sliceSection(finalText, ['Nakit Akış', 'Nakit Akisi', 'Cash Flow', 'İşletme Sermayesi', 'Working Capital'], 1800)
-    || sliceSection(finalText, ['OCF', 'FCF'], 1200);
+    sliceSection(finalText, ['Nakit Akış', 'Nakit Akisi', 'Cash Flow', 'İşletme Sermayesi', 'Working Capital'], 3600)
+    || sliceSection(finalText, ['OCF', 'FCF'], 2400);
 
   // --- Yatırım Programı (CAPEX planı, kapasite genişleme, iştirakler) ---
   const investments =
-    sliceSection(finalText, ['Yatırım', 'Yatirim', 'CAPEX', 'Kapasite', 'Capacity', 'Büyüme Planı', 'Growth Plan', 'Investment Program'], 2000)
-    || sliceSection(ctxText, ['Yatırım', 'CAPEX', 'Kapasite', 'Filo Yatırımı', 'Tesis Yatırımı'], 1800);
+    sliceSection(finalText, ['Yatırım', 'Yatirim', 'CAPEX', 'Kapasite', 'Capacity', 'Büyüme Planı', 'Growth Plan', 'Investment Program'], 4000)
+    || sliceSection(ctxText, ['Yatırım', 'CAPEX', 'Kapasite', 'Filo Yatırımı', 'Tesis Yatırımı'], 3600);
 
   // --- Temettü politikası ---
   const dividend =
-    sliceSection(finalText, ['Temettü', 'Temettu', 'Dividend', 'Kar Payı', 'Payout'], 1600);
+    sliceSection(finalText, ['Temettü', 'Temettu', 'Dividend', 'Kar Payı', 'Payout'], 3200);
 
   // --- IV. Değerleme ---
   const valuationBlock =
-    sliceSection(valText, ['Bear', 'Base', 'Bull', 'Senaryo', 'Scenarios', 'Hedef Fiyat', 'Target Price'], 2400)
-    || sliceSection(finalText, ['Değerleme', 'Degerleme', 'Valuation', 'Hedef Fiyat'], 2000);
+    sliceSection(valText, ['Bear', 'Base', 'Bull', 'Senaryo', 'Scenarios', 'Hedef Fiyat', 'Target Price'], 4800)
+    || sliceSection(finalText, ['Değerleme', 'Degerleme', 'Valuation', 'Hedef Fiyat'], 4000);
 
   // --- V. Sektör & Rekabet ---
   const sector =
-    sliceSection(finalText, ['Sektör', 'Rekabet', 'Competition', 'Peer', 'Emsal', 'Porter', 'SWOT'], 2200)
-    || sliceSection(ctxText, ['Rekabet', 'Sektör', 'Competition'], 1600);
+    sliceSection(finalText, ['Sektör', 'Rekabet', 'Competition', 'Peer', 'Emsal', 'Porter', 'SWOT'], 4400)
+    || sliceSection(ctxText, ['Rekabet', 'Sektör', 'Competition'], 3200);
 
   // --- VI. Makro ---
   const macro =
-    sliceSection(finalText, ['Makro', 'Macro', 'Jeopolitik', 'Geopolitic', 'TCMB', 'Transmisyon', 'Transmission'], 2200)
-    || sliceSection(finalText, ['Enflasyon', 'Inflation', 'Faiz', 'FX', 'Kur'], 1600);
+    sliceSection(finalText, ['Makro', 'Macro', 'Jeopolitik', 'Geopolitic', 'TCMB', 'Transmisyon', 'Transmission'], 4400)
+    || sliceSection(finalText, ['Enflasyon', 'Inflation', 'Faiz', 'FX', 'Kur'], 3200);
 
   // --- VII. Teknik ---
   const technical =
-    sliceSection(finalText, ['Teknik Analiz', 'Technical Analysis', 'Trend Analizi', 'Destek', 'Direnç', 'Support', 'Resistance'], 1600)
-    || sliceSection(finalText, ['RSI', 'MACD', 'Momentum'], 1200);
+    sliceSection(finalText, ['Teknik Analiz', 'Technical Analysis', 'Trend Analizi', 'Destek', 'Direnç', 'Support', 'Resistance'], 3200)
+    || sliceSection(finalText, ['RSI', 'MACD', 'Momentum'], 2400);
 
   // --- VIII. ESG ---
   const esg =
-    sliceSection(finalText, ['ESG', 'Sürdürülebilirlik', 'Sustainability', 'CBAM', 'Karbon', 'Carbon'], 1800)
-    || sliceSection(ctxText, ['ESG', 'CBAM'], 1400);
+    sliceSection(finalText, ['ESG', 'Sürdürülebilirlik', 'Sustainability', 'CBAM', 'Karbon', 'Carbon'], 3600)
+    || sliceSection(ctxText, ['ESG', 'CBAM'], 2800);
 
   // --- IX. Sentiment ---
   const sentiment =
-    sliceSection(finalText, ['Haber', 'Sentiment', 'Duygu', 'Market Mood', 'News Flow'], 1600);
+    sliceSection(finalText, ['Haber', 'Sentiment', 'Duygu', 'Market Mood', 'News Flow'], 3200);
 
   // --- XI. Risk ---
   const risks =
-    sliceSection(finalText, ['Risk Değerlendirmesi', 'Risk Assessment', 'Temel Riskler', 'Key Risks', 'Risk Matrisi'], 2000)
-    || sliceSection(finalText, ['Risk'], 1600);
+    sliceSection(finalText, ['Risk Değerlendirmesi', 'Risk Assessment', 'Temel Riskler', 'Key Risks', 'Risk Matrisi'], 4000)
+    || sliceSection(finalText, ['Risk'], 3200);
 
   // --- XII. Sonuç ---
   const closing =
-    sliceSection(finalText, ['Sonuç', 'Sonuc', 'Conclusion', 'Analitik Sonuç', 'Genel Değerlendirme', 'Kapanış'], 2400)
-    || sliceSection(ssText, ['Sentez', 'Convergence', 'Divergence'], 1800);
+    sliceSection(finalText, ['Sonuç', 'Sonuc', 'Conclusion', 'Analitik Sonuç', 'Genel Değerlendirme', 'Kapanış'], 4800)
+    || sliceSection(ssText, ['Sentez', 'Convergence', 'Divergence'], 3600);
 
   const investmentThesis =
-    sliceSection(finalText, ['Yatırım Tezi', 'Investment Thesis', 'Öneriler', 'Recommendations'], 2000)
-    || sliceSection(ssText, ['Yatırım Tezi', 'Investment Thesis'], 1600);
+    sliceSection(finalText, ['Yatırım Tezi', 'Investment Thesis', 'Öneriler', 'Recommendations'], 4000)
+    || sliceSection(ssText, ['Yatırım Tezi', 'Investment Thesis'], 3200);
 
   return {
     card_summary: cardSummary,
