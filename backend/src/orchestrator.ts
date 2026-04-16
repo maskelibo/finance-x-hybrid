@@ -3,13 +3,14 @@ import { db, ensureColumn } from './db.js';
 import { runAgent } from './agent-runner.js';
 import { getAgentMeta } from './agents.js';
 import { runFeedbackLoop } from './feedback-loop.js';
-import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED } from './config.js';
+import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED } from './config.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
 import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
 import { runPythonKapWatch } from './python/agent_runners/kap_watch.js';
 import { runPythonDataCollection } from './python/agent_runners/data_collection.js';
 import { runPythonParseStandardization } from './python/agent_runners/parse_standardization.js';
 import { runPythonReconciliation } from './python/agent_runners/reconciliation.js';
+import { runPythonFinancialAnalysis } from './python/agent_runners/financial_analysis.js';
 import { computeAll, type FinancialInputs, type EngineOutput } from './financial-engine.js';
 import { validateAgentOutput } from './schema-validator.js';
 import { captureSessionSnapshot } from './version-snapshot.js';
@@ -458,6 +459,10 @@ async function runSingleAgent(
   }
   if (PYTHON_RECONCILIATION_ENABLED && agentId === 'reconciliation') {
     const outcome = await runPythonReconciliation(sessionId, runId, ticker, accumulatedContext);
+    return outcome === 'ok' ? 'ok' : 'failed';
+  }
+  if (PYTHON_FINANCIAL_ANALYSIS_ENABLED && agentId === 'financial_analysis') {
+    const outcome = await runPythonFinancialAnalysis(sessionId, runId, ticker, accumulatedContext);
     return outcome === 'ok' ? 'ok' : 'failed';
   }
 
