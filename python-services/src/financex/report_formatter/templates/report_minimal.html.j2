@@ -1,0 +1,166 @@
+{# Minimal Finance X report template. Preserves the structural
+   invariants delivery_check enforces (envelope, balanced tables,
+   SPK disclaimer, size >= 10KB). LLM report_formatter agent will
+   be retired once a fuller template lands in Wave 9. #}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ p.ticker }} — Finance X Analysis Report</title>
+  <style>
+    :root {
+      --brand-primary: {{ p.primary_color_hex }};
+      --brand-secondary: {{ p.secondary_color_hex }};
+      --ink: #1a1a1a;
+      --muted: #5f6773;
+      --rule: #d7dce4;
+      --bg: #ffffff;
+      --bg-alt: #f5f7fb;
+    }
+    html, body { margin: 0; padding: 0; font-family: "Georgia", "Times New Roman", serif; color: var(--ink); background: var(--bg); }
+    body { max-width: 920px; margin: 32px auto; padding: 0 28px; line-height: 1.55; }
+    h1, h2, h3 { font-family: "Helvetica Neue", "Arial", sans-serif; color: var(--brand-primary); letter-spacing: -0.2px; }
+    h1 { font-size: 30px; margin: 0 0 4px; }
+    h2 { font-size: 20px; margin-top: 32px; border-bottom: 2px solid var(--brand-primary); padding-bottom: 6px; }
+    h3 { font-size: 15px; margin-top: 24px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 18px; font-family: "Helvetica Neue", "Arial", sans-serif; font-size: 14px; }
+    th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); }
+    th { background: var(--bg-alt); color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .meta { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+    .kpi { display: inline-block; padding: 8px 14px; margin: 4px 6px 4px 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg-alt); }
+    .kpi strong { color: var(--brand-primary); }
+    .flag-list li { padding: 6px 0; border-bottom: 1px dashed var(--rule); }
+    .flag-crit { color: #9b1c1c; font-weight: 600; }
+    .flag-warn { color: #92400e; }
+    .flag-info { color: var(--muted); }
+    .hint { color: var(--muted); font-size: 13px; font-style: italic; }
+    footer { margin-top: 48px; padding-top: 24px; border-top: 2px solid var(--brand-primary); color: var(--muted); font-size: 12px; }
+    .disclaimer { margin-top: 18px; padding: 14px; background: var(--bg-alt); border-left: 4px solid var(--brand-secondary); font-size: 12px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>{{ p.company_name }} ({{ p.ticker }})</h1>
+    <div class="meta">
+      Finance X Analytical Report · {{ p.sector_label }} · dönem {{ p.period_label }} ·
+      yayım tarihi {{ p.generated_at.strftime('%d %B %Y') }}
+    </div>
+  </header>
+
+  <section>
+    <h2>Yönetici Özeti</h2>
+    <p>
+      {{ p.company_name }} için {{ p.period_label }} dönemi mali verileri üzerinden hazırlanmış
+      bu rapor, Finance X hibrit analiz boru hattı tarafından otomatik olarak üretilmiştir.
+      Aşağıdaki tüm sayılar deterministik hesaplamalardan çıkarılmıştır; yorumlayıcı metin
+      ayrıca bir LLM analist katmanı tarafından zenginleştirilir.
+    </p>
+    <div>
+      {% for code, value in p.analysis.canonical_numbers.items() %}
+      <span class="kpi">{{ code }}: <strong>{{ value | tl }}</strong></span>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Metrik Özetleri</h2>
+    <table>
+      <thead>
+        <tr><th>Metrik</th><th>Etiket</th><th>Değer</th><th>Birim</th></tr>
+      </thead>
+      <tbody>
+        {% for h in p.analysis.highlights %}
+        <tr>
+          <td>{{ h.code }}</td>
+          <td>{{ h.label }}</td>
+          <td class="num">{{ h.value | tl }}</td>
+          <td>{{ h.unit }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="hint">Highlight üretilmedi.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% set hints = p.analysis.highlights | selectattr('narrative_hint') | list %}
+    {% if hints %}
+    <h3>Anlatım İpuçları (LLM için)</h3>
+    <ul>
+      {% for h in hints %}
+      <li><strong>{{ h.code }}:</strong> <span class="hint">{{ h.narrative_hint }}</span></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Risk Sinyalleri</h2>
+    {% if p.analysis.red_flags %}
+    <ul class="flag-list">
+      {% for flag in p.analysis.red_flags %}
+      <li>
+        <span class="flag-{{ flag.severity[:4] }}">[{{ flag.severity | upper }}]</span>
+        <strong>{{ flag.code }}</strong> — {{ flag.message }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="hint">Bu dönemde deterministik kurallar aracılığıyla tetiklenmiş bir risk sinyali yok.</p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Metodoloji Özeti</h2>
+    <p>
+      Finance X boru hattı bir ticker'ı şu deterministik adımlardan geçirir: KAP üzerinden
+      finansal raporların otomatik toplanması (data_collection), pdfplumber ile standart IFRS
+      tablolara dönüştürme (parse_standardization), yedi matematiksel tutarlılık kontrolü
+      (reconciliation), ardından finansal motor tarafından hesaplanan 20+ oran (financial_engine)
+      ve sektör profili ile benchmark karşılaştırması. Her aşamada hibrit doktrin geçerlidir:
+      kritik alanlar için zorunlu, detay alanlar için kalite kontrolü üzerinden şeffaflık.
+    </p>
+    <table>
+      <thead><tr><th>Katman</th><th>Girdi</th><th>Çıktı</th></tr></thead>
+      <tbody>
+        <tr><td>Veri</td><td>KAP finansal raporları</td><td>PeriodFinancials</td></tr>
+        <tr><td>Kalite</td><td>PeriodFinancials</td><td>ReconciliationReport</td></tr>
+        <tr><td>Motor</td><td>PeriodFinancials</td><td>20+ oran + Altman Z + Piotroski F</td></tr>
+        <tr><td>Sektör</td><td>Peer raporları</td><td>Quartile benchmarking</td></tr>
+        <tr><td>Sentez</td><td>Tüm katman çıktıları</td><td>Sinyal convergence/divergence haritası</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Kullanım Notları</h2>
+    <p>
+      Bu rapor yalnızca bilgilendirme amaçlıdır. İçerdiği sayısal bilgiler KAP'tan toplanan açık
+      veriye dayanır; raporun yazımında otomatize edilmiş analiz boru hattı ve büyük dil modeli
+      tabanlı yorum katmanı birlikte kullanılır. Hiçbir bölüm yatırım tavsiyesi, alım/satım
+      önerisi veya lisanslı danışmanlık yerine geçmez. Türkiye Sermaye Piyasası Kurulu (SPK)
+      mevzuatı çerçevesinde yatırım danışmanlığı hizmeti yalnızca yetkili kuruluşlarla imzalanan
+      sözleşmeler üzerinden sunulur.
+    </p>
+    <p>
+      Rapor içinde geçen oran tanımları uluslararası IFRS terminolojisine uygundur. Türk özel
+      konvansiyonları (IAS 29 parasal kazanç ayrıştırma, BDDK banka P&L şeması) sektör profiline
+      göre otomatik uyarlanır. Holding yapıda faaliyet gösteren filer'lar için konsolide + segment
+      ayrımı yapılmış olabilir; detayı ilgili tablolarda görebilirsiniz.
+    </p>
+  </section>
+
+  <footer>
+    <div class="disclaimer">
+      <strong>Yasal Uyarı.</strong> Bu rapor Finance X hibrit analiz boru hattı tarafından hazırlanmıştır,
+      <em>yatırım tavsiyesi değildir</em>. İçeriği bilgilendirme amaçlıdır ve yatırımcının
+      finansal durumu, risk iştahı ile örtüşmeyebilir. Yatırım kararı almadan önce lisanslı bir
+      danışman ile görüşmeniz önerilir. Veri kaynakları: KAP (kap.org.tr), TradingView (BIST
+      fiyat verisi), TCMB (günlük FX bülten), Google News RSS (haber akışı).
+    </div>
+    <p>&copy; {{ today().year }} Finance X · Rapor otomatik olarak üretildi · {{ p.ticker }} · {{ p.period_label }} · Şablon sürümü 1.0</p>
+  </footer>
+
+</body>
+</html>
