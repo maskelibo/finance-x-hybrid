@@ -119,6 +119,51 @@ function cleanupMarkdown(md: string): string {
 
   // Drop redundant heading lines that snuck into the slice.
   out = out.replace(/^\s*#{1,6}\s+.*$/gm, '').trim();
+
+  // Convert markdown tables to HTML tables (block-level or inline).
+  // Block-level: consecutive | ... | lines
+  {
+    const lines = out.split('\n');
+    const result: string[] = [];
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+        const block: string[] = [];
+        while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+          block.push(lines[i].trim());
+          i++;
+        }
+        if (block.length >= 3 && /^\|[\s|:\-]+\|$/.test(block[1])) {
+          const splitCells = (r: string) => r.slice(1, -1).split('|').map(c => c.trim());
+          const headerCells = splitCells(block[0]);
+          const bodyRows = block.slice(2).map(splitCells);
+          const thead = `<thead><tr>${headerCells.map(c => `<th>${c}</th>`).join('')}</tr></thead>`;
+          const tbody = `<tbody>${bodyRows.map(cells => `<tr>${cells.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>`;
+          result.push(`<table>${thead}${tbody}</table>`);
+        } else {
+          result.push(...block);
+        }
+      } else {
+        result.push(line);
+        i++;
+      }
+    }
+    out = result.join('\n');
+  }
+
+  // Inline squished tables: "| h1 | h2 | |---|---| | a | b |" all on one paragraph
+  out = out.replace(/(\|[^|\n]+(?:\|[^|\n]+)+\|)\s*(\|[\s|:\-]+\|)\s*((?:\|[^|\n]+(?:\|[^|\n]+)+\|\s*)+)/g, (_, header, sep, body) => {
+    void sep;
+    const splitCells = (r: string) => r.slice(1, -1).split('|').map(c => c.trim());
+    const headerCells = splitCells(header.trim());
+    const rowMatches = body.match(/\|[^|\n]+(?:\|[^|\n]+)+\|/g) ?? [];
+    const bodyRows = rowMatches.map((r: string) => splitCells(r.trim()));
+    if (headerCells.length === 0 || bodyRows.some((r: string[]) => r.length !== headerCells.length)) return _;
+    const thead = `<thead><tr>${headerCells.map(c => `<th>${c}</th>`).join('')}</tr></thead>`;
+    const tbody = `<tbody>${bodyRows.map((cells: string[]) => `<tr>${cells.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    return `<table>${thead}${tbody}</table>`;
+  });
   // Convert markdown bold/italic into <strong>/<em>.
   out = out.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
   out = out.replace(/(^|[^*])\*([^*\n]+)\*([^*]|$)/g, '$1<em>$2</em>$3');
