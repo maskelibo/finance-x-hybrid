@@ -751,13 +751,33 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const ownershipPie = buildOwnershipPie(ticker, sectorRaw);
   const ownershipPieSvg = ownershipPie ? pieChart(ownershipPie, 'Ortaklık Yapısı (Yaklaşık)') : '';
 
-  // ESG Radar (E/S/G 3-axis)
-  // Compute heuristic E/S/G scores: E from CBAM presence + sector,
-  // S from employee count (if known) + sector, G from audit/board.
+  // ESG Radar (E/S/G 3-axis) — sector-specific baseline profiles
+  // Scores 0-100; adjusted by CBAM data availability and QA score
+  const esgSectorProfile: Record<string, { E: number; S: number; G: number }> = {
+    banking:    { E: 72, S: 70, G: 75 },  // Low direct emissions, strong governance
+    holding:    { E: 60, S: 65, G: 68 },  // Weighted avg of subsidiaries
+    aviation:   { E: 35, S: 62, G: 65 },  // High CO2 intensity
+    steel:      { E: 30, S: 55, G: 60 },  // Heavy industry, CBAM exposure
+    telecom:    { E: 68, S: 65, G: 70 },  // Low emissions, digital inclusion
+    defense:    { E: 50, S: 58, G: 62 },  // Moderate, export controls
+    refinery:   { E: 28, S: 55, G: 58 },  // High emissions, hazardous ops
+    retail:     { E: 60, S: 62, G: 65 },  // Supply chain, labor
+    energy:     { E: 40, S: 58, G: 62 },  // Generation mix dependent
+    insurance:  { E: 70, S: 68, G: 72 },  // Low direct impact
+    reit:       { E: 55, S: 65, G: 68 },  // Building efficiency
+    industrial: { E: 50, S: 60, G: 65 },  // Default
+  };
+  const esgBase = esgSectorProfile[sectorRaw] ?? esgSectorProfile.industrial;
   const esgScores = {
-    E: esgCbam?.total_annual_cost_eur != null ? 45 : sectorRaw === 'banking' ? 75 : sectorRaw === 'industrial' ? 55 : 65,
-    S: sectorRaw === 'banking' ? 72 : sectorRaw === 'holding' ? 68 : 60,
-    G: qa?.overall_score != null ? Math.round(Number(qa.overall_score) * 100) : 70,
+    // E: Adjust down if CBAM cost exists (= high carbon), up if no CBAM exposure
+    E: esgCbam?.total_annual_cost_eur != null
+      ? Math.max(15, esgBase.E - 10)  // CBAM cost exists → worse E score
+      : esgBase.E,
+    S: esgBase.S,
+    // G: Boost from high QA score (= good disclosure quality ≈ governance proxy)
+    G: qa?.overall_score != null
+      ? Math.min(95, esgBase.G + Math.round((Number(qa.overall_score) - 0.7) * 30))
+      : esgBase.G,
   };
   const esgRadarSvg = radarChart([
     { label: 'Çevresel (E)', value: esgScores.E },
@@ -765,17 +785,25 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     { label: 'Yönetişim (G)', value: esgScores.G },
   ], 'ESG Skor Profili (0-100)');
 
-  // Price band chart with support/resistance + scenarios
+  // Price band chart — derive S/R from moving averages when available
   const lc = numOrNull(tech?.last_close);
   const dcfPerShareNum = dcf ? numOrNull((dcf as Record<string, unknown>).per_share_value) : null;
+  const pbMa20 = numOrNull(techMA.ma_20 ?? techMA.ma20 ?? tech?.ma20);
+  const pbMa50 = numOrNull(techMA.ma_50 ?? techMA.ma50 ?? tech?.ma50);
+  const pbMa200 = numOrNull(techMA.ma_200 ?? techMA.ma200 ?? tech?.ma200);
+  // Use MAs as support/resistance anchors: MA200 = strong S/R, MA50 = near S/R
+  const pbSupport1 = pbMa50 != null && lc != null && pbMa50 < lc ? pbMa50 : lc != null ? lc * 0.95 : undefined;
+  const pbSupport2 = pbMa200 != null && lc != null && pbMa200 < lc ? pbMa200 : lc != null ? lc * 0.88 : undefined;
+  const pbResist1 = pbMa50 != null && lc != null && pbMa50 > lc ? pbMa50 : lc != null ? lc * 1.05 : undefined;
+  const pbResist2 = pbMa200 != null && lc != null && pbMa200 > lc ? pbMa200 : lc != null ? lc * 1.12 : undefined;
   const priceBandSvg = lc != null ? priceBandChart({
     lastClose: lc,
-    support1: lc * 0.95,
-    support2: lc * 0.88,
-    resistance1: lc * 1.05,
-    resistance2: lc * 1.12,
+    support1: pbSupport1,
+    support2: pbSupport2,
+    resistance1: pbResist1,
+    resistance2: pbResist2,
     bearTarget: dcfPerShareNum ? dcfPerShareNum * 0.75 : lc * 0.8,
-    baseTarget: dcfPerShareNum ? dcfPerShareNum : lc * 1.1,
+    baseTarget: dcfPerShareNum ?? lc * 1.1,
     bullTarget: dcfPerShareNum ? dcfPerShareNum * 1.25 : lc * 1.35,
   }, 'Destek/Direnç + Hedef Fiyat Bandı (TL)') : '';
 
