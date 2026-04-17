@@ -160,17 +160,31 @@ def run_data_collection(
         # and skip the byCriteria call (plus its cooldown).
         raw_list = prefetched_disclosures
     else:
-        # Cool-down in case the orchestrator just ran kap_watch against the
-        # same ticker — KAP rate-limits back-to-back byCriteria calls.
-        if _KAP_COOLDOWN_S > 0:
-            time.sleep(_KAP_COOLDOWN_S)
+        # KAP API returns 500 when the date window is too wide (>2 years).
+        # Split into per-year requests with cooldown between each.
+        raw_list = []
+        year_start = since.year
+        year_end = ceiling.year
 
-        try:
-            raw_list = http_client.fetch_disclosures(
-                ticker, since=since, until=ceiling
-            )
-        except Exception as exc:
-            raise RuntimeError(f"KAP fetch_disclosures failed for {ticker}: {exc}") from exc
+        for yr in range(year_start, year_end + 1):
+            yr_since = date(yr, 1, 1) if yr > year_start else since
+            yr_until = date(yr, 12, 31) if yr < year_end else ceiling
+
+            if _KAP_COOLDOWN_S > 0:
+                time.sleep(_KAP_COOLDOWN_S)
+
+            try:
+                year_disclosures = http_client.fetch_disclosures(
+                    ticker, since=yr_since, until=yr_until
+                )
+                raw_list.extend(year_disclosures)
+                print(f"[data_collection] {ticker} {yr}: {len(year_disclosures)} disclosures")
+            except Exception as exc:
+                errors.append(f"KAP fetch failed for {ticker} year {yr}: {exc}")
+                print(f"[data_collection] {ticker} {yr}: FAILED — {exc}")
+
+        if not raw_list and not errors:
+            raise RuntimeError(f"KAP fetch_disclosures returned 0 results for {ticker} ({since} → {ceiling})")
 
     for raw in raw_list:
         kind = classify_kind(raw.title, raw.category, raw.summary)
