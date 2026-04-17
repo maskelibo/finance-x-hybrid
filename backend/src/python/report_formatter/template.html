@@ -883,6 +883,18 @@
     </div>
     {{/if}}
 
+    {{#if ma_table_has}}
+    <h2>Hareketli Ortalamalar</h2>
+    <table>
+      <thead><tr><th>Periyot</th><th class="num">Değer</th><th class="num">Kapanışa Göre Fark</th></tr></thead>
+      <tbody>
+        {{#each ma_table}}
+        <tr><td class="label">{{this.period}}</td><td class="num">{{this.value}}</td><td class="num">{{this.vs_close}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
     {{#if narrative_technical}}
     <h2>Trend Analizi</h2>
     <div>{{&narrative_technical}}</div>
