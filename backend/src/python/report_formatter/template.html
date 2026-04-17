@@ -469,6 +469,11 @@
     </table>
     {{/if}}
 
+    {{#if chart_waterfall_has}}
+    <h2>Gelir Tablosu Şelale Analizi</h2>
+    <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_waterfall}}</div>
+    {{/if}}
+
     <h2>Finansal Trend ({{multi_year_count}} dönem)</h2>
 
     {{#if chart_financial_trend_has}}
