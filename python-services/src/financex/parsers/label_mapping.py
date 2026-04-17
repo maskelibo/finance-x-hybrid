@@ -96,6 +96,26 @@ INCOME_STATEMENT_MAP: dict[str, str] = {
     "kontrol gucu olmayan paylar kari": "minority_net_income",
     "net parasal pozisyon kazanc kaybi": "monetary_gain_loss",
     "parasal kazanc kayip": "monetary_gain_loss",
+    # Finansman gelir/giderleri — EBITDA ve interest coverage hesabı için kritik
+    "finansman gelirleri": "financial_income",
+    "finansman giderleri": "financial_expense",
+    "finansman gelir gideri": "financial_expense",
+    "faiz gelirleri": "interest_income",
+    "faiz giderleri": "interest_expense",
+    "faiz geliri": "interest_income",
+    "faiz gideri": "interest_expense",
+    # Vergi
+    "vergi gideri geliri": "tax_expense",
+    "surdurulen faaliyetler vergi gideri geliri": "tax_expense",
+    "donem vergi gideri geliri": "tax_expense",
+    "ertelenmis vergi gideri geliri": "tax_expense",
+    # Amortisman (nadiren gelir tablosunda ayrı gösterilir)
+    "amortisman ve itfa giderleri": "depreciation_amortization",
+    "amortisman giderleri": "depreciation_amortization",
+    # OpEx
+    "genel yonetim giderleri": "opex",
+    "pazarlama giderleri": "opex",
+    "arastirma gelistirme giderleri": "opex",
 }
 
 
@@ -209,9 +229,26 @@ CASH_FLOW_MAP: dict[str, str] = {
     "nakit ve nakit benzerlerindeki net degisim": "net_change_in_cash",
     "maddi ve maddi olmayan duran varlik alimlari": "capex",
     "maddi duran varlik alimlari": "capex",
+    "maddi olmayan duran varlik alimlari": "capex",
+    "yatirim harcamalari": "capex",
+    "sabit kiymek yatirimlari": "capex",
+    "duran varlik alimlari": "capex",
+    "maddi ve maddi olmayan duran varliklarin alimi": "capex",
+    "maddi duran varliklarin alimi icin odenen nakit": "capex",
     "odenen temettuler": "dividends_paid",
+    "odenen temettüler": "dividends_paid",
+    "kar payi odemeleri": "dividends_paid",
     "amortisman ve itfa giderleri": "depreciation_amortization",
     "amortisman gideri": "depreciation_amortization",
+    "amortisman ve itfa paylar": "depreciation_amortization",
+    "amortisman": "depreciation_amortization",
+    "itfa paylar": "depreciation_amortization",
+    "maddi ve maddi olmayan duran varlik amortismani": "depreciation_amortization",
+    "amortismanlar": "depreciation_amortization",
+    "amortisman ve itfa gideri ile ilgili duzeltmeler": "depreciation_amortization",
+    "amortisman ve itfa giderleri ile ilgili duzeltmeler": "depreciation_amortization",
+    "amortisman ve itfa ile ilgili duzeltmeler": "depreciation_amortization",
+    "amortismana iliskin duzeltmeler": "depreciation_amortization",
     "yabanci para cevrim farklarinin etkisi": "fx_impact",
     "kur farki etkisi": "fx_impact",
 }

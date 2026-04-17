@@ -100,10 +100,13 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
     # EBIT proxy: operating_income if present, else revenue − cogs − opex.
     ebit: Decimal | None = is_.operating_income
 
-    # EBITDA proxy: if ebitda present use it, else EBIT + D&A
+    # EBITDA proxy: if ebitda present use it, else EBIT + D&A.
+    # D&A may be in income_statement or cash_flow (KAP format puts it in
+    # cash_flow as "Amortisman ve İtfa Gideri İle İlgili Düzeltmeler").
     ebitda: Decimal | None = is_.ebitda
-    if ebitda is None and ebit is not None and cf and cf.free_cash_flow is None and is_.depreciation_amortization is not None:
-        ebitda = ebit + abs(is_.depreciation_amortization)
+    da_value = is_.depreciation_amortization or (cf.depreciation_amortization if cf else None)
+    if ebitda is None and ebit is not None and da_value is not None:
+        ebitda = ebit + abs(da_value)
 
     dso = _days(bs.trade_receivables, is_.revenue, label="DSO")
     dio = _days(bs.inventories, cogs_abs, label="DIO")
