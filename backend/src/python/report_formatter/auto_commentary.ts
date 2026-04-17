@@ -36,44 +36,93 @@ interface ProfitabilityInputs {
 }
 
 
-/** Profitability paragraph — 4-6 cümle. */
+/** Sector-aware profitability thresholds — percentile-based ranges.
+ *  P25/P50/P75 approximations for Turkish market sectors. */
+function sectorThresholds(sector: string): {
+  gm: { p25: number; p50: number; p75: number } | null;
+  em: { p25: number; p50: number; p75: number };
+  nm: { p25: number; p50: number; p75: number };
+  roe: { p25: number; p50: number; p75: number };
+} {
+  switch (sector) {
+    case 'banking': return { gm: null, em: { p25: 35, p50: 45, p75: 55 }, nm: { p25: 15, p50: 22, p75: 30 }, roe: { p25: 10, p50: 18, p75: 28 } };
+    case 'holding': return { gm: { p25: 12, p50: 20, p75: 30 }, em: { p25: 8, p50: 14, p75: 22 }, nm: { p25: 5, p50: 10, p75: 16 }, roe: { p25: 8, p50: 14, p75: 22 } };
+    case 'aviation': return { gm: { p25: 18, p50: 25, p75: 35 }, em: { p25: 12, p50: 20, p75: 28 }, nm: { p25: 4, p50: 10, p75: 18 }, roe: { p25: 15, p50: 25, p75: 40 } };
+    case 'steel': return { gm: { p25: 10, p50: 18, p75: 26 }, em: { p25: 6, p50: 14, p75: 22 }, nm: { p25: 2, p50: 8, p75: 15 }, roe: { p25: 8, p50: 15, p75: 25 } };
+    case 'telecom': return { gm: { p25: 50, p50: 58, p75: 65 }, em: { p25: 28, p50: 35, p75: 42 }, nm: { p25: 8, p50: 14, p75: 22 }, roe: { p25: 10, p50: 18, p75: 28 } };
+    case 'defense': return { gm: { p25: 22, p50: 30, p75: 38 }, em: { p25: 14, p50: 22, p75: 30 }, nm: { p25: 8, p50: 15, p75: 22 }, roe: { p25: 12, p50: 20, p75: 30 } };
+    case 'refinery': return { gm: { p25: 5, p50: 10, p75: 18 }, em: { p25: 3, p50: 8, p75: 14 }, nm: { p25: 1, p50: 4, p75: 9 }, roe: { p25: 10, p50: 18, p75: 28 } };
+    case 'retail': return { gm: { p25: 22, p50: 28, p75: 34 }, em: { p25: 4, p50: 7, p75: 11 }, nm: { p25: 1, p50: 3, p75: 6 }, roe: { p25: 15, p50: 25, p75: 40 } };
+    default: return { gm: { p25: 15, p50: 22, p75: 32 }, em: { p25: 8, p50: 14, p75: 22 }, nm: { p25: 3, p50: 8, p75: 15 }, roe: { p25: 10, p50: 18, p75: 28 } };
+  }
+}
+
+/** Estimate TRY cost of equity from TCMB policy rate context.
+ *  Formula: Rf (10Y ~policyRate-2%) + ERP (~6%) + sector beta premium.
+ *  More accurate than a static 30%. */
+function estimatedCoE(sector: string, policyRate?: number | null): number {
+  const rf = (policyRate ?? 42.5) - 2;  // 10Y approx
+  const erp = 6;
+  const sectorBeta: Record<string, number> = {
+    banking: 1.1, holding: 0.95, aviation: 1.3, steel: 1.2,
+    telecom: 0.85, defense: 0.9, refinery: 1.15, retail: 0.9,
+    industrial: 1.0, energy: 1.05, insurance: 0.95, reit: 0.8,
+  };
+  const beta = sectorBeta[sector] ?? 1.0;
+  return rf + erp * beta;
+}
+
+/** Quartile label from value vs sector P25/P50/P75. */
+function quartileLabel(val: number, pcts: { p25: number; p50: number; p75: number }): string {
+  if (val >= pcts.p75) return 'üst çeyrek (Q4)';
+  if (val >= pcts.p50) return 'medyanın üzerinde (Q3)';
+  if (val >= pcts.p25) return 'medyanın altında (Q2)';
+  return 'alt çeyrek (Q1)';
+}
+
+/** Profitability paragraph — sector-aware quartile analysis, institutional prose. */
 export function commentaryProfitability(inputs: ProfitabilityInputs): string {
   const parts: string[] = [];
   const gm = numOrNull(inputs.grossMargin);
   const em = numOrNull(inputs.ebitdaMargin);
   const nm = numOrNull(inputs.netMargin);
   const roe = numOrNull(inputs.roe);
+  const th = sectorThresholds(inputs.sector);
 
-  // Sector thresholds — industrial vs services vs banking differ.
-  const industryThresholds = inputs.sector === 'banking'
-    ? { gm: null, em: 45, nm: 20, roe: 15 }      // banking NIM substitutes gm
-    : inputs.sector === 'holding'
-      ? { gm: 20, em: 12, nm: 8, roe: 12 }
-      : { gm: 20, em: 12, nm: 7, roe: 15 };       // industrial default
-
-  if (gm != null && industryThresholds.gm) {
-    const verdict = gm >= industryThresholds.gm ? 'sektör ortalamasının üzerinde konumlanan'
-                  : gm >= industryThresholds.gm * 0.75 ? 'sektör ortalamasına yakın seyreden'
-                  : 'sektör ortalamasının altında kalan';
-    parts.push(`Brüt marj ${fmtPct(gm)} ile ${verdict} bir seviye sergiliyor. Maliyet yapısı ve ürün karması bu marj seviyesini destekleyen temel faktörler arasında.`);
+  if (gm != null && th.gm) {
+    const q = quartileLabel(gm, th.gm);
+    parts.push(`Brüt marj ${fmtPct(gm)} ile sektör dağılımında ${q} konumunda (sektör P50: ${fmtPct(th.gm.p50)}). ${gm >= th.gm.p75 ? 'Fiyatlama gücü ve/veya maliyet avantajı belirgin bir rekabet üstünlüğünü yansıtıyor.' : gm < th.gm.p25 ? 'Hammadde maliyetleri ve ürün karması baskısı brüt kârlılığı sınırlamakta; marj iyileşmesi için fiyatlama veya tedarik zinciri optimizasyonu gerekli görünüyor.' : 'Maliyet yapısı ve ürün karması bu marj seviyesini destekleyen temel faktörler olarak değerlendiriliyor.'}`);
   }
 
-  if (em != null && industryThresholds.em) {
-    const verdict = em >= industryThresholds.em ? 'güçlü operasyonel kârlılığa işaret eden'
-                  : em >= industryThresholds.em * 0.7 ? 'kabul edilebilir bir operasyonel kârlılık gösteren'
-                  : 'operasyonel maliyet baskısını yansıtan';
-    parts.push(`FAVÖK marjı ${fmtPct(em)} seviyesinde ve ${verdict} bir tabloya işaret ediyor. ${em < industryThresholds.em * 0.7 ? 'Operasyonel iyileştirme inisiyatifleri kısa vadede marj kalitesini artıracak temel kaldıraç olarak öne çıkıyor.' : 'Bu marj seviyesi nakit yaratma kapasitesini desteklerken finansman yükümlülüklerinin karşılanmasında konfor sağlıyor.'}`);
+  if (em != null) {
+    const q = quartileLabel(em, th.em);
+    parts.push(`FAVÖK marjı ${fmtPct(em)} seviyesinde; sektör dağılımında ${q} (sektör P50: ${fmtPct(th.em.p50)}). ${em >= th.em.p75 ? 'Operasyonel verimlilik ve ölçek ekonomisi güçlü nakit yaratma kapasitesini destekliyor.' : em < th.em.p25 ? 'Operasyonel maliyet baskısı belirgin; personel, enerji ve genel yönetim giderlerinde yapısal iyileştirme potansiyeli değerlendirilmeli.' : 'Nakit yaratma kapasitesi yeterli düzeyde olup finansman yükümlülüklerinin karşılanmasında makul esneklik sağlıyor.'}`);
   }
 
-  if (nm != null && industryThresholds.nm) {
-    const verdict = nm >= industryThresholds.nm ? 'sektör liderleri arasında yer alan' : nm >= industryThresholds.nm * 0.6 ? 'ortalama seviyede olan' : 'zayıf kalan';
-    parts.push(`Net kâr marjı ${fmtPct(nm)} olup ${verdict} bir profil çiziyor. Finansman giderleri, vergi etkileri ve tek seferlik kalemler bu marjın oluşmasında belirleyici rol oynuyor.`);
+  // Margin interaction: high GM but low NM = OpEx or financing burden
+  if (gm != null && nm != null && th.gm) {
+    const gmSpread = gm - nm;
+    if (gm >= th.gm.p50 && nm < th.nm.p25) {
+      parts.push(`Dikkat çekici bir marj sıkışması gözlemleniyor: brüt marj güçlü (${fmtPct(gm)}) olmasına rağmen, net marj (${fmtPct(nm)}) sektör alt çeyreğinde kalmakta. Bu ayrışma, yüksek operasyonel giderler, ağır finansman yükü veya tek seferlik zararlar kaynaklı olabilir; kâr kalitesinin sorgulanmasını gerektiriyor.`);
+    } else if (gmSpread > 25 && nm >= th.nm.p50) {
+      parts.push(`Brüt marjdan net marjına düşüş (${fmtPct(gmSpread)} puan) operasyonel ve finansman giderlerinin ağırlığını yansıtsa da, net kârlılık sektör medyanının üzerinde korunmakta.`);
+    }
   }
 
-  if (roe != null && industryThresholds.roe) {
-    const tlCostOfEquity = 30; // Turkish TRY cost of equity approximation
-    const verdict = roe >= tlCostOfEquity ? 'özsermaye maliyetini aşan ve pay sahibi değeri yaratan' : roe >= tlCostOfEquity * 0.6 ? 'özsermaye maliyetine yaklaşan' : 'özsermaye maliyetinin altında kalan ve değer erozyonuna işaret eden';
-    parts.push(`Özsermaye kârlılığı (ROE) ${fmtPct(roe)} düzeyinde gerçekleşti; bu rakam ${verdict} bir getiri anlamına geliyor. TRY bazında kabul gören yaklaşık %${tlCostOfEquity} özsermaye maliyeti eşiği referans alındığında, şirketin sermaye kullanımındaki etkinliği ${roe >= tlCostOfEquity ? 'güçlü' : 'sınırlı'}.`);
+  if (nm != null) {
+    const q = quartileLabel(nm, th.nm);
+    parts.push(`Net kâr marjı ${fmtPct(nm)} olup sektör dağılımında ${q} (sektör P50: ${fmtPct(th.nm.p50)}). Finansman giderleri, vergi etkileri ve tek seferlik kalemler bu marjın oluşmasında belirleyici rol oynuyor.`);
+  }
+
+  if (roe != null) {
+    const coe = estimatedCoE(inputs.sector);
+    const q = quartileLabel(roe, th.roe);
+    const spread = roe - coe;
+    const verdict = spread > 5 ? 'özsermaye maliyetini belirgin biçimde aşarak pay sahibi değeri yaratan'
+                  : spread > 0 ? 'özsermaye maliyetini sınırlı ölçüde aşan'
+                  : spread > -5 ? 'özsermaye maliyetine yakın seyreden'
+                  : 'özsermaye maliyetinin önemli ölçüde altında kalan ve değer erozyonuna işaret eden';
+    parts.push(`Özsermaye kârlılığı (ROE) ${fmtPct(roe)} düzeyinde; sektör dağılımında ${q} (sektör P50: ${fmtPct(th.roe.p50)}). Tahmini TRY özsermaye maliyeti (${fmtPct(coe, 0)}) referans alındığında, bu getiri ${verdict} bir konumlanma ortaya koyuyor.`);
   }
 
   return parts.join(' ');
@@ -98,28 +147,52 @@ export function commentaryLeverage(inputs: LeverageInputs): string {
   const cr = numOrNull(inputs.currentRatio);
   const ic = numOrNull(inputs.interestCoverage);
 
-  if (nd != null && eb && eb > 0) {
+  // Sector-specific ND/EBITDA thresholds
+  const ndEbThresh: Record<string, { safe: number; warning: number; critical: number }> = {
+    banking: { safe: 0, warning: 0, critical: 0 },
+    holding: { safe: 2.5, warning: 4, critical: 6 },
+    aviation: { safe: 3, warning: 5, critical: 7 },
+    steel: { safe: 2, warning: 3.5, critical: 5 },
+    telecom: { safe: 2.5, warning: 4, critical: 6 },
+    refinery: { safe: 1.5, warning: 3, critical: 4.5 },
+    retail: { safe: 1.5, warning: 2.5, critical: 4 },
+    defense: { safe: 1.5, warning: 3, critical: 5 },
+    industrial: { safe: 2, warning: 3.5, critical: 5 },
+  };
+  const thresh = ndEbThresh[inputs.sector] ?? ndEbThresh.industrial;
+
+  if (nd != null && eb && eb > 0 && inputs.sector !== 'banking') {
     const ratio = nd / eb;
-    const verdict = ratio < 2 ? 'sağlıklı kaldıraç profiline işaret eden'
-                  : ratio < 3.5 ? 'orta düzey kaldıraç profiline işaret eden'
-                  : ratio < 5 ? 'yükselmiş kaldıraç nedeniyle yakın izlenmesi gereken'
-                  : 'distressed seviyeye yaklaşan ve refinansman riskini artıran';
-    parts.push(`Net borç/FAVÖK oranı ${ratio.toFixed(2)}x seviyesinde olup ${verdict} bir yapı oluşturuyor. ${ratio >= 3.5 ? 'Kredi derecelendirme kuruluşlarının eşiklerine yaklaşma potansiyeli ve olası bir outlook değişikliği riski raporlama sürecinde dikkatle takip edilmeli.' : 'Bu oran seviyesi yeni borçlanma esnekliği ve stratejik yatırımlar için manevra alanı sağlıyor.'}`);
+    const verdict = ratio < thresh.safe ? 'konservatif kaldıraç profilinde'
+                  : ratio < thresh.warning ? 'kabul edilebilir kaldıraç seviyesinde'
+                  : ratio < thresh.critical ? 'yükselmiş kaldıraç nedeniyle yakın izlenmesi gereken'
+                  : 'kredi derecelendirme kuruluşlarının eşiklerini aşan, refinansman riski taşıyan';
+    parts.push(`Net Borç/FAVÖK oranı ${ratio.toFixed(2)}x seviyesinde olup sektör bağlamında ${verdict} bir yapı sergiliyor (sektör güvenli eşik: <${thresh.safe.toFixed(1)}x). ${ratio >= thresh.warning ? 'Yükselen finansman maliyetleri ve potansiyel kredi notu baskısı yakın dönem riskleri arasında; borç vadesinin yeniden yapılandırma olasılığı değerlendirilmeli.' : 'Bu kaldıraç düzeyi yeni yatırım ve stratejik satın almalar için borçlanma kapasitesi sağlıyor.'}`);
   }
 
   if (nd != null && eq && eq > 0) {
     const d2e = nd / eq;
-    parts.push(`Net borç / özsermaye oranı ${(d2e * 100).toFixed(1)}% düzeyinde; bu ${d2e < 0.3 ? 'düşük finansal kaldıraçla konservatif bir sermaye yapısına' : d2e < 0.7 ? 'dengeli bir finansman karışımına' : 'agresif finansman kullanımına'} işaret ediyor.`);
+    const label = d2e < 0.3 ? 'konservatif sermaye yapısı (düşük kaldıraç)'
+                : d2e < 0.7 ? 'dengeli borç-özsermaye karışımı'
+                : d2e < 1.2 ? 'agresif finansman kullanımı'
+                : 'yüksek kaldıraçlı yapı — özsermayeyi aşan borç yükü';
+    parts.push(`Net Borç/Özsermaye oranı ${fmtPct(d2e * 100, 1)} düzeyinde; bu ${label} olarak değerlendiriliyor.`);
   }
 
   if (cr != null) {
-    const verdict = cr >= 1.5 ? 'güçlü kısa vadeli likidite tamponu' : cr >= 1 ? 'asgari likidite gereksinimini karşılayan' : 'kısa vadeli likidite baskısı altında olan';
-    parts.push(`Cari oran ${cr.toFixed(2)} ile ${verdict} bir pozisyonu yansıtıyor. ${cr < 1 ? 'Dönen varlıkların kısa vadeli yükümlülükleri karşılamakta yetersiz kalması işletme sermayesi yönetiminin kritik önem taşıdığını gösteriyor.' : ''}`);
+    const verdict = cr >= 2.0 ? 'güçlü kısa vadeli likidite tamponu sağlayan'
+                  : cr >= 1.5 ? 'yeterli likidite esnekliğine sahip'
+                  : cr >= 1.0 ? 'asgari likidite dengesini koruyan'
+                  : 'kısa vadeli likidite baskısı altında olan';
+    parts.push(`Cari oran ${cr.toFixed(2)}x ile ${verdict} bir bilanço yapısını yansıtıyor.${cr < 1 ? ' Dönen varlıkların kısa vadeli yükümlülükleri karşılayamaması, işletme sermayesi yönetiminde acil iyileştirme ihtiyacını ortaya koyuyor.' : ''}`);
   }
 
   if (ic != null) {
-    const verdict = ic >= 4 ? 'faiz giderlerini rahatlıkla karşılayan' : ic >= 2 ? 'faiz yükümlülüklerini yeterli düzeyde karşılayan' : 'faiz karşılama oranı zayıf kalan';
-    parts.push(`Faiz karşılama oranı ${ic.toFixed(2)}x seviyesinde olup ${verdict} bir yapı çiziyor.`);
+    const verdict = ic >= 6 ? 'güçlü faiz karşılama kapasitesi gösteren'
+                  : ic >= 3 ? 'yeterli düzeyde faiz yükümlülüklerini karşılayan'
+                  : ic >= 1.5 ? 'sınırlı faiz karşılama marjıyla operasyonel baskıya duyarlı'
+                  : 'yetersiz faiz karşılama oranıyla finansal stres riski taşıyan';
+    parts.push(`Faiz karşılama oranı (ICR) ${ic.toFixed(2)}x seviyesinde olup ${verdict} bir yapı çiziyor.${ic < 1.5 ? ' Bu düzey, borç yeniden yapılandırma veya sermaye artırımı ihtiyacını gündeme getirebilir.' : ''}`);
   }
 
   return parts.join(' ');
@@ -289,7 +362,7 @@ export function commentaryValuation(inputs: ValuationIntroInputs): string {
   }
 
   if (inputs.tryWaccWarning) {
-    parts.push(`⚠ Dikkat: Kullanılan WACC %${((wacc ?? 0) * 100).toFixed(1)} seviyesinde olup TRY bazlı bir orana karşılık gelebilir; Turkish filers'da TRY WACC tuzağı DCF'i sıfıra yaklaştırabilir. USD bazlı WACC önerilmelidir.`);
+    parts.push(`⚠ Metodoloji uyarısı: Kullanılan WACC ${fmtPct((wacc ?? 0) * 100, 1)} seviyesinde olup TRY bazlı bir iskonto oranına karşılık gelebilir. Yüksek enflasyon ortamında faaliyet gösteren Türk şirketlerinde TRY bazlı WACC kullanımı, yüksek nominal iskonto oranı nedeniyle DCF sonucunu sistematik olarak düşük hesaplatabilir. USD bazlı serbest nakit akışı ve USD WACC ile yapılacak değerleme daha güvenilir sonuçlar üretecektir.`);
   }
 
   if (wacc != null) {
@@ -312,11 +385,35 @@ interface RiskInputs {
 }
 
 
+const RISK_CODE_TR: Record<string, string> = {
+  'LIQUIDITY_TIGHT': 'Likidite Sıkışıklığı',
+  'DEBT_RISK': 'Borçluluk Riski',
+  'HIGH_LEVERAGE': 'Yüksek Kaldıraç',
+  'MARGIN_EROSION': 'Marj Erozyonu',
+  'NEGATIVE_FCF': 'Negatif Serbest Nakit Akışı',
+  'LOW_COVERAGE': 'Düşük Faiz Karşılama',
+  'ALTMAN_DISTRESS': 'Altman Z Distress Bölgesi',
+  'PIOTROSKI_WEAK': 'Zayıf Piotroski Skoru',
+  'CURRENCY_MISMATCH': 'Döviz Uyumsuzluğu',
+  'RELATED_PARTY': 'İlişkili Taraf Riski',
+  'GOVERNANCE_FLAG': 'Yönetişim Uyarısı',
+  'DIVIDEND_CUT': 'Temettü Kesintisi Riski',
+  'CAPEX_OVERRUN': 'Yatırım Bütçe Aşımı',
+  'REVENUE_DECLINE': 'Gelir Düşüşü',
+  'WORKING_CAPITAL_STRESS': 'İşletme Sermayesi Baskısı',
+};
+
+export function translateRiskCode(code: string): string {
+  return RISK_CODE_TR[code] ?? code.replace(/_/g, ' ').toLowerCase()
+    .replace(/\b\w/g, c => c.toLocaleUpperCase('tr-TR'));
+}
+
+
 export function commentaryRisk(inputs: RiskInputs): string {
   const parts: string[] = [];
 
   if (inputs.criticalFlags.length > 0) {
-    const codes = inputs.criticalFlags.slice(0, 3).map(f => f.code).join(', ');
+    const codes = inputs.criticalFlags.slice(0, 3).map(f => translateRiskCode(f.code)).join(', ');
     parts.push(`Rapor, ${inputs.criticalFlags.length} kritik risk faktörü tespit etmiştir (${codes}). Bu faktörler yatırım tezini doğrudan etkileyebilecek yapıda olup, yakın izlenme gerektirmektedir.`);
   }
 
@@ -332,14 +429,21 @@ export function commentaryRisk(inputs: RiskInputs): string {
     parts.push(`TRY WACC tuzağı riski mevcut — değerleme metodolojisi USD bazlı dönüşüme çevrilmedikçe DCF sonuçları ciddi hata payı taşıyabilir.`);
   }
 
-  // Sector-specific risks
-  if (inputs.sector === 'banking') {
-    parts.push(`Bankacılık sektör risklerinin başında net faiz marjı sıkışması, kredi kaybı karşılık artışı (LLP), BDDK sermaye yeterliliği revizyonları ve TCMB para politikası sürprizleri yer almaktadır.`);
-  } else if (inputs.sector === 'holding') {
-    parts.push(`Holding yapısında başlıca riskler arasında iştirak seviyesindeki operasyonel sorunların holdinge yansıması, sektörel konsantrasyon riski ve piyasa değerlemesinde konglomerat indirimi genişlemesi bulunmaktadır.`);
-  } else if (inputs.sector === 'industrial') {
-    parts.push(`Sanayi sektörlerinde maruziyet genel olarak hammadde fiyat volatilitesi, enerji maliyet artışları, talep daralması ve döviz kuru hareketleri şeklinde tezahür eder. THYAO gibi havacılık şirketleri için ise yakıt maliyeti, rezervasyon iptalleri ve jeopolitik kapatmalar kritik değişkenlerdir.`);
-  }
+  // Sector-specific risk narratives
+  const sectorRiskNarrative: Record<string, string> = {
+    banking: `Bankacılık sektöründe ana risk faktörleri: (i) net faiz marjı sıkışması — TCMB politika faizi değişimleri NIM üzerinde doğrudan etki yaratıyor, (ii) kredi riski — takipteki alacaklar (NPL) artışı ve karşılık yükü, (iii) BDDK sermaye yeterliliği revizyonları ve makro-ihtiyati önlemler, (iv) döviz pozisyonu açığı ve kur volatilitesi.`,
+    holding: `Holding yapısında başlıca riskler: (i) iştirak seviyesindeki operasyonel sorunların konsolide tabloya yansıması, (ii) sektörel konsantrasyon riski — portföyün belirli sektörlere aşırı ağırlığı, (iii) piyasa değerlemesinde konglomerat indirimi genişlemesi, (iv) iştirakler arası kaynak tahsisi verimsizliği.`,
+    aviation: `Havacılık sektörü riskleri: (i) yakıt maliyeti — toplam giderlerin %25-30'u, Brent fiyatına doğrudan duyarlı, (ii) döviz kuru — gelirin %80-90'ı hard currency, borç servisi USD bazlı, (iii) jeopolitik hava sahası kısıtlamaları ve slot kayıpları, (iv) turist taşımacılığı mevsimselliği ve makro tüketim baskısı.`,
+    steel: `Demir-çelik sektörü riskleri: (i) hammadde fiyat volatilitesi (demir cevheri, kok kömürü, hurda), (ii) CBAM 2026+ karbon maliyeti — ihracat kanalında ek yük, (iii) Çin fazla kapasitesi ve dumping baskısı, (iv) EPDK enerji tarifesi artışları üretim maliyetini doğrudan etkiliyor.`,
+    defense: `Savunma sektörü riskleri: (i) kamu alım bütçesi kesintileri veya proje ertelemesi — gelirin büyük kısmı SSB/TSK projeleri, (ii) ithal komponent tedarik zinciri aksamaları ve yaptırım riskleri, (iii) ihracat lisansı engelleri ve jeopolitik müşteri riski, (iv) Ar-Ge geri dönüş süresinin uzunluğu ve teknoloji eskimesi.`,
+    telecom: `Telekomünikasyon sektörü riskleri: (i) BTK tarife düzenlemeleri fiyatlama esnekliğini sınırlıyor, (ii) 5G yatırım döngüsü yüksek CAPEX gerektiriyor — finansman maliyeti baskısı, (iii) ARPU büyümesinin enflasyonun altında kalma riski, (iv) sayısal vergi ve düzenleyici yük artışı.`,
+    refinery: `Rafineri sektörü riskleri: (i) crack spread daralması — küresel rafine kapasitesi artışı, (ii) Brent petrol fiyat volatilitesi stok değerleme etkisi, (iii) çevresel düzenleme sıkılaşması ve karbon maliyeti, (iv) TL zayıflamasının yurt içi talepte yaratacağı baskı.`,
+    retail: `Perakende sektörü riskleri: (i) tüketici güveni düşüşü ve ihtiyari harcama daralması, (ii) gıda enflasyonu ve tedarik zinciri maliyetleri, (iii) minimum ücret artışlarının çift yönlü etkisi (maliyet + talep), (iv) online rekabet baskısı ve mağaza verimliliği erozyonu.`,
+    energy: `Enerji sektörü riskleri: (i) EPDK tarife düzenlemeleri gelir tavanını belirliyor, (ii) kur riski — USD bazlı yatırım maliyetleri, (iii) yenilenebilir enerji yatırımlarında lisans ve çevresel izin süreçleri, (iv) küresel enerji fiyat volatilitesi ve arz güvenliği.`,
+    industrial: `Sanayi sektöründe ana riskler: (i) hammadde fiyat volatilitesi ve tedarik zinciri aksamaları, (ii) enerji maliyet artışları (doğalgaz, elektrik), (iii) döviz kuru — ithal girdi bağımlılığı, (iv) iç ve dış talep yavaşlaması.`,
+  };
+  const sectorRisk = sectorRiskNarrative[inputs.sector] ?? sectorRiskNarrative.industrial;
+  parts.push(sectorRisk);
 
   parts.push(`Risk matrisi (etki × olasılık) yukarıda tespit edilen faktörleri 3×3 grid üzerinde konumlandırmakta ve yakın izleme önceliğini görsel olarak iletmektedir.`);
 
@@ -376,6 +480,13 @@ export function commentaryCompanyProfile(inputs: CompanyProfileInputs): string {
     holding: `Holding yapısında faaliyet gösteren şirket, birden fazla iştirak aracılığıyla farklı sektörlerde konumlanmakta. Portföy kompozisyonu, iştirak seviyesindeki operasyonel performanslar ve sermaye dağıtım politikası yatırımcı değerini şekillendiren başlıca faktörler.`,
     insurance: `Sigorta ana faaliyet kolu olan şirket, prim üretimi, rezerv yönetimi ve yatırım portföyü performansı üzerinden değer yaratmakta. SEDDK düzenlemeleri ve reasürans piyasası koşulları operasyonel dinamikleri etkileyen dış faktörler arasında.`,
     reit: `Gayrimenkul Yatırım Ortaklığı (GYO) yapısında faaliyet gösteren şirket, portföyündeki gayrimenkuller üzerinden kira ve değerleme geliri üretmekte. NAV (net aktif değer), portföy çeşitliliği ve kira doluluk oranı ana performans göstergeleri.`,
+    aviation: `Havacılık sektöründe faaliyet gösteren şirket; yolcu trafiği (RPK/ASK), doluluk oranı (load factor), birim gelir (RASK) ve birim maliyet (CASK) operasyonel performansın temel göstergeleri arasında. Yakıt maliyeti toplam giderlerin %25-30'unu oluştururken, döviz kuru (gelirin büyük kısmı USD/EUR bazlı), jeopolitik riskler ve hava sahası kısıtlamaları kârlılığı doğrudan etkileyen dış faktörler. Hub ağı kapasitesi, filo yapısı ve MRO (bakım-onarım) operasyonları uzun vadeli değer yaratmanın temelini oluşturmaktadır.`,
+    steel: `Demir-çelik sektöründe faaliyet gösteren şirket; üretim kapasitesi, kapasite kullanım oranı, hammadde tedarik maliyetleri (cevher, hurda, enerji) ve ihracat performansı temel göstergeler arasında. CBAM düzenlemeleri karbon maliyetini artırırken, küresel çelik talebi ve Çin rekabeti fiyatlama gücünü belirlemektedir.`,
+    telecom: `Telekomünikasyon sektöründe faaliyet gösteren şirket; abone bazı, ARPU (kullanıcı başına ortalama gelir), churn oranı ve data gelir payı operasyonel temel metrikleri. BTK düzenlemeleri, 5G yatırımları ve sayısal dönüşüm harcamaları sektör dinamiklerini şekillendirmektedir.`,
+    energy: `Enerji sektöründe faaliyet gösteren şirket; üretim kapasitesi, kapasite faktörü, enerji fiyatları (EPDK tarifesi veya serbest piyasa) ve yatırım planları operasyonel performansın belirleyicileri. YEKDEM/YEKA mekanizmaları ve karbon hedefleri düzenleyici çerçeveyi oluşturmaktadır.`,
+    refinery: `Rafineri sektöründe faaliyet gösteren şirket; crack spread (rafine marjı), kapasite kullanım oranı, ürün portföyü ve lojistik avantaj temel performans göstergeleri. Brent petrol fiyatı ve döviz kuru doğrudan kârlılığı etkileyen dış değişkenler.`,
+    defense: `Savunma ve havacılık sanayiinde faaliyet gösteren şirket; sipariş defteri (backlog), yurt dışı ihracat oranı, Ar-Ge harcama yoğunluğu ve kamu alım programları temel göstergeler. SSB projeleri ve NATO standartları sektörel çerçeveyi belirlemektedir.`,
+    retail: `Perakende sektöründe faaliyet gösteren şirket; mağaza sayısı, metrekare başına satış, sepet büyüklüğü ve özel marka penetrasyonu operasyonel temel metrikleri. Tüketici güveni, enflasyon ve gıda fiyatları sektörel dinamikleri şekillendirmektedir.`,
   };
 
   parts.push(sectorDesc[inputs.sector] ?? sectorDesc.industrial);
@@ -450,21 +561,35 @@ export function commentaryMacro(inputs: MacroInputs): string {
   parts.push(`Türkiye makro ortamı rapor tarihi itibarıyla yüksek enflasyon, sıkı para politikası ve TL'nin seyri üzerinden şekillenmektedir. USD/TRY ${inputs.usdTry ?? '—'} seviyesinde; TCMB politika faizi ${inputs.policyRate ?? '—'} olup enflasyon dinamikleri ve kur geçişkenliği fiyat istikrarının en kritik değişkenleri arasında yer almaktadır.`);
 
   const sectorImpact: Record<string, string> = {
-    industrial: `Sanayi sektöründe TL'nin değer kaybı ihracatçıya kısa vadeli avantaj sağlarken, ithalata bağlı hammadde maliyetlerini artırmakta; net etki her şirketin ihracat/ithalat dengesi ile şekillenmektedir. TCMB sıkı para politikası finansman maliyetini artırarak yatırım kararlarını geciktirebilir.`,
+    industrial: `Sanayi sektöründe TL'nin değer kaybı ihracatçıya kısa vadeli avantaj sağlarken, ithalata bağlı hammadde maliyetlerini artırmakta; net etki şirketin ihracat/ithalat dengesi ile şekillenmektedir. TCMB sıkı para politikası finansman maliyetini artırarak yatırım kararlarını geciktirebilir.`,
     banking: `Bankacılık sektörü için faiz artışları genelde NIM genişlemesi fırsatı sunsa da kredi talebinin yavaşlaması ve NPL artışı karşı etki olarak devreye giriyor. TCMB'nin makro-prudansiyel araçları (zorunlu karşılıklar, BDDK likidite düzenlemeleri) doğrudan kâr yapısını etkilemektedir.`,
     holding: `Holding yapısı yüksek enflasyon ortamında iştirak seviyesinde farklılaşan sektör dinamikleriyle karşılaşmaktadır. İştirak portföyünün defansif-döngüsel dengesi, yüksek faiz ortamında hisse performansının ana belirleyicilerinden birisidir.`,
     insurance: `Sigorta şirketleri için yüksek enflasyon hem prim fiyatlamasını hem hasar trendini baskılamakta; reasürans koşulları sıkılaşmakta. Yatırım portföyünün getirisi ise hisse karlılığını destekleyen en önemli faktörlerden.`,
     reit: `GYO sektörü yüksek faiz ortamında değerleme baskısı altında; konut/ofis satış dinamikleri zayıflasa da kira gelirleri enflasyon endeksli artış göstermekte.`,
+    aviation: `Havacılık sektöründe gelirin ~%80-90'ı USD/EUR bazlı olduğundan TL zayıflaması gelir tarafında olumlu etki yaratırken, USD bazlı borç servisi (uçak finansmanı) ve yakıt maliyeti (Brent) olumsuz baskı oluşturmaktadır. Brent petrol fiyatı ve jeopolitik hava sahası kısıtlamaları kısa vadeli kârlılığın en kritik dış değişkenleri.`,
+    steel: `Demir-çelik sektöründe EPDK enerji tarifeleri doğrudan maliyet baskısı oluştururken, TL zayıflaması ihracat rekabet gücünü desteklemektedir. AB CBAM karbon düzenlemesi 2026'dan itibaren ihracat kanalında ek maliyet unsuru. Küresel çelik fazla kapasitesi ve Çin dumping riski fiyatlama gücünü sınırlamaktadır.`,
+    defense: `Savunma sektöründe kamu alım bütçeleri ve SSB projeleri gelir görünürlüğünü belirlemektedir. TL zayıflaması USD bazlı sipariş defteri (backlog) değerini artırırken, ithal komponent maliyetlerini yükseltmektedir. **Jeopolitik bağlam:** İran-ABD gerilimi ve Hürmüz Boğazı kapanma riski küresel enerji fiyatlarını yukarı çekerken, bölgesel güvenlik kaygılarını artırarak savunma harcamalarına olumlu his yaratmaktadır. Rusya-Ukrayna çatışmasının devamı NATO üyelerinin savunma bütçelerini GDP'nin %2+'sine çıkarma baskısını sürdürmekte — bu Türk savunma sanayii ihracatı için yapısal talep artışı anlamına gelmektedir. Ortadoğu'daki tırmanan gerilimler, elektronik harp, İHA/SİHA ve hava savunma sistemlerine olan küresel talebi artırmakta; bu durum ASELSAN gibi yerli savunma şirketlerinin sipariş defterini olumlu etkilemektedir.`,
+    telecom: `Telekomünikasyon sektöründe ARPU artışı enflasyona paralel seyir gösterirken, yüksek CAPEX gerektiren 5G yatırımları finansman maliyeti baskısı altında. BTK tarife düzenlemeleri ve sayısal vergi politikaları sektörel marjları doğrudan etkilemektedir.`,
+    energy: `Enerji sektöründe EPDK tarife düzenlemeleri ve YEKDEM/YEKA mekanizmaları gelir tavanını belirlerken, TL zayıflaması USD bazlı enerji yatırımlarının geri dönüş süresini kısaltmaktadır. Küresel enerji fiyatları ve karbon hedefleri yatırım kararlarını yönlendirmektedir.`,
+    refinery: `Rafineri sektöründe crack spread (rafine marjı) ve Brent petrol fiyatı kârlılığın temel belirleyicileri. TL zayıflaması yurt içi pompa fiyatlarını artırarak talep baskısı oluştururken, ihracat kanalında rekabet avantajı sağlamaktadır.`,
+    retail: `Perakende sektöründe yüksek enflasyon tüketici güvenini ve harcama kalıplarını doğrudan etkilemektedir. Gıda enflasyonu özelinde defansif talep korunurken, ihtiyari harcamalar baskı altında. Minimum ücret artışları hem maliyet hem talep tarafını eş zamanlı etkilemektedir.`,
   };
 
   const sectorKey = inputs.sectorTr === 'Bankacılık' ? 'banking'
                   : inputs.sectorTr === 'Holding' ? 'holding'
                   : inputs.sectorTr === 'Sigorta' ? 'insurance'
                   : inputs.sectorTr === 'GYO' ? 'reit'
+                  : inputs.sectorTr === 'Havacılık' ? 'aviation'
+                  : inputs.sectorTr === 'Demir-Çelik' ? 'steel'
+                  : inputs.sectorTr === 'Savunma' ? 'defense'
+                  : inputs.sectorTr === 'Telekomünikasyon' ? 'telecom'
+                  : inputs.sectorTr === 'Enerji' ? 'energy'
+                  : inputs.sectorTr === 'Rafineri' ? 'refinery'
+                  : inputs.sectorTr === 'Perakende' ? 'retail'
                   : 'industrial';
   parts.push(sectorImpact[sectorKey]);
 
-  parts.push(`Küresel dinamiklerde petrol fiyatları, emtia trendleri ve FED politikaları TL üzerindeki dolaylı baskıyı belirleyen faktörler arasında. Jeopolitik gelişmeler (Ukrayna, Orta Doğu) özellikle enerji yoğun sanayi ve havacılık sektörlerinde doğrudan etkiye sahip.`);
+  parts.push(`Küresel dinamiklerde petrol fiyatları, emtia trendleri ve FED politikaları TL üzerindeki dolaylı baskıyı belirleyen faktörler arasında. Jeopolitik gelişmeler (Ukrayna, Orta Doğu) ${inputs.sectorTr} sektöründe doğrudan veya dolaylı etkiye sahiptir.`);
 
   return parts.join(' ');
 }
@@ -521,6 +646,7 @@ export function commentaryEsg(inputs: ESGInputs): string {
     holding: `Holding yapısında ESG değerlendirmesi iştirak bazlı yapılıyor; konsolide ESG skoru ağırlıklı ortalamayı yansıtmakta. Çevresel risk iştiraklerin sektörlerine göre farklılaşırken sosyal ve yönetişim uygulamaları holding düzeyinde standardize edilebiliyor. Holding'in sermaye yapısı ve uzun vadeli strateji açıklamaları yatırımcılar için önemli ESG sinyalleri.`,
     insurance: `Sigorta sektöründe ESG perspektifinde iklim değişikliği kaynaklı hasar riskine karşı portföy ayarlamaları, yatırım portföyünün ESG uyumu ve ürün portföyündeki sürdürülebilir seçenekler önemli. Sosyal boyut çalışan çeşitliliği ve adil fiyatlama uygulamalarıyla şekillenir.`,
     reit: `GYO sektörü ESG tarafında bina enerji verimliliği (LEED, BREEAM sertifikaları), yenilenebilir enerji kullanımı ve yeşil alan oranı ön plana çıkıyor. Sosyal boyut erişilebilirlik ve kiracı memnuniyeti, yönetişim ise portföy değerleme şeffaflığıyla ilişkili.`,
+    aviation: `Havacılık sektörü ESG profilinde Çevresel (E) boyut en kritik alan: CO₂ emisyon yoğunluğu, CORSIA (Uluslararası Havacılık Karbon Denkleştirme ve Azaltma Planı) uyumu, SAF (Sürdürülebilir Havacılık Yakıtı) kullanım oranı ve filo yakıt verimliliği değerlendirmenin temelini oluşturuyor. Sosyal (S) boyutta personel güvenliği, uçuş ekibi çalışma koşulları, sendika ilişkileri ve müşteri deneyimi ön plana çıkıyor. Yönetişim (G) tarafında devlet sahipliğinin yönetim bağımsızlığına etkisi, atama süreçlerinin şeffaflığı ve ilişkili taraf işlem politikası değerlendirme kriterleri arasında.`,
   };
 
   parts.push(sectorESG[inputs.sector] ?? sectorESG.industrial);
