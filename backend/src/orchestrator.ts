@@ -689,17 +689,45 @@ ${snPythonOutput.slice(0, 20000)}
       console.log(`[HYBRID] strategic_synthesis: Python → LLM enrichment`);
       const faOutput = String(accumulatedContext['financial_analysis_output'] ?? '').slice(0, 15000);
       const macroOutput = String(accumulatedContext['macro_analysis_output'] ?? '').slice(0, 10000);
-      const llmPrompt = `Sen bir stratejik analistsin. Aşağıda ${ticker} için sinyal haritası + finansal analiz + makro bağlam var.
+      const techOutput = String(accumulatedContext['technical_analysis_output'] ?? '').slice(0, 8000);
+      const valOutput = String(accumulatedContext['valuation_agent_output'] ?? '').slice(0, 8000);
+      const scOutput = String(accumulatedContext['sector_competition_output'] ?? '').slice(0, 5000);
+      const llmPrompt = `Sen ${ticker} için kapsamlı bir stratejik sentez raporu hazırlayan kıdemli kurumsal araştırma analistisin.
 
-GÖREV:
-1. Sinyal YAKINSAMA ve SAPMA analizi yap
-2. BULL senaryosu yaz (tetikleyiciler, olasılık, hedef)
-3. BAZ senaryosu yaz
-4. BEAR senaryosu yaz
-5. Analitik sonuç ve yatırım tezi öner
-6. TÜRKÇE, kurumsal araştırma tarzında
+Aşağıda Python engine'in ürettiği sinyal haritası ve tüm upstream analizler var. Senin görevin bunları tutarlı bir yatırım tezi haline getirmek.
 
-## Sinyal Haritası (Python)
+## GÖREVLER (HEPSİNİ TAMAMLA):
+
+### 1. SİNYAL ANALİZİ
+- Pozitif, negatif ve nötr sinyalleri LISTELE ve AĞIRLIKLANDIR
+- Sinyaller arası ÇELIŞKILERI tespit et ve ÇÖZÜMLE
+- Konverjans skoru ne anlama geliyor YORUMLA
+- Finansal sağlık (Piotroski, Altman) ile teknik momentum UYUMLU mu?
+
+### 2. BULL SENARYOSU (Detaylı)
+- 3-5 somut tetikleyici (kapasite artışı, sipariş, marj iyileşmesi, makro destek vb.)
+- Olasılık tahmini (%)
+- 12 aylık hedef fiyat aralığı
+- Bu senaryonun gerçekleşmesi için izlenmesi gereken KPI'lar
+
+### 3. BAZ SENARYOSU (Detaylı)
+- Mevcut trendin devam ettiği varsayım
+- Hedef fiyat
+- Ana varsayımlar ve hassasiyet
+
+### 4. BEAR SENARYOSU (Detaylı)
+- 3-5 risk tetikleyicisi (marj erozyonu, talep düşüşü, kur baskısı, jeopolitik vb.)
+- Olasılık tahmini (%)
+- Aşağı yönlü hedef fiyat
+- Stop-loss seviyeleri
+
+### 5. YATIRIM TEZİ
+- Net öneri: AL / TUT / SAT — gerekçesiyle
+- Zaman ufku (kısa/orta/uzun vade)
+- Ana katalizörler ve izleme noktaları
+- Risk/getiri dengesi
+
+## Sinyal Haritası (Python — deterministik)
 ${pythonOutput}
 
 ## Finansal Analiz
@@ -708,7 +736,18 @@ ${faOutput}
 ## Makro Bağlam
 ${macroOutput}
 
-Minimum 3000 karakter.`;
+## Teknik Analiz
+${techOutput}
+
+## Değerleme
+${valOutput}
+
+## Sektör Rekabet
+${scOutput}
+
+## Ticker: ${ticker} | Sektör: ${accumulatedContext['sector_override'] ?? 'industrial'}
+
+ÇIKTI FORMATI: Zengin Türkçe markdown — her bölüm ayrı başlık, tablolar, somut rakamlar. Goldman Sachs/Morgan Stanley araştırma raporu tarzında. Minimum 5000 karakter.`;
       try {
         const enrichResult = await runAgent({ agentId: 'strategic_synthesis', taskPrompt: llmPrompt, context: accumulatedContext, timeoutMs: getAgentTimeout('strategic_synthesis') });
         if (enrichResult.success && enrichResult.output.length > 500) {
