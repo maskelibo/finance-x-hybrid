@@ -377,21 +377,28 @@ export function timelineChart(events: TimelineEvent[], title = ''): string {
     }
   }
 
-  // Events — alternating above/below with connecting line
-  valid.slice(0, 20).forEach((e, i) => {
+  // Events — alternating above/below, skip labels when too close
+  const minLabelGap = 55; // minimum px between labels to avoid overlap
+  let lastLabelX = -999;
+  valid.slice(0, 16).forEach((e, i) => {
     const x = xScale(e.ts);
     const above = i % 2 === 0;
-    const pinLen = 28;
+    const pinLen = 30;
     const y = above ? yMid - pinLen : yMid + pinLen;
-    const lblY = above ? y - 10 : y + 14;
     const color = dirColor[e.direction ?? 'neutral'] || COLORS.muted;
 
+    // Pin line + dot always rendered
     p.push(`<line x1="${x}" y1="${yMid}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="1.2" stroke-dasharray="2,2"/>`);
     p.push(`<circle cx="${x}" cy="${y}" r="4.5" fill="${COLORS.bg}" stroke="${color}" stroke-width="2"/>`);
     p.push(`<circle cx="${x}" cy="${y}" r="2" fill="${color}"/>`);
 
-    const lblTrunc = e.label.length > 28 ? e.label.slice(0, 28) + '…' : e.label;
-    p.push(`<text x="${x}" y="${lblY}" text-anchor="middle" font-size="7.5" font-weight="500" fill="${COLORS.text}">${escapeSvg(lblTrunc)}</text>`);
+    // Only show label if far enough from previous label
+    if (Math.abs(x - lastLabelX) >= minLabelGap) {
+      const lblY = above ? y - 10 : y + 14;
+      const lblTrunc = e.label.length > 24 ? e.label.slice(0, 24) + '…' : e.label;
+      p.push(`<text x="${x}" y="${lblY}" text-anchor="middle" font-size="7" font-weight="500" fill="${COLORS.text}">${escapeSvg(lblTrunc)}</text>`);
+      lastLabelX = x;
+    }
   });
 
   p.push(c.close);

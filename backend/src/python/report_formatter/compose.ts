@@ -693,7 +693,9 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
   // ----- Risk Matrix (populated from red_flags + divergences) -----
 
-  const riskMatrix = buildRiskMatrix(fa, ss);
+  const riskSector = TICKER_SECTOR_OVERRIDE[ticker.toUpperCase()]
+    ?? String(fa?.sector ?? val?.sector ?? 'industrial').toLowerCase();
+  const riskMatrix = buildRiskMatrix(fa, ss, qa, riskSector);
 
   // ----- XII. Catalysts -----
 
@@ -2211,6 +2213,8 @@ function buildMultiplesRows(
 function buildRiskMatrix(
   fa: Record<string, unknown> | null,
   ss: Record<string, unknown> | null,
+  qa: Record<string, unknown> | null,
+  sector: string,
 ): Record<string, string> {
   const cells: Record<string, string[]> = {
     high_low: [], high_med: [], high_high: [],
@@ -2222,21 +2226,99 @@ function buildRiskMatrix(
     const impactLevel = severity === 'critical' ? 'high' : severity === 'warning' ? 'med' : 'low';
     const l = label.toLowerCase();
     let likelihood: string;
-    if (/kesin|beklenen|certain|expected|already/.test(l)) likelihood = 'high';
-    else if (/olası|olasi|likely|probable/.test(l)) likelihood = 'med';
+    if (/kesin|beklenen|certain|expected|already|mevcut|gerçekleş/.test(l)) likelihood = 'high';
+    else if (/olası|olasi|likely|probable|muhtemel|risk/.test(l)) likelihood = 'med';
     else likelihood = 'low';
     return [impactLevel, likelihood];
   };
 
+  // 1) FA red_flags (if available)
   for (const f of arrayFrom(fa?.red_flags ?? [])) {
-    const label = String(f.code ?? f.message ?? '').slice(0, 30);
+    const label = String(f.code ?? f.message ?? '').slice(0, 40);
+    if (!label || label === 'undefined') continue;
     const [imp, lik] = classify(label, String(f.severity ?? '').toLowerCase());
     const key = `${imp}_${lik}`;
     if (cells[key]) cells[key].push(label);
   }
+
+  // 2) SS divergences
   for (const d of arrayFrom(ss?.divergences ?? [])) {
-    const s = String(d).slice(0, 30);
-    cells.med_med.push(s);   // divergences default to center cell
+    const s = String(d).slice(0, 40);
+    if (s && s !== 'undefined') cells.med_med.push(s);
+  }
+
+  // 3) QA-derived risk indicators (always available)
+  const qaScore = qa?.overall_score != null ? Number(qa.overall_score) : null;
+  if (qaScore != null && qaScore < 0.6) {
+    cells.high_med.push('Düşük QA skoru — veri güvenilirliği sınırlı');
+  }
+
+  // 4) Sector-default risks (if matrix is still too empty)
+  const totalEntries = Object.values(cells).reduce((s, l) => s + l.length, 0);
+  if (totalEntries < 3) {
+    const sectorDefaults: Record<string, Array<[string, string, string]>> = {
+      // [label, impact, likelihood]
+      aviation: [
+        ['Yakıt maliyeti volatilitesi', 'high', 'high'],
+        ['Jeopolitik hava sahası riski', 'high', 'med'],
+        ['Döviz kuru baskısı (USD borç)', 'med', 'high'],
+        ['Mevsimsel talep dalgalanması', 'low', 'high'],
+      ],
+      steel: [
+        ['CBAM karbon maliyeti (2026+)', 'high', 'high'],
+        ['Çin dumping baskısı', 'high', 'med'],
+        ['Enerji tarifesi artışı', 'med', 'high'],
+        ['Hammadde tedarik kesintisi', 'med', 'med'],
+      ],
+      defense: [
+        ['Kamu bütçe kesintisi / proje ertelemesi', 'high', 'med'],
+        ['İthal komponent yaptırım riski', 'high', 'low'],
+        ['İhracat lisans engelleri', 'med', 'med'],
+        ['Ar-Ge geri dönüş gecikmesi', 'med', 'high'],
+        ['Döviz kuru — ithal komponent maliyeti', 'low', 'high'],
+      ],
+      banking: [
+        ['NIM sıkışması (faiz politikası)', 'high', 'high'],
+        ['NPL artışı ve karşılık yükü', 'high', 'med'],
+        ['BDDK düzenleme sürprizi', 'med', 'med'],
+        ['Döviz pozisyonu açığı', 'med', 'low'],
+      ],
+      telecom: [
+        ['BTK tarife düzenlemesi', 'high', 'med'],
+        ['5G CAPEX yükü', 'med', 'high'],
+        ['ARPU büyüme yavaşlaması', 'med', 'med'],
+        ['Rekabet baskısı (churn)', 'low', 'high'],
+      ],
+      refinery: [
+        ['Crack spread daralması', 'high', 'med'],
+        ['Brent fiyat volatilitesi', 'high', 'high'],
+        ['Çevre düzenleme sıkılaşması', 'med', 'med'],
+        ['TL zayıflaması — iç talep baskısı', 'low', 'high'],
+      ],
+      holding: [
+        ['İştirak operasyonel riski', 'high', 'med'],
+        ['Konglomerat indirimi genişlemesi', 'med', 'high'],
+        ['Sektörel konsantrasyon', 'med', 'med'],
+        ['Sermaye dağıtım verimsizliği', 'low', 'med'],
+      ],
+      retail: [
+        ['Tüketici güven düşüşü', 'high', 'high'],
+        ['Gıda enflasyonu baskısı', 'med', 'high'],
+        ['Online rekabet erozyonu', 'med', 'med'],
+        ['Minimum ücret maliyet artışı', 'low', 'high'],
+      ],
+      industrial: [
+        ['Hammadde fiyat volatilitesi', 'high', 'med'],
+        ['Döviz kuru riski', 'med', 'high'],
+        ['Enerji maliyet artışı', 'med', 'med'],
+        ['Talep yavaşlaması', 'low', 'med'],
+      ],
+    };
+    const defaults = sectorDefaults[sector] ?? sectorDefaults.industrial;
+    for (const [label, imp, lik] of defaults) {
+      const key = `${imp}_${lik}`;
+      if (cells[key] && cells[key].length < 2) cells[key].push(label);
+    }
   }
 
   const out: Record<string, string> = {};
