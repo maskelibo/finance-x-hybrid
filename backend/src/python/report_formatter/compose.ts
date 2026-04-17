@@ -491,6 +491,25 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   // last_close may not be in tech output — fallback to orchestrator pre-fetch or Bollinger middle (≈MA20)
   const lastClose = numOrNull(techPriceData.last_close ?? tech?.last_close ?? ctx['last_close_price'] ?? techVolatility.bollinger_middle ?? techMA.ma_20);
   const volumeAvg = numOrNull(techPriceData.volume_avg ?? tech?.volume_avg ?? tech?.average_volume);
+  const maTable: Array<{ period: string; value: string; vs_close: string }> = [];
+  const maEntries: Array<[string, unknown]> = [
+    ['MA 20', techMA.ma_20 ?? techMA.ma20 ?? tech?.ma20],
+    ['MA 50', techMA.ma_50 ?? techMA.ma50 ?? tech?.ma50],
+    ['MA 100', techMA.ma_100 ?? techMA.ma100 ?? tech?.ma100],
+    ['MA 200', techMA.ma_200 ?? techMA.ma200 ?? tech?.ma200],
+  ];
+  for (const [label, raw] of maEntries) {
+    const v = numOrNull(raw);
+    if (v != null) {
+      const diff = lastClose != null ? ((lastClose / v - 1) * 100) : null;
+      maTable.push({
+        period: label,
+        value: formatTRY(v, 2) + ' TL',
+        vs_close: diff != null ? `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%` : '—',
+      });
+    }
+  }
+
   const technical = tech ? {
     trend_label: trend === 'bullish' ? 'Yükseliş' : trend === 'bearish' ? 'Düşüş' : trend === 'neutral' ? 'Nötr' : '—',
     rsi: rsi != null ? rsi.toFixed(1) : '—',
@@ -1085,6 +1104,8 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Section VII
     technical,
     technical_has: technicalHas,
+    ma_table: maTable as unknown as TemplateValue,
+    ma_table_has: maTable.length > 0,
 
     // Section VIII
     esg,
