@@ -1077,8 +1077,9 @@ export function sparkline(values: Array<number | null>, opts: {
   const parts: string[] = [];
   parts.push(`<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;width:${w}px;height:${h}px">`);
   parts.push(`<path d="${path.trim()}" stroke="${color}" stroke-width="1.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`);
-  if (opts.showDot !== false && lastPt) {
-    parts.push(`<circle cx="${lastPt[0].toFixed(1)}" cy="${lastPt[1].toFixed(1)}" r="2.5" fill="${color}"/>`);
+  if (opts.showDot !== false && lastPt != null) {
+    const lp = lastPt as [number, number];
+    parts.push(`<circle cx="${lp[0].toFixed(1)}" cy="${lp[1].toFixed(1)}" r="2.5" fill="${color}"/>`);
   }
   parts.push('</svg>');
   return parts.join('');
