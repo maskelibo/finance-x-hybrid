@@ -301,7 +301,7 @@ export function resumeSession(sessionId: string): boolean {
   const session = db.prepare(`SELECT * FROM analysis_sessions WHERE id = ?`).get(sessionId) as any;
   if (!session) return false;
   // Only resume paused/failed sessions — never completed
-  if (!['paused_rate_limit', 'paused_stuck_agent', 'failed'].includes(session.status)) return false;
+  if (!['paused', 'paused_rate_limit', 'paused_stuck_agent', 'failed'].includes(session.status)) return false;
   const selectedLayers = parseSelectedLayers(session.selected_layers);
 
   const promise = executeSession(session.id, session.ticker, session.runtime_mode as RuntimeMode, selectedLayers).catch((err) => {
@@ -458,14 +458,56 @@ async function runSingleAgent(
   }
   if (PYTHON_TECHNICAL_ANALYSIS_ENABLED && agentId === 'technical_analysis') {
     const outcome = await runPythonTechnicalAnalysis(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // HYBRID: Python indicators hesapladı, LLM yorumlasın
+    const pythonOutput = String(accumulatedContext['technical_analysis_output'] ?? '');
+    if (pythonOutput.length > 100) {
+      console.log(`[HYBRID] technical_analysis: Python → LLM enrichment`);
+      const llmPrompt = `Sen bir teknik analistsin. Aşağıda ${ticker} için hesaplanan teknik göstergeler var.
+
+1. Her göstergeyi YORUMLA (RSI, MACD, Bollinger, MA'lar)
+2. Kısa/orta/uzun vade trend DEĞERLENDİR
+3. Destek ve direnç seviyeleri BELİRLE
+4. Bull ve Bear senaryoları YAZ
+5. TÜRKÇE, kurumsal tarzda
+
+## Python Teknik Göstergeler
+${pythonOutput.slice(0, 10000)}
+
+Minimum 1500 karakter.`;
+      try {
+        const enrichResult = await runAgent({ agentId: 'technical_analysis', taskPrompt: llmPrompt, context: accumulatedContext, timeoutMs: getAgentTimeout('technical_analysis') });
+        if (enrichResult.success && enrichResult.output.length > 300) {
+          let merged: Record<string, unknown>;
+          try { merged = JSON.parse(pythonOutput); } catch { merged = {}; }
+          merged.llm_narrative = enrichResult.output;
+          merged.hybrid = true;
+          const mergedJson = JSON.stringify(merged);
+          db.prepare(`UPDATE agent_runs SET output_text = ? WHERE id = ?`).run(mergedJson, runId);
+          accumulatedContext['technical_analysis_output'] = mergedJson;
+          console.log(`[HYBRID] technical_analysis: merged`);
+        }
+      } catch (err: any) {
+        console.warn(`[HYBRID] technical_analysis LLM error: ${err.message}`);
+      }
+    }
+    return 'ok';
   }
   if (PYTHON_KAP_WATCH_ENABLED && agentId === 'kap_watch') {
     const outcome = await runPythonKapWatch(sessionId, runId, ticker, accumulatedContext);
     return outcome === 'ok' ? 'ok' : 'failed';
   }
   if (PYTHON_DATA_COLLECTION_ENABLED && agentId === 'data_collection') {
-    const outcome = await runPythonDataCollection(sessionId, runId, ticker, accumulatedContext);
+    let outcome = await runPythonDataCollection(sessionId, runId, ticker, accumulatedContext);
+    // KAP API can return transient 500 errors — retry once after 5s
+    if (outcome !== 'ok') {
+      console.warn(`[PIPELINE] data_collection failed — retrying once after 5s`);
+      await new Promise(r => setTimeout(r, 5000));
+      db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, output_text = NULL, error_message = 'auto-retry after KAP API failure' WHERE id = ?`)
+        .run(runId);
+      outcome = await runPythonDataCollection(sessionId, runId, ticker, accumulatedContext);
+      if (outcome === 'ok') console.log(`[PIPELINE] data_collection retry succeeded`);
+    }
     return outcome === 'ok' ? 'ok' : 'failed';
   }
   if (PYTHON_PARSE_STANDARDIZATION_ENABLED && agentId === 'parse_standardization') {
@@ -478,15 +520,145 @@ async function runSingleAgent(
   }
   if (PYTHON_FINANCIAL_ANALYSIS_ENABLED && agentId === 'financial_analysis') {
     const outcome = await runPythonFinancialAnalysis(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // HYBRID: Python hesapladı, şimdi LLM yorumlasın
+    const pythonOutput = String(accumulatedContext['financial_analysis_output'] ?? '');
+    if (pythonOutput.length > 100) {
+      console.log(`[HYBRID] financial_analysis: Python ${Math.round(pythonOutput.length/1024)}KB → LLM enrichment starting`);
+      const llmPrompt = `Sen bir kurumsal araştırma analistisin. Aşağıda Python engine'in hesapladığı finansal metrikler var. Senin görevin:
+
+1. Her metriği YORUMLA — sadece sayıyı tekrarlama, ne anlama geldiğini açıkla
+2. Sektör benchmark'larıyla KARŞILAŞTIR
+3. Yatırım kararıyla BAĞLA — bu metrik neden önemli, ne yapılmalı
+4. TÜRKÇE yaz, kurumsal araştırma tarzında
+
+## Python Engine Çıktısı (deterministik — doğru kabul et, tekrar hesaplama)
+${pythonOutput.slice(0, 30000)}
+
+## Upstream Context
+Ticker: ${ticker}
+Sektör: ${accumulatedContext['sector_override'] ?? 'industrial'}
+
+ÇIKTI FORMATI: Zengin Türkçe markdown — tablolar, yorumlar, risk tespitleri. Minimum 3000 karakter.`;
+
+      try {
+        const enrichResult = await runAgent({
+          agentId: 'financial_analysis',
+          taskPrompt: llmPrompt,
+          context: accumulatedContext,
+          timeoutMs: getAgentTimeout('financial_analysis'),
+        });
+        if (enrichResult.success && enrichResult.output.length > 500) {
+          // Merge: Python structured data + LLM narrative
+          let merged: Record<string, unknown>;
+          try { merged = JSON.parse(pythonOutput); } catch { merged = {}; }
+          merged.llm_narrative = enrichResult.output;
+          merged.hybrid = true;
+          const mergedJson = JSON.stringify(merged);
+          db.prepare(`UPDATE agent_runs SET output_text = ? WHERE id = ?`).run(mergedJson, runId);
+          accumulatedContext['financial_analysis_output'] = mergedJson;
+          console.log(`[HYBRID] financial_analysis: merged ${Math.round(pythonOutput.length/1024)}KB Python + ${Math.round(enrichResult.output.length/1024)}KB LLM = ${Math.round(mergedJson.length/1024)}KB`);
+        } else {
+          console.warn(`[HYBRID] financial_analysis LLM enrichment failed or too short — keeping Python-only output`);
+        }
+      } catch (err: any) {
+        console.warn(`[HYBRID] financial_analysis LLM enrichment error: ${err.message} — keeping Python-only`);
+      }
+    }
+    return 'ok';
   }
   if (PYTHON_MACRO_ANALYSIS_ENABLED && agentId === 'macro_analysis') {
     const outcome = await runPythonMacroAnalysis(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // HYBRID: Python FX/rates topladı, şimdi LLM jeopolitik analiz yapsın
+    const pythonOutput = String(accumulatedContext['macro_analysis_output'] ?? '');
+    console.log(`[HYBRID] macro_analysis: Python ${pythonOutput.length}B → LLM enrichment starting`);
+    const sectorLabel = accumulatedContext['sector_override'] ?? 'industrial';
+    const llmPrompt = `Sen bir makroekonomi analistisin. Aşağıda TCMB/FX verileri var. Senin görevin:
+
+1. Türkiye makro ortamını DEĞERLENDIR — enflasyon, faiz, kur, büyüme
+2. JEOPOLİTİK ANALİZ yap — İran-ABD gerilimi, Hürmüz Boğazı, Rusya-Ukrayna, NATO
+3. Bu makro/jeopolitik ortamın ${ticker} (${sectorLabel} sektörü) üzerindeki ETKİSİNİ analiz et
+4. TÜRKÇE yaz, kurumsal araştırma tarzında
+
+## Python Engine Çıktısı (TCMB verileri)
+${pythonOutput}
+
+## Upstream Context
+Ticker: ${ticker}
+Sektör: ${sectorLabel}
+
+ÇIKTI FORMATI: Zengin Türkçe markdown — makro tablo, jeopolitik değerlendirme, sektör etkisi. Minimum 2000 karakter.`;
+
+    try {
+      const enrichResult = await runAgent({
+        agentId: 'macro_analysis',
+        taskPrompt: llmPrompt,
+        context: accumulatedContext,
+        timeoutMs: getAgentTimeout('macro_analysis'),
+      });
+      if (enrichResult.success && enrichResult.output.length > 500) {
+        let merged: Record<string, unknown>;
+        try { merged = JSON.parse(pythonOutput); } catch { merged = {}; }
+        merged.llm_narrative = enrichResult.output;
+        merged.hybrid = true;
+        const mergedJson = JSON.stringify(merged);
+        db.prepare(`UPDATE agent_runs SET output_text = ? WHERE id = ?`).run(mergedJson, runId);
+        accumulatedContext['macro_analysis_output'] = mergedJson;
+        console.log(`[HYBRID] macro_analysis: merged ${pythonOutput.length}B Python + ${Math.round(enrichResult.output.length/1024)}KB LLM`);
+      }
+    } catch (err: any) {
+      console.warn(`[HYBRID] macro_analysis LLM enrichment error: ${err.message}`);
+    }
+    return 'ok';
   }
   if (PYTHON_SENTIMENT_NEWS_ENABLED && agentId === 'sentiment_news_agent') {
     const outcome = await runPythonSentimentNews(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // HYBRID: Python haber topladı, şimdi LLM sentiment yorumu yapsın
+    const snPythonOutput = String(accumulatedContext['sentiment_news_agent_output'] ?? '');
+    if (snPythonOutput.length > 100) {
+      console.log(`[HYBRID] sentiment_news: Python ${Math.round(snPythonOutput.length/1024)}KB → LLM enrichment starting`);
+      const snLlmPrompt = `Sen bir haber analisti ve sentiment uzmanısın. Aşağıda Python engine'in topladığı son 30 günlük haber verileri ve sentiment skorları var. Senin görevin:
+
+1. Haber akışını ÖZETLE — ana temalar, dikkat çeken gelişmeler
+2. Sentiment dağılımını YORUMLA — pozitif/nötr/negatif oranı ne diyor
+3. Önemli haberleri SIRALA — yatırım kararını etkileyecek ana haberler
+4. KAP bildirimleriyle haberleri BAĞLA — tutarlılık var mı
+5. Kısa vadeli katalizör/risk olabilecek haber temalarını BELİRLE
+6. TÜRKÇE yaz, kurumsal araştırma tarzında
+
+## Python Haber/Sentiment Çıktısı
+${snPythonOutput.slice(0, 20000)}
+
+## Ticker: ${ticker} | Sektör: ${accumulatedContext['sector_override'] ?? 'industrial'}
+
+ÇIKTI FORMATI: Zengin Türkçe markdown — haber özet tablosu, sentiment değerlendirmesi, katalizör/risk listesi. Minimum 2000 karakter.`;
+
+      try {
+        const enrichResult = await runAgent({
+          agentId: 'sentiment_news_agent',
+          taskPrompt: snLlmPrompt,
+          context: accumulatedContext,
+          timeoutMs: getAgentTimeout('sentiment_news_agent'),
+        });
+        if (enrichResult.success && enrichResult.output.length > 500) {
+          let merged: Record<string, unknown>;
+          try { merged = JSON.parse(snPythonOutput); } catch { merged = {}; }
+          merged.llm_narrative = enrichResult.output;
+          merged.hybrid = true;
+          const mergedJson = JSON.stringify(merged);
+          db.prepare(`UPDATE agent_runs SET output_text = ? WHERE id = ?`).run(mergedJson, runId);
+          accumulatedContext['sentiment_news_agent_output'] = mergedJson;
+          console.log(`[HYBRID] sentiment_news: merged ${Math.round(snPythonOutput.length/1024)}KB Python + ${Math.round(enrichResult.output.length/1024)}KB LLM`);
+        } else {
+          console.warn(`[HYBRID] sentiment_news LLM enrichment failed or too short — keeping Python-only`);
+        }
+      } catch (err: any) {
+        console.warn(`[HYBRID] sentiment_news LLM enrichment error: ${err.message} — keeping Python-only`);
+      }
+    }
+    return 'ok';
   }
   if (PYTHON_EVENT_CLASSIFICATION_ENABLED && agentId === 'event_classification') {
     const outcome = await runPythonEventClassification(sessionId, runId, ticker, accumulatedContext);
@@ -510,19 +682,198 @@ async function runSingleAgent(
   }
   if (PYTHON_STRATEGIC_SYNTHESIS_ENABLED && agentId === 'strategic_synthesis') {
     const outcome = await runPythonStrategicSynthesis(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // HYBRID: Python sinyal haritası oluşturdu, LLM senaryo analizi yapsın
+    const pythonOutput = String(accumulatedContext['strategic_synthesis_output'] ?? '');
+    if (pythonOutput.length > 50) {
+      console.log(`[HYBRID] strategic_synthesis: Python → LLM enrichment`);
+      const faOutput = String(accumulatedContext['financial_analysis_output'] ?? '').slice(0, 15000);
+      const macroOutput = String(accumulatedContext['macro_analysis_output'] ?? '').slice(0, 10000);
+      const llmPrompt = `Sen bir stratejik analistsin. Aşağıda ${ticker} için sinyal haritası + finansal analiz + makro bağlam var.
+
+GÖREV:
+1. Sinyal YAKINSAMA ve SAPMA analizi yap
+2. BULL senaryosu yaz (tetikleyiciler, olasılık, hedef)
+3. BAZ senaryosu yaz
+4. BEAR senaryosu yaz
+5. Analitik sonuç ve yatırım tezi öner
+6. TÜRKÇE, kurumsal araştırma tarzında
+
+## Sinyal Haritası (Python)
+${pythonOutput}
+
+## Finansal Analiz
+${faOutput}
+
+## Makro Bağlam
+${macroOutput}
+
+Minimum 3000 karakter.`;
+      try {
+        const enrichResult = await runAgent({ agentId: 'strategic_synthesis', taskPrompt: llmPrompt, context: accumulatedContext, timeoutMs: getAgentTimeout('strategic_synthesis') });
+        if (enrichResult.success && enrichResult.output.length > 500) {
+          let merged: Record<string, unknown>;
+          try { merged = JSON.parse(pythonOutput); } catch { merged = {}; }
+          merged.llm_narrative = enrichResult.output;
+          merged.hybrid = true;
+          const mergedJson = JSON.stringify(merged);
+          db.prepare(`UPDATE agent_runs SET output_text = ? WHERE id = ?`).run(mergedJson, runId);
+          accumulatedContext['strategic_synthesis_output'] = mergedJson;
+          console.log(`[HYBRID] strategic_synthesis: merged`);
+        }
+      } catch (err: any) {
+        console.warn(`[HYBRID] strategic_synthesis LLM error: ${err.message}`);
+      }
+    }
+    return 'ok';
   }
   if (PYTHON_VALUATION_ENABLED && agentId === 'valuation_agent') {
     const outcome = await runPythonValuation(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // HYBRID: Python DCF/peer hesapladı, şimdi LLM senaryo analizi yapsın
+    const valPythonOutput = String(accumulatedContext['valuation_agent_output'] ?? '');
+    if (valPythonOutput.length > 50) {
+      console.log(`[HYBRID] valuation_agent: Python ${Math.round(valPythonOutput.length/1024)}KB → LLM enrichment starting`);
+      const faContext = String(accumulatedContext['financial_analysis_output'] ?? '').slice(0, 15000);
+      const valLlmPrompt = `Sen bir kurumsal araştırma değerleme uzmanısın. Aşağıda Python engine'in hesapladığı DCF değerleme ve emsal çarpanları var. Senin görevin:
+
+1. DCF sonucunu YORUMLA — hisse başına değer vs piyasa fiyatı, upside/downside
+2. WACC ve terminal büyüme varsayımlarını SORGULA — hassasiyet analizi yap
+3. Emsal çarpanlarını (EV/EBITDA, P/E) KARŞILAŞTIR — şirket ucuz mu pahalı mı
+4. BEAR / BASE / BULL senaryoları oluştur: her biri için hedef fiyat + tetikleyiciler + olasılık
+5. Türk piyasası için TRY WACC riski varsa UYAR
+6. TÜRKÇE yaz, kurumsal araştırma tarzında
+
+## Python Değerleme Çıktısı
+${valPythonOutput.slice(0, 20000)}
+
+## Finansal Analiz Bağlamı
+${faContext}
+
+## Ticker: ${ticker} | Sektör: ${accumulatedContext['sector_override'] ?? 'industrial'}
+
+ÇIKTI FORMATI: Zengin Türkçe markdown — DCF tablosu, senaryo karşılaştırma, duyarlılık matrisi, yatırım tezi. Minimum 4000 karakter.`;
+
+      try {
+        const enrichResult = await runAgent({
+          agentId: 'valuation_agent',
+          taskPrompt: valLlmPrompt,
+          context: accumulatedContext,
+          timeoutMs: getAgentTimeout('valuation_agent'),
+        });
+        if (enrichResult.success && enrichResult.output.length > 500) {
+          let merged: Record<string, unknown>;
+          try { merged = JSON.parse(valPythonOutput); } catch { merged = {}; }
+          merged.llm_narrative = enrichResult.output;
+          merged.hybrid = true;
+          const mergedJson = JSON.stringify(merged);
+          db.prepare(`UPDATE agent_runs SET output_text = ? WHERE id = ?`).run(mergedJson, runId);
+          accumulatedContext['valuation_agent_output'] = mergedJson;
+          console.log(`[HYBRID] valuation_agent: merged ${Math.round(valPythonOutput.length/1024)}KB Python + ${Math.round(enrichResult.output.length/1024)}KB LLM = ${Math.round(mergedJson.length/1024)}KB`);
+        } else {
+          console.warn(`[HYBRID] valuation_agent LLM enrichment failed or too short (${enrichResult.output.length} chars) — keeping Python-only`);
+        }
+      } catch (err: any) {
+        console.warn(`[HYBRID] valuation_agent LLM enrichment error: ${err.message} — keeping Python-only`);
+      }
+    }
+    return 'ok';
   }
   if (PYTHON_ANALYST_CONSENSUS_ENABLED && agentId === 'analyst_consensus_agent') {
     const outcome = await runPythonAnalystConsensus(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // HYBRID: Python analist veri topladı, şimdi LLM yorumlasın
+    const acPythonOutput = String(accumulatedContext['analyst_consensus_agent_output'] ?? '');
+    if (acPythonOutput.length > 50) {
+      console.log(`[HYBRID] analyst_consensus: Python ${Math.round(acPythonOutput.length/1024)}KB → LLM enrichment starting`);
+      const acLlmPrompt = `Sen bir kurumsal araştırma analistisin. Aşağıda analist konsensüs verileri var. Senin görevin:
+
+1. Analist hedef fiyat dağılımını YORUMLA — ortalama, medyan, min/max
+2. BUY/HOLD/SELL dağılımını DEĞERLENDİR — konsensüs ne diyor
+3. Revizyon trendini ANALİZ ET — analistler yukarı mı aşağı mı revize ediyor
+4. Konsensüsün GÜVENİLİRLİĞİNİ sorgula — kaç analist, ne kadar güncel, sapma ne kadar
+5. Crowded trade riski varsa UYAR
+6. TÜRKÇE yaz, kurumsal araştırma tarzında
+
+## Analist Konsensüs Verisi
+${acPythonOutput.slice(0, 15000)}
+
+## Ticker: ${ticker} | Sektör: ${accumulatedContext['sector_override'] ?? 'industrial'}
+
+ÇIKTI FORMATI: Zengin Türkçe markdown — konsensüs tablosu, revizyon trendi, güvenilirlik değerlendirmesi. Minimum 2000 karakter.`;
+
+      try {
+        const enrichResult = await runAgent({
+          agentId: 'analyst_consensus_agent',
+          taskPrompt: acLlmPrompt,
+          context: accumulatedContext,
+          timeoutMs: getAgentTimeout('analyst_consensus_agent'),
+        });
+        if (enrichResult.success && enrichResult.output.length > 500) {
+          let merged: Record<string, unknown>;
+          try { merged = JSON.parse(acPythonOutput); } catch { merged = {}; }
+          merged.llm_narrative = enrichResult.output;
+          merged.hybrid = true;
+          const mergedJson = JSON.stringify(merged);
+          db.prepare(`UPDATE agent_runs SET output_text = ? WHERE id = ?`).run(mergedJson, runId);
+          accumulatedContext['analyst_consensus_agent_output'] = mergedJson;
+          console.log(`[HYBRID] analyst_consensus: merged ${Math.round(acPythonOutput.length/1024)}KB Python + ${Math.round(enrichResult.output.length/1024)}KB LLM`);
+        } else {
+          console.warn(`[HYBRID] analyst_consensus LLM enrichment failed or too short — keeping Python-only`);
+        }
+      } catch (err: any) {
+        console.warn(`[HYBRID] analyst_consensus LLM enrichment error: ${err.message} — keeping Python-only`);
+      }
+    }
+    return 'ok';
   }
   if (PYTHON_ESG_ENABLED && agentId === 'esg_agent') {
     const outcome = await runPythonEsg(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // HYBRID: Python CBAM hesapladı, şimdi LLM ESG yorumu yapsın
+    const esgPythonOutput = String(accumulatedContext['esg_agent_output'] ?? '');
+    if (esgPythonOutput.length > 30) {
+      console.log(`[HYBRID] esg_agent: Python ${Math.round(esgPythonOutput.length/1024)}KB → LLM enrichment starting`);
+      const esgLlmPrompt = `Sen bir ESG (Çevresel, Sosyal, Yönetişim) analiz uzmanısın. Aşağıda Python engine'in hesapladığı CBAM karbon maliyeti ve ESG verileri var. Senin görevin:
+
+1. Çevresel (E) boyutu DEĞERLENDIR — Scope 1/2 emisyon, CBAM maruziyeti, karbon maliyeti trendi
+2. Sosyal (S) boyutu DEĞERLENDIR — çalışan, iş güvenliği, tedarik zinciri
+3. Yönetişim (G) boyutu DEĞERLENDIR — yönetim kurulu, bağımsızlık, şeffaflık
+4. CBAM 2026-2034 phase-in etkisini HESAPLA ve yorumla
+5. Sürdürülebilirlik raporlama uyumunu KONTROL ET (KGK, TSRS)
+6. TÜRKÇE yaz, kurumsal araştırma tarzında
+
+## Python ESG/CBAM Çıktısı
+${esgPythonOutput.slice(0, 10000)}
+
+## Ticker: ${ticker} | Sektör: ${accumulatedContext['sector_override'] ?? 'industrial'}
+
+ÇIKTI FORMATI: Zengin Türkçe markdown — E/S/G skor kartı, CBAM maliyet tablosu, sürdürülebilirlik değerlendirmesi. Minimum 2500 karakter.`;
+
+      try {
+        const enrichResult = await runAgent({
+          agentId: 'esg_agent',
+          taskPrompt: esgLlmPrompt,
+          context: accumulatedContext,
+          timeoutMs: getAgentTimeout('esg_agent'),
+        });
+        if (enrichResult.success && enrichResult.output.length > 500) {
+          let merged: Record<string, unknown>;
+          try { merged = JSON.parse(esgPythonOutput); } catch { merged = {}; }
+          merged.llm_narrative = enrichResult.output;
+          merged.hybrid = true;
+          const mergedJson = JSON.stringify(merged);
+          db.prepare(`UPDATE agent_runs SET output_text = ? WHERE id = ?`).run(mergedJson, runId);
+          accumulatedContext['esg_agent_output'] = mergedJson;
+          console.log(`[HYBRID] esg_agent: merged ${Math.round(esgPythonOutput.length/1024)}KB Python + ${Math.round(enrichResult.output.length/1024)}KB LLM`);
+        } else {
+          console.warn(`[HYBRID] esg_agent LLM enrichment failed or too short — keeping Python-only`);
+        }
+      } catch (err: any) {
+        console.warn(`[HYBRID] esg_agent LLM enrichment error: ${err.message} — keeping Python-only`);
+      }
+    }
+    return 'ok';
   }
   if (PYTHON_REPORT_FORMATTER_ENABLED && agentId === 'report_formatter') {
     const outcome = await runPythonReportFormatter(sessionId, runId, ticker, accumulatedContext);
@@ -1195,6 +1546,24 @@ async function executeSession(
       } catch (err) {
         console.warn(`[PIPELINE] Could not store formatter HTML in DB:`, err);
       }
+    }
+
+    // Update reports table with rendered HTML if formatter produced valid output
+    try {
+      const fmtOut = formatterRun?.output_text || '';
+      let htmlContent = '';
+      // formatter output is JSON envelope {formatted_html: "...", ...}
+      try {
+        const parsed = JSON.parse(fmtOut);
+        if (typeof parsed?.formatted_html === 'string') htmlContent = parsed.formatted_html;
+      } catch { htmlContent = fmtOut; }
+      if (htmlContent.length > 5000) {
+        db.prepare(`UPDATE reports SET content = ? WHERE session_id = ? AND report_type = 'executive'`)
+          .run(htmlContent, sessionId);
+        console.log(`[PIPELINE] reports tablosu HTML ile güncellendi (${Math.round(htmlContent.length / 1024)}KB)`);
+      }
+    } catch (err: any) {
+      console.warn(`[PIPELINE] reports tablosu HTML güncellemesi başarısız: ${err.message}`);
     }
 
     // ============================================================
@@ -1946,7 +2315,7 @@ If annual/activity report text is available, extract these sections into structu
 - Calisma Sayilari ve Insan Kaynaklari
 - Musteri/Tedarikci Yogunlasmasi`,
     reconciliation: `Validate the data quality for ${ticker}. Check accounting integrity, cross-statement consistency, and assign data quality scores.`,
-    context_extraction: `Extract the business model context for ${ticker}: what the company sells, revenue sources, customer structure, operational cycle, FX sensitivity, segment breakdown, key risks. Use WebSearch to find recent annual report data.
+    context_extraction: `Extract the business model context for ${ticker}: what the company sells, revenue sources, customer structure, operational cycle, FX sensitivity, segment breakdown, key risks. Use ONLY the data already provided in your context (data_collection, kap_watch, parse_standardization outputs). Do NOT call WebSearch or WebFetch — all data is already available in your input context.
 
 HOLDING/KONGLOMERA TESPITI:
 - If ${ticker} is a holding company (e.g., KCHOL, SAHOL, DOHOL, TAVHL), identify ALL subsidiaries with >10% ownership
