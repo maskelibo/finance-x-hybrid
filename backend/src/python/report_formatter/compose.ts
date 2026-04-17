@@ -1383,9 +1383,13 @@ function mdToHtml(md: string): string {
   // Fix escaped pipes that break markdown tables
   text = text.replace(/\\\|/g, '—');
 
-  // Strip duplicate sections that template already renders (İçindekiler, Zorunlu Bildirimler)
-  text = text.replace(/##?\s*İÇİNDEKİLER[\s\S]*?(?=\n##?\s[A-ZÇŞÜÖİĞ])/gi, '');
+  // Strip duplicate sections that template already renders (İçindekiler, Zorunlu Bildirimler, disclaimers)
+  text = text.replace(/##?\s*İÇİNDEKİLER[\s\S]*?(?=\n##?\s[A-ZÇŞÜÖİĞa-zçşüöığ])/gi, '');
+  text = text.replace(/##?\s*(?:TABLE OF CONTENTS|İçindekiler)[\s\S]*?(?=\n##?\s)/gi, '');
   text = text.replace(/##?\s*ZORUNLU BİLDİRİMLER[\s\S]*$/gi, '');
+  text = text.replace(/##?\s*(?:UYARI|Disclaimer|Yasal Uyarı)[\s\S]*$/gi, '');
+  // Strip "Bu rapor Finance X platformu tarafından..." closing boilerplate from LLM narrative
+  text = text.replace(/\n{2,}Bu rapor Finance X platformu[\s\S]*$/gi, '');
 
   // Clean up LLM's ugly "[VERI YOK — ...]" / "[VERİ YOK — ...]"
   // placeholders — transform into muted <em> with Turkish label.
