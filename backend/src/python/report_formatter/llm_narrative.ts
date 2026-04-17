@@ -100,6 +100,9 @@ export function sliceSection(
 function cleanupMarkdown(md: string): string {
   let out = md.trim();
 
+  // Fix escaped pipes that break markdown tables (LLM writes \| inside cells)
+  out = out.replace(/\\\|/g, '—');
+
   // Clean up LLM's ugly "[VERI YOK — ...]" and "[Hesaplanamadi — ...]"
   // placeholders before the conversion — turn them into muted italic.
   out = out.replace(/\[VER[İI]\s*YOK\s*[—\-]?\s*([^\]]*)\]/gi, (_, reason) => {
@@ -116,6 +119,92 @@ function cleanupMarkdown(md: string): string {
   });
   // Plain "VERİ YOK" outside brackets
   out = out.replace(/\bVER[İI]\s*YOK\b/gi, '<em style="color:#94a3b8;">Raporlanmadı</em>');
+
+  // Translate English confidence labels → Turkish
+  out = out.replace(/\(High Confidence\)/gi, '(Yüksek Güven)');
+  out = out.replace(/\(Medium Confidence\)/gi, '(Orta Güven)');
+  out = out.replace(/\(Low Confidence\)/gi, '(Düşük Güven)');
+  out = out.replace(/\(Speculative\)/gi, '(Spekülatif)');
+  out = out.replace(/\bHIGH\b(?=\s*(?:güven|confidence))/gi, 'YÜKSEK');
+  out = out.replace(/\bMEDIUM\b(?=\s*(?:güven|confidence))/gi, 'ORTA');
+  out = out.replace(/\bLOW\b(?=\s*(?:güven|confidence))/gi, 'DÜŞÜK');
+
+  // Strip internal pipeline agent names from KAYNAK citations
+  out = out.replace(/valuation_agent\s*çıktısı/gi, 'değerleme modeli');
+  out = out.replace(/\bvaluation_agent\b/gi, 'değerleme modeli');
+  out = out.replace(/\bdata_collection\b/gi, 'veri toplama');
+  out = out.replace(/\bsector_competition_output\b/gi, 'sektör analizi');
+  out = out.replace(/\bfinancial_analysis_output\b/gi, 'finansal analiz');
+  out = out.replace(/\bstrategic_synthesis_output\b/gi, 'stratejik sentez');
+  out = out.replace(/\bfinal_summary_output\b/gi, 'nihai özet');
+  out = out.replace(/\bcontext_extraction\b/gi, 'bağlam çıkarma');
+  out = out.replace(/\bsnippet'ları\b/gi, 'verileri');
+  out = out.replace(/\bsnippet(?:'?s)?\b/gi, 'veri parçaları');
+  out = out.replace(/\bfundamental has both positive and negative signals\s*[—\-]\s*inspect closer\.?/gi,
+    'Temel göstergeler hem olumlu hem olumsuz sinyaller içermektedir — detaylı inceleme gerekmektedir.');
+  // Strip AGENT SELF-ASSESSMENT section entirely — internal metadata
+  out = out.replace(/##?\s*AGENT SELF-ASSESSMENT[\s\S]*$/gi, '');
+  out = out.replace(/\bpending_ceo_review\b/gi, 'CEO onayı bekliyor');
+  // Strip agent file hashes (ta-out-xxxxx, rpt-xxxxx etc.)
+  out = out.replace(/\b[a-z]{2,4}-(?:out|in|rpt)-[A-Za-z0-9_-]{10,}\b/g, '');
+  // Strip "management_guidance" system term
+  out = out.replace(/\bmanagement_guidance\b/gi, 'yönetim rehberliği');
+  // Common Turkish typos from LLM — ASCII fallback + encoding bugs.
+  // Keep this list growing as new LLM output patterns emerge.
+  const typoFixes: Array<[RegExp, string]> = [
+    // ASCII fallback for Turkish chars
+    [/\bguclu\b/gi, 'güçlü'],
+    [/\bzayif\b/gi, 'zayıf'],
+    [/\bDegerleme\b/g, 'Değerleme'],
+    [/\bdegerleme\b/g, 'değerleme'],
+    [/\bKarlilik\b/g, 'Kârlılık'],
+    [/\bkarlilik\b/g, 'kârlılık'],
+    [/\bAgirlikli\b/g, 'Ağırlıklı'],
+    [/\bagirlikli\b/g, 'ağırlıklı'],
+    [/\bBuyume\b/g, 'Büyüme'],
+    [/\bbuyume\b/g, 'büyüme'],
+    [/\bOzet\b/g, 'Özet'],
+    [/\bozet\b/g, 'özet'],
+    [/\bFinanscal\b/g, 'Finansal'],
+    [/\bfinanscal\b/g, 'finansal'],
+    [/\bSirket\b/g, 'Şirket'],
+    [/\bsirket\b/g, 'şirket'],
+    [/\bOzsermaye\b/g, 'Özsermaye'],
+    [/\bozsermaye\b/g, 'özsermaye'],
+    [/\bDoviz\b/g, 'Döviz'],
+    [/\bdoviz\b/g, 'döviz'],
+    [/\bFaalıyet\b/g, 'Faaliyet'],
+    [/\bfaalıyet\b/g, 'faaliyet'],
+    [/\bCalisma\b/g, 'Çalışma'],
+    [/\bcalisma\b/g, 'çalışma'],
+    [/\bUretim\b/g, 'Üretim'],
+    [/\buretim\b/g, 'üretim'],
+    // Encoding bugs
+    [/\bBüsük\b/g, 'Büyük'],
+    [/\bbüsük\b/g, 'büyük'],
+    [/\beesasl/gi, 'esasl'],
+    [/\brotalarininin\b/gi, 'rotalarının'],
+    [/\bstruktur/gi, 'yapıs'],
+    [/\bANLAT1SI\b/g, 'ANLATISI'],
+    [/\bAnlatiisi\b/g, 'Anlatısı'],
+    [/\bAg Irlikli\b/g, 'Ağırlıklı'],
+    [/\bkalmistr\b/g, 'kalmıştır'],
+    [/\bgorunuyor\b/g, 'görünüyor'],
+    [/\bGorunuyor\b/g, 'Görünüyor'],
+    [/\byuksek\b/g, 'yüksek'],
+    [/\bYuksek\b/g, 'Yüksek'],
+    [/\bdusuk\b/g, 'düşük'],
+    [/\bDusuk\b/g, 'Düşük'],
+    [/\bgelecek donem\b/gi, 'gelecek dönem'],
+    [/\bsektorde\b/g, 'sektörde'],
+    [/\bdonem\b/g, 'dönem'],
+    [/\bsure\b(?=\s)/g, 'süre'],
+    [/\bortalama\b/g, 'ortalama'],
+    // Repeated words
+    [/\b(\w+)\s+\1\b/g, '$1'],
+  ];
+  for (const [re, fix] of typoFixes) out = out.replace(re, fix);
+  out = out.replace(/  +/g, ' ');
 
   // Drop redundant heading lines that snuck into the slice.
   out = out.replace(/^\s*#{1,6}\s+.*$/gm, '').trim();
@@ -187,6 +276,13 @@ function cleanupMarkdown(md: string): string {
       if (inList) { htmlParts.push('</ul>'); inList = false; }
       continue;
     }
+    // Horizontal rules
+    if (/^---+$/.test(line) || /^\*\*\*+$/.test(line) || /^___+$/.test(line)) {
+      flushParagraph();
+      if (inList) { htmlParts.push('</ul>'); inList = false; }
+      htmlParts.push('<hr>');
+      continue;
+    }
     const bulletMatch = line.match(/^[-*]\s+(.+)$/);
     if (bulletMatch) {
       flushParagraph();
@@ -207,7 +303,7 @@ function cleanupMarkdown(md: string): string {
 function escapeHtmlInner(s: string): string {
   return s
     .replace(/&(?!(?:amp|lt|gt|quot|#\d+);)/g, '&amp;')
-    .replace(/<(?!\/?(?:strong|em)\b)/g, '&lt;');
+    .replace(/<(?!\/?(?:strong|em|table|thead|tbody|tr|th|td|ul|ol|li|p|h[1-6]|div|hr|br|blockquote|sup|code)\b)/g, '&lt;');
 }
 
 function escapeRegex(s: string): string {
