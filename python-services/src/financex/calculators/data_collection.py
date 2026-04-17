@@ -29,9 +29,10 @@ import time
 from datetime import UTC, date, datetime
 from pathlib import Path
 
+from financex.crawlers.fintables import FintablesClient
 from financex.crawlers.kap import HttpKapClient, KapClient, RawDisclosure
 from financex.schemas.base import SourceRef
-from financex.schemas.data_collection import CollectedDocument, DataCollectionManifest
+from financex.schemas.data_collection import CollectedDocument, DataCollectionManifest, YearCoverageGap
 
 # Only used when we DO have to go back to KAP (no prefetched list).
 # kap_watch + data_collection land in the same orchestrator phase, so
@@ -222,20 +223,109 @@ def run_data_collection(
     if _owns_client and hasattr(http_client, "close"):
         http_client.close()  # type: ignore[attr-defined]
 
+    sources = [
+        SourceRef(
+            source_id="kap",
+            url="https://www.kap.org.tr",
+            fetched_at=datetime.now(UTC),
+            detail="POST /tr/api/disclosure/members/byCriteria + GET /tr/api/BildirimPdf",
+        )
+    ]
+
+    # ------------------------------------------------------------------
+    # Year-gap detection + Fintables fallback
+    # ------------------------------------------------------------------
+    expected_years = set(range(since.year, ceiling.year + 1))
+    covered_years_fr = {d.year for d in documents if d.kind == "financial_report" and d.year}
+    covered_years_ar = {d.year for d in documents if d.kind == "activity_report" and d.year}
+    missing_fr = sorted(expected_years - covered_years_fr)
+    missing_ar = sorted(expected_years - covered_years_ar)
+
+    coverage_gaps: list[YearCoverageGap] = []
+
+    if missing_fr or missing_ar:
+        # Try Fintables mirror for missing years
+        fintables = FintablesClient()
+        fintables_used = False
+        try:
+            for year in sorted(set(missing_fr) | set(missing_ar)):
+                pdf_bytes = fintables.fetch_pdf(ticker, year)
+                if pdf_bytes is not None:
+                    fintables_used = True
+                    sha = _sha256(pdf_bytes)
+                    # Fintables reports are typically activity_report (entegre faaliyet)
+                    kind = "activity_report"
+                    stamp = f"{year}0101"
+                    fname = f"{ticker.upper()}_{kind}_{stamp}_fintables.pdf"
+                    local_path = (pdf_dir / fname).resolve()
+                    if not (local_path.exists() and _sha256(local_path.read_bytes()) == sha):
+                        local_path.write_bytes(pdf_bytes)
+
+                    fintables_url = fintables.source_url(ticker, year) or ""
+                    documents.append(
+                        CollectedDocument(
+                            kind=kind,
+                            disclosure_index=f"fintables-{year}",
+                            title=f"{ticker.upper()} Faaliyet Raporu {year} (Fintables mirror)",
+                            published_at=datetime(year, 12, 31, tzinfo=UTC),
+                            source_url=fintables_url,
+                            local_path=str(local_path),
+                            content_sha256=sha,
+                            size_bytes=len(pdf_bytes),
+                            period_label=f"FY{year}",
+                            year=year,
+                        )
+                    )
+                    # Remove from missing sets
+                    missing_fr = [y for y in missing_fr if y != year]
+                    missing_ar = [y for y in missing_ar if y != year]
+                else:
+                    # Record the gap
+                    coverage_gaps.append(
+                        YearCoverageGap(
+                            year=year,
+                            kind="financial_report",
+                            sources_tried=["kap", "fintables"],
+                            reason="404_all_sources",
+                        )
+                    )
+        finally:
+            fintables.close()
+
+        if fintables_used:
+            sources.append(
+                SourceRef(
+                    source_id="fintables",
+                    url="https://storage.fintables.com",
+                    fetched_at=datetime.now(UTC),
+                    detail="GET /media/uploads/kap-attachments/{slug}-*-{year}.pdf",
+                )
+            )
+
+    # Any remaining gaps that Fintables couldn't fill
+    for year in missing_fr:
+        if not any(g.year == year for g in coverage_gaps):
+            coverage_gaps.append(
+                YearCoverageGap(
+                    year=year,
+                    kind="financial_report",
+                    sources_tried=["kap"],
+                    reason="not_in_kap_window",
+                )
+            )
+
+    if coverage_gaps:
+        gap_years = sorted({g.year for g in coverage_gaps})
+        warnings.append(f"Year coverage gaps remain: {gap_years}. Manual IR page fetch may be needed.")
+
     return DataCollectionManifest(
         ticker=ticker.upper(),
         collected_at=datetime.now(UTC),
         since=since,
         until=ceiling,
         documents=documents,
-        sources_consulted=[
-            SourceRef(
-                source_id="kap",
-                url="https://www.kap.org.tr",
-                fetched_at=datetime.now(UTC),
-                detail=f"POST /tr/api/disclosure/members/byCriteria + GET /tr/api/BildirimPdf",
-            )
-        ],
+        sources_consulted=sources,
         errors=errors,
         warnings=warnings,
+        coverage_gaps=coverage_gaps,
     )

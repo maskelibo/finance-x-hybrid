@@ -40,6 +40,21 @@ class CollectedDocument(FinancexModel):
     year: int | None = Field(default=None, ge=2000, le=2100)
 
 
+class YearCoverageGap(FinancexModel):
+    """A year for which no financial_report or activity_report was found."""
+
+    year: int = Field(ge=2000, le=2100)
+    kind: str = Field(description="'financial_report' or 'activity_report'.")
+    sources_tried: list[str] = Field(
+        default_factory=list,
+        description="Source IDs attempted: 'kap', 'fintables', etc.",
+    )
+    reason: str | None = Field(
+        default=None,
+        description="Why the gap exists: '404_all_sources', 'rate_limited', etc.",
+    )
+
+
 class DataCollectionManifest(FinancexModel):
     """Summary of a data_collection run for one ticker."""
 
@@ -54,6 +69,10 @@ class DataCollectionManifest(FinancexModel):
     sources_consulted: list[SourceRef] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
+    coverage_gaps: list[YearCoverageGap] = Field(
+        default_factory=list,
+        description="Years within the window that lack a financial or activity report.",
+    )
 
     def financial_reports(self) -> list[CollectedDocument]:
         return [d for d in self.documents if d.kind == "financial_report"]
