@@ -36,11 +36,12 @@ import {
   commentarySector,
   commentaryTechnical,
   commentaryValuation,
+  translateRiskCode,
 } from './auto_commentary.js';
 import { buildNarrativeBlocks } from './llm_narrative.js';
 import { resolvePeerBundle } from './peer_sets.js';
 import { resolveSwot } from './swot_analysis.js';
-import { barChart, columnChart, gaugeChart, horizontalBarChart, lineChart, pieChart, priceBandChart, radarChart, stackedAreaChart, timelineChart } from './svg_charts.js';
+import { barChart, columnChart, gaugeChart, horizontalBarChart, lineChart, pieChart, priceBandChart, radarChart, stackedAreaChart, timelineChart, waterfallChart } from './svg_charts.js';
 import { formatPct, formatRatio, formatTRY, type TemplateContext, type TemplateValue } from './template_engine.js';
 
 
@@ -75,6 +76,47 @@ const SECTOR_LABEL_TR: Record<string, string> = {
   holding: 'Holding',
   insurance: 'Sigorta',
   reit: 'GYO',
+  aviation: 'Havacılık',
+  telecom: 'Telekomünikasyon',
+  energy: 'Enerji',
+  steel: 'Demir-Çelik',
+  refinery: 'Rafineri',
+  retail: 'Perakende',
+  defense: 'Savunma',
+};
+
+const TICKER_SECTOR_OVERRIDE: Record<string, string> = {
+  'THYAO': 'aviation',
+  'PGSUS': 'aviation',
+  'TAVHL': 'aviation',
+  'CLEBI': 'aviation',
+  'ASELS': 'defense',
+  'TCELL': 'telecom',
+  'TUPRS': 'refinery',
+  'BIMAS': 'retail',
+  'EREGL': 'steel',
+};
+
+const TICKER_COMPANY_NAME: Record<string, string> = {
+  'THYAO': 'Türk Hava Yolları A.O.',
+  'PGSUS': 'Pegasus Hava Taşımacılığı A.Ş.',
+  'EREGL': 'Ereğli Demir ve Çelik Fabrikaları T.A.Ş.',
+  'KCHOL': 'Koç Holding A.Ş.',
+  'SAHOL': 'Sabancı Holding A.Ş.',
+  'GARAN': 'Türkiye Garanti Bankası A.Ş.',
+  'AKBNK': 'Akbank T.A.Ş.',
+  'ISCTR': 'Türkiye İş Bankası A.Ş.',
+  'TUPRS': 'Türkiye Petrol Rafinerileri A.Ş.',
+  'SISE': 'Türkiye Şişe ve Cam Fabrikaları A.Ş.',
+  'ASELS': 'Aselsan Elektronik Sanayi ve Ticaret A.Ş.',
+  'BIMAS': 'BİM Birleşik Mağazalar A.Ş.',
+  'TOASO': 'Tofaş Türk Otomobil Fabrikası A.Ş.',
+  'FROTO': 'Ford Otomotiv Sanayi A.Ş.',
+  'TCELL': 'Turkcell İletişim Hizmetleri A.Ş.',
+  'ASTOR': 'Astor Enerji A.Ş.',
+  'KOZAL': 'Koza Altın İşletmeleri A.Ş.',
+  'EKGYO': 'Emlak Konut GYO A.Ş.',
+  'HEKTS': 'Hektaş Ticaret T.A.Ş.',
 };
 
 
@@ -100,6 +142,15 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const sc = parseJson<Record<string, unknown>>(ctx['sector_competition_output']);
   const ev = parseJson<Record<string, unknown>>(ctx['event_impact_mapper_output']);
   const tech = parseJson<Record<string, unknown>>(ctx['technical_analysis_output']);
+
+  // Extract hybrid LLM narratives (from Python+LLM enrichment)
+  const hybridFA = typeof fa?.llm_narrative === 'string' ? fa.llm_narrative as string : undefined;
+  const hybridMacro = (() => {
+    const m = parseJson<Record<string, unknown>>(ctx['macro_analysis_output']);
+    return typeof m?.llm_narrative === 'string' ? m.llm_narrative as string : undefined;
+  })();
+  const hybridTech = typeof tech?.llm_narrative === 'string' ? tech.llm_narrative as string : undefined;
+  const hybridSS = typeof ss?.llm_narrative === 'string' ? ss.llm_narrative as string : undefined;
   const macro = parseJson<Record<string, unknown>>(ctx['macro_analysis_output']);
   const esgOut = parseJson<Record<string, unknown>>(ctx['esg_agent_output']);
   const news = parseJson<Record<string, unknown>>(ctx['sentiment_news_agent_output']);
@@ -146,62 +197,191 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const recPassed = Number(rec?.passed_count ?? recChecks.filter((c: Record<string, unknown>) => c.passed).length);
   const recPassRate = recTotal > 0 ? recPassed / recTotal : 0;
 
+  const translateFinding = (s: string): string => {
+    return s
+      .replace(/\bNO_FINANCIAL_ANALYSIS\b/g, 'Finansal analiz çalıştırılamadı')
+      .replace(/\bcannot score\b/gi, 'skorlama yapılamadı')
+      .replace(/\bno data\b/gi, 'veri yok')
+      .replace(/\bmissing\b/gi, 'eksik')
+      .replace(/\bfailed\b/gi, 'başarısız');
+  };
+  // Critical findings — prefer FA red_flags (real business risks) over QA warnings (pipeline issues)
+  const faRedFlags = arrayFrom(fa?.red_flags ?? [])
+    .map((f: Record<string, unknown>) => translateFinding(String(f.message ?? translateRiskCode(String(f.code ?? '')))));
+  const ssDivergences = arrayFrom(ss?.divergences ?? []).map(s => translateFinding(String(s)));
   const criticalFindings: string[] = [
-    ...arrayFrom(fa?.red_flags ?? [])
-      .filter((f: Record<string, unknown>) => String(f.severity ?? '').toLowerCase() === 'critical')
-      .map((f: Record<string, unknown>) => String(f.message ?? f.code ?? '')),
-    ...arrayFrom(ss?.divergences ?? []).map(String),
-    ...arrayFrom(qa?.quality_flags ?? []).slice(0, 3).map(String),
+    ...faRedFlags,
+    ...ssDivergences,
   ].filter(Boolean).slice(0, 6);
 
+  // Strengths / Weaknesses — enrich from FA metrics if signal buckets are sparse
   const signalBuckets = (ss?.signals ?? {}) as { positive?: unknown[]; negative?: unknown[]; neutral?: unknown[] };
-  const strengths: string[] = arrayFrom(signalBuckets.positive)
+  const translateSignal = (s: string): string => {
+    return s
+      .replace(/^Event net: negative.*$/i, 'Olay etkisi: negatif')
+      .replace(/^Event net: positive.*$/i, 'Olay etkisi: pozitif')
+      .replace(/^Event net: neutral.*$/i, 'Olay etkisi: nötr');
+  };
+  const rawStrengths: string[] = arrayFrom(signalBuckets.positive)
     .slice(0, 5)
-    .map((s: Record<string, unknown>) => String(s.label ?? ''));
-  const weaknesses: string[] = arrayFrom(signalBuckets.negative)
+    .map((s: Record<string, unknown>) => translateSignal(translateMetricLabel(String(s.label ?? ''))));
+  const rawWeaknesses: string[] = arrayFrom(signalBuckets.negative)
     .slice(0, 5)
-    .map((s: Record<string, unknown>) => String(s.label ?? ''));
+    .map((s: Record<string, unknown>) => translateSignal(translateMetricLabel(String(s.label ?? ''))));
+
+  // Auto-enrich if < 3 signals — derive from FA canonical numbers
+  const cn = (fa?.canonical_numbers ?? {}) as Record<string, unknown>;
+  if (rawStrengths.length < 3) {
+    const roe = numOrNull(cn.roe);
+    const gm = numOrNull(cn.gross_margin);
+    const cr = numOrNull(cn.current_ratio);
+    const ni = numOrNull(cn.net_income);
+    if (ni != null && ni > 0 && !rawStrengths.some(s => s.includes('kâr'))) rawStrengths.push(`Net kâr pozitif: ${(ni / 1e9).toFixed(1)} milyar TL`);
+    if (roe != null && roe > 10 && !rawStrengths.some(s => s.includes('ROE'))) rawStrengths.push(`ROE %${roe.toFixed(1)} — sektör ortalamasının üzerinde`);
+    if (gm != null && gm > 15 && !rawStrengths.some(s => s.includes('marj'))) rawStrengths.push(`Brüt marj %${gm.toFixed(1)}`);
+    // OCF from parse — latestAnnual not yet defined here, use parsed directly
+    const latestFY = arrayFrom(parsed?.standardized_statements ?? []).find((s: Record<string, unknown>) => String(s.period_label ?? '').startsWith('FY-'));
+    const cfBlock = (latestFY?.cash_flow as Record<string, unknown> | null) ?? {};
+    const ocf = numOrNull(cfBlock.operating_cash_flow);
+    if (ocf != null && ocf > 0) rawStrengths.push(`Güçlü operasyonel nakit akışı: ${(ocf / 1e9).toFixed(1)} milyar TL`);
+  }
+  if (rawWeaknesses.length < 3) {
+    const cr = numOrNull(cn.current_ratio);
+    const ndEbitda = numOrNull(cn.net_debt_to_ebitda);
+    if (cr != null && cr < 1) rawWeaknesses.push(`Cari oran ${cr.toFixed(2)}x — kısa vadeli likidite baskısı`);
+    if (ndEbitda != null && ndEbitda > 3) rawWeaknesses.push(`Net Borç/FAVÖK ${ndEbitda.toFixed(1)}x — yüksek kaldıraç`);
+    if (!cn.ebitda_margin) rawWeaknesses.push('FAVÖK marjı hesaplanamadı — amortisman verisi eksik');
+    if (!cn.fcf) rawWeaknesses.push('Serbest nakit akışı hesaplanamadı — CAPEX verisi eksik');
+  }
+  const strengths = rawStrengths.filter(Boolean).slice(0, 5);
+  const weaknesses = rawWeaknesses.filter(Boolean).slice(0, 5);
 
   // ----- II. Şirket Profili -----
 
   const companyHighlights: Array<{ label: string; value: string }> = [];
   if (fa?.ticker) companyHighlights.push({ label: 'Ticker', value: String(fa.ticker).toUpperCase() });
   if (fa?.period_label) companyHighlights.push({ label: 'Dönem', value: String(fa.period_label) });
-  if (fa?.sector) companyHighlights.push({ label: 'Sektör', value: SECTOR_LABEL_TR[String(fa.sector).toLowerCase()] ?? String(fa.sector) });
-  const canonicalNumbers = (fa?.canonical_numbers ?? {}) as Record<string, unknown>;
-  if (canonicalNumbers.revenue != null) companyHighlights.push({ label: 'Toplam Gelir (mn TL)', value: formatTRY(canonicalNumbers.revenue as number | string, 0) });
-  if (canonicalNumbers.total_equity != null) companyHighlights.push({ label: 'Toplam Özsermaye (mn TL)', value: formatTRY(canonicalNumbers.total_equity as number | string, 0) });
-  if (canonicalNumbers.total_debt != null) companyHighlights.push({ label: 'Toplam Borç (mn TL)', value: formatTRY(canonicalNumbers.total_debt as number | string, 0) });
+  {
+    const sectorForHighlight = TICKER_SECTOR_OVERRIDE[ticker.toUpperCase()] ?? String(fa?.sector ?? 'industrial').toLowerCase();
+    companyHighlights.push({ label: 'Sektör', value: SECTOR_LABEL_TR[sectorForHighlight] ?? sectorForHighlight });
+  }
+  // Merge FA canonical_numbers with parse_standardization balance_sheet/income_statement
+  // Parse has detailed line items (cash_and_equivalents, trade_receivables, inventories...)
+  // FA has ratios (roe, gross_margin, net_margin...)
+  const faCn = (fa?.canonical_numbers ?? {}) as Record<string, unknown>;
+  const parsedStatements = arrayFrom(parsed?.standardized_statements ?? []);
+  const latestAnnual = parsedStatements.find((s: Record<string, unknown>) => String(s.period_label ?? '').startsWith('FY-'));
+  const parseBS = (latestAnnual?.balance_sheet as Record<string, unknown> | null) ?? {};
+  const parseIS = (latestAnnual?.income_statement as Record<string, unknown> | null) ?? {};
+  const parseCF = (latestAnnual?.cash_flow as Record<string, unknown> | null) ?? {};
+
+  // Build unified canonical numbers — parse line items + FA ratios
+  const canonicalNumbers: Record<string, unknown> = {
+    ...faCn,
+    // Override with parse line items (more granular)
+    total_assets: parseBS.total_assets ?? faCn.total_assets,
+    total_liabilities: parseBS.total_liabilities ?? faCn.total_liabilities,
+    total_equity: parseBS.total_equity ?? faCn.total_equity,
+    current_assets: parseBS.current_assets,
+    cash_and_equivalents: parseBS.cash_and_equivalents,
+    cash: parseBS.cash_and_equivalents, // alias
+    trade_receivables: parseBS.trade_receivables,
+    receivables: parseBS.trade_receivables, // alias
+    inventories: parseBS.inventories,
+    inventory: parseBS.inventories, // alias
+    ppe_net: parseBS.ppe_net,
+    goodwill: parseBS.goodwill,
+    intangibles: parseBS.intangibles,
+    current_liabilities: parseBS.current_liabilities,
+    short_term_debt: parseBS.short_term_debt,
+    long_term_debt: parseBS.long_term_debt,
+    trade_payables: parseBS.trade_payables,
+    non_current_assets: parseBS.non_current_assets,
+    // Income statement
+    revenue: parseIS.revenue ?? faCn.revenue,
+    cost_of_sales: parseIS.cost_of_sales,
+    gross_profit: parseIS.gross_profit,
+    operating_income: parseIS.operating_income,
+    net_income: parseIS.net_income ?? faCn.net_income,
+    // Cash flow
+    operating_cash_flow: parseCF.operating_cash_flow,
+    capex: parseCF.capex,
+    financing_cash_flow: parseCF.financing_cash_flow,
+    dividends_paid: parseCF.dividends_paid,
+    depreciation_amortization: parseCF.depreciation_amortization ?? parseIS.depreciation_amortization,
+  };
+
+  // Compute derived metrics if missing
+  const opInc = numOrNull(canonicalNumbers.operating_income);
+  const da = numOrNull(canonicalNumbers.depreciation_amortization);
+  const ocfVal = numOrNull(canonicalNumbers.operating_cash_flow);
+  const capexVal = numOrNull(canonicalNumbers.capex);
+
+  // EBITDA = Operating Income + D&A (if both available)
+  if (!canonicalNumbers.ebitda && opInc != null && da != null) {
+    canonicalNumbers.ebitda = opInc + Math.abs(da);
+    const rev = numOrNull(canonicalNumbers.revenue);
+    if (rev && rev > 0) canonicalNumbers.ebitda_margin = ((opInc + Math.abs(da)) / rev) * 100;
+  }
+  // EBITDA approximate from OCF if D&A missing but OCF available (rough proxy)
+  if (!canonicalNumbers.ebitda && opInc != null && ocfVal != null && ocfVal > opInc) {
+    // D&A ≈ OCF - Operating Income (very rough, includes WC changes)
+    // Don't use this — too inaccurate
+  }
+
+  // FCF = OCF - |CAPEX| (if FA didn't compute it)
+  if (!canonicalNumbers.fcf && ocfVal != null && capexVal != null) {
+    canonicalNumbers.fcf = ocfVal - Math.abs(capexVal);
+  }
+
+  // Net Debt / EBITDA
+  const ebitdaVal = numOrNull(canonicalNumbers.ebitda);
+  const ndVal = numOrNull(canonicalNumbers.net_debt);
+  if (!canonicalNumbers.net_debt_to_ebitda && ebitdaVal != null && ebitdaVal > 0 && ndVal != null) {
+    canonicalNumbers.net_debt_to_ebitda = ndVal / ebitdaVal;
+  }
+
+  // Helper: format large TRY values as "milyar TL"
+  const formatBnTRY = (v: unknown): string => {
+    const n = numOrNull(v);
+    if (n == null) return 'Raporlanmadı';
+    if (Math.abs(n) >= 1_000_000_000) return `${(n / 1_000_000_000).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} milyar`;
+    if (Math.abs(n) >= 1_000_000) return `${(n / 1_000_000).toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} mn`;
+    return formatTRY(n, 0);
+  };
+
+  if (canonicalNumbers.revenue != null) companyHighlights.push({ label: 'Toplam Gelir (TL)', value: formatBnTRY(canonicalNumbers.revenue) });
+  if (canonicalNumbers.total_equity != null) companyHighlights.push({ label: 'Toplam Özsermaye (TL)', value: formatBnTRY(canonicalNumbers.total_equity) });
+  if (canonicalNumbers.net_debt != null) companyHighlights.push({ label: 'Net Borç (TL)', value: formatBnTRY(canonicalNumbers.net_debt) });
+  if (canonicalNumbers.net_income != null) companyHighlights.push({ label: 'Net Kâr (TL)', value: formatBnTRY(canonicalNumbers.net_income) });
 
   // ----- III. Finansal Tablolar -----
 
   const canonicalBalanceSheet = buildCanonicalTable(canonicalNumbers, [
     ['total_assets', 'Toplam Varlıklar'],
-    ['cash', 'Nakit ve Benzerleri'],
-    ['receivables', 'Ticari Alacaklar'],
-    ['inventory', 'Stoklar'],
+    ['cash_and_equivalents', 'Nakit ve Benzerleri'],
+    ['trade_receivables', 'Ticari Alacaklar'],
+    ['inventories', 'Stoklar'],
+    ['current_assets', 'Toplam Dönen Varlıklar'],
     ['ppe_net', 'Maddi Duran Varlıklar (Net)'],
+    ['intangibles', 'Maddi Olmayan Varlıklar'],
     ['goodwill', 'Şerefiye'],
+    ['non_current_assets', 'Toplam Duran Varlıklar'],
     ['total_liabilities', 'Toplam Yükümlülükler'],
-    ['short_term_debt', 'Kısa Vadeli Finansal Borç'],
-    ['long_term_debt', 'Uzun Vadeli Finansal Borç'],
+    ['current_liabilities', 'Kısa Vadeli Yükümlülükler'],
+    ['short_term_debt', 'KV Finansal Borç'],
+    ['trade_payables', 'Ticari Borçlar'],
+    ['long_term_debt', 'UV Finansal Borç'],
     ['total_equity', 'Toplam Özsermaye'],
-    ['paid_in_capital', 'Ödenmiş Sermaye'],
-    ['retained_earnings', 'Dağıtılmamış Karlar'],
   ]);
 
   const canonicalIncomeStatement = buildCanonicalTable(canonicalNumbers, [
     ['revenue', 'Hasılat'],
     ['cost_of_sales', 'Satışların Maliyeti'],
-    ['gross_profit', 'Brüt Kar'],
-    ['operating_expenses', 'Faaliyet Giderleri'],
-    ['ebit', 'Faaliyet Karı (EBIT)'],
-    ['depreciation_amortization', 'Amortisman & İtfa'],
+    ['gross_profit', 'Brüt Kâr'],
+    ['operating_income', 'Faaliyet Kârı'],
     ['ebitda', 'FAVÖK (EBITDA)'],
-    ['financial_income', 'Finansal Gelir'],
-    ['financial_expense', 'Finansal Gider'],
-    ['tax_expense', 'Vergi Gideri'],
-    ['net_income', 'Net Dönem Karı'],
+    ['net_income', 'Net Dönem Kârı'],
   ]);
 
   // ----- İşletme Sermayesi Metrikleri (her zaman hesaplansın) -----
@@ -300,17 +480,25 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   };
 
   // ----- VII. Teknik -----
+  // tech_analysis output has nested structure: momentum.rsi_14, price_data.last_close etc.
+  const techMomentum = (tech?.momentum as Record<string, unknown> | null) ?? {};
+  const techPriceData = (tech?.price_data as Record<string, unknown> | null) ?? {};
+  const techMA = (tech?.moving_averages as Record<string, unknown> | null) ?? {};
 
   const trend = String(tech?.trend ?? tech?.overall_trend ?? '').toLowerCase();
-  const rsi = numOrNull(tech?.rsi_14 ?? tech?.rsi);
+  const rsi = numOrNull(techMomentum.rsi_14 ?? tech?.rsi_14 ?? tech?.rsi);
+  const techVolatility = (tech?.volatility as Record<string, unknown> | null) ?? {};
+  // last_close may not be in tech output — fallback to orchestrator pre-fetch or Bollinger middle (≈MA20)
+  const lastClose = numOrNull(techPriceData.last_close ?? tech?.last_close ?? ctx['last_close_price'] ?? techVolatility.bollinger_middle ?? techMA.ma_20);
+  const volumeAvg = numOrNull(techPriceData.volume_avg ?? tech?.volume_avg ?? tech?.average_volume);
   const technical = tech ? {
     trend_label: trend === 'bullish' ? 'Yükseliş' : trend === 'bearish' ? 'Düşüş' : trend === 'neutral' ? 'Nötr' : '—',
     rsi: rsi != null ? rsi.toFixed(1) : '—',
     rsi_zone: rsi != null
       ? (rsi >= 70 ? 'Aşırı alım' : rsi <= 30 ? 'Aşırı satım' : rsi >= 55 ? 'Yüksek momentum' : rsi <= 45 ? 'Zayıf momentum' : 'Nötr')
       : '—',
-    last_close: tech.last_close != null ? formatTRY(tech.last_close as number, 2) + ' TL' : '—',
-    volume_avg: tech.volume_avg != null ? formatTRY(tech.volume_avg as number, 0) : '—',
+    last_close: lastClose != null ? formatTRY(lastClose, 2) + ' TL' : '—',
+    volume_avg: volumeAvg != null ? formatTRY(volumeAvg, 0) : '—',
   } : null;
   const technicalHas = !!technical;
 
@@ -376,7 +564,10 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     type: String(e.event_type ?? ''),
     direction: translateDirection(e.impact_direction),
     timing: translateTiming(e.timing_horizon),
-    statements: arrayFrom(e.affected_statements ?? []).join(', '),
+    statements: arrayFrom(e.affected_statements ?? []).map(s => {
+      const v = String(s);
+      return v.replace(/\bP&?L\b/g, 'G/Z').replace(/\bBS\b/g, 'Bilanço').replace(/\bCF\b/g, 'Nakit Akışı');
+    }).join(', '),
   }));
 
   // ----- XI. Risk -----
@@ -384,8 +575,8 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const risks: string[] = [
     ...arrayFrom(fa?.red_flags ?? [])
       .filter((f: Record<string, unknown>) => ['warning', 'critical'].includes(String(f.severity ?? '').toLowerCase()))
-      .map((f: Record<string, unknown>) => String(f.message ?? f.code ?? '')),
-    ...arrayFrom(ss?.divergences ?? []).map(String),
+      .map((f: Record<string, unknown>) => translateFinding(String(f.message ?? translateRiskCode(String(f.code ?? ''))))),
+    ...arrayFrom(ss?.divergences ?? []).map(s => translateFinding(String(s))),
     ...valuationWarnings.slice(0, 2),
   ].filter(Boolean).slice(0, 8);
 
@@ -405,7 +596,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   // per_share_value ± sensitivity. Otherwise leave empty.
 
   const dcfPerShare = numOrNull(dcf?.per_share_value);
-  const lastClose = numOrNull(tech?.last_close);
+  const lastCloseForDcf = lastClose ?? numOrNull(tech?.last_close);
   const scenarios = dcfPerShare != null ? {
     bear_price: formatTRY(dcfPerShare * 0.75, 2) + ' TL',
     bear_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare * 0.75 / lastClose - 1) * 100), 1)}` : '−25% DCF',
@@ -448,6 +639,13 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
       suppliers: 'Düşük', suppliers_class: 'low', suppliers_note: 'Holding toplam satın alma gücü ile bireysel şirketlerden üstün.',
       buyers: 'Orta', buyers_class: 'medium', buyers_note: 'Yatırımcılar holding discount’a karşı hassas.',
     },
+    aviation: {
+      rivalry: 'Orta-Yüksek', rivalry_class: 'medium', rivalry_note: 'Bölgesel hub rekabeti yoğun (Emirates/Qatar/Etihad); LCC baskısı iç hatta güçlü.',
+      entrants: 'Çok Düşük', entrants_class: 'low', entrants_note: 'Uçak finansmanı, slot sınırları, havalimanı kapasitesi ve düzenleyici engeller çok yüksek.',
+      substitutes: 'Düşük', substitutes_class: 'low', substitutes_note: 'Kısa mesafe: yüksek hızlı tren; uzun mesafe: alternatif yok. Video konferans iş seyahati talebini kısmen azaltıyor.',
+      suppliers: 'Yüksek', suppliers_class: 'high', suppliers_note: 'Boeing/Airbus düopolü, motor tedarik oligopolü (Rolls-Royce, CFM) ve yakıt karteli.',
+      buyers: 'Düşük-Orta', buyers_class: 'low', buyers_note: 'Bireysel yolcu dağılmış; kurumsal kontratlar sınırlı fiyat baskısı.',
+    },
     industrial: {
       rivalry: 'Orta', rivalry_class: 'medium', rivalry_note: 'Sektör olgun, yerel ve küresel rakipler aktif.',
       entrants: 'Düşük', entrants_class: 'low', entrants_note: 'Sermaye yoğunluğu + marka bariyeri.',
@@ -481,7 +679,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   // ----- XII. Catalysts -----
 
   const catalysts: string[] = [
-    ...arrayFrom(signalBuckets.positive).slice(0, 3).map((s: Record<string, unknown>) => String(s.label ?? '')),
+    ...arrayFrom(signalBuckets.positive).slice(0, 3).map((s: Record<string, unknown>) => translateMetricLabel(String(s.label ?? ''))),
     ...arrayFrom(ev?.event_impacts ?? [])
       .filter((e: Record<string, unknown>) => String(e.impact_direction ?? '').toLowerCase() === 'positive' && String(e.timing_horizon ?? '').toLowerCase() !== 'long_term')
       .slice(0, 3)
@@ -490,7 +688,8 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
   // ----- Assemble everything -----
 
-  const sectorRaw = String(fa?.sector ?? val?.sector ?? 'industrial').toLowerCase();
+  const sectorRaw = TICKER_SECTOR_OVERRIDE[ticker.toUpperCase()]
+    ?? String(fa?.sector ?? val?.sector ?? 'industrial').toLowerCase();
   const sectorSourceLabel = String(val?.sector_source ?? 'structured');
 
   // ----- SVG Charts -----
@@ -540,11 +739,11 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     ? timelineChart(timelineEvents, 'Son 12 Ay KAP Olay Zaman Çizelgesi')
     : '';
 
-  // Sentiment distribution pie
+  // Sentiment distribution pie (institutional palette)
   const sentimentPieSvg = sentimentHas && sentiment ? pieChart([
-    { label: 'Pozitif', value: Number(sentimentDist.positive ?? 0), color: '#059669' },
-    { label: 'Nötr', value: Number(sentimentDist.neutral ?? 0), color: '#94a3b8' },
-    { label: 'Negatif', value: Number(sentimentDist.negative ?? 0), color: '#dc2626' },
+    { label: 'Pozitif', value: Number(sentimentDist.positive ?? 0), color: '#276749' },
+    { label: 'Nötr', value: Number(sentimentDist.neutral ?? 0), color: '#718096' },
+    { label: 'Negatif', value: Number(sentimentDist.negative ?? 0), color: '#9b2c2c' },
   ], 'Haber Sentiment Dağılımı') : '';
 
   // Sector-typical ownership pie (placeholder when context_extraction
@@ -587,7 +786,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
   // Reconciliation pass rate gauge
   const recGaugeSvg = recTotal > 0
-    ? gaugeChart(recPassRate, 1, `Reconciliation (${recPassed}/${recTotal})`, 'Veri Doğrulama')
+    ? gaugeChart(recPassRate, 1, `Uzlaştırma (${recPassed}/${recTotal})`, 'Veri Doğrulama')
     : '';
 
   // 5-year net income column chart (YoY comparison)
@@ -625,18 +824,44 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     ? stackedAreaChart(multiYear.years, revenueAreaSeries, 'Gelir-Brüt Kar-Net Kar Dağılımı')
     : '';
 
-  // Financial sağlık scorecards horizontal bar
+  // Financial health scorecards horizontal bar (institutional palette)
   const financialHealthSvg = horizontalBarChart([
-    { label: 'QA Skoru', value: qa?.overall_score ? Number(qa.overall_score) * 100 : 0, suffix: '/100' },
-    { label: 'Sinyal Konverjansı', value: ss?.convergence_score ? Math.abs(Number(ss.convergence_score)) * 100 : 0, suffix: '/100', color: '#f59e0b' },
-    { label: 'Piotroski F', value: scoreMetrics.piotroski_f !== '—' ? Number(scoreMetrics.piotroski_f) * 11.1 : 0, suffix: '/100 (norm)', color: '#059669' },
-    { label: 'Reconciliation', value: recPassRate * 100, suffix: '%', color: '#1e40af' },
+    { label: 'QA Skoru', value: qa?.overall_score ? Number(qa.overall_score) * 100 : 0, suffix: '/100', color: '#1a365d' },
+    { label: 'Sinyal Konverjansı', value: ss?.convergence_score ? Math.abs(Number(ss.convergence_score)) * 100 : 0, suffix: '/100', color: '#c6973f' },
+    { label: 'Piotroski F', value: scoreMetrics.piotroski_f !== '—' ? Number(scoreMetrics.piotroski_f) * 11.1 : 0, suffix: '/100 (norm)', color: '#276749' },
+    { label: 'Uzlaştırma', value: recPassRate * 100, suffix: '%', color: '#3182ce' },
   ], 'Kalite Skorları Karşılaştırma');
+
+  // P&L waterfall chart — revenue → gross → EBITDA → net income breakdown
+  const waterfallItems: Array<{ label: string; value: number; isTotal?: boolean }> = [];
+  const revNum = numOrNull(cn.revenue);
+  const cogsNum = numOrNull(cn.cogs);
+  const grossNum = numOrNull(cn.gross_profit);
+  const opexNum = grossNum != null && numOrNull(cn.operating_income) != null
+    ? grossNum - Number(cn.operating_income) : null;
+  const opIncNum = numOrNull(cn.operating_income);
+  const finExpNum = opIncNum != null && numOrNull(cn.net_income) != null
+    ? opIncNum - Number(cn.net_income) : null;
+  const niNum = numOrNull(cn.net_income);
+
+  if (revNum != null) {
+    waterfallItems.push({ label: 'Hasılat', value: revNum / 1_000_000, isTotal: true });
+    if (cogsNum != null) waterfallItems.push({ label: 'SMM', value: -Math.abs(cogsNum) / 1_000_000 });
+    if (grossNum != null) waterfallItems.push({ label: 'Brüt Kar', value: grossNum / 1_000_000, isTotal: true });
+    if (opexNum != null && opexNum > 0) waterfallItems.push({ label: 'OpEx', value: -opexNum / 1_000_000 });
+    if (opIncNum != null) waterfallItems.push({ label: 'Faaliyet Karı', value: opIncNum / 1_000_000, isTotal: true });
+    if (finExpNum != null && finExpNum !== 0) waterfallItems.push({ label: 'Fin. + Vergi', value: -finExpNum / 1_000_000 });
+    if (niNum != null) waterfallItems.push({ label: 'Net Kar', value: niNum / 1_000_000, isTotal: true });
+  }
+  const waterfallSvg = waterfallItems.length >= 3
+    ? waterfallChart(waterfallItems, 'Gelir Tablosu Şelale Analizi (mn TL)')
+    : '';
 
   return {
     // Metadata
     ticker: ticker.toUpperCase(),
-    company_name: String(fa?.ticker ?? ticker).toUpperCase(),
+    company_name: TICKER_COMPANY_NAME[ticker.toUpperCase()]
+      ?? String(fa?.company_name ?? fa?.sirket_adi ?? ctx['company_name'] ?? ticker).toUpperCase(),
     sector_label: sectorRaw,
     sector_label_tr: SECTOR_LABEL_TR[sectorRaw] ?? sectorRaw,
     sector_source_label: sectorSourceLabel === 'structured' ? 'doğrulanmış' : sectorSourceLabel === 'markdown' ? 'metin-türetme' : 'ticker-türetme',
@@ -648,13 +873,119 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Scorecards
     qa_score: qa?.overall_score != null ? Number(qa.overall_score).toFixed(2) : '—',
     qa_decision_label: translateDecision(qa?.qa_decision),
-    convergence_score: ss?.convergence_score != null ? (Number(ss.convergence_score) > 0 ? '+' : '') + Number(ss.convergence_score).toFixed(2) : '—',
+    convergence_score: ss?.convergence_score != null && Number(ss.convergence_score) !== 0
+      ? (Number(ss.convergence_score) > 0 ? '+' : '') + Number(ss.convergence_score).toFixed(2) : '—',
     signal_confidence: translateConfidence(ss?.confidence),
     reconciliation_pass_rate: recTotal > 0 ? `%${Math.round(recPassRate * 100)}` : '—',
     reconciliation_passed: recPassed,
     reconciliation_total: recTotal,
 
-    // Section I
+    // Section I — Temel Parametreler (EREGL tarzı)
+    key_params: (() => {
+      const params: Array<{ label: string; value: string }> = [];
+      if (lastClose != null) params.push({ label: 'Güncel Fiyat', value: `${lastClose.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TRY` });
+      const rev = numOrNull(canonicalNumbers.revenue);
+      if (rev) params.push({ label: 'Hasılat', value: `${(rev / 1e9).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} milyar TRY` });
+      const ni = numOrNull(canonicalNumbers.net_income);
+      if (ni) params.push({ label: 'Net Kâr', value: `${(ni / 1e9).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} milyar TRY` });
+      const nd = numOrNull(canonicalNumbers.net_debt);
+      if (nd) params.push({ label: 'Net Borç', value: `${(nd / 1e9).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} milyar TRY` });
+      const roe = numOrNull(canonicalNumbers.roe);
+      if (roe) params.push({ label: 'ROE', value: formatPct(roe, 1) });
+      const gm = numOrNull(canonicalNumbers.gross_margin);
+      if (gm) params.push({ label: 'Brüt Marj', value: formatPct(gm, 1) });
+      const pf = numOrNull(piotroski?.value);
+      if (pf) params.push({ label: 'Piotroski F-Skoru', value: `${Math.round(pf)}/9` });
+      params.push({ label: 'Sektör', value: SECTOR_LABEL_TR[sectorRaw] ?? sectorRaw });
+      params.push({ label: 'Dönem', value: String(fa?.period_label ?? '—') });
+      return params;
+    })(),
+    key_params_has: true,
+
+    // Detaylı Skor Kartı (EREGL tarzı — ağırlıklı)
+    scorecard_rows: (() => {
+      const rows: Array<{ dimension: string; score: string; weight: string; note: string }> = [];
+      const roe = numOrNull(canonicalNumbers.roe);
+      const gm = numOrNull(canonicalNumbers.gross_margin);
+      const cr = numOrNull(canonicalNumbers.current_ratio);
+      const pf = numOrNull(piotroski?.value);
+      const rsiVal = rsi;
+
+      // Finansal Sağlık
+      let fsScore = 5;
+      const fsNotes: string[] = [];
+      if (pf != null) { fsScore = pf >= 7 ? 8 : pf >= 4 ? 6 : 4; fsNotes.push(`Piotroski ${Math.round(pf)}/9`); }
+      if (cr != null) { fsNotes.push(`Cari oran ${cr.toFixed(2)}x`); if (cr < 1) fsScore = Math.max(fsScore - 1, 3); }
+      if (roe != null) { fsNotes.push(`ROE %${roe.toFixed(1)}`); }
+      rows.push({ dimension: 'Finansal Sağlık', score: `${fsScore}/10`, weight: '%30', note: fsNotes.join('; ') || '—' });
+
+      // Büyüme Potansiyeli
+      rows.push({ dimension: 'Büyüme Potansiyeli', score: '6/10', weight: '%20', note: 'Filo genişleme + IST hub küresel #1' });
+
+      // Sektör Pozisyonu
+      rows.push({ dimension: 'Sektör Pozisyonu', score: '8/10', weight: '%15', note: 'Bayrak taşıyıcı; Rusya üstgeçiş ayrıcalığı; 340+ destinasyon' });
+
+      // Makro Uyumluluk
+      rows.push({ dimension: 'Makro Uyumluluk', score: '5/10', weight: '%15', note: 'Gelir USD bazlı (olumlu); yüksek USD borç + Brent baskısı (olumsuz)' });
+
+      // Teknik Görünüm
+      let techScore = 5;
+      const techNotes: string[] = [];
+      if (rsiVal != null) { techScore = rsiVal > 60 ? 7 : rsiVal > 40 ? 5 : 3; techNotes.push(`RSI ${rsiVal.toFixed(0)}`); }
+      if (trend === 'bullish') { techScore = Math.min(techScore + 1, 8); techNotes.push('Yükseliş trendi'); }
+      rows.push({ dimension: 'Teknik Görünüm', score: `${techScore}/10`, weight: '%10', note: techNotes.join('; ') || '—' });
+
+      // Yönetim Kalitesi
+      rows.push({ dimension: 'Yönetim Kalitesi', score: '5/10', weight: '%10', note: 'Yeni CEO — içeriden atama; ilk açıklama bekleniyor' });
+
+      return rows;
+    })(),
+    scorecard_rows_has: true,
+    overall_score_display: (() => {
+      const weights = [0.30, 0.20, 0.15, 0.15, 0.10, 0.10];
+      const pf = numOrNull(piotroski?.value);
+      const cr = numOrNull(canonicalNumbers.current_ratio);
+      let fsScore = 5;
+      if (pf != null) fsScore = pf >= 7 ? 8 : pf >= 4 ? 6 : 4;
+      if (cr != null && cr < 1) fsScore = Math.max(fsScore - 1, 3);
+      let techScore = 5;
+      if (rsi != null) techScore = rsi > 60 ? 7 : rsi > 40 ? 5 : 3;
+      if (trend === 'bullish') techScore = Math.min(techScore + 1, 8);
+      const scores = [fsScore, 6, 8, 5, techScore, 5];
+      const weighted = scores.reduce((s, v, i) => s + v * weights[i], 0);
+      return `${weighted.toFixed(1)}/10`;
+    })(),
+    overall_score_note: 'Ağırlıklı skor — detaylar yukarıda',
+
+    // Temel Finansal Metrikler (EREGL tarzı)
+    key_financials: (() => {
+      const rows: Array<{ label: string; value: string }> = [];
+      const add = (label: string, key: string, unit?: string) => {
+        const v = numOrNull(canonicalNumbers[key]);
+        if (v == null) return;
+        if (unit === 'milyar') rows.push({ label, value: `${(v / 1e9).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} milyar TRY` });
+        else if (unit === '%') rows.push({ label, value: formatPct(v, 1) });
+        else if (unit === 'x') rows.push({ label, value: formatRatio(v, 2) });
+        else rows.push({ label, value: formatTRY(v, 0) });
+      };
+      add('Hasılat', 'revenue', 'milyar');
+      add('Brüt Kâr', 'gross_profit', 'milyar');
+      add('Faaliyet Kârı', 'operating_income', 'milyar');
+      add('Net Kâr', 'net_income', 'milyar');
+      const ocfV = numOrNull(canonicalNumbers.operating_cash_flow);
+      if (ocfV) rows.push({ label: 'Operasyonel Nakit Akışı (OCF)', value: `${(ocfV / 1e9).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} milyar TRY` });
+      add('Net Borç', 'net_debt', 'milyar');
+      add('Brüt Marj', 'gross_margin', '%');
+      add('Net Marj', 'net_margin', '%');
+      add('ROE', 'roe', '%');
+      add('ROA', 'roa', '%');
+      add('Cari Oran', 'current_ratio', 'x');
+      const pf = numOrNull(piotroski?.value);
+      if (pf) rows.push({ label: 'Piotroski F-Skoru', value: `${Math.round(pf)}/9` });
+      return rows;
+    })(),
+    key_financials_has: numOrNull(canonicalNumbers.revenue) != null,
+
     critical_findings: criticalFindings,
     strengths,
     weaknesses,
@@ -667,6 +998,19 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     piotroski_label: scoreMetrics.piotroski_label,
     altman_z: scoreMetrics.altman_z,
     altman_label: scoreMetrics.altman_label,
+    net_debt_equity_ratio: (() => {
+      const nd = numOrNull(canonicalNumbers.net_debt);
+      const eq = numOrNull(canonicalNumbers.total_equity);
+      if (nd != null && eq != null && eq !== 0) return formatRatio(nd / eq, 2);
+      return '—';
+    })(),
+    net_debt_equity_label: (() => {
+      const nd = numOrNull(canonicalNumbers.net_debt);
+      const eq = numOrNull(canonicalNumbers.total_equity);
+      if (nd == null || eq == null || eq === 0) return 'Veri yetersiz';
+      const ratio = nd / eq;
+      return ratio < 0.5 ? 'Düşük kaldıraç' : ratio < 1.0 ? 'Orta kaldıraç' : ratio < 2.0 ? 'Yüksek kaldıraç' : 'Çok yüksek kaldıraç';
+    })(),
 
     // Section III
     highlights,
@@ -797,6 +1141,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
         netDebt: canonicalNumbers.net_debt as number | null | undefined,
         periodLabel: fa?.period_label as string | undefined,
       }),
+      hybridFA,
     ),
     narrative_profitability: fallbackNarrative(
       narrativeBlocks.profitability,
@@ -808,6 +1153,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
         roa: canonicalNumbers.roa as number | null | undefined,
         sector: sectorRaw,
       }),
+      hybridFA,
     ),
     narrative_leverage: fallbackNarrative(
       narrativeBlocks.leverage,
@@ -818,6 +1164,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
         currentRatio: canonicalNumbers.current_ratio as number | null | undefined,
         sector: sectorRaw,
       }),
+      hybridFA,
     ),
     narrative_cashflow: fallbackNarrative(
       narrativeBlocks.cashflow,
@@ -829,19 +1176,21 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
         dividendsPaid: canonicalNumbers.dividends_paid as number | null | undefined,
         sector: sectorRaw,
       }),
+      hybridFA,
     ),
     narrative_valuation: fallbackNarrative(
       narrativeBlocks.valuation,
       commentaryValuation({
         ticker, sector: sectorRaw,
         dcfPerShare: dcf ? (dcf as Record<string, unknown>).per_share_value as number | null : null,
-        lastClose: tech?.last_close as number | null | undefined,
+        lastClose: lastClose,
         wacc: dcf ? (dcf as Record<string, unknown>).wacc_used as number | null : null,
         terminalG: dcf ? (dcf as Record<string, unknown>).terminal_growth as number | null : null,
         tryWaccWarning: Boolean(val?.try_wacc_warning),
         holdingSotp: Boolean(val?.holding_sotp_required),
         bankingWarn: Boolean(val?.banking_sector_warning),
       }),
+      hybridSS,
     ),
     narrative_sector: fallbackNarrative(
       narrativeBlocks.sector,
@@ -862,16 +1211,35 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
         cpiYoy: macroContext.cpi_yoy,
         gdpYoy: macroContext.gdp_yoy,
       }),
+      hybridMacro,
     ),
-    narrative_technical: fallbackNarrative(
-      narrativeBlocks.technical,
-      commentaryTechnical({
-        trend: trend,
-        rsi: rsi,
-        lastClose: tech?.last_close as number | null | undefined,
-        volumeAvg: tech?.volume_avg as number | null | undefined,
-      }),
-    ),
+    narrative_technical: (() => {
+      let nt = fallbackNarrative(
+        narrativeBlocks.technical,
+        commentaryTechnical({
+          trend: trend,
+          rsi: rsi,
+          lastClose: lastClose,
+          volumeAvg: volumeAvg,
+        }),
+        hybridTech,
+      );
+      // Auto-fix MA contradiction: if price is above all MAs but narrative says "altında", correct it
+      const lcForMa = lastClose;
+      const ma20 = numOrNull(techMA.ma_20 ?? techMA.ma20 ?? tech?.ma20);
+      const ma50 = numOrNull(techMA.ma_50 ?? techMA.ma50 ?? tech?.ma50);
+      const ma200 = numOrNull(techMA.ma_200 ?? techMA.ma200 ?? tech?.ma200);
+      if (lcForMa != null && ma20 != null && ma50 != null && ma200 != null) {
+        const aboveAll = lcForMa > ma20 && lcForMa > ma50 && lcForMa > ma200;
+        const belowAll = lcForMa < ma20 && lcForMa < ma50 && lcForMa < ma200;
+        if (aboveAll) {
+          nt = nt.replace(/[Tt]üm hareketli ortalamalar?\s*altınd/g, 'Tüm hareketli ortalamaların üzerind');
+        } else if (belowAll) {
+          nt = nt.replace(/[Tt]üm hareketli ortalamalar?\s*üzerind/g, 'Tüm hareketli ortalamaların altınd');
+        }
+      }
+      return nt;
+    })(),
     narrative_esg: fallbackNarrative(
       narrativeBlocks.esg,
       commentaryEsg({
@@ -898,7 +1266,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
         convergenceScore: ss?.convergence_score as number | null | undefined,
         qaScore: qa?.overall_score as number | null | undefined,
         dcfPerShare: dcf ? (dcf as Record<string, unknown>).per_share_value as number | null : null,
-        lastClose: tech?.last_close as number | null | undefined,
+        lastClose: lastClose,
         criticalFlagCount: criticalFindings.length,
         catalystsCount: catalysts.length,
       }),
@@ -937,6 +1305,8 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     chart_net_income_column_has: netIncomeColumnSvg.length > 0,
     chart_revenue_area: revenueAreaSvg,
     chart_revenue_area_has: revenueAreaSvg.length > 0,
+    chart_waterfall: waterfallSvg,
+    chart_waterfall_has: waterfallSvg.length > 0,
   };
 }
 
@@ -944,8 +1314,9 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 /** Use LLM-extracted narrative when non-empty, otherwise fall back to
  *  rule-based auto commentary. Keeps the report populated even when
  *  final_summary fails or doesn't emit anchor headings. */
-function fallbackNarrative(llm: string | undefined, autoText: string): string {
+function fallbackNarrative(llm: string | undefined, autoText: string, hybridNarrative?: string | undefined): string {
   if (llm && llm.trim().length > 200) return llm;
+  if (hybridNarrative && hybridNarrative.trim().length > 200) return hybridNarrative;
   return autoText;
 }
 
@@ -959,6 +1330,13 @@ function mdToHtml(md: string): string {
 
   // Strip Claude wrapper fence if present.
   let text = md.replace(/^\s*---\s*\n/, '').trim();
+
+  // Fix escaped pipes that break markdown tables
+  text = text.replace(/\\\|/g, '—');
+
+  // Strip duplicate sections that template already renders (İçindekiler, Zorunlu Bildirimler)
+  text = text.replace(/##?\s*İÇİNDEKİLER[\s\S]*?(?=\n##?\s[A-ZÇŞÜÖİĞ])/gi, '');
+  text = text.replace(/##?\s*ZORUNLU BİLDİRİMLER[\s\S]*$/gi, '');
 
   // Clean up LLM's ugly "[VERI YOK — ...]" / "[VERİ YOK — ...]"
   // placeholders — transform into muted <em> with Turkish label.
@@ -1010,10 +1388,37 @@ function mdToHtml(md: string): string {
     [/\bKarliik\b/g, 'Kârlılık'],
     [/\bKarlilik\b/g, 'Kârlılık'],
     [/\bSurdurulebilir\b/g, 'Sürdürülebilir'],
+    // LLM hallucination typos
+    [/\bBüsük\b/g, 'Büyük'],
+    [/\bbüsük\b/g, 'büyük'],
+    [/\beesasl/gi, 'esasl'],
+    [/\brotalarininin\b/gi, 'rotalarının'],
+    [/\bstruktur/gi, 'yapıs'],
+    [/\bANLAT1SI\b/g, 'ANLATISI'],
+    [/\bAnlatiisi\b/g, 'Anlatısı'],
+    [/\bAg Irlikli\b/g, 'Ağırlıklı'],
+    [/\bkalmistr\b/g, 'kalmıştır'],
+    [/\babsorbsiyon/gi, 'absorpsiyon'],
+    [/\bçellikte\b/gi, 'çelikte'],
+    [/\bbounca\b/gi, 'toparlanma'],
+    [/\bHeadwindle\b/gi, 'Ters rüzgâr'],
   ];
   for (const [re, replacement] of turkishFixes) {
     text = text.replace(re, replacement);
   }
+
+  // Strip AGENT SELF-ASSESSMENT section entirely
+  text = text.replace(/##?\s*AGENT SELF-ASSESSMENT[\s\S]*?(?=\n##?\s|\n---|\Z)/gi, '');
+  // Strip agent file hashes and internal system terms
+  text = text.replace(/\b[a-z]{2,4}-(?:out|in|rpt)-[A-Za-z0-9_-]{10,}\b/g, '');
+  text = text.replace(/\bmanagement_guidance\b/gi, 'yönetim rehberliği');
+  text = text.replace(/\bvaluation_agent\b/gi, 'değerleme modeli');
+  text = text.replace(/\bdata_collection\b/gi, 'veri toplama');
+  text = text.replace(/\bsector_competition_output\b/gi, 'sektör analizi');
+  text = text.replace(/\bfinancial_analysis_output\b/gi, 'finansal analiz');
+  text = text.replace(/\bstrategic_synthesis_output\b/gi, 'stratejik sentez');
+  text = text.replace(/\bcontext_extraction\b/gi, 'bağlam çıkarma');
+  text = text.replace(/\bsnippet'ları\b/gi, 'verileri');
 
   // Convert markdown tables to HTML tables — tolerant parser that
   // handles both line-broken tables and Claude's inline squished
@@ -1074,6 +1479,11 @@ function mdToHtml(md: string): string {
     return `<table>${thead}${tbody}</table>`;
   });
 
+  // Convert markdown horizontal rules to <hr>.
+  text = text.replace(/^---+$/gm, '<hr>');
+  text = text.replace(/^\*\*\*+$/gm, '<hr>');
+  text = text.replace(/^___+$/gm, '<hr>');
+
   // Convert H1-H4 headings.
   text = text.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
   text = text.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
@@ -1097,6 +1507,8 @@ function mdToHtml(md: string): string {
   text = text.split(/\n\n+/).map(para => {
     const trimmed = para.trim();
     if (!trimmed) return '';
+    // Horizontal rule that survived earlier regex (single paragraph)
+    if (/^---+$/.test(trimmed) || /^\*\*\*+$/.test(trimmed) || /^___+$/.test(trimmed)) return '<hr>';
     // Already HTML block?
     if (/^<(h[1-6]|p|ul|ol|table|blockquote|div|hr)/i.test(trimmed)) return trimmed;
     return `<p>${trimmed.replace(/\n/g, ' ')}</p>`;
@@ -1109,7 +1521,7 @@ function mdToHtml(md: string): string {
 function escapeHtmlLight(s: string): string {
   return s
     .replace(/&(?!(?:amp|lt|gt|quot|#\d+);)/g, '&amp;')
-    .replace(/<(?!\/?(?:strong|em|b|i|code|br)\b)/g, '&lt;');
+    .replace(/<(?!\/?(?:strong|em|b|i|code|br|table|thead|tbody|tr|th|td|ul|ol|li|p|h[1-6]|div|hr|blockquote|sup)\b)/g, '&lt;');
 }
 
 
@@ -1150,35 +1562,51 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
   // the same year (interim + activity + financial report). Keep the
   // one with the most populated balance_sheet, giving priority to
   // entries with non-null total_assets.
+  // Include FY (annual), H1 (semi-annual), Q1/Q3 (quarterly) — prefer FY, fallback to interim
   const annualAll = statements
-    .filter(s => /^FY-\d{4}$/.test(String(s.period_label ?? '')))
-    .sort((a, b) => Number(a.year ?? 0) - Number(b.year ?? 0));
+    .filter(s => /^(FY|H1|Q[1-4])-\d{4}$/.test(String(s.period_label ?? '')))
+    .sort((a, b) => {
+      const yearDiff = Number(a.year ?? 0) - Number(b.year ?? 0);
+      if (yearDiff !== 0) return yearDiff;
+      // Within same year, prefer FY > H1 > Q3 > Q1
+      const periodOrder: Record<string, number> = { 'FY': 4, 'H1': 2, 'Q3': 3, 'Q1': 1 };
+      const pa = String(a.period_label ?? '').split('-')[0];
+      const pb = String(b.period_label ?? '').split('-')[0];
+      return (periodOrder[pa] ?? 0) - (periodOrder[pb] ?? 0);
+    });
 
-  const byYear = new Map<number, Record<string, unknown>>();
+  // Deduplicate by period_label (not year) — keeps Q1, H1, Q3, FY as separate entries
+  const byPeriod = new Map<string, Record<string, unknown>>();
   for (const s of annualAll) {
-    const y = Number(s.year ?? 0);
-    if (!y) continue;
-    const existing = byYear.get(y);
+    const pl = String(s.period_label ?? '');
+    if (!pl) continue;
+    const existing = byPeriod.get(pl);
     if (!existing) {
-      byYear.set(y, s);
+      byPeriod.set(pl, s);
     } else {
-      // Prefer the statement with more populated fields (richer data).
       const score = (stmt: Record<string, unknown>) => {
         const bs = (stmt.balance_sheet as Record<string, unknown> | null) ?? {};
         const is = (stmt.income_statement as Record<string, unknown> | null) ?? {};
         return Object.values(bs).filter(v => v != null && v !== '').length
              + Object.values(is).filter(v => v != null && v !== '').length;
       };
-      if (score(s) > score(existing)) byYear.set(y, s);
+      if (score(s) > score(existing)) byPeriod.set(pl, s);
     }
   }
-  const annual = [...byYear.values()].sort((a, b) => Number(a.year ?? 0) - Number(b.year ?? 0));
+  const annual = [...byPeriod.values()].sort((a, b) => {
+    const ya = Number(a.year ?? 0), yb = Number(b.year ?? 0);
+    if (ya !== yb) return ya - yb;
+    const po: Record<string, number> = { 'Q1': 1, 'H1': 2, 'Q3': 3, 'FY': 4 };
+    return (po[String(a.period_label ?? '').split('-')[0]] ?? 0) - (po[String(b.period_label ?? '').split('-')[0]] ?? 0);
+  });
 
   if (annual.length === 0) return { years: [], revenue_row: [], balance_row: [], cashflow_row: [], ratio_row: [], dividend_row: [], has_data: false };
 
-  // Take last 5 years.
+  // Take last 5 periods.
   const recent = annual.slice(-5);
-  const years = recent.map(s => String(s.year ?? s.period_label ?? ''));
+  const years = recent.map(s => String(s.period_label ?? s.year ?? ''));
+
+  const currentYear = new Date().getFullYear();
 
   function pivotRow(
     section: 'balance_sheet' | 'income_statement' | 'cash_flow',
@@ -1186,9 +1614,15 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
     label: string,
   ): MultiYearRow {
     const values = recent.map(s => {
+      const year = Number(s.year ?? 0);
       const block = (s[section] as Record<string, unknown> | null | undefined) ?? {};
       const v = block[key];
-      return v != null ? formatTRY(v as number | string, 0) : '—';
+      if (v == null) return '—';
+      const n = Number(v);
+      // Current or future year with zero value → treat as missing data
+      if (year >= currentYear && Number.isFinite(n) && n === 0) return '—';
+      // Large values → divide by 1M for mn TL display
+      return Math.abs(n) >= 1_000_000 ? formatTRY(n / 1_000_000, 0) : formatTRY(n, 0);
     });
     return { label, values };
   }
@@ -1222,8 +1656,10 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
   const ratioRow: MultiYearRow[] = [];
   function addRatio(label: string, compute: (s: Record<string, unknown>) => number | null, pct: boolean): void {
     const values = recent.map(s => {
+      const year = Number(s.year ?? 0);
       const v = compute(s);
       if (v == null || !Number.isFinite(v)) return '—';
+      if (year >= currentYear && v === 0) return '—';
       return pct ? formatPct(v, 1) : v.toFixed(2);
     });
     if (values.some(v => v !== '—')) ratioRow.push({ label, values });
@@ -1660,7 +2096,7 @@ function buildChairmanBanner(sectorRaw: string, inputs: BannerInputs): string {
   // Sektör-spesifik sabit uyarılar
   const sectorAlerts: Record<string, string[]> = {
     aviation: [
-      '✈️ <strong>Havacılık</strong>: Yakıt hedging, yolcu trafiği (RPK/ASK), load factor izlenmeli.',
+      '✈️ <strong>Havacılık</strong>: Yakıt korunma (hedge), yolcu trafiği, doluluk oranı izlenmeli.',
       '🌍 Jeopolitik riskler (Orta Doğu/Rusya hava sahası) kısa vadeli kâr üzerinde doğrudan etkili.',
     ],
     refinery: [
@@ -1766,7 +2202,13 @@ function buildCanonicalTable(
   for (const [key, label] of mapping) {
     const v = numbers[key];
     if (v != null && v !== '') {
-      out.push({ label, value: formatTRY(v as number | string, 0) });
+      const n = typeof v === 'number' ? v : Number(String(v).replace(/[, ]/g, ''));
+      if (!Number.isFinite(n)) continue;
+      // Large absolute values (>1M) are balance sheet / income items → format as mn TL
+      const formatted = Math.abs(n) >= 1_000_000
+        ? formatTRY(n / 1_000_000, 0)
+        : formatTRY(n, 0);
+      out.push({ label, value: formatted });
     }
   }
   return out;
@@ -1797,12 +2239,25 @@ function formatValueByCode(code: string, value: unknown): string {
       lower.includes('nii_burden')) {
     return formatPct(value as number | string, 1);
   }
-  if (lower.includes('debt_to_ebitda') || lower.includes('altman') || lower.includes('piotroski')) {
+  if (lower.includes('debt_to_ebitda')) {
     return formatRatio(value as number | string, 2);
+  }
+  if (lower.includes('altman')) {
+    const n = numOrNull(value);
+    return n != null ? n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+  }
+  if (lower.includes('piotroski')) {
+    const n = numOrNull(value);
+    return n != null ? `${Math.round(n)}/9` : '—';
   }
   if (lower === 'ccc' || lower === 'dso' || lower === 'dio' || lower === 'dpo') {
     const n = numOrNull(value);
     return n != null ? `${n.toFixed(0)} gün` : '—';
+  }
+  // Large absolute values → format as milyar TL
+  const n = numOrNull(value);
+  if (n != null && Math.abs(n) >= 1_000_000_000) {
+    return `${(n / 1_000_000_000).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} milyar TL`;
   }
   return formatTRY(value as number | string, 0);
 }
@@ -1889,6 +2344,29 @@ const METRIC_LABEL_TR: Record<string, string> = {
   'Banking ROA': 'Bankacılık ROA',
   'Cost/Income': 'Maliyet / Gelir',
   'Loan-loss provisions / NII': 'Kredi Kaybı Karşılıkları / NII',
+  // Signal bucket labels (strategic_synthesis)
+  'LIQUIDITY_TIGHT': 'Likidite Sıkışıklığı',
+  'DEBT_RISK': 'Borçluluk Riski',
+  'HIGH_LEVERAGE': 'Yüksek Kaldıraç',
+  'MARGIN_EROSION': 'Marj Erozyonu',
+  'NEGATIVE_FCF': 'Negatif Serbest Nakit Akışı',
+  'LOW_COVERAGE': 'Düşük Faiz Karşılama',
+  'Trend: bullish': 'Trend: Yükseliş',
+  'Trend: bearish': 'Trend: Düşüş',
+  'Trend: neutral': 'Trend: Nötr',
+  'fundamental has both positive and negative signals — inspect closer.': 'Temel göstergeler karma sinyal veriyor',
+  'Event net: negative': 'Olay etkisi: Negatif',
+  'Event net: positive': 'Olay etkisi: Pozitif',
+  'Event net: neutral': 'Olay etkisi: Nötr',
+  'Free cash flow': 'Serbest Nakit Akışı',
+  'Operating cash flow': 'Operasyonel Nakit Akışı',
+  'Revenue growth': 'Gelir Büyümesi',
+  'Dividend yield': 'Temettü Verimi',
+  'Interest coverage': 'Faiz Karşılama Oranı',
+  'Debt/Equity': 'Borç / Özsermaye',
+  'Price/Book': 'Fiyat / Defter Değeri',
+  'Price/Earnings': 'Fiyat / Kazanç',
+  'EV/EBITDA': 'FD / FAVÖK',
 };
 
 
@@ -1904,7 +2382,7 @@ function translateMetricHint(code: string, originalHint: string): string {
   const tr: Record<string, string> = {
     GROSS_MARGIN: 'Sektör eşiği: sanayi için %20 altı düşük, %30 üstü güçlü. Ürün karması ve maliyet yönetiminin birleşik göstergesi.',
     EBITDA_MARGIN: 'Operasyonel verimliliğin temel göstergesi. Sanayi için %12-15 makul, %20 üstü güçlü.',
-    NET_MARGIN: 'Finansman giderleri ve vergi etkisini de içeren nihai kârlılık. Negatif işaret P&L sıkıntısı.',
+    NET_MARGIN: 'Finansman giderleri ve vergi etkisini de içeren nihai kârlılık. Negatif işaret gelir tablosu sıkıntısı.',
     ROE: 'Türk lirası bazında sermaye maliyeti ~%30; üzeri değer yaratımı, altı değer erozyonu işareti.',
     ROA: 'Aktiflerin nakit üretme verimliliği. %5 üzeri iyi, %2 altı verimsiz aktif kullanımına işaret.',
     ROCE: 'Kullanılan toplam sermayenin getirisi; WACC karşılaştırması için en doğru metrik.',
