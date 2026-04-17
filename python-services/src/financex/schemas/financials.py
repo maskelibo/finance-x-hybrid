@@ -131,6 +131,7 @@ class CashFlowStatement(FinancexModel):
     capex: Money | None = None
     free_cash_flow: Money | None = None
     dividends_paid: Money | None = None
+    depreciation_amortization: Money | None = None
     net_borrowing: Money | None = None
     fx_impact: Money | None = None
     net_change_in_cash: Money | None = None
