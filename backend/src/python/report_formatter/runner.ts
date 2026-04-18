@@ -50,8 +50,8 @@ export async function runPythonReportFormatter(
       ticker,
       reportId,
       accumulatedContext,
-      // MVP: empty narrative blocks. Template hides their wrappers.
-      narrativeBlocks: {},
+      // Auto-extract narrative blocks from LLM outputs via llm_narrative.ts
+      // (passing undefined lets composeReportContext use buildNarrativeBlocks)
     });
 
     const html = renderTemplate(TEMPLATE, ctx);

@@ -169,6 +169,66 @@ Her rapor icin:
 - KAP watch mandate penceresini ayni adla ayri cikti blokunda verecek; `7 gun`, `30 gun`, `12 ay` artik birbirine karismayacak.
 - Her material KAP olayi icin `finansal kanal + sonraki beklenen adim/tarih` birlikte yazilacak; timeline agent'i ham metin degil bu watchlist'i kullanacak.
 
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Delta-Update Raporu
+
+### Eksikler:
+- **monitoring_window.start "2025-04-16" — 1 YIL GERİ** — Doğru pencere "2026-03-17" (son 30 gün) veya "2025-04-16" (son 12 ay) olmalıydı. Çıktı "2025-04-16" gösteriyor ama 119 disclosure listelendi; bu 12 aylık tarama mı, veri hatası mı? Net belirtilmeli.
+- **is_material: null tüm disclosures için** — 119 disclosure'dan hiçbirinin `is_material` alanı doldurulmadı. CEO değişimi (1590373) açıkça materyal; manuel olarak bile `is_material: true` yazılabilirdi.
+- **quantitative_impact_try: null tüm disclosures için** — CEO değişimi, temettü sıfır kararı, yönetim kurulu atamaları için TRY etki hesabı yapılmadı. "CEO değişiminin finansal etkisi sayısal verilemez" doğrudur ama temettü sıfır kararının impact'i hesaplanabilirdi: "118.2 bn TRY olası temettü ödemesinin sıfırlanması = nakit koruması +118.2 bn TRY."
+- **İran krizi KAP sessizliği tespiti yapılmadı** — 10 Orta Doğu rotası askıya alındı; THYAO'nun bu konuda özel durum açıklaması yapıp yapmadığı kontrol edilmedi. "Sessizlik de bulgudur" kuralı uygulanmadı.
+- **Forward event takvimi üretilmedi** — Mayıs 2026 Q1 sonuçları, yeni CEO'nun ilk stratejik beyanı, TCMB PPK tarihleri forward takvimde sunulmadı.
+- **Trafik KPI aylık bildirimleri KAP ID ile teyit edilmedi** — Mart 2026 trafik verisi (pax +%16, doluluk %83.6) context'ten aktarıldı ama KAP bildirim ID'si çekilmedi.
+
+### Bundan Sonra:
+- **is_material alanını her zaman doldur** — "SPK mevzuatı açısından materyal mi?" sorusunu her disclosure için cevapla: true/false/uncertain. Yönetim değişikliği → true (SPK bildirimi zorunlu). Rutin form → false. Bilinmiyorsa "uncertain" yaz.
+- **Temettü/kar payı bildirimleri için quantitative_impact zorunlu** — Temettü kararı (sıfır da olsa) → "X mn TRY temettü dağıtılmadı / korundu" formatıyla sayısal etki her zaman hesaplanabilir.
+- **THYAO için zorunlu KAP tarama kategorileri:**
+  1. Aylık trafik KPI bildirimleri (ID + URL her ay)
+  2. CEO/YK değişikliği sonrası "özel durum açıklaması"
+  3. Rota askıya alma / operasyonel değişiklik bildirimleri
+  4. İran/Orta Doğu operasyonu hakkında THYAO sessizliği tespiti
+  5. Yeni CEO'nun ilk stratejik beyanı (AGM sonrası bildirimi takip)
+- **monitoring_window başlangıç tarihi net yaz** — "Son 30 gün (2026-03-16 → 2026-04-16)" veya "Son 12 ay (2025-04-16 → 2026-04-16)" hangisi mandate'se, başlıkta açıkça belirt.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Remediation (thyao-remediation-20260416)
+
+### Eksikler:
+- **119 disclosure hacim iyi ✓ — ancak is_material: null tümü (3. kez)** — Delta ve Standard raporda aynı hata tekrarlandı. CEO değişimi (1590373) SPK mevzuatı uyarınca açıkça materyal; null kabul edilemez.
+- **quantitative_impact_try: null tüm disclosures** — Temettü sıfır kararı (1590365): "118.2 bn TRY ödenmedi = nakit koruması" şeklinde etki her zaman üretilebilir.
+- **İran krizi KAP sessizliği tespiti yapılmadı** — 10 Orta Doğu rotası askıya; THYAO özel durum açıklaması yaptı mı? Sessizlik de bulgudur kuralı uygulanmadı.
+- **Forward event takvimi üretilmedi** — Mayıs 2026 Q1 sonuçları, yeni CEO beyanı, TCMB PPK (22 Nisan) takvimde görünmüyor.
+- **Aylık trafik KPI bildirimleri KAP ID ile teyit edilmedi** — Trafik verisi context'ten aktarıldı; KAP bildirim ID'si çekilmedi.
+
+### Bundan Sonra:
+- **is_material alanı her disclosure'da zorunlu (3. direktif)** — true / false / uncertain + tek cümle gerekçe. Yönetim değişikliği = true; rutin form = false. Bu alan COO delivery check'e eklendi.
+- **Temettü/kar payı kararında quantitative_impact zorunlu** — Sıfır temettü bile hesaplanabilir: "X mn TRY ödenmedi = nakit koruması." Null bırakma yasak.
+- **THYAO KAP tarama 5 zorunlu kategori (3. kez yazılıyor — uygulanacak):**
+  1. Aylık trafik KPI bildirimleri (ID + URL)
+  2. CEO/YK değişikliği sonrası özel durum açıklaması
+  3. Rota askıya alma/operasyonel değişiklik bildirimleri
+  4. İran sessizliği tespiti (bildiri yoksa "sessizlik" kaydı)
+  5. Yeni CEO'nun ilk stratejik beyanı takibi
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu
+
+### Eksikler:
+- **119 disclosure listelendi ✓ — hacim iyi** — Full inventory mevcut; bu pozitif.
+- **is_material: null tüm 119 disclosure için** — Aynı THYAO delta hatası tekrarlandı. CEO değişimi (1590373) açıkça SPK mevzuatı uyarınca materyal; null kabul edilemez.
+- **quantitative_impact_try: null tüm disclosures için** — Temettü sıfır kararı (1590365): "118.2 bn TRY ödenmedi = nakit koruması" şeklinde etki yazılabilirdi.
+- **İran krizi KAP sessizliği tespiti yapılmadı** — "10 Orta Doğu rotası askıya" konusunda THYAO özel durum açıklaması yaptı mı? Bu kontrol yapılmadı.
+- **Forward event takvimi üretilmedi** — Mayıs 2026 Q1 sonuçları, yeni CEO ilk beyanı, TCMB PPK (22 Nisan) takvimde yok.
+- **Aylık trafik KPI bildirimleri KAP ID ile teyit edilmedi** — Mart 2026 trafik verisi (pax +%16) context'ten aktarıldı, KAP bildirim ID'si çekilmedi.
+
+### Bundan Sonra:
+- **is_material alanı her zaman doldurulacak** — Bu direktif delta'da da verildi; standard raporda da uygulanmadı. Yönetim değişikliği = true, rutin form = false, bilinmiyorsa = uncertain. 3 seçenekten biri zorunlu.
+- **Temettü kararlarında quantitative_impact zorunlu** — "X mn TRY temettü ödenmedi / korundu" formatı her zaman üretilebilir; null bırakma yasak.
+- **THYAO zorunlu KAP tarama kategorileri (3. kez yazılıyor):**
+  1. Aylık trafik KPI bildirimleri (ID + URL)
+  2. CEO/YK değişikliği sonrası özel durum açıklaması
+  3. Rota askıya alma / operasyonel değişiklik bildirimleri
+  4. İran/Orta Doğu operasyonu hakkında sessizlik tespiti
+  5. Yeni CEO'nun ilk stratejik beyanı takibi
+
 ## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
 
 ### Eksikler:
@@ -181,3 +241,78 @@ Her rapor icin:
 - **KAP bildirim metni WebFetch ile oku** — Bildirim ID'si var ama içerik bilinmiyorsa kap.org.tr/tr/Bildirim/[ID] sayfasından doğrudan oku. Haber kaynağına güvenme; KAP metnini oku.
 - **KCHOL holding = 6 subsidiary + ana şirket taraması** — YKBNK, TUPRS, FROTO, ARCLK, EREGL, TCELL için KAP delta penceresi bildirimleri ayrıca kontrol edilecek. Sessizlik da bulgu.
 - **Forward takvim zorunlu ayrı bölüm** — "Beklenen Kritik Olaylar" başlığı altında: Tarih | Olay | Materiality | İlgili Segment | Beklenen Etki. 22 Nisan PPK + 29 Nisan YKBNK Q1 bu formatta.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Tam Analiz (thyao-full-20260416)
+
+### Eksikler:
+- **119 bildirim çekildi ✓ — hacim iyi** — KAP kapsamı bu turda güçlüydü; 119 bildirim tarih/ID ile listelenmiş.
+- **is_material null tüm bildirimlerde — 3. THYAO analizi** — Materyallik skoru hiçbir bildirim için üretilmedi. Kural net: bildirim ID'si var + içerik biliniyorsa materyallik ZORUNLU.
+- **quantitative_impact null tüm bildirimlerde** — Her bildirim için: TRY etkisi, hisse başı etki, % EBITDA — bunlar üretilmedi.
+- **Forward takvim eksik** — Q1 2025 sonuçları (Mayıs), TCMB PPK (22 Nisan), aylık trafik bildirimi — bunlar forward calendar'a eklenmedi.
+- **İran/Orta Doğu sessizlik tespiti yapılmadı** — Kural: İran rota askıya alma konusunda bildirim yoksa bunu "sessizlik tespiti" olarak özellikle not et. Bu bilgi event_classification için önemli.
+- **CEO değişimi post-disclosure takibi yok** — Ahmet Olmüster atanması (KAP bildirimi) sonrası YK açıklamaları, strateji beyanı takibi yapılmadı.
+
+### Bundan Sonra:
+- **is_material = her bildirim için zorunlu (null = output incomplete)** — İçerik okundu ama materyallik yok → tamamlanmamış çıktı. Materyallik skalası: HIGH (>%5 EBITDA etkisi potansiyeli) / MEDIUM (%1-5) / LOW (<1%). İçerik bilinmiyorsa: "MATERYALLIK: BELİRSİZ — içerik okunmadı" etiketi.
+- **quantitative_impact şablonu (her materyel bildirim için):**
+  ```
+  - TRY etkisi: [hesaplama veya "conf: LOW, proxy"]
+  - % EBITDA: [tahmini etki yüzdesi]
+  - Hisse başı etki: [TRY/hisse tahmini]
+  ```
+- **THYAO forward takvim zorunlu 5 kategori:** (1) Aylık trafik KPI bildirimi, (2) Q1/Q2 finansal sonuçlar, (3) TCMB PPK tarihleri, (4) CEO/YK stratejik açıklaması, (5) İran/Bölgesel operasyonel bildirim.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Full Analiz (thyao-full-20260416-v4)
+
+### Eksikler:
+- **is_material null tüm 119 bildirimde — 4. THYAO, kalıcı bloker** — CEO değişimi (KAP 1590373) SPK mevzuatı uyarınca açıkça materyel; null çıktı sistematik hata. Rutin formlar için "LOW" bile olsa zorunlu.
+- **quantitative_impact null tüm bildirimlerde** — Temettü sıfır kararı (KAP 1590365): "118.2 bn TRY nakit koruması" şeklinde etki hesaplanabilirdi. İran/rota bildirimleri için: rota × sefer × TRY bilet = gelir kaybı tahmini [conf: LOW] kabul edilir.
+- **İran/Orta Doğu rota krizi KAP sessizliği tespiti yok** — 10 rota askıya → THYAO "özel durum açıklaması" yaptı mı? Yaptıysa KAP ID; yapmadıysa "sessizlik = bulgu" notu. Her iki durum da raporlanmalıydı.
+- **Forward event takvimi üretilmedi** — Mayıs 2026 Q1 finansal sonuçları, 22 Nisan TCMB PPK, yeni CEO Ahmet Olmüster'ın ilk stratejik beyanı, aylık trafik bildirimi — hiçbiri ileriye dönük takvimde yok.
+- **Aylık trafik KPI bildirimi KAP ID'si teyit edilmedi** — Mart 2026 pax +%16 verisi context'ten alındı; KAP bildirim ID'si ve URL'si verilmedi.
+
+### Bundan Sonra:
+- **is_material: Her bildirim için zorunlu, null = FAIL (4. direktif — kesinleşti)** — Materyallik skalası: HIGH (stratejik/yönetim/büyük finansal), MEDIUM (operasyonel/kota/rota), LOW (rutin form). İçerik okunmadan "BELİRSİZ" et; asla null bırakma.
+- **Sessizlik tespiti: İran + CEO değişimi sonrası KAP özel durum bildirimi kontrol edilecek** — Bu iki olay için SPK bildirimi beklentisi var; bildirim yoksa bunu açıkça "Sessizlik Tespiti" bölümüne yaz.
+- **quantitative_impact şablonu her HIGH/MEDIUM bildirimine zorunlu:**
+  ```
+  - TRY etkisi: [hesaplama veya "conf: LOW, proxy kullanıldı"]
+  - % EBITDA: [tahmini etki yüzdesi]
+  - % Piyasa değeri: [tahmini]
+  ```
+- **Forward takvim = her THYAO çıktısının son bölümü** — Tarih | Olay | Beklenen Materyallik | İlgili Agent. 5 zorunlu kategori dahil edilmeden çıktı tamamlanmış sayılmaz.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Raporu
+
+### Eksikler:
+- **119 disclosure tarandı ✓ — kapsam iyi** — Bildirim sayısı kabul edilebilir.
+- **is_material null tüm 119 bildirimde — 5. THYAO, kalıcı bloker** — CEO değişimi (KAP 1590373) SPK mevzuatı uyarınca açıkça materyel; null çıktı 5. kez tekrarlandı. Rutin formlar için "LOW" bile olsa zorunlu.
+- **quantitative_impact null tüm bildirimlerde — 5. THYAO** — Temettü sıfır: "118.2bn TRY nakit koruması" hesaplanabilirdi. İran/rota: gelir kaybı tahmini [conf: LOW] kabul edilir.
+- **İran/Orta Doğu rota krizi KAP sessizliği tespiti yok** — 10 rota askıya → THYAO özel durum açıklaması yaptı mı? Sessizlik de bulgudur.
+- **Forward event takvimi üretilmedi — 5. THYAO** — Q1 sonuçları, TCMB PPK, yeni CEO stratejik beyanı, aylık trafik bildirimi yok.
+- **Aylık trafik KPI bildirimi KAP ID'si teyit edilmedi** — Mart 2026 pax +%16 verisi context'ten alındı; KAP bildirim ID'si ve URL'si verilmedi.
+
+### Bundan Sonra:
+- **is_material: Her bildirim için zorunlu, null = FAIL (5. direktif — kesinleşti)** — HIGH/MEDIUM/LOW skalası. İçerik okunmadıysa: "BELİRSİZ"; asla null bırakma.
+- **Sessizlik tespiti: İran + CEO değişimi sonrası KAP özel durum bildirimi kontrol edilecek** — SPK bildirimi beklentisi var; bildirim yoksa "Sessizlik Tespiti" bölümüne yaz.
+- **Forward takvim = son bölüm, 5 zorunlu kategori** — Tarih | Olay | Beklenen Materyallik | İlgili Agent. Eksikse çıktı tamamlanmış sayılmaz.
+
+## CEO Geri Bildirimi — 2026-04-17 — ASELS Raporu
+
+### Eksikler:
+- **is_material: null — 99 bildirimin TAMAMI** — Her bildirim için değerlendirme yapılmadı. Özellikle kritik: KAP ID 1594693 (temettü dağıtımı, 1594692 ile aynı gün = BUGÜN, 17 Nisan) ve 1594692 (AGM çağrısı) açıkça YÜKSEK materyallikti; null olarak kaldı.
+- **quantitative_impact: null — tüm bildirimlerde** — Temettü için "1,594,693 TL × hisse adedi = X TRY toplam temettü" hesaplanabilirdi. Her bildirim için en azından "conf: LOW" ile tahmin üretilmeli.
+- **Temettü dağıtımı (BUGÜN, 17 Nisan) IMMEDIATE olarak flaglenmedi** — Bugün gerçekleşen materyel olay (temettü dağıtım başlangıcı) urgent değil, LOW olarak sınıflandırıldı. event_timeline_alert'e IMMEDIATE sinyali verilmedi.
+- **AGM çağrısı (BUGÜN, 17 Nisan) IMMEDIATE olarak flaglenmedi** — Aynı problem; AGM gündemindeki konular (sermaye artırımı, YK seçimi) NEAR-TERM materyel olayları tetikleyebilirdi.
+- **DÖNÜŞÜM bildirimleri (pay dönüşümü) değerlendirilmedi** — Birden fazla DÖNÜŞÜM bildirimi var; bunlar serbest dolaşım ve ortaklık yapısı değişimi açısından materyel olabilir.
+- **Forward event takvimi üretilmedi** — Q1 2025 finansal sonuçlar, AGM tarihi, yeni sözleşme duyuruları beklentisi; bunlar ASELS izleme takvimine girilmedi.
+
+### Bundan Sonra:
+- **Savunma şirketleri için is_material değerlendirme şablonu:**
+  - Sözleşme/ihale duyuruları: YÜKSEK (>1% revenue ise ÇOK YÜKSEK)
+  - SSB/TSKGV bildirimleri: YÜKSEK
+  - Pay dönüşümü (DÖNÜŞÜM): ORTA (serbest dolaşım etkileri)
+  - Temettü/AGM (bugün veya 7 gün içinde): YÜKSEK + IMMEDIATE
+  - Rutin dipnot açıklamaları: DÜŞÜK
+- **Forward takvim savunma şirketleri için zorunlu içerik:** (1) Yeni sözleşme duyurusu beklentisi, (2) SSB ihale takvimi, (3) Çeyrek finansal sonuçlar, (4) AGM/EGM tarihleri, (5) Temettü ödeme takvimi.
+- **Bugün gerçekleşen olaylar her zaman IMMEDIATE + YÜKSEK** — Temettü dağıtım günü, AGM günü, vade tarihi — bunlar her zaman IMMEDIATE önceliğiyle raporlanacak.

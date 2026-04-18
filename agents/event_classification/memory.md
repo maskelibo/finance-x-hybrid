@@ -176,6 +176,61 @@
 - Event classification her raporda cikisina `investment meaning` alani ekleyecek; olay sadece adlandirilmayacak, katalist mi risk mi rutin mi net yazilacak.
 - Telekom event taxonomy'si ayri sabit set olarak uygulanacak; spektrum, BTK, enerji, kur, vergi ve rekabet olaylari birbiri yerine kullanilmayacak.
 
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Delta-Update Raporu
+
+### Eksikler:
+- **is_material: null tüm 119 classification için** — Hiçbir olay için is_material alanı doldurulmadı. CEO değişimi (1590373) açıkça SPK mevzuatı uyarınca materyal; bu alan boş bırakılamaz.
+- **quantitative_impact_try: null hepsi için** — 119 olay arasında hiçbiri için TRY etki hesabı yapılmadı. Temettü sıfır kararı için bile "118.2 bn TRY temettü ödemesi yapılmadı = nakit koruması" şeklinde etki yazılabilirdi.
+- **İran krizi macro_event olarak classify edilmedi** — 10 Orta Doğu rotası askıya = havacılık için P0 macro_event. THYAO'nun "Özel Durum Açıklaması (Genel)" bildirimleri arasında İran etkisine dair bir sınıflandırma yok; bu olay KAP'tan bağımsız olarak macro_event taxonomy'siyle işlenmeliydi.
+- **Brent +%4.68 ve USD/TRY 44.76 macro_event sınıflandırması yok** — CEO pre-flight P1 olarak belirtmişti. Bu makro değişkenler macro_event olarak listeye girmedi.
+- **CEO değişimi için "management_change" tam JSON eksik** — Severity "unexpected" (beklentisiz = HIGH materiality), önceki CEO kim, yeni CEO kim, stratejik fark nedir — bunlar tam JSON'da yer almalıydı.
+- **Multi-event interaction analizi yok** — CEO değişimi + temettü sıfır + İran rotaları → üçü aynı anda açıklandı. Net combined etkisi (yönetim riski + nakit koruması + rota gelir kaybı) tek tabloda sunulmadı.
+
+### Bundan Sonra:
+- **is_material alanı her classification'da doldurulacak** — true / false / uncertain + tek cümle gerekçe. SPK mevzuatı gerektiren olay = true. Bilinmiyorsa = uncertain.
+- **Havacılık için zorunlu macro_event listesi:**
+  - Brent fiyatı ±%3 üstü hareket → macro_event (yakıt maliyeti)
+  - USD/TRY ±%2 üstü hareket → macro_event (gelir çevirimi)
+  - İran/Orta Doğu rota kapatmaları → macro_event (operasyonel gelir)
+  - IATA/ICAO regulasyon değişikliği → macro_regulatory_event
+- **CEO/YK değişimi = unexpected_management_change (HIGH materiality)** — routine (beklenen dönem sonu) değil; beklentisiz CEO değişimi her zaman HIGH + severe olarak işaretlenecek.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Remediation (thyao-remediation-20260416)
+
+### Eksikler:
+- **is_material: null tüm 119 classification — 3. THYAO hatası** — Delta + Standard raporda aynı sorun. CEO değişimi (1590373) high_confidence materyal event olarak classify edildi ✓ ama is_material alanı null bırakıldı; açıklanamaz.
+- **quantitative_impact_try: null hepsi için** — Temettü sıfır: "118.2 bn TRY nakit koruması" hesaplanabilirdi. CEO değişimi: belirsizlik premi senaryo üretilebilirdi.
+- **İran krizi macro_event classify edilmedi** — 10 rota askıya = P0 macro_event direktifi. Havacılık macro_event listesi 3 kez yazıldı; uygulanmadı.
+- **Brent +%4.68 macro_event yok** — CEO pre-flight P1. Classify edilmedi.
+- **Multi-event interaction analizi yok** — CEO değişimi + temettü sıfır + İran rotaları üçü net combined P&L tablosu; üretilmedi.
+
+### Bundan Sonra:
+- **is_material alanı her classification'da zorunlu (3. direktif)** — true / false / uncertain. SPK mevzuatı gerektiren olay = true. Bu alan artık COO delivery check'te otomatik kontrol edilecek.
+- **Havacılık macro_event listesi (4. kez — uygulanacak):**
+  - Brent ±%3+ → macro_event (yakıt maliyeti)
+  - USD/TRY ±%2+ → macro_event (gelir çevirimi)
+  - İran/Orta Doğu rota kapatmaları → macro_event (operasyonel gelir)
+- **CEO/YK değişimi = unexpected_management_change, severity HIGH** — Beklentisiz değişim her zaman HIGH + severe. Zorunlu JSON alanları: önceki CEO, yeni CEO, stratejik fark, belirsizlik premium.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu
+
+### Eksikler:
+- **is_material: null tüm 119 classification için** — Aynı hata 3. kez tekrarlandı (delta + standard). CEO değişimi (1590373) high_confidence materyal_event olarak zaten classify edildi; is_material true yazılmaması açıklanamaz.
+- **quantitative_impact_try: null hepsi için** — Temettü sıfır kararı (1590365): "118.2 bn TRY" etkisi hesaplanabilirdi. CEO değişimi için bile belirsizlik premi senaryo üretilebilirdi.
+- **İran krizi macro_event olarak classify edilmedi** — Havacılık direktifi: "10 rota askıya = P0 macro_event". Yine atlandı.
+- **Brent +%4.68 macro_event yok** — CEO pre-flight P1: Brent değişimi → yakıt maliyeti macro_event. Classify edilmedi.
+- **Multi-event interaction analizi yok** — CEO değişimi + temettü sıfır + İran rotaları → net combined P&L etkisi tablosu üretilmedi.
+- **CEO değişimi tam JSON eksik** — "material_event" classify edildi ✓ ama severity = unexpected + HIGH materiality + önceki CEO kim + yeni CEO kim + stratejik fark bilgileri JSON'da yok.
+
+### Bundan Sonra:
+- **is_material alanı her zaman doldurulacak — 3. direktif** — SPK mevzuatı gerektiren olay = true. Bu alan artık pipeline çıktı kontrolünde otomatik check edilmeli (COO seviyesinde).
+- **Havacılık macro_event listesi (4. kez yazılıyor):**
+  - Brent ±%3+ → macro_event (yakıt)
+  - USD/TRY ±%2+ → macro_event (gelir çevirimi)
+  - İran/Orta Doğu rota kapatmaları → macro_event
+  - IATA/ICAO regulasyon değişikliği → macro_regulatory_event
+- **CEO/YK değişimi = unexpected_management_change, HIGH, severity: CRITICAL** — Beklentisiz üst yönetim değişikliği; SEC'te Form 8-K benzeri Türk karşılığı SPK bildirimi. JSON'da zorunlu 4 alan: önceki CEO + yeni CEO + strateji sürekliliği değerlendirmesi + pazar reaksiyonu.
+
 ## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
 
 ### Eksikler:
@@ -188,3 +243,89 @@
 - **Materyallik = içerik bilinmeden verilemez** — KAP bildirimi okunmadan "ORTA" atama yasak. İçerik bilinemiyorsa: "MATERYALLIK: BELİRSİZ — içerik doğrulaması gerekiyor".
 - **Holding analizinde cross-event NAV tablosu zorunlu** — 3+ materyel event varsa sonunda: Olay | P&L Etkisi (mn TL) | NAV Etkisi (TL/hisse) | Dönem | Net. Bu tablo event_impact_mapper'ın input'u.
 - **Event JSON truncation önlemi** — 5+ event varsa: Özet tablo → JSON Batch 1 (Event 1-3) → JSON Batch 2 (Event 4+). Tek mesajda kesme.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Tam Analiz (thyao-full-20260416)
+
+### Eksikler:
+- **is_material null tüm eventler — 3. THYAO analizi** — Materyallik skoru üretilmedi. CEO değişimi, İran rotaları, Brent hareketi — bunların hiçbiri materyallik etiketiyle işaretlenmedi.
+- **İran rotaları ve Brent +%4.68 macro_event olarak sınıflandırılmadı** — Kural: Brent ±%3+ → macro_event; İran rota kapanması → macro_event. Bu kurallar uygulanmadı.
+- **Multi-event interaction analizi eksik** — CEO değişimi + İran rotaları + Brent hareketi aynı dönemde; bu üç olayın birleşik etkisi (kümülatif EBITDA delta) hesaplanmadı.
+- **CEO değişimi JSON'ı tamamlanmadı** — unexpected_management_change JSON'ında 4 zorunlu alan eksik: önceki CEO, yeni CEO profili, strateji sürekliliği değerlendirmesi, piyasa reaksiyonu.
+- **quantitative_impact tüm eventler null** — Hiçbir event için TRY etkisi tahmini verilmedi.
+
+### Bundan Sonra:
+- **THYAO zorunlu event taxonomy (her analizde kontrol edilecek):**
+  - CEO/YK değişimi → unexpected_management_change, severity: CRITICAL, urgency: HIGH
+  - Brent ±%3+ → macro_event, severity: HIGH
+  - USD/TRY ±%2+ → macro_event, severity: MEDIUM
+  - İran/Orta Doğu rota kapanması → macro_event, severity: HIGH
+  - IATA/ICAO değişikliği → macro_regulatory_event
+- **is_material null = classification incomplete** — Materyallik atanamıyorsa "BELİRSİZ" et; null bırakma.
+- **Multi-event: 3+ materyel event = cross-event tablo zorunlu** — Olay | EBITDA Δ (mn TL) | Tarih | Süre | Kümülatif Net Etki. Bu tablo event_impact_mapper'a gönderilir.
+- **CEO değişimi JSON tam formatı:**
+  ```json
+  {
+    "type": "unexpected_management_change",
+    "previous_ceo": "[ad-soyad + tenure]",
+    "new_ceo": "[ad-soyad + profil özeti]",
+    "strategy_continuity": "[değerlendirme]",
+    "market_reaction": "[fiyat tepkisi + tarih]",
+    "severity": "CRITICAL",
+    "is_material": "HIGH"
+  }
+  ```
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Full Analiz (thyao-full-20260416-v4)
+
+### Eksikler:
+- **is_material null tüm eventlerde — 4. THYAO, kalıcı hata** — CEO değişimi, İran rota kapanması, Brent +%4.68 — üçü de yüksek materyallik taşıyor; hepsi null. Kural 4 kez yazıldı; null çıktı artık COO kapısında durdurulacak.
+- **İran rota kapanması macro_event olarak sınıflandırılmadı** — Direktif: Brent ±%3+ ve İran/Orta Doğu rota kapanması → macro_event zorunlu. Bu iki olay için kural uygulanmadı.
+- **Sayısal etki (quantitative_impact) tüm eventlerde null** — CEO değişimi için: "strateji belirsizliği → taşınan fiyat/bilet geliri riski" tahmini bile olsa üretilmesi gerekirdi. İran rotaları için: 10 rota × günlük sefer tahmini × TRY gelir = H1 kayıp tahmini [conf: LOW] üretilebilirdi.
+- **AGM gündem sub-event ayrımı yapılmadı** — AGM tek event olarak kaydedildi; temettü sıfır kararı, YK seçimi, sermaye artışı reddi — her biri ayrı event olarak sınıflandırılmalıydı.
+- **Multi-event interaction tablosu üretilmedi** — CEO değişimi + İran rotaları + Brent spike üç materyel olay birlikte değerlendirilmedi; kümülatif EBITDA delta hesabı yapılmadı.
+
+### Bundan Sonra:
+- **THYAO event taxonomy — artık memory'de sabit kod (4. direktif):**
+  - CEO/YK değişimi → unexpected_management_change, severity: CRITICAL, is_material: HIGH
+  - Brent ±%3+ hareket → macro_event, severity: HIGH, is_material: HIGH
+  - İran/Orta Doğu rota kapanması → macro_event, severity: HIGH, is_material: HIGH
+  - AGM kararları → her karar ayrı sub-event (temettü / YK / sermaye)
+- **is_material null = classification incomplete — COO'ya BLOCKED gönderilir** — Artık null çıktı kabul edilemez; "BELİRSİZ" bile null'dan üstün.
+- **3+ materyel event → cross-event interaction tablosu zorunlu:** Olay | Bireysel EBITDA Δ | Kümülatif Etki | Yön. Bu tablo event_impact_mapper için input.
+- **AGM her zaman sub-event listesi gerektirir** — AGM gündem maddeleri ayrı ayrı classify et; tek "AGM" eventi kabul edilmez.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Raporu
+
+### Eksikler:
+- **is_material null tüm eventlerde — 5. THYAO, kalıcı hata** — CEO değişimi, İran rota kapanması, Brent +%4.68 — üçü de yüksek materyallik taşıyor; hepsi null. Direktif 4 kez yazıldı; null çıktı artık COO kapısında durduruluyor.
+- **İran rota kapanması macro_event olarak sınıflandırılmadı — 5. THYAO** — Direktif: Brent ±%3+ ve İran/Orta Doğu rota kapanması → macro_event zorunlu. 5 analizdir uygulanmadı.
+- **quantitative_impact tüm eventlerde null — 5. THYAO** — CEO değişimi için strateji belirsizliği risk tahmini bile üretilmedi. İran rotaları için: rota × sefer × TRY gelir = [conf: LOW] kabul edilir.
+- **AGM sub-event ayrımı yapılmadı** — Temettü sıfır kararı, YK seçimi, sermaye kararı ayrı eventler olarak sınıflandırılmadı.
+- **Multi-event interaction tablosu üretilmedi** — CEO değişimi + İran rotaları + Brent spike kümülatif EBITDA delta hesabı yapılmadı.
+
+### Bundan Sonra:
+- **THYAO event taxonomy = memory'de sabit kod (5. direktif):**
+  - CEO/YK değişimi → unexpected_management_change, CRITICAL, is_material: HIGH
+  - Brent ±%3+ → macro_event, HIGH, is_material: HIGH
+  - İran/Orta Doğu rota kapanması → macro_event, HIGH, is_material: HIGH
+  - AGM kararları → her karar ayrı sub-event
+- **is_material null = classification incomplete — COO BLOCKED gönderilir (5. direktif)** — "BELİRSİZ" bile null'dan üstün.
+- **3+ materyel event → cross-event interaction tablosu zorunlu** — Olay | Bireysel EBITDA Δ | Kümülatif Etki | Yön.
+
+## CEO Geri Bildirimi — 2026-04-17 — ASELS Raporu
+
+### Eksikler:
+- **is_material: null tüm 99 bildirimde** — Temettü dağıtımı (BUGÜN), AGM (BUGÜN), DÖNÜŞÜM bildirimleri, savunma sözleşme duyuruları — hepsi null. Bu bildirimler için açıkça YÜKSEK materyallik değerlendirmesi yapılmalıydı.
+- **quantitative_impact: null tüm bildirimlerde** — Savunma sektöründe sözleşme duyuruları için "sözleşme tutarı / yıllık ciro = % impact" basit hesabı yapılabilirdi.
+- **Savunma sözleşme duyuruları "contract_signing" olarak sınıflandırılmadı** — ASELS'te sözleşme bildirimleri özel olay tipidir; "corporate_action" veya "other" değil, "contract_signing" kategorisi zorunlu.
+- **DÖNÜŞÜM bildirimleri (pay dönüşümü) değerlendirilmedi** — Ortaklık yapısı ve serbest dolaşım etkisi açısından ORTA materyallik; sınıflandırılmadı.
+- **Multi-event interaction tablosu yok** — Temettü + AGM + sözleşme duyuruları bir arada olduğunda kümülatif etki analizi üretilmedi.
+
+### Bundan Sonra:
+- **Savunma şirketleri için olay sınıflandırma şablonu:**
+  - Sözleşme/ihale duyurusu → contract_signing, YÜKSEK (>%1 ciro)
+  - Temettü dağıtımı (aynı gün) → corporate_action, YÜKSEK, IMMEDIATE
+  - AGM (aynı gün) → corporate_action, YÜKSEK, IMMEDIATE
+  - Pay dönüşümü → share_structure_change, ORTA
+  - SSB/TSKGV ilgili bildirim → regulatory_event, YÜKSEK
+- **Bugün gerçekleşen her olay → IMMEDIATE + YÜKSEK** — "Tarih = analiz tarihi" koşulu otomatik IMMEDIATE tetikleyicisi.

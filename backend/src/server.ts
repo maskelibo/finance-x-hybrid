@@ -247,6 +247,45 @@ app.get('/api/reports/pdfs/list', (_req, res) => {
   res.json({ pdfs: files });
 });
 
+// Re-render a report using the template system from existing agent_runs data
+app.post('/api/reports/:sessionId/rerender', async (req, res) => {
+  const { sessionId } = req.params;
+  try {
+    const session = db.prepare(`SELECT ticker FROM analysis_sessions WHERE id = ?`).get(sessionId) as { ticker: string } | undefined;
+    if (!session) return res.status(404).json({ error: 'Session not found' });
+
+    // Reconstruct accumulatedContext from agent_runs
+    const runs = db.prepare(`SELECT agent_id, output_text FROM agent_runs WHERE session_id = ? AND status = 'completed'`)
+      .all(sessionId) as Array<{ agent_id: string; output_text: string | null }>;
+    const accCtx: Record<string, unknown> = {};
+    for (const run of runs) {
+      accCtx[`${run.agent_id}_output`] = run.output_text || '';
+    }
+
+    const { composeReportContext } = await import('./python/report_formatter/compose.js');
+    const { renderTemplate } = await import('./python/report_formatter/template_engine.js');
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const templatePath = path.join(process.cwd(), 'dist', 'template.html');
+    const template = fs.readFileSync(templatePath, 'utf-8');
+
+    const ctx = composeReportContext({
+      ticker: session.ticker,
+      reportId: `rpt-rerender-${Date.now()}`,
+      accumulatedContext: accCtx,
+    });
+    const html = renderTemplate(template, ctx);
+
+    // Update reports table
+    db.prepare(`UPDATE reports SET content = ? WHERE session_id = ? AND report_type = 'executive'`)
+      .run(html, sessionId);
+
+    res.json({ ok: true, ticker: session.ticker, html_bytes: html.length });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Compare reports for multiple tickers
 app.get('/api/analysis/compare', (req, res) => {
   const tickers = (req.query.tickers as string || '').split(',').map(t => t.trim().toUpperCase()).filter(Boolean);

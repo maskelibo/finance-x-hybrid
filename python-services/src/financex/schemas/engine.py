@@ -48,11 +48,26 @@ class EngineRatios(FinancexModel):
     current_ratio: RatioValue | None = None
     acid_test: RatioValue | None = None
 
+    # Absolute values exposed as ratios for canonical_numbers
+    ebitda: RatioValue | None = None
+    ebt: RatioValue | None = None                  # Earnings Before Tax (pretax income)
+    gross_profit_ias29: RatioValue | None = None    # Gross profit adjusted for IAS29
+    gross_margin_ias29: RatioValue | None = None    # Gross margin IAS29-adjusted %
+
     # Cash flow quality
     fcf: RatioValue | None = None
+    fcf_to_interest: RatioValue | None = None       # FCF / Interest Payments
     ocf_to_ebitda: RatioValue | None = None
     capex_to_ebitda: RatioValue | None = None
     interest_burden: RatioValue | None = None
+
+    # Banking-specific (None for industrial companies)
+    nim: RatioValue | None = None                # Net Interest Margin
+    cost_to_income: RatioValue | None = None     # Cost / Income
+    llp_to_nii: RatioValue | None = None         # Loan Loss Provisions / NII
+    loans_to_assets: RatioValue | None = None    # Total Loans / Total Assets
+    equity_multiplier: RatioValue | None = None  # Total Assets / Equity (leverage)
+    nii_growth: RatioValue | None = None         # NII as % of total income
 
 
 class EngineScores(FinancexModel):

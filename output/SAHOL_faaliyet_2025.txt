@@ -1,0 +1,84 @@
+# PDF Text Extraction
+# Kaynak: https://www.kap.org.tr/tr/api/BildirimPdf/1566012
+# Tarih: 2026-04-14T09:52:24.887Z
+# Sayfa Sayisi: 4
+# PDF Dosya: /Users/ibrahimpeyman/Documents/Finance X/output/pdfs/1566012.pdf
+---
+--- Sayfa 1 ---
+31 Aralık 2025 Konsolide Faaliyet Raporu
+HACI ÖMER SABANCI HOLDİNG A.Ş.
+Faaliyet Raporu (Konsolide)
+2025 - 4. 3 Aylık Bildirim
+KAMUYU AYDINLATMA PLATFORMU
+Özet Bilgi
+KAP'ta yayınlanma tarihi ve saati: 04.03.2026 19:25:27
+https://www.kap.org.tr/tr/Bildirim/1566012
+
+--- Sayfa 2 ---
+Bağımsız Denetim Kuruluşu DRT BAĞIMSIZ DENETİM VE SERBEST MUHASEBECİ MALİ MÜŞAVİRLİK A.Ş.
+Denetim Türü Sürekli
+Denetim Sonucu Olumlu
+YÖNETİM KURULUNUN YILLIK FAALİYET RAPORUNA İLİŞKİN
+BAĞIMSIZ DENETÇİ RAPORU
+Hacı Ömer Sabancı Holding A.Ş. Genel Kurulu'na
+1) Görüş
+Hacı Ömer Sabancı Holding A.Ş. ("Şirket") ile bağlı ortaklıklarının ("Grup") 01/01/2025?31/12/2025 hesap dönemine ait tam set konsolide finansal tablolarını
+denetlemiş olduğumuzdan, bu hesap dönemine ilişkin yıllık faaliyet raporunu da denetlemiş bulunuyoruz.
+Görüşümüze göre, yönetim kurulunun yıllık faaliyet raporu içinde yer alan konsolide finansal bilgiler ile Yönetim Kurulu'nun Grup'un durumu hakkında
+denetlenmiş olan konsolide finansal tablolarda yer alan bilgileri kullanarak yaptığı irdelemeler, tüm önemli yönleriyle, denetlenen tam set konsolide finansal
+tablolarla ve bağımsız denetim sırasında elde ettiğimiz bilgilerle tutarlıdır ve gerçeği yansıtmaktadır.
+2) Görüşün Dayanağı
+Yaptığımız bağımsız denetim, Sermaye Piyasası Kurulu düzenlemeleri çerçevesinde kabul edilen ve Kamu Gözetimi, Muhasebe ve Denetim Standartları Kurumu ("
+KGK") tarafından yayımlanan Türkiye Denetim Standartları'nın bir parçası olan Bağımsız Denetim Standartları'na ("BDS"lere) uygun olarak yürütülmüştür. Bu
+Standartlar kapsamındaki sorumluluklarımız, raporumuzun bölümünde
+	Bağımsız Denetçinin Yıllık Faaliyet Raporunun Bağımsız Denetimine İlişkin Sorumlulukları
+ayrıntılı bir şekilde açıklanmıştır. KGK tarafından yayımlanan ve kamu yararını ilgilendiren kuruluşların konsolide finansal tablolarının bağımsız denetimleri için
+geçerli olan ("Etik Kurallar") ile Sermaye Piyasası Kurulu mevzuatında ve ilgili diğer
+	Bağımsız Denetçiler için Etik Kurallar (Bağımsızlık Standartları Dahil)
+mevzuatta kamu yararını ilgilendiren kuruluşların konsolide finansal tablolarının bağımsız denetimleriyle ilgili olarak yer alan etik hükümlere uygun olarak
+Grup'tan bağımsız olduğumuzu beyan ederiz. Etik Kurallar ve mevzuat kapsamındaki etiğe ilişkin diğer sorumluluklar da tarafımızca yerine getirilmiştir. Bağımsız
+denetim sırasında elde ettiğimiz bağımsız denetim kanıtlarının, görüşümüzün oluşturulması için yeterli ve uygun bir dayanak oluşturduğuna inanıyoruz.
+3) Tam Set Konsolide Finansal Tablolara İlişkin Denetçi Görüşümüz
+Grup'un 01/01/2025?31/12/2025 hesap dönemine ilişkin tam set konsolide finansal tabloları hakkında 4 Mart 2026 tarihli denetçi raporumuzda olumlu görüş
+bildirmiş bulunuyoruz.
+4) Yönetim Kurulu'nun Yıllık Faaliyet Raporuna İlişkin Sorumluluğu
+Grup yönetimi, 6102 sayılı Türk Ticaret Kanunu'nun (TTK) 514 ve 516'ncı maddelerine ve Sermaye Piyasası Kurulu'nun ("SPK") II-14.1 No'lu "Sermaye Piyasasında
+Finansal Raporlamaya İlişkin Esaslar Tebliği"ne ("Tebliğ") göre yıllık faaliyet raporuyla ilgili olarak aşağıdakilerden sorumludur:
+a) Yıllık faaliyet raporunu bilanço gününü izleyen ilk üç ay içinde hazırlar ve genel kurula sunar.
+b) Yıllık faaliyet raporunu; grubun o yıla ait faaliyetlerinin akışı ile her yönüyle konsolide finansal durumunu doğru, eksiksiz, dolambaçsız, gerçeğe uygun ve
+dürüst bir şekilde yansıtacak şekilde hazırlar. Bu raporda konsolide finansal durum, konsolide finansal tablolara göre değerlendirilir. Raporda ayrıca, grubun
+gelişmesine ve karşılaşması muhtemel risklere de açıkça işaret olunur. Bu konulara ilişkin yönetim kurulunun değerlendirmesi de raporda yer alır.
+Bağımsız Denetçi Görüşü
+
+--- Sayfa 3 ---
+c) Faaliyet raporu ayrıca aşağıdaki hususları da içerir:
+- Faaliyet yılının sona ermesinden sonra grupta meydana gelen ve özel önem taşıyan olaylar,
+- Grup'un araştırma ve geliştirme çalışmaları,
+- Yönetim kurulu üyeleri ile üst düzey yöneticilere ödenen ücret, prim, ikramiye gibi mali menfaatler, ödenekler, yolculuk, konaklama ve temsil giderleri, ayni ve
+nakdî imkânlar, sigortalar ve benzeri teminatlar.
+Yönetim kurulu, faaliyet raporunu hazırlarken Ticaret Bakanlığı'nın ve ilgili kurumların yaptığı ikincil mevzuat düzenlemelerini de dikkate alır.
+5) Bağımsız Denetçinin Yıllık Faaliyet Raporunun Bağımsız Denetimine İlişkin Sorumluluğu
+Amacımız, TTK hükümleri ve Tebliğ çerçevesinde yıllık faaliyet raporu içinde yer alan konsolide finansal bilgiler ile Yönetim Kurulu'nun denetlenmiş olan
+konsolide finansal tablolarda yer alan bilgileri kullanarak yaptığı irdelemelerin, Grup'un denetlenen konsolide finansal tablolarıyla ve bağımsız denetim sırasında
+elde ettiğimiz bilgilerle tutarlı olup olmadığı ve gerçeği yansıtıp yansıtmadığı hakkında görüş vermek ve bu görüşümüzü içeren bir rapor düzenlemektir.
+Yaptığımız bağımsız denetim, Sermaye Piyasası Kurulu düzenlemelerine ve BDS'lere uygun olarak yürütülmüştür. Bu standartlar, etik hükümlere uygunluk
+sağlanması ile bağımsız denetimin, faaliyet raporunda yer alan konsolide finansal bilgiler ve Yönetim Kurulu'nun denetlenmiş olan konsolide finansal tablolarda
+yer alan bilgileri kullanarak yaptığı irdelemelerin konsolide finansal tablolarla ve denetim sırasında elde edilen bilgilerle tutarlı olup olmadığına ve gerçeği
+yansıtıp yansıtmadığına dair makul güvence elde etmek üzere planlanarak yürütülmesini gerektirir.
+Bu bağımsız denetimi yürütüp sonuçlandıran sorumlu denetçi H. Erdem Selçuk'tur.
+DRT BAĞIMSIZ DENETİM VE SERBEST MUHASEBECİ MALİ MÜŞAVİRLİK A.Ş.
+Member of DELOITTE TOUCHE TOHMATSU LIMITED
+H. Erdem Selçuk, SMMM
+Sorumlu Denetçi
+İstanbul, 4 Mart 2026
+
+--- Sayfa 4 ---
+Finansal Tablo Niteliği Konsolide
+İlgili Şirketler []
+İlgili Fonlar []
+Faaliyet Raporu
+Yapılan Açıklama Düzeltme mi? Hayır (No)
+Konuya İlişkin Daha Önce Yapılan Açıklamanın Tarihi -
+Açıklamalar
+31 Aralık 2025 Konsolide Entegre Faaliyet Raporumuz ektedir.
+Faaliyet Raporu

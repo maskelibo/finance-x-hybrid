@@ -1,0 +1,85 @@
+# PDF Text Extraction
+# Kaynak: https://www.kap.org.tr/tr/api/BildirimPdf/1139352
+# Tarih: 2026-04-16T08:05:05.164Z
+# Sayfa Sayisi: 3
+# PDF Dosya: /Users/ibrahimpeyman/Documents/Finance X/output/pdfs/1139352.pdf
+---
+--- Sayfa 1 ---
+Finansal Duran Varlık Edinimi
+İZ YATIRIM HOLDİNG A.Ş.
+Finansal Duran Varlık Edinimi
+KAMUYU AYDINLATMA PLATFORMU
+Özet Bilgi
+KAP'ta yayınlanma tarihi ve saati: 17.04.2023 18:14:48
+https://www.kap.org.tr/tr/Bildirim/1139352
+
+--- Sayfa 2 ---
+İlgili Şirketler []
+İlgili Fonlar []
+Finansal Duran Varlık Edinimi
+Yapılan Açıklama Güncelleme mi? Hayır (No)
+Yapılan Açıklama Düzeltme mi? Hayır (No)
+Konuya İlişkin Daha Önce Yapılan Açıklamanın Tarihi -
+Yapılan Açıklama Ertelenmiş Bir Açıklama mı? Hayır (No)
+Bildirim İçeriği
+Edinime İlişkin Yönetim Kurulu Karar Tarihi 17/04/2023
+Alıma İlişkin Yönetim Kurulu Kararında Bağımsız Üyelerin
+Çoğunluğunun Onayı Var mı? Evet
+Edinilen Finansal Duran Varlığın Unvanı PWT Teknoloji A.Ş.
+Edinilen Finansal Duran Varlığın Faaliyet Konusu Teknoloji
+Edinilen Finansal Duran Varlığın Sermayesi 60.000 TL
+Edinim Yöntemi Sermaye Artırımı Yoluyla Edinim (Capital Increase)
+İşlemin Tamamlandığı/Tamamlanacağı Tarih 24.04.2023
+Edinme Koşulları Peşin (Cash)
+Vadeli ise Koşulları -
+Edinilen Payların Nominal Tutarı 3.158 TL
+Beher Payın Alış Fiyatı 158,33 TL
+Toplam Tutar 500.000 TL
+Edinilen Payların Finansal Duran Varlığın Sermayesine
+Oranı (%) %5
+Edinim Sonrasında Sahip Olunan Payların Finansal Duran
+Varlık Sermayesine Oranı (%) %5
+Edinimden Sonra Finansal Varlıkta Sahip Olunan Oy
+Haklarının Oranı (%) %5
+Edinilen Finansal Duran Varlığın Ortaklığın Kamuya
+Açıklanan Son Finansal Tablosundaki Aktif Toplamına Oranı
+(%)
+%0,56
+İşlem Bedelinin Ortaklığın Kamuya Açıklanan Son Yıllık
+Finansal Tablolara Göre Oluşan Hasılat Tutarına Oranı (%) %1,94
+Ortaklığın Faaliyetlerine Etkisi Holdingimizin büyüme stratejisi içinde teknoloji
+sektöründeki satın alma işlemidir.
+Pay Alım Teklifinde Bulunma Yükümlülüğünün Doğup
+Doğmadığı Hayır (No)
+Pay Alım Teklifinde Bulunma Yükümlülüğü Doğuyorsa
+Muafiyet Başvurusu Yapılıp Yapılmayacağı Hayır (No)
+Finansal Duran Varlık Edinimi
+
+--- Sayfa 3 ---
+Satan/Devreden Kişinin Adı/Ünvanı Holdingimiz, iştirak edilen Şirket'te yapılacak
+sermaye artışıyla pay edineceği için Şirket'in mevcut
+ortaklarından pay almayacaktır.
+Karşı Taraf SPK Düzenlemelerine Göre İlişkili Taraf mıdır? Hayır (No)
+Ortaklığın Satan/Devreden Tarafla İlişkinin Niteliği -
+Varsa İşleme İlişkin Sözleşme Tarihi 17/04/2023
+Finansal Duran Varlığın Değerinin Belirlenme Yöntemi İştirak edilen Şirket'in diğer ortaklarının iştirak
+bedellerine kıyasen hesaplanmıştır.
+Değerleme Raporu Düzenlendi mi? Düzenlenmedi (Not Prepared)
+Değerleme Raporu Düzenlenmediyse Nedeni Zorunlu değildir.
+Değerleme Raporu Düzenlendiyse Tarih ve Numarası -
+Değerleme Raporunu Hazırlayan Değerleme Kuruluşunun
+Unvanı -
+Değerleme Raporu Sonucu Bulunan Tutar -
+İşlem Değerleme Raporundaki Sonuçlara Uygun
+Gerçekleştirilmemişse/Gerçekleştirilmeyecekse Gerekçesi -
+Açıklamalar
+Şirketimizin yatırım vizyonu ve katma değerli alanlara yatırım yapma stratejisi doğrultusunda, teknoloji sektöründe
+özellikle IoT bazlı akıllı cihazlar, e-sim ve taşınabilir modem alanında faaliyet gösteren ve https://
+www.pocketwifiturkey.com/ internet sitesi uzerinden ağırlıklı olarak yabancılara hizmet veren PWT Teknoloji A.Ş. unvanlı
+şirkete %5 oranında iştirak etmesine, iştirak bedelinin 500.000 TL tutarında olmasına ve yönetim kurulunun imzalanacak
+sözleşmelerde yetkilendirilmesine katılanların oybirliği ile karar verilmiştir.
+Kamuoyuna ve yatırımcılarımıza duyurulur.
+Yukarıdaki açıklamalarımızın, Sermaye Piyasası Kurulu‘nun yürürlükteki Özel Durumlar Tebliğinde yer alan esaslara uygun olduğunu, bu
+konuda/konularda tarafımıza ulaşan bilgileri tam olarak yansıttığını, bilgilerin defter, kayıt ve belgelerimize uygun olduğunu, konuyla ilgili
+bilgileri tam ve doğru olarak elde etmek için gerekli tüm çabaları gösterdiğimizi ve yapılan bu açıklamalardan sorumlu olduğumuzu beyan
+ederiz.

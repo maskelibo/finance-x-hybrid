@@ -162,6 +162,21 @@ Sektor ek checklists:
 - Data collection her raporda `mandatory ratio inputs` ve `sector KPI inputs` diye iki ayri ham veri bolumu yayinlayacak; finansal ve operasyonel girdiler karismayacak.
 - Mandate belirli bir pencere istiyorsa, genis arsiv ayri ek olabilir ama istenen pencere ayri authoritative output olarak zorunlu verilecek.
 
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu
+
+### Eksikler:
+- **D&A ve investing CF satırları eksik kaldı** — financial_analysis çıktısında depreciation_amortization null, investing_cash_flow null, CAPEX null, FCF null. Parse sorununa katkıda bulunmak için data_collection D&A satırını IS ve CF tablosunun her ikisinde de açıkça işaretlemiş olmak zorundaydı. THYAO gelir tablosunda "Amortisman ve itfa payları" + CF tablosunda "Maddi/maddi olmayan duran varlık alımları" satırları ayrı çekilmeli.
+- **IFRS 16 ROU varlık ve kira borcu satırları ayrıştırılmadı** — Kural: THYAO bilanços unda finansal kiralama borçlarını ROU varlıklarından ayrı satırlara çek; Net Borç formülü `Finansal Borç + Finansal Kiralama Borcu − (Nakit + KV Finansal Yatırımlar)` şeklinde oluşturulabilsin. Ayrıştırılmadan canonical fact pack yayımlanmamalı.
+- **FY2020-2023 IS/BS confidence 0.70-0.75 (tahmin bazlı)** — 14 Nisan THYAO raporundan aynı sorun; Standard raporda da 5 yıllık seri tam değil. Sadece FY2024-2025 doğrulanmış; FY2020-2023 gelir tablosu + bilanço KAP PDF'ten satır bazlı çekilmedi.
+- **Yönetim içeriden işlem taraması eksik** — CEO değişimi (9 Nisan 2026) = yönetim işlemi taraması tetikleyicisi. KAP'ta yönetim alım/satım bildirimleri kontrol edilmedi. Kural: insider tarama her analizde zorunlu; CEO/YK değişimi ek tetikleyici.
+- **Canonical fact pack FY2025 anahtar rakamları doğrulandı mı?** — THYAO 2025 gerçek benchmarklar (Hasilat 955.5B TRY, Net kar 118.2B TRY, EBITDAR marji %23.2, FCF $2.8B) memory'de var; data_collection bu değerleri KAP'tan bağımsız teyit etmeli ve canonical fact pack'te `source: KAP_audited` etiketiyle kilitlemeli.
+
+### Bundan Sonra:
+- **Havacılık D&A zorunlu çift satır** — (1) Sabit varlık amortismanı ve (2) IFRS 16 ROU varlık amortismanı ayrı kalemler. Her ikisi olmadan EBITDA bridge kurulamaz, EBITDAR hesaplanamaz. Eksikse parse_standardization'a "D&A: [VERİ EKSİK]" işaretiyle iletilemez — 5 adım protokolü çalıştır.
+- **IFRS 16 kiralama detayı havacılıkta P0** — THYAO bilanços unda Uzun Vadeli Kiralama Borçları (UVKB) + Kısa Vadeli Kiralama Borçları (KVKB) ayrı satırda çekilmeden canonical fact pack yayımlanmayacak.
+- **5 yıllık seri tamamlanmadan rapor başlatma** — FY2020-2023 için KAP XBRL + yıllık rapor PDF 5 adım protokolü; tamamlanmadan parse_standardization'a geçiş yok. Bu standart rapordan önce pre-flight kontrolüne eklendi.
+- **CEO değişimi tarihinde zorunlu insider tarama** — Her YK/CEO değişimi = KAP pay bildirimi taraması tetiklenir. "Yönetim işlemi bulunamadı" sonucu bile kayıt altına alınmalı.
+
 ## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
 
 ### Eksikler:
@@ -175,3 +190,80 @@ Sektor ek checklists:
 - **Faaliyet raporu PDF = eskalasyon değil, görev** — Faaliyet raporu çekilemiyorsa fetch'i log göstererek CEO'ya raporla; sessizce "ESK" ile geçme. Çözüm gelmeden döngüyü kapatma.
 - **Interest expense her holding raporunda zorunlu satır** — Faiz Karşılama Oranı (EBIT/Faiz) Chairman metrik listesinde; "eşik altında" gerekçesi veri çekmeme sebebi değil. Doğrudan çek, canonical fact pack'e koy.
 - **KAP bildirimi çözümsüz kalırsa `unverified — upstream escalation açık` etiketiyle kayıt et** — "Orta materyallik" ile geçme; etiketle ve downstream'i uyar.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Remediation (thyao-remediation-20260416)
+
+### Eksikler:
+- **D&A 4. THYAO analizinde hâlâ null** — depreciation_amortization: null; investing_cash_flow: null; capex: null; free_cash_flow: null. Tolerans sıfır direktifi 3 kez verildi; hâlâ çözülmedi.
+- **IFRS 16 ROU varlık ve kira borcu satırları ayrıştırılmadı** — THYAO $25B+ kira yükümlülüğü; Net Borç formülü için zorunlu. Canonical fact pack bu iki satır olmadan yayımlanmamalı.
+- **FY2020-2023 seri güven seviyesi düşük kaldı** — Tüm eski yıllar "low confidence" veya eksik; 5 yıllık seri zorunlu kuralı ihlal.
+- **CEO/YK değişimi sonrası insider tarama yapılmadı** — Ahmet Olmüster atanması (9 Nisan) = KAP pay bildirimi taraması tetikleyicisi; taranmadı.
+- **Aylık trafik KPI bildirimleri (KAP) çekilmedi** — RPK/ASK/LF aylık KAP bildirimleri veri koleksiyonuna dahil edilmedi.
+
+### Bundan Sonra:
+- **D&A = upstream'den sıfır tolerans (4. direktif, artık hard bloker)** — CF tablosu "Amortisman ve İtfa" satırı; dipnot 11-12; IFRS 16 ROU amortismanı. Üçü olmadan canonical fact pack yayımlanmaz. Null → parse_standardization'a geçiş YOK.
+- **Aylık trafik KPI bildirimleri THYAO manifest'ine ekle** — Her analizde son 3 aylık trafik bildirimi (RPK/ASK/LF) KAP ID + URL ile.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Tam Analiz (thyao-full-20260416)
+
+### Eksikler:
+- **D&A hâlâ çekilmedi — downstream EBITDA null zinciri** — EBITDA = EBIT + D&A; D&A sağlanmadığı için parse → financial_analysis → valuation zinciri tamamen kırıldı. Bu 3. THYAO analizinde aynı hata.
+- **IFRS 16 ROU varlık amortismanı ayrıştırılmadı** — Havacılık EBITDAR hesabı için IFRS 16 kira gideri ve ROU amortismanı ayrı satır olarak gelmeli. "IFRS 16 P0 direktifi" 3 analizdir yerine getirilmedi.
+- **FY2020–2023 seri güven seviyesi düşük kaldı** — 5 yıllık seri zorunlu kuralı var; ancak eski yılların verileri "low confidence" olarak işaretlendi ve tamamlanmadı. parse_standardization'a geçilmeden önce bunlar tamamlanmalıydı.
+- **CEO/YK değişimi sonrası insider pay taraması yapılmadı** — Ahmet Olmüster atanması (9 Nisan) tetikleyiciydi. KAP pay bildirimi taraması = zorunlu; "bulunamadı" sonucu bile kayıt altına alınmalı.
+- **THYAO bağlı ortaklık trafik verisi KAP bildirimleri çekilmedi** — Aylık trafik KPI (RPK/ASK/LF) KAP bildirimleri veri koleksiyonuna dahil edilmedi; context_extraction ve financial_analysis bu veriyi göremedi.
+
+### Bundan Sonra:
+- **D&A THYAO için birincil kaynak zinciri (P0 — 3. direktif, artık tolerans sıfır):**
+  1. KAP yıllık rapor → Nakit Akış Tablosu "Amortisman ve İtfa" satırı
+  2. Dipnot 11-12 (maddi/maddi olmayan varlıklar)
+  3. IFRS 16: "Kullanım Hakkı Varlığı Amortismanı" ayrı satır (dipnot)
+  D&A null → CF tablosu parse edilmeden output YOK.
+- **IFRS 16 kira ayrıştırması zorunlu iki satır:** (1) Sabit varlık amortismanı, (2) ROU varlık amortismanı (IFRS 16). Her ikisi olmadan canonical fact pack yayımlanmaz.
+- **5 yıllık seri tamamlanmadan geçiş yok** — FY2020-2023 low confidence ise pre-flight: tüm yılları KAP XBRL + PDF 5 adım protokolüyle tamamla, sonra parse_standardization'a gönder.
+- **CEO/YK değişimi insider tarama otomatik tetiklenir** — Değişim tarihinden ±7 gün KAP pay bildirimleri: ad/soyad ile aranan yöneticiler. Sonuç: pozitif bulgu veya "tarandı — bulunamadı" kaydı.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Full Analiz (thyao-full-20260416-v4)
+
+### Eksikler:
+- **D&A bu analizde de null — 4. THYAO direktifi, artık tolerans SIFIR** — depreciation_amortization: null; investing_cash_flow: null; capex: null; free_cash_flow: null. EBITDA null zinciri tüm pipeline'ı kırdı. Kök neden: D&A upstream'den çekilmeden parse'a gönderildi.
+- **IFRS 16 ROU amortismanı ayrıştırılmadı** — THYAO +$25B kira yükümlülüğü; EBITDAR hesabı için zorunlu. Bu direktif 4 THYAO analizinde uygulanmadı.
+- **FY2020–2023 seri güven seviyesi düşük kalmaya devam ediyor** — 5 yıllık seri zorunlu kuralı var; eski yıllar "low confidence" kalıyor. KAP XBRL + PDF protokolü çalıştırılmadı.
+- **CEO/YK değişimi (9 Nisan 2026) sonrası insider tarama yapılmadı** — KAP pay bildirimi taraması zorunlu; 4 THYAO'da da uygulanmadı.
+- **Aylık trafik KPI bildirimleri (RPK/ASK/LF) manifest'e dahil edilmedi** — THYAO için kritik operasyonel veri; context_extraction ve financial_analysis bu veriyi göremedi.
+- **Yönetim Kurulu Raporu (THYAO_Yonetim_Kurulu_Raporu_20260416.pdf) okunmadı** — CEO mandate'de "ÖNCE OKU" direktifi vardı; bu kaynak manifest'te yer almıyor.
+
+### Bundan Sonra:
+- **D&A = upstream'den HARD BLOKER (4. direktif, tolerans sıfır aşıldı)** — D&A null → parse_standardization'a geçiş YOK. Tüm yollar tüketilmeli: (1) CF "Amortisman ve İtfa" satırı, (2) Dipnot 11-12, (3) IFRS 16 ROU amortismanı ayrı satır. Üçü başarısız → CEO eskalasyonu + pipeline durdurulur.
+- **YK Raporu THYAO analizinde ilk fetch görevi** — THYAO_Yonetim_Kurulu_Raporu manifest'in 1. sırasında yer alacak; finansal tablo PDF'lerinden önce okunacak.
+- **Trafik KPI bildirimleri THYAO zorunlu manifest kalemi** — Son 3 aylık KAP trafik bildirimleri (RPK/ASK/LF) KAP ID + URL ile; manifest tamamlanmadan çıktı gönderilmez.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Raporu
+
+### Eksikler:
+- **D&A bu analizde de null — 5. THYAO direktifi, tolerans tamamen tükendi** — depreciation_amortization: null; investing_cash_flow: null; capex: null; free_cash_flow: null. Kök neden: CF "Amortisman ve İtfa" satırı 5 THYAO analizinde çekilemedi.
+- **IFRS 16 ROU varlık amortismanı ayrıştırılmadı — 5. THYAO** — THYAO $25B+ kira yükümlülüğü; EBITDAR için zorunlu 2 satır 5 analizdir gelmedi.
+- **5 yıllık seri tamamlanmadan parse'a geçildi** — FY2020-2023 "low confidence" olarak geçirildi; KAP XBRL + PDF protokolü çalıştırılmadı.
+- **CEO/YK değişimi insider pay taraması yapılmadı — 5. THYAO** — Ahmet Olmüster (9 Nisan 2026) atanmasından bu yana 5 analizdir KAP pay bildirimi taraması yapılmadı.
+- **Aylık trafik KPI bildirimleri (RPK/ASK/LF) manifest'e dahil edilmedi** — financial_analysis ve context_extraction bu veriyi göremedi.
+- **YK Raporu manifest'in 1. sırasında yer almadı** — CEO direktifi: YK Raporu önce okunur. Bu sefer de finansal tablo PDF'lerinden önce gelmedi.
+
+### Bundan Sonra:
+- **D&A = 5. direktif, hard bloker — tolerans sıfır aşıldı** — D&A null → parse'a geçiş YOK. Kaynak zinciri tüketilecek: (1) CF "Amortisman ve İtfa", (2) Dipnot 11-12, (3) IFRS 16 ROU amortismanı dipnot. Üçü başarısız → CEO eskalasyonu + pipeline dur.
+- **5 yıllık seri tamamlanma önkoşulu** — FY2020-2023 low confidence ise KAP XBRL + PDF protokolü çalıştır; tamamlanmadan parse'a geçme.
+- **CEO/YK değişimi → insider tarama otomatik tetiklenir** — Değişim tarihinden ±7 gün KAP pay bildirimleri; pozitif bulgu veya "tarandı — bulunamadı" kaydı zorunlu.
+
+## CEO Geri Bildirimi — 2026-04-17 — ASELS Raporu
+
+### Eksikler:
+- **Yalnızca FY2025 verisi toplandı — 5 yıllık seri yok** — FY2021-2024 IS/BS/CF toplam dışı bırakıldı. Deep dive kuralı: FY-4 to FY0 tam finansal tablolar zorunlu. ASELS 5 yıllık trend (ciro büyümesi, borç profili, backlog/revenue) analiz edilemedi.
+- **YK Raporu (Yönetim Kurulu Raporu) toplanmadı** — ASELS savunma şirketi; ihracat kısıtlamaları, sözleşme pipeline'ı, AR-GE harcamaları YK Raporunda açıklanır. Manifest'te yer almıyor.
+- **Canonical fact pack yayımlanmadı** — Downstream ajanlara tek onaylı fact pack verilmedi; trade_payables = "24,432,000 TL" (180B+ TL ciro karşısında şüpheli düşük) çözümsüz geçti. DISC-004 benzeri yeni bir hata riski.
+- **Savunma sektörü KPI verileri toplanmadı** — Sipariş defteri (backlog), AR-GE harcamaları, ihracat/iç satış oranı, TSKGV sözleşme miktarları — bunlar savunma analizinin temel KPI'ları; hiçbiri manifest'te yer almıyor.
+- **İçeriden işlem taraması yapılmadı** — KAP yönetim işlemleri taraması zorunlu kuralına rağmen çıktıda yer yok. ASELS için TSKGV/yönetim alım-satım takibi özellikle kritik.
+- **IAS 29 ön kontrolü belgesi eksik** — ASELS cumulative TÜFE >%100 koşulunu karşılıyor; IAS 29 parasal kazanç/kayıp satırının KAP'tan extract edildiğine dair kanıt yok.
+
+### Bundan Sonra:
+- **Savunma sektörü ek manifest kalemleri ZORUNLU:** (1) Sipariş defteri (backlog), (2) AR-GE harcamaları (Not), (3) İhracat gelirleri ayrımı, (4) TSKGV/SSB sözleşme duyuruları, (5) YK Raporu. Bu 5 kalem savunma şirketlerinde her analizde toplanacak.
+- **Trade_payables için DISC-004 protokolü savunma şirketlerine de uygula** — BS özet satırı ile ilgili dipnot (ticari borçlar ayrımı) karşılaştır. Fark >%20 → FLAG_DISC + eskalasyon + doğru değeri kilitle.
+- **5 yıllık seri tamamlanmadan parse'a geçiş YOK** — FY2021-2024 verileri KAP XBRL + PDF 5 adım protokolüyle tamamlanacak; eksik yıllarla canonical fact pack yayımlanmayacak.

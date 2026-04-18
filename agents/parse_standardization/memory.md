@@ -72,6 +72,37 @@
 - **KAP XBRL'den parse dene** — PDF parse başarısızsa XBRL endpoint'i direkt dene (kap.org.tr/tr/api/XBRL endpoints). Başarısızsa sonucu logla.
 - **2023 ve öncesi eksikliğinde KAP historical archive** — 5 yıllık data için KAP'ta "Yıllık Raporlar" bölümünden ilgili yılın raporunu ayrıca fetch et; "2023 mevcut değil" demeden KAP'ta ilgili FY raporunu ara.
 
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu
+
+### Eksikler:
+- **income_statement.ebitda: null** — D&A çekilmediğinden EBITDA hesaplanamadı. EBITDA Aviation analizinin çekirdeği; KAP CF notundan D&A satırı zorunlu çekilmeli.
+- **income_statement.depreciation_amortization: null** — KAP PDF amortisman notundan (Not 11-12) doğrudan çekilmeli. "EBITDA − EBIT" türetmesi yasaklandı.
+- **income_statement.financial_income/expense/tax_expense: null** — Faiz karşılama ve vergi oranı hesaplanamaz. Gelir tablosu zinciri (EBIT → Finance → PBT → Tax → NI) eksiksiz olmalı.
+- **cash_flow.investing_cash_flow / capex / free_cash_flow: null** — FCF null → CAPEX/EBITDA bloke. Yatırım CF ve CAPEX satırları KAP nakit akış tablosundan çekilmeli.
+- **equity_change: {} (tamamen boş)** — Özsermaye hareket tablosu hiç çekilmedi. ROE trend ve equity reconciliation için zorunlu.
+- **IFRS 16 ROU + kira borcu ayrıştırılmadı** — THYAO $25B+ kira yükümlülüğü; ROU amortismanı D&A'dan ayrıştırılmadan EBITDA vs EBITDAR farkı hesaplanamaz.
+
+### Bundan Sonra:
+- **Havacılık şirketlerinde D&A zorunlu çift satır** — (1) IFRS 16 ROU amortismanı ayrı satır, (2) sabit varlık amortismanı ayrı satır. İkisinin toplamı = toplam D&A. Her ikisi KAP CF veya amortisman notundan çekilecek.
+- **IS zinciri null toleransı: SIFIR** — Financial_income, financial_expense, tax_expense, ebitda, depreciation_amortization — bunlardan biri null ise parse output PENDING_IS_CHAIN etiketiyle CEO'ya eskalasyon.
+- **ICF null = CAPEX null = Chairman mandatory metric ihlali** — ICF / CAPEX satırları "CF tam gelmedi" diye null bırakılamaz; alternatif kaynaklar tüketilmeden PENDING yazılmaz.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu (Post-Report Loop)
+
+### Eksikler:
+- **income_statement.ebitda: null** — D&A çekilmediğinden EBITDA hesaplanamadı. 3. THYAO analizinde aynı sorun.
+- **income_statement.depreciation_amortization: null** — Not 11-12 okunmadı; türetme yasağına rağmen hâlâ null bırakılıyor.
+- **income_statement.financial_income, financial_expense, tax_expense: null** — Gelir tablosu zinciri (EBIT→Finance→PBT→Tax→NI) kırık; faiz karşılama ve vergi oranı hesaplanamaz.
+- **cash_flow.investing_cash_flow / capex / free_cash_flow: null** — FCF ve CAPEX/EBITDA bloke. Nakit akış tablosu ICF bölümü hâlâ çekilmedi.
+- **equity_change: {} (tamamen boş)** — 3. THYAO analizinde de SE tablosu hiç çekilmedi.
+- **IFRS 16 ROU + kira borcu ayrıştırılmadı** — Her raporda yazılmasına rağmen uygulanmıyor.
+
+### Bundan Sonra:
+- **Havacılık D&A zorunlu çift satır — 3. direktif, artık kesin kural** — ROU amortismanı + sabit varlık amortismanı. Bir sonraki THYAO'da D&A null ise parse output REDDEDİLİR.
+- **IS zinciri null toleransı sıfır** — financial_income/expense, tax_expense, ebitda, D&A null ise PENDING_IS_CHAIN + eskalasyon zorunlu.
+- **ICF null = CAPEX null = REDDEDİLİR** — 3 rapordur aynı sorun; bir dahaki THYAO'da ICF/CAPEX null tolere edilmez.
+- **Equity_change boş gönderme YASAK** — "PENDING_SE — eskalasyon yapıldı" formatı zorunlu; boş JSON gönderme.
+
 ## Zorunlu Kontrol Listesi
 
 Her parse job oncesi:
@@ -211,3 +242,87 @@ Sektor ek islemler:
 **Imza:** CEO Agent
 **Log Tarihi:** 2026-04-16T14:30:00+03:00
 **Oturum:** eregl-deep-dive-20260415
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Remediation (thyao-remediation-20260416)
+
+### Eksikler:
+- **EBITDA null — 4. THYAO analizi (tolerans sıfır aşıldı)** — income_statement.ebitda: null. D&A çekilmediği için EBITDA hesaplanamadı. Bu zincir kırılması parse katmanından başlıyor.
+- **income_statement.depreciation_amortization: null** — 4 THYAO analizinde aynı sorun; CF "Amortisman ve İtfa" satırı alınmadı.
+- **income_statement.financial_income/expense/tax_expense: null** — Gelir tablosu zinciri (EBIT→Finance→PBT→Tax→NI) tamamlanmadı.
+- **cash_flow.investing_cash_flow/capex/free_cash_flow: null** — Yatırım faaliyetleri CF bölümü 4 THYAO'da hiç çekilmedi.
+- **equity_change: {} (tamamen boş)** — 4. THYAO, SE tablosu hiç çekilmedi.
+- **IFRS 16 ROU amortismanı ayrıştırılmadı** — EBITDAR hesabı için zorunlu; 4 kez direktif verildi.
+
+### Bundan Sonra:
+- **THYAO parse hard bloker listesi (4. direktif — tolerans yok):**
+  1. D&A → CF "Amortisman ve İtfa" satırı ZORUNLU; null → upstream escalation + parse DURUR
+  2. IFRS 16 ROU amortismanı → ayrı satır; dipnot 26-27 açılır
+  3. IS tam zincir: Revenue→COGS→Brüt→EBITDA→D&A→EBIT→fin.gelir→fin.gider→VÖK→vergi→Net Kar — hepsi dolu
+  4. CF yatırım faaliyetleri → CAPEX + finansal yatırımlar ZORUNLU
+  5. SE → dönem başı + net kar + temettü + dönem sonu kolonu
+- **Null satır = upstream escalation tetikler; "veri yok" yazarak geçmek YASAK.**
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Tam Analiz (thyao-full-20260416)
+
+### Eksikler:
+- **EBITDA null — 3. THYAO analizi, artık tolerans sıfır** — Revenue mevcut, COGS mevcut; ancak D&A çekilmediği için EBITDA = null. Bu hata art arda 3 THYAO raporunda tekrarlandı. Kök neden: D&A upstream'den gelmiyor → parse eskalasyonu yapılmıyor.
+- **D&A null — nakit akış tablosundan alınmadı** — CF tablosunun "Amortisman ve İtfa" satırı her zaman mevcuttur. Bu satır null bırakılamaz.
+- **IS zinciri kırık** — financial_income / financial_expense / tax null. Sonuç: PBT ve net income bridge kurulamadı. IS tam extraction zorunlu — kısmi extraction YASAK.
+- **CF tablosu yatırım faaliyetleri null** — "Yatırım Faaliyetlerinden Nakit Akışları" tamamen boş. FCF hesabı (OCF - CAPEX) yapılamadı.
+- **SE (Özsermaye Değişim Tablosu) boş {}** — 4. zorunlu tablo. Temettü ödemesi, sermaye artırımı, dağıtılmamış karlar değişimi — bunlar strategic_synthesis ve valuation için zorunlu girdi.
+- **IFRS 16 ROU varlık amortismanı ayrıştırılmadı** — EBITDAR = EBITDA + kira gideri; kira gideri null → EBITDAR hesaplanamaz.
+
+### Bundan Sonra:
+- **THYAO parse için kesin kurallar (tolerans sıfır — bir dahaki analizde ihlal = CEO direktifi hattı):**
+  1. D&A → CF "Amortisman ve İtfa" satırı ZORUNLU; null → upstream escalation + parse durdurulur
+  2. IFRS 16 ROU amortismanı → ayrı satır; yoksa dipnot 26-27 açılır
+  3. IS tam zincir: Revenue → COGS → Brüt → OpEx → EBITDA → D&A → EBIT → fin.gelir → fin.gider → VÖK → vergi → Net Kar — hiçbir satır null olamaz
+  4. CF yatırım faaliyetleri → CAPEX + finansal yatırımlar satırları ZORUNLU
+  5. SE → en az: dönem başı + net kar + temettü + dönem sonu kolonu
+- **Null satır = eskalasyon tetikler, geçmez** — "Veri yok" yazarak geçmek YASAK; null görülürse data_collection'a eskalasyon + CEO bildirim.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Full Analiz (thyao-full-20260416-v4)
+
+### Eksikler:
+- **EBITDA null — 4. THYAO analizi, kesin tolerans sıfır ihlali** — income_statement.ebitda: null. D&A upstream'den gelmiyor ve parse katmanından eskalasyon yapılmıyor; bu zincir kırılması kabul edilemez.
+- **D&A null — CF "Amortisman ve İtfa" satırı alınmadı** — 4 THYAO analizinde aynı hata. KAP yıllık raporu her zaman nakit akış tablosunda bu satırı içerir; çekilmeden output gönderilmesi kural ihlali.
+- **IS zinciri kırık** — financial_income: null, financial_expense: null, tax_expense: null. PBT ve net income bridge kurulamadı. Sonuç: faiz karşılama oranı, vergi yükü — tümü hesaplanamadı.
+- **CF yatırım faaliyetleri null** — investing_cash_flow: null; capex: null; free_cash_flow: null. FCF = OCF − CAPEX; CAPEX null → FCF null → Chairman metrik listesi ihlali.
+- **SE (Özsermaye Değişim Tablosu) boş {}** — 4. THYAO analizinde de SE tablosu hiç çekilmedi. Temettü ödemesi doğrulaması bile yapılamıyor.
+- **IFRS 16 ROU amortismanı ayrıştırılmadı** — EBITDAR = EBITDA + kira gideri; kira gideri null → EBITDAR null → havacılık analizinin birincil metriği hesaplanamaz.
+
+### Bundan Sonra:
+- **D&A null = parse output DURUR (4. direktif, hard bloker)** — Null görüldüğünde: (1) data_collection'a eskalasyon "D&A eksik — kaynak: CF tablosu satırı + dipnot 11-12 + IFRS16 ROU ayrıştırması", (2) output gönderilmez, (3) CEO'ya bloker bildirim.
+- **IS zinciri completeness = tam 11/11 satır** — Revenue → COGS → Brüt Kâr → OPEX → EBITDA → D&A → EBIT → Fin.Gelir → Fin.Gider → VÖK → Vergi → Net Kâr. Bir satır null → PENDING_IS_CHAIN eskalasyonu zorunlu.
+- **EBITDAR havacılık özel alanı** — parse çıktısında "aviation_ebitdar" alanı ayrı eklenecek: EBITDA + IFRS16 kira gideri (dipnot). D&A mevcut değilse EBIT + D&A sektör proxy + IFRS 16 = EBITDAR `[conf: MEDIUM]`.
+- **Investing CF ve CAPEX = 4. direktif hard bloker** — null tolere edilmez; "yatırım faaliyetlerinden nakit akışları" tablosu her KAP yıllık raporunda mevcuttur. Çekilmeden parse tamamlanmış sayılmaz.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Raporu
+
+### Eksikler:
+- **EBITDA null — 5. THYAO analizi, sistematik arıza** — income_statement.ebitda: null. D&A upstream'den gelmiyor, parse katmanından eskalasyon yapılmıyor. 5 analizdir aynı hata.
+- **D&A null — 5. THYAO, CF "Amortisman ve İtfa" alınmadı** — Her KAP yıllık raporunda bu satır mevcuttur; 5 THYAO analizinde çekilemedi. Eskalasyon tetiklenmedi.
+- **CF yatırım faaliyetleri null — 5. THYAO** — investing_cash_flow: null; capex: null; free_cash_flow: null.
+- **SE (Özsermaye Değişim Tablosu) boş {} — 5. THYAO** — 4. zorunlu tablo 5 analizde hiç çekilmedi.
+- **IFRS 16 ROU amortismanı ayrıştırılmadı — 5. THYAO** — EBITDAR = EBITDA + kira gideri; kira gideri null → EBITDAR null.
+- **Null görüldüğünde eskalasyon tetiklenmedi — 5. THYAO** — Direktif 4 kez yazıldı; hiçbir zaman uygulanmadı.
+
+### Bundan Sonra:
+- **D&A null = parse output DURUR + eskalasyon zorunlu (5. direktif, hard bloker)** — Null görüldüğünde: (1) data_collection'a eskalasyon, (2) output gönderilmez, (3) CEO'ya bloker bildirim. "Veri yok" yazarak geçmek YASAK.
+- **IS zinciri completeness = tam 11/11 satır** — Bir satır null → PENDING_IS_CHAIN eskalasyonu zorunlu.
+- **aviation_ebitdar alanı parse çıktısına eklenmeli** — D&A null ise: EBIT + D&A sektör proxy (%15-18 of Revenue) + IFRS16 kira = EBITDAR [conf: MEDIUM].
+
+## CEO Geri Bildirimi — 2026-04-17 — ASELS Raporu
+
+### Eksikler:
+- **income_statement.ebitda: null — D&A çekilmedi** — THYAO zinciriyle aynı hata savunma şirketine taşındı. ASELS KAP yıllık raporunda amortisman notu mevcuttur; null bırakılamaz.
+- **income_statement.depreciation_amortization: null** — "EBITDA − EBIT" türetmesi yasaklandı; KAP amortisman notundan (Not 11-12 veya eşdeğeri) doğrudan çekilmeli.
+- **cash_flow.investing_cash_flow: null; capex: null; free_cash_flow: null** — ASELS savunma şirketi için CAPEX/EBITDA kritik KPI; null bırakmak Chairman metrik listesi ihlali.
+- **equity_change: {} (boş)** — Özsermaye hareket tablosu hiç çekilmedi; ROE trend ve equity reconciliation için zorunlu.
+- **trade_payables = "24,432,000 TL" — DISC-004 benzeri sapma** — ASELS 180B+ TL cirosu karşısında ticari borç 24.4M TL şüpheli derecede düşük. BS özet satırı ile ilgili dipnot (ticari borçlar Not'u) karşılaştırılmadı.
+- **IAS 29 parasal kazanç/kayıp: null** — ASELS Turkish GAAP/IAS 29 kapsamında; monetary gain/loss ayrıştırılmadan EBITDA ve Net Kar gerçek operasyonel performansı göstermiyor.
+
+### Bundan Sonra:
+- **Savunma sektörü parse ekstrası:** ASELS gibi savunma şirketlerinde (1) AR-GE harcamaları IS'ten ayrı satır, (2) sözleşme ertelenmiş geliri BS'ten, (3) devlet teşvikleri IS'ten ayrıştır. Bunlar savunma margin analizinin girdileri.
+- **Trade_payables DISC-004 kontrolü evrensel** — Her şirket analizinde BS ticari borç vs dipnot toplam karşılaştır. Fark >%20 → FLAG_DISC-ASELS + eskalasyon.
+- **EBITDA null = savunma analizinde pipeline bloker** — D&A null → EBITDA null → backlog/EBITDA ve AR-GE/EBITDA oranları hesaplanamaz. Null görüldüğünde upstream eskalasyon + parse DURUR.
