@@ -105,6 +105,36 @@
 - **Holding için gelir tablosunda 3 katman** — (1) Solo/Parent: temettü + yönetim ücreti, (2) Konsolide: tüm bağlı ortaklıklar, (3) Segment: IFRS 8 ayrımı. Üçünü ayrı satırlarda ver.
 - **DSO blocked olsa bile sector proxy ver** — "Holding sektöründe DSO ortalama 45-60 gün; KCHOL için ticari alacak yokluğunda tahmini DSO: N/A — IFRS 8 segment bazlı gerekiyor [conf: VERY LOW]" formatında bile olsa ver. Sıfır bırakma.
 
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Remediation (thyao-remediation-20260416)
+
+### Eksikler:
+- **6/28 metrik — %79 eksik** — mandatory_metrics_complete: FALSE. EBITDAR, FCF, OCF, ROIC, DSO/DIO/DPO/CCC, NWC/Revenue ve daha fazlası null. Bu oran havacılık analizini temelsiz bırakır.
+- **EBITDAR null — 3. THYAO direktifi** — Havacılık analizinin birincil metriği. EBITDA null iken EBITDAR = EBITDA + Kira Gideri; IFRS 16 kira gideri context'ten çekilip proxy EBITDAR üretilebilirdi.
+- **Sektör "industrial" — cascade etkisi** — sector_competition ve QA bunu aynen aldı. Ticker-based mapping (THYAO → aviation) uygulanmadı.
+- **DSO/DIO/DPO engine_snapshot'ta var ama metrics_array'de yok** — DSO=17.25, DIO=18.66, DPO=35.39 hesaplandı ✓ ama zorunlu metrik listesine dahil edilmedi.
+- **ROE %13 ile TRY CoE ~%30 karşılaştırması yapılmadı** — ROE < CoE → değer yıkımı. Bu fundamental bulgu havacılık çerçevesinde yorumlanmadı.
+
+### Bundan Sonra:
+- **EBITDAR proxy hesabı** — EBITDA null ise: Operating Income + D&A proxy (sektör) + Kira Gideri (IFRS 16 dipnotu veya context) = EBITDAR. `[conf: MEDIUM, tahmin]` etiketle; null bırakma.
+- **DSO/DIO/DPO engine_snapshot'tan metrics_array'e taşı** — Hesaplandıysa görünür olmalı; Chairman metrik listesi bunu zorunlu kılıyor.
+- **ROE < CoE bulgusu zorunlu yorum** — ROE ile TRY sermaye maliyeti (~%25-30) karşılaştırması; "değer yıkıyor" veya "eşiğe yakın" yorumu narrative'de zorunlu.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu
+
+### Eksikler:
+- **Sadece 6 metrik üretildi (28 zorunlunun %21'i)** — GROSS_MARGIN, NET_MARGIN, ROE, CCC, NET_DEBT, PIOTROSKI_F. EBITDA_MARGIN, FCF, ROIC, EBITDAR, CAPEX/EBITDA, OCF/EBITDA, faiz karşılama, NWC/Revenue tümü null veya eksik.
+- **EBITDAR hesaplanmadı** — Havacılık zorunlu metriği (3. rapordur bu direktif verildi). EBITDA null çünkü D&A parse'dan gelmiyor; ama IFRS 16 kira gideri ile EBITDAR proxy hesaplanabilirdi.
+- **Sektör = "industrial"** — THYAO açıkça havacılık. sector_competition fallback'ini financial_analysis da besliyor; sektör tespiti ticker seviyesinde hardcode olmalı.
+- **DSO/DIO/DPO engine_snapshot'ta var ama metrics listesine girmedi** — engine_snapshot: DSO=17.25, DIO=18.66, DPO=35.39 hesaplandı ✓ — ancak ana metrics listesinde bu 3 metrik görünmüyor. Bu eksik raporlama.
+- **ROE %13 yorumsuz bırakıldı** — TRY sermaye maliyeti ~%30; ROE %13 = ciddi değer yıkımı. Narrative_hint "TRY cost of capital ~30%" yazıyor ama interpretation yok; sadece rakam var.
+- **IAS 29 adjusted metrikler yok** — Havacılık + Türk şirketi → IAS 29 etkisi ayrıştırılmalı.
+
+### Bundan Sonra:
+- **DSO/DIO/DPO/CCC engine_snapshot'ta varsa ana metrics listesine de ekle** — Hesaplandı ama raporlanmadı = Chairman metrik ihlali. Her metrik `metrics` array'inde zorunlu görünmeli.
+- **EBITDA null ise EBITDAR proxy** — EBITDA hesaplanamıyorsa: EBITDA ≈ Operating Income + D&A tahmini (sector proxy ile) veya OCF proxy; hiçbiri yoksa "[EBITDA NULL — D&A eksik, parse eskalasyonu gerekli]" yaz ama null bırakma.
+- **Sektör override zorunlu** — THYAO, PEGYS, ONUIR → sector = "aviation" hardcode. "industrial" fallback kabul edilmez.
+- **Narrative yorum zorunlu** — ROE %13 < TRY CoE %30 = değer yıkımı. Her metrik için 4-soru yorum: Ne kadar? → Nasıl değişti? → Neden? → TRY etkisi?
+
 ## Bilinen Hatalar (Bir Daha Yapma)
 
 - AKBNK-EREGL arasi 6+ raporda ayni eksikler tekrarlandi: working capital, cash flow, likidite metrikleri SIFIR
@@ -112,6 +142,25 @@
 - TUPRS'ta Bolum 1-9 pipeline'a iletilmedi, sadece Bolum 10-11 gitti — TUM bolumler iletilmeli
 - EBITDA celiskisi (TUPRS 62B vs 53.78B) cozulmeden rapor gonderildi — her iki degerle senaryo analizi zorunlu
 - mandatory_metrics_complete: TRUE verip metrikler ciktida gorunmedi — yaniltici beyan YASAK
+
+## CEO Geri Bildirimi — 2026-04-17 — ASELS Raporu
+
+### Eksikler:
+- **Yalnızca 7/28 metrik üretildi (%75 eksik)** — mandatory_metrics_complete: FALSE. EBITDA_MARGIN, FCF, ROIC, DSO/DIO/DPO/CCC, NWC/Revenue, IAS29 adjusted metrikler, savunma KPI'ları tümü null veya eksik.
+- **Sektör = "industrial" — ASELS için de yanlış** — ASELS açıkça savunma elektroniği; "industrial" fallback sector_competition'a yanlış sektör verdi ve peer_group [] sonucuna yol açtı.
+- **DSO/DIO/DPO engine_snapshot'ta hesaplandı ama metrics_array'de görünmüyor** — THYAO dersinin aynısı ASELS'te tekrarlandı. Hesaplandıysa görünür olmalı.
+- **Savunma KPI'ları tamamen eksik** — Backlog/Revenue, AR-GE harcaması/ciro, ihracat oranı, CCC 390.95 gün savunma sektörü benchmarkıyla karşılaştırılmadı (sektör ort. ~180-270 gün; 390 gün yüksek).
+- **EBITDA null zinciri çözülmeden üretildi** — D&A parse'dan gelmiyor; EBITDA proxy üretilmedi ve "EBITDA NULL — D&A eksik" escalasyonu tetiklenmedi.
+- **IAS 29 ayrıştırması yapılmadı** — ASELS Turkish GAAP/IAS 29 kapsamında; nominal Net Kar vs IAS 29 adjusted Net Kar karşılaştırması yoktu.
+
+### Bundan Sonra:
+- **Savunma sektörü zorunlu ek metrikler (her savunma analizinde):**
+  1. Backlog/Revenue oranı (sipariş görünürlüğü)
+  2. AR-GE harcaması/ciro % (maliyet yapısı ve rekabet avantajı)
+  3. İhracat gelirleri/toplam ciro % (FX pozisyonu ve büyüme trendi)
+  4. CCC savunma sektörü benchmark karşılaştırması (normal: ~180-270 gün)
+- **Sektör override savunma şirketleri için zorunlu** — ASELS/ASELSAN, ROKET, FNSS → "defense_electronics" veya "defense". "industrial" fallback kabul edilmez.
+- **DSO/DIO/DPO engine_snapshot'ta varsa metrics_array'e de ekle** — 3. direktif; artık hard kural.
 - Cash FAVOK hic hesaplanmadi (TUPRS) — FAVOK != Cash FAVOK, ayri hesapla
 
 ## CEO Geri Bildirimi — 2026-04-14 — SAHOL Raporu
@@ -181,3 +230,52 @@
 - **WC kalem BS doğrudan satırı** — FY2024 BS satırları asterisksiz çekilecek; yıl sonu BS farkı ile CF tablosu farkı arasında reconciliation yapılacak. Fark >5% → DISC flag.
 - **Interest expense eksikse proxy tahmini ver** — "Net finansal gider / debt × faiz oranı" yöntemiyle tahmini faiz gideri `[conf: LOW, proxy]` formatında hesaplanacak. Boş bırakma.
 - **Her holding raporunda parent-only satır zorunlu** — Solo gelir + solo borç + solo temettü ödemesi ayrı satırlarda canonical fact pack'te yer alacak.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Tam Analiz (thyao-full-20260416)
+
+### Eksikler:
+- **6/28 metrik hesaplandı — %21 tamamlama** — 28 zorunlu metrik var; sadece 6 üretildi. EBITDA/EBITDAR null zinciri tüm metrikleri bloke etti. "Veri yok" = eskalasyon zorunlu, geçiş yasak.
+- **EBITDAR null — 3. THYAO analizi** — Havacılığın birincil metriği 3 rapor boyunca üretilmedi. Bunun sebebi D&A + IFRS 16 kira gideri upstream'den gelmiyor; eskalasyon tetiklenmedi.
+- **Sektör "industrial" olarak etiketlendi — 3. THYAO analizi** — THYAO = havacılık sektörü. "industrial" etiketi peer benchmark seçimini tamamen bozuyor. Bu üçüncü tekrardır; artık kural olarak hard-coded gerekli.
+- **DSO/DIO/DPO engine_snapshot'ta ama metrics array'de yok** — Hesaplandı ✓ ama output formatında metrics dizisine eklenmedi. QA bu metrikleri göremedi; Chairman metrik sayımı eksik çıktı.
+- **ROE %13 TRY CoE ~%30 ile karşılaştırılmadan verildi** — ROE < CoE = değer imhası. Bu yorum yapılmadan ROE rakamı anlamsız. Her ROE satırının yanında CoE benchmark ve "değer yaratıyor mu?" yorumu zorunlu.
+- **Tüm WC metrikleri (DSO/DIO/DPO/CCC/NWC) hesaplandı mı?** — CCC zinciri (DSO + DIO - DPO) null bırakıldı; CF WC değişimi ile kontrol yapılmadı.
+
+### Bundan Sonra:
+- **THYAO sektör etiketi = "aviation" (hard-coded, değiştirilemez)** — Sektör tespitini otomatik bırakma; THYAO analizinde sektör = aviation, peer group = Lufthansa/IAG/Wizz Air/flydubai/Delta. Upstream etiket ne gelirse gelsin overwrite et.
+- **EBITDA/EBITDAR null → eskalasyon, output YOK** — D&A null veya IFRS 16 null gelirse: (1) parse_standardization'a eskalasyon aç, (2) output üretme, (3) CEO'ya bloker bildir. 3 defa tekrarlanmasına izin vermiyoruz.
+- **metrics array = engine_snapshot ile eşit** — engine_snapshot'ta hesaplanan her metrik metrics[] dizisine de eklenecek. DSO/DIO/DPO/CCC/NWC bunlara dahil.
+- **ROE yorumu = "ROE %X vs TRY CoE ~%Y → değer [yaratıyor/imha ediyor]"** — CoE benchmark havacılık için ~%28-32 TRY; bu satır her analizde görünür.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Full Analiz (thyao-full-20260416-v4)
+
+### Eksikler:
+- **6/28 metrik (%21 tamamlama) — 4. THYAO analizi, tolerans sıfır** — Üretilen: GROSS_MARGIN, NET_MARGIN, ROE, CCC, NET_DEBT, PIOTROSKI_F. Eksik: EBITDAR, EBITDA_MARGIN, FCF, ROIC, CAPEX/EBITDA, OCF/EBITDA, faiz karşılama, NWC/Revenue, RASK, CASK, EBITDAR_MARGIN ve daha fazlası.
+- **EBITDAR null — 4. THYAO direktifi** — Havacılık analizinin birincil metriği. EBITDA null → EBITDAR proxy bile üretilmedi. THYAO 2025 EBITDAR marjı %23.2 bilinmesine rağmen sıfır girdi üretildi.
+- **Sektör "industrial" — 4. THYAO analizi, sistematik arıza** — THYAO = aviation; "industrial" fallback 4 analizdir düzeltilmedi. Bu upstream override yapılmadan çalışılamaz.
+- **DSO=17.25, DIO=18.66, DPO=35.39 engine_snapshot'ta hesaplandı ama metrics[] dizisine eklenmedi** — Chairman metrik listesinde zorunlu; hesaplandı ama görünmüyor. Bu raporlama eksikliği 3. THYAO'da da devam etti.
+- **ROE %12.96 yorumsuz verildi** — TRY sermaye maliyeti ~%28-30; ROE < CoE = değer imhası. narrative_hint "TRY cost of capital ~30%" yazıyor ama "değer yıkımı" yorumu yok. Bu 3. THYAO'da da aynı eksiklik.
+- **Havacılık operasyonel KPI'lar (CASK/RASK/LF/RPK/ASK) hesaplanmadı** — THYAO 2025 referans: CASK US¢8.55, RASK US¢7.21, LF %83.6. Bu değerler context_extraction'dan gelmesi durumunda dahi financial_analysis bölümünde yorumlanması zorunlu.
+- **IAS 29 adjusted metrikler yok** — TÜFE >100% olduğu dönemler; THYAO USD ağırlıklı ama IAS 29 etkisi ayrıştırılmadı.
+
+### Bundan Sonra:
+- **EBITDAR proxy zorunlu (4. direktif, tolerans sıfır)** — EBITDA null ise: Operating Income + D&A sektör proxy (%15-18 of Revenue) + IFRS 16 kira gideri (kontekst veya dipnottan) = EBITDAR `[conf: MEDIUM]`. Null → metrics array'de "[EBITDAR NULL — D&A eksik, parse eskalasyonu tetiklendi]" yaz.
+- **metrics array eksikse output PASS VERİLMEZ** — engine_snapshot'ta hesaplanan her metrik metrics[] dizisine eklenecek. DSO/DIO/DPO/CCC bu listeye zorunlu dahil. Eksik = mandatory_metrics_complete: FALSE.
+- **Aviation KPI bölümü her THYAO analizinde** — CASK/RASK/LF/RPK/ASK — finansal tablolardan hesaplanamazsa context/kap_watch/trafik bildirimlerinden çekilecek ve ayrı "Operasyonel KPI" bölümü olarak raporlanacak.
+- **Sektör override lokal kuralı** — THYAO, PEGYS, ONUIR → sector = "aviation" hard-coded; upstream "industrial" gelirse overwrite et. Bu override kodu financial_analysis başlangıç adımında yer alacak.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Raporu
+
+### Eksikler:
+- **6/28 metrik (%21 tamamlama) — 5. THYAO analizi, sistematik arıza** — Üretilen: GROSS_MARGIN, NET_MARGIN, ROE, CCC, NET_DEBT, PIOTROSKI_F. Geri kalan 22 metrik null.
+- **EBITDAR null — 5. THYAO direktifi** — Havacılık analizinin birincil metriği. EBITDA null → EBITDAR proxy bile üretilmedi.
+- **Sektör "industrial" — 5. THYAO analizi, sistematik arıza** — THYAO = aviation; "industrial" fallback 5 analizdir düzeltilmedi. Upstream override yapılmadan çalışılamaz.
+- **DSO/DIO/DPO engine_snapshot'ta hesaplandı ama metrics[] dizisine eklenmedi — 4. THYAO** — Chairman metrik listesinde zorunlu; hesaplandı ama görünmüyor.
+- **ROE %12.96 TRY CoE ile karşılaştırılmadı** — TRY sermaye maliyeti ~%28-30; ROE < CoE = değer imhası yorumu yapılmadı.
+- **Havacılık KPI (CASK/RASK/LF/RPK/ASK) hesaplanmadı** — Context_extraction'dan dahi alınabilirdi; 5 analizdir eksik.
+- **IAS 29 adjusted metrikler yok** — Türkiye'de zorunlu; THYAO USD ağırlıklı olsa da ayrıştırılmadı.
+
+### Bundan Sonra:
+- **EBITDAR proxy zorunlu (5. direktif, tolerans sıfır)** — EBITDA null ise: Operating Income + D&A sektör proxy (%15-18 of Revenue) + IFRS16 kira = EBITDAR [conf: MEDIUM]. Null → metrics array'de "[EBITDAR NULL — D&A eksik, eskalasyon tetiklendi]".
+- **Sektör override başlangıç adımı** — THYAO/PEGYS/ONUIR → sector = "aviation" hard-coded; upstream ne gelirse gelsin. "industrial" fallback YASAK.
+- **metrics array = engine_snapshot ile eşit** — engine_snapshot'ta hesaplanan her metrik metrics[] dizisine de eklenir. DSO/DIO/DPO/CCC bu listeye zorunlu dahil.

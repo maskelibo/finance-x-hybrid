@@ -112,8 +112,8 @@ ZAMAN ÇERÇEVESI: [12 ay / 24 ay / >24 ay]
 ### 5. Analytical Open Questions
 Questions that the available data cannot answer — areas where additional data or time is needed before confident conclusions can be drawn.
 
-### 6. Overall Analytical Confidence
-A single overall confidence label (high / medium / low / speculative) based on the breadth and quality of the input evidence base.
+### 6. Genel Analitik Güvenilirlik (Overall Confidence)
+Tek bir güvenilirlik etiketi — TÜRKÇE olmalı (yüksek / orta / düşük / spekülatif). Girdi kanıtlarının genişlik ve kalitesine dayanır.
 
 ### 7. YATIRIM TEZİ ÖZETİ (YENİ — ZORUNLU)
 

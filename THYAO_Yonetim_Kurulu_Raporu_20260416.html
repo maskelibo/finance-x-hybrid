@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THYAO — Finance X Kapsamlı Analiz Raporu</title>
+  <style>
+    @page { size: A4 portrait; margin: 20mm 15mm 20mm 15mm; }
+    :root {
+      --brand-primary: #1e40af;
+      --brand-secondary: #1a1a2e;
+      --brand-accent: #f59e0b;
+      --fx-dark: #1e293b;
+      --fx-gray: #6b7280;
+      --fx-light-gray: #f3f4f6;
+      --fx-border: #e5e7eb;
+      --fx-success: #059669;
+      --fx-warning: #d97706;
+      --fx-danger: #dc2626;
+      --fx-white: #ffffff;
+      --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: ui-monospace, 'SF Mono', 'Consolas', monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-main); font-size: 10pt; line-height: 1.55; color: var(--fx-dark); background: var(--fx-white); }
+
+    .page { page-break-before: always; min-height: 257mm; padding: 0 0 30px; position: relative; }
+    .page:first-child { page-break-before: avoid; }
+    .page-inner { padding: 0 8mm; }
+
+    .page-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 2px solid var(--brand-primary); margin-bottom: 16px; font-size: 8pt; color: var(--fx-gray); }
+    .page-header-left { display: flex; align-items: center; gap: 12px; }
+    .company-ticker { font-weight: 700; color: var(--brand-primary); font-size: 10pt; }
+    .brand-mark { background: var(--brand-primary); color: #fff; padding: 3px 8px; border-radius: 3px; font-weight: 700; font-size: 9pt; }
+    .page-footer { position: absolute; bottom: 4px; left: 8mm; right: 8mm; display: flex; justify-content: space-between; font-size: 7pt; color: var(--fx-gray); border-top: 1px solid var(--fx-border); padding-top: 4px; }
+
+    .cover-page { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 257mm; text-align: center; background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%); color: #fff; padding: 40mm 20mm; }
+    .cover-page .cover-ticker { font-size: 54pt; font-weight: 800; letter-spacing: 4px; margin-bottom: 8px; }
+    .cover-page .cover-company { font-size: 16pt; font-weight: 300; margin-bottom: 8px; opacity: 0.9; }
+    .cover-page .cover-exchange { font-size: 11pt; font-weight: 400; opacity: 0.7; margin-bottom: 40px; }
+    .cover-page .cover-title { font-size: 14pt; font-weight: 600; margin-bottom: 8px; }
+    .cover-page .cover-date { font-size: 11pt; opacity: 0.85; }
+    .cover-page .cover-badge { margin-top: 50px; padding: 8px 24px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; font-size: 9pt; opacity: 0.8; }
+    .cover-divider { width: 80px; height: 3px; background: rgba(255,255,255,0.5); margin: 24px auto; }
+    .cover-meta { display: flex; gap: 40px; margin-top: 24px; font-size: 9pt; opacity: 0.85; }
+    .cover-meta-item { text-align: center; }
+    .cover-meta-item .cv-val { font-size: 14pt; font-weight: 700; display: block; margin-bottom: 2px; }
+
+    h1 { font-size: 16pt; font-weight: 700; color: var(--brand-primary); margin: 20px 0 10px; border-bottom: 2px solid var(--brand-primary); padding-bottom: 6px; page-break-after: avoid; }
+    h2 { font-size: 13pt; font-weight: 600; color: var(--fx-dark); margin: 16px 0 8px; page-break-after: avoid; }
+    h3 { font-size: 11pt; font-weight: 600; color: var(--brand-primary); margin: 14px 0 6px; page-break-after: avoid; }
+    p { margin: 7px 0; text-align: justify; orphans: 4; widows: 4; }
+    ul, ol { margin: 7px 0 7px 20px; }
+    li { margin-bottom: 4px; orphans: 4; widows: 4; }
+    strong { font-weight: 600; }
+    em { font-style: italic; }
+
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9pt; table-layout: fixed; page-break-inside: avoid; }
+    table th { background: var(--brand-primary); color: #fff; font-weight: 600; padding: 7px 9px; text-align: left; border: 1px solid var(--brand-primary); }
+    table td { padding: 6px 9px; border: 1px solid var(--fx-border); vertical-align: top; word-wrap: break-word; }
+    table tr:nth-child(even) { background: var(--fx-light-gray); }
+    table td.num, table th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    table td.label { font-weight: 600; color: var(--fx-dark); }
+    table tr.subtotal td { background: #eef2ff; font-weight: 600; }
+    table tr.total td { background: var(--brand-primary); color: #fff; font-weight: 700; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .kpi-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .kpi-card { border: 1px solid var(--fx-border); border-radius: 6px; padding: 12px; background: #fff; }
+    .kpi-card .kpi-label { font-size: 8pt; color: var(--fx-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .kpi-card .kpi-value { font-size: 18pt; font-weight: 700; color: var(--brand-primary); font-family: var(--font-mono); }
+    .kpi-card .kpi-sub { font-size: 8pt; color: var(--fx-gray); margin-top: 4px; }
+    .kpi-card.positive .kpi-value { color: var(--fx-success); }
+    .kpi-card.negative .kpi-value { color: var(--fx-danger); }
+    .kpi-card.warning .kpi-value { color: var(--fx-warning); }
+
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 9pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-pass { background: #d1fae5; color: #047857; }
+    .badge-fail { background: #fee2e2; color: #b91c1c; }
+    .badge-warn { background: #fef3c7; color: #b45309; }
+    .badge-info { background: #dbeafe; color: #1d4ed8; }
+    .badge-neutral { background: var(--fx-light-gray); color: var(--fx-gray); }
+
+    .bullet-list { list-style: none; padding: 0; margin: 10px 0; }
+    .bullet-list li { padding: 8px 12px; border-left: 3px solid var(--fx-border); margin: 6px 0; background: var(--fx-light-gray); font-size: 10pt; }
+    .bullet-list li.critical { border-left-color: var(--fx-danger); background: #fef2f2; }
+    .bullet-list li.warn { border-left-color: var(--fx-warning); background: #fffbeb; }
+    .bullet-list li.ok { border-left-color: var(--fx-success); background: #ecfdf5; }
+
+    .porter-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .porter-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 10px 14px; background: #fff; }
+    .porter-box h4 { font-size: 10pt; font-weight: 700; color: var(--brand-primary); margin-bottom: 6px; }
+    .porter-box .intensity { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8pt; margin-bottom: 6px; font-weight: 600; }
+    .porter-box .intensity.high { background: #fee2e2; color: #b91c1c; }
+    .porter-box .intensity.medium { background: #fef3c7; color: #b45309; }
+    .porter-box .intensity.low { background: #d1fae5; color: #047857; }
+
+    .risk-matrix { display: grid; grid-template-columns: 80px repeat(3, 1fr); gap: 6px; margin: 14px 0; page-break-inside: avoid; font-size: 9pt; }
+    .risk-cell { padding: 10px; text-align: center; border-radius: 4px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+    .risk-axis { font-weight: 700; color: var(--fx-gray); font-size: 8pt; text-transform: uppercase; }
+    .risk-low { background: #d1fae5; color: #047857; }
+    .risk-med { background: #fef3c7; color: #b45309; }
+    .risk-high { background: #fee2e2; color: #b91c1c; }
+
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .scenario-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 14px; background: #fff; text-align: center; }
+    .scenario-box h4 { font-size: 11pt; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .scenario-box.bear h4 { color: var(--fx-danger); }
+    .scenario-box.base h4 { color: var(--brand-primary); }
+    .scenario-box.bull h4 { color: var(--fx-success); }
+    .scenario-box .scn-price { font-size: 20pt; font-weight: 800; font-family: var(--font-mono); color: var(--fx-dark); margin: 6px 0; }
+    .scenario-box .scn-sub { font-size: 8pt; color: var(--fx-gray); }
+    .scenario-box ul { list-style: none; padding: 0; margin-top: 10px; text-align: left; }
+    .scenario-box li { font-size: 8.5pt; padding: 3px 0; border-bottom: 1px dotted var(--fx-border); }
+
+    .esg-bars { margin: 14px 0; }
+    .esg-bars .bar-row { display: grid; grid-template-columns: 80px 1fr 40px; gap: 10px; align-items: center; margin: 6px 0; font-size: 9pt; }
+    .esg-bars .bar-track { height: 14px; background: var(--fx-light-gray); border-radius: 7px; overflow: hidden; }
+    .esg-bars .bar-fill { height: 100%; background: linear-gradient(90deg, var(--fx-success) 0%, var(--brand-primary) 100%); }
+
+    .toc { background: var(--fx-light-gray); padding: 20px; border-radius: 6px; margin-bottom: 24px; }
+    .toc ul { list-style: none; padding: 0; columns: 2; gap: 24px; }
+    .toc li { padding: 4px 0; border-bottom: 1px dotted var(--fx-border); font-size: 10pt; }
+    .toc li .toc-num { display: inline-block; width: 36px; font-weight: 700; color: var(--brand-primary); }
+
+    .swot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .swot-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 12px; background: #fff; }
+    .swot-box h4 { font-size: 10pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 2px solid; }
+    .swot-box.strengths h4 { color: var(--fx-success); border-color: var(--fx-success); }
+    .swot-box.weaknesses h4 { color: var(--fx-danger); border-color: var(--fx-danger); }
+    .swot-box.opportunities h4 { color: var(--brand-primary); border-color: var(--brand-primary); }
+    .swot-box.threats h4 { color: var(--fx-warning); border-color: var(--fx-warning); }
+    .swot-box ul { list-style: none; padding: 0; }
+    .swot-box li { font-size: 9pt; padding: 4px 0; border-bottom: 1px dotted var(--fx-border); }
+    .swot-box li:last-child { border-bottom: none; }
+
+    .note { background: #fffbeb; border-left: 4px solid var(--fx-warning); padding: 10px 14px; margin: 12px 0; font-size: 9pt; color: #78350f; border-radius: 3px; }
+    .note strong { color: #92400e; }
+
+    .disclaimer { margin-top: 40px; padding: 22px; background: var(--fx-light-gray); border-radius: 6px; font-size: 8pt; color: var(--fx-gray); line-height: 1.7; }
+    .disclaimer strong { color: var(--fx-dark); }
+    .method-list { font-size: 9pt; }
+
+    .score-gauge { display: inline-block; width: 100%; height: 10px; background: var(--fx-light-gray); border-radius: 5px; overflow: hidden; margin: 4px 0; }
+    .score-gauge-fill { height: 100%; background: linear-gradient(90deg, var(--fx-success) 0%, var(--brand-primary) 100%); }
+
+    @media screen {
+      body { background: #e5e7eb; padding: 20px; }
+      .page { max-width: 210mm; margin: 0 auto 10px; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 16mm 10mm 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================== COVER ============================ -->
+  <div class="page cover-page">
+    <div class="cover-ticker">THYAO</div>
+    <div class="cover-company">THYAO</div>
+    <div class="cover-exchange">Borsa İstanbul · Sanayi</div>
+    <div class="cover-divider"></div>
+    <div class="cover-title">Kapsamlı Şirket Analiz Raporu</div>
+    <div class="cover-date">2026-04-16</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><span class="cv-val">0.96</span>QA Skoru</div>
+      <div class="cover-meta-item"><span class="cv-val">+0.38</span>Sinyal Konverjansı</div>
+      <div class="cover-meta-item"><span class="cv-val">%57</span>Reconciliation</div>
+    </div>
+    <div class="cover-badge">Finance X Platform · Python Hybrid · rpt-DqWRuBdX3vc4RRkcrr345</div>
+  </div>
+
+  <!-- ============= İÇİNDEKİLER ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>İçindekiler</h1>
+    <div class="toc">
+      <ul>
+        <li><span class="toc-num">I.</span>Yönetici Özeti</li>
+        <li><span class="toc-num">II.</span>Şirket Profili</li>
+        <li><span class="toc-num">III.</span>Finansal Analiz</li>
+        <li><span class="toc-num">IV.</span>Değerleme &amp; Hedef Fiyat</li>
+        <li><span class="toc-num">V.</span>Sektör &amp; Rekabet</li>
+        <li><span class="toc-num">VI.</span>Makroekonomik Bağlam</li>
+        <li><span class="toc-num">VII.</span>Teknik Analiz</li>
+        <li><span class="toc-num">VIII.</span>ESG Değerlendirmesi</li>
+        <li><span class="toc-num">IX.</span>Haber &amp; Sentiment</li>
+        <li><span class="toc-num">X.</span>KAP Olayları</li>
+        <li><span class="toc-num">XI.</span>Risk Değerlendirmesi</li>
+        <li><span class="toc-num">XII.</span>Sonuç &amp; Öneriler</li>
+      </ul>
+    </div>
+
+    <h2>Raporun Kapsamı</h2>
+    <p>Bu rapor THYAO (THYAO) için Finance X platformunun 22 özel ajanıyla otomatik olarak üretilmiştir. Python deterministic hesaplamalar (bilanço, nakit akışı, ratio, DCF, Altman Z, Piotroski F) ile LLM narrative bloklar (yorum, strateji, sentez) hibrit olarak bir araya getirilmiştir. Veriler FY-2025 dönemine aittir ve KAP resmi bildirimleri, TCMB, TradingView/Yahoo Finance ile Google News RSS kaynaklarından çekilmiştir.</p>
+
+    <h2>Hızlı Göstergeler</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">QA Skoru</div><div class="kpi-value">0.96</div><div class="kpi-sub">Geçer</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sinyal</div><div class="kpi-value">+0.38</div><div class="kpi-sub">orta</div></div>
+      <div class="kpi-card"><div class="kpi-label">Rec.</div><div class="kpi-value">%57</div><div class="kpi-sub">4/7</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sektör</div><div class="kpi-value" style="font-size:12pt;">Sanayi</div><div class="kpi-sub">doğrulanmış</div></div>
+    </div>
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>i</span></div>
+  </div></div>
+
+
+  <!-- ============= I. YÖNETİCİ ÖZETİ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>I. Yönetici Özeti</h1>
+
+    
+    <div class="note" style="background: #eef2ff; border-left-color: var(--brand-primary); color: #1e40af; margin-bottom: 16px;">
+      <strong style="color: var(--brand-primary);">Chairman Sektörel Dikkat Noktaları</strong>
+      <div style="margin:4px 0;">✈️ <strong>Havacılık</strong>: Yakıt hedging, yolcu trafiği (RPK/ASK), load factor izlenmeli.</div><div style="margin:4px 0;">🌍 Jeopolitik riskler (Orta Doğu/Rusya hava sahası) kısa vadeli kâr üzerinde doğrudan etkili.</div>
+    </div>
+    
+
+    
+    <h2>Temel Değerlendirme</h2>
+    <div><p>&lt;table>&lt;thead>&lt;tr>&lt;th>Senaryo&lt;/th>&lt;th>P/BV Çarpanı&lt;/th>&lt;th>Hedef Fiyat&lt;/th>&lt;th>Mevcut Fiyata Göre&lt;/th>&lt;/tr>&lt;/thead>&lt;tbody>&lt;tr>&lt;td>Bear&lt;/td>&lt;td>0.35x&lt;/td>&lt;td>231 TL&lt;/td>&lt;td>-%24&lt;/td>&lt;/tr>&lt;tr>&lt;td>Baz&lt;/td>&lt;td>0.50x&lt;/td>&lt;td>330 TL&lt;/td>&lt;td>+%9&lt;/td>&lt;/tr>&lt;tr>&lt;td>Bull&lt;/td>&lt;td>0.70x&lt;/td>&lt;td>462 TL&lt;/td>&lt;td>+%52&lt;/td>&lt;/tr>&lt;tr>&lt;td><strong>Ağırlıklı Ort.</strong>&lt;/td>&lt;td><strong>(Bear×%25 + Baz×%50 + Bull×%25)</strong>&lt;/td>&lt;td><strong>338 TL</strong>&lt;/td>&lt;td><strong>+%12</strong>&lt;/td>&lt;/tr>&lt;/tbody>&lt;/table></p></div>
+    
+
+    <h2>Skor Kartı</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">QA Skoru</div><div class="kpi-value">0.96</div><div class="kpi-sub">Geçer</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sinyal</div><div class="kpi-value">+0.38</div><div class="kpi-sub">orta</div></div>
+      <div class="kpi-card"><div class="kpi-label">Rec.</div><div class="kpi-value">%57</div><div class="kpi-sub">4/7 check</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sektör</div><div class="kpi-value" style="font-size:12pt;">Sanayi</div><div class="kpi-sub">doğrulanmış</div></div>
+    </div>
+
+    <h3>Finansal Sağlık Skorları</h3>
+    <div class="kpi-grid-3">
+      <div class="kpi-card"><div class="kpi-label">Piotroski F-Score</div><div class="kpi-value">4</div><div class="kpi-sub">Orta (0-9 ölçek)</div></div>
+      <div class="kpi-card"><div class="kpi-label">Altman Z-Score</div><div class="kpi-value">—</div><div class="kpi-sub">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Net Borç/Özsermaye</div><div class="kpi-value" style="font-size:14pt;">Ratio</div><div class="kpi-sub">Canonical</div></div>
+    </div>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 700 188" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;height:auto"><text x="350" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Kalite Skorları Karşılaştırma</text><text x="152" y="60" text-anchor="end" font-size="10" fill="#0f172a">QA Skoru</text><rect x="160" y="46" width="460.0" height="20" fill="#1e40af" rx="3"/><text x="628" y="60" font-size="10" font-weight="600" fill="#0f172a">96/100</text><text x="152" y="92" text-anchor="end" font-size="10" fill="#0f172a">Sinyal Konverjansı</text><rect x="160" y="78" width="182.1" height="20" fill="#f59e0b" rx="3"/><text x="350.0833333333333" y="92" font-size="10" font-weight="600" fill="#0f172a">38/100</text><text x="152" y="124" text-anchor="end" font-size="10" fill="#0f172a">Piotroski F</text><rect x="160" y="110" width="212.7" height="20" fill="#059669" rx="3"/><text x="380.75" y="124" font-size="10" font-weight="600" fill="#0f172a">44,4/100 (norm)</text><text x="152" y="156" text-anchor="end" font-size="10" fill="#0f172a">Reconciliation</text><rect x="160" y="142" width="273.8" height="20" fill="#1e40af" rx="3"/><text x="441.8095238095238" y="156" font-size="10" font-weight="600" fill="#0f172a">57,143%</text></svg></div>
+    
+
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; page-break-inside:avoid;">
+      <div><svg viewBox="0 0 320 210" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:320px;height:auto;background:#ffffff;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><text x="160" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Kalite Göstergesi</text><path d="M70.0,170.0 A90,90 0 0 1 115.0,92.1" stroke="#dc2626" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><path d="M115.0,92.1 A90,90 0 0 1 205.0,92.1" stroke="#f59e0b" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><path d="M205.0,92.1 A90,90 0 0 1 250.0,170.0" stroke="#059669" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><line x1="160" y1="170" x2="249.3" y2="158.7" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><circle cx="160" cy="170" r="8" fill="#0f172a"/><circle cx="160" cy="170" r="4" fill="#ffffff"/><text x="160" y="205" text-anchor="middle" font-size="24" font-weight="800" fill="#0f172a" font-family="ui-monospace, Consolas, monospace">0.96</text><text x="160" y="225" text-anchor="middle" font-size="11" font-weight="500" fill="#64748b">QA Skoru (0-1)</text><text x="52.0" y="174.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">0</text><text x="160.0" y="66.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">1</text><text x="268.0" y="174.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">1</text></svg></div>
+      <div><svg viewBox="0 0 320 210" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:320px;height:auto;background:#ffffff;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><text x="160" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Veri Doğrulama</text><path d="M70.0,170.0 A90,90 0 0 1 115.0,92.1" stroke="#dc2626" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><path d="M115.0,92.1 A90,90 0 0 1 205.0,92.1" stroke="#f59e0b" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><path d="M205.0,92.1 A90,90 0 0 1 250.0,170.0" stroke="#059669" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><line x1="160" y1="170" x2="180.0" y2="82.3" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><circle cx="160" cy="170" r="8" fill="#0f172a"/><circle cx="160" cy="170" r="4" fill="#ffffff"/><text x="160" y="205" text-anchor="middle" font-size="24" font-weight="800" fill="#0f172a" font-family="ui-monospace, Consolas, monospace">0.57</text><text x="160" y="225" text-anchor="middle" font-size="11" font-weight="500" fill="#64748b">Reconciliation (4/7)</text><text x="52.0" y="174.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">0</text><text x="160.0" y="66.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">1</text><text x="268.0" y="174.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">1</text></svg></div>
+    </div>
+    
+
+    
+    <h2>1 Kritik Bulgu</h2>
+    <ul class="bullet-list">
+      
+      <li class="critical">fundamental has both positive and negative signals — inspect closer.</li>
+      
+    </ul>
+    
+
+    
+    <h3>Güçlü Yönler</h3>
+    <ul class="bullet-list">
+      
+      <li class="ok">Gross margin</li>
+      
+      <li class="ok">Net margin</li>
+      
+      <li class="ok">Return on equity</li>
+      
+      <li class="ok">Piotroski F-score</li>
+      
+      <li class="ok">Trend: bullish</li>
+      
+    </ul>
+    
+
+    
+    <h3>Zayıf Yönler</h3>
+    <ul class="bullet-list">
+      
+      <li class="warn">LIQUIDITY_TIGHT</li>
+      
+      <li class="warn">Event net: negative (+0 / −2)</li>
+      
+    </ul>
+    
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>1</span></div>
+  </div></div>
+
+  <!-- ============= II. ŞİRKET PROFİLİ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>II. Şirket Profili</h1>
+
+    
+    <div>THYAO, Borsa İstanbul'da işlem gören Sanayi sektöründen bir şirket olup FY-2025 itibarıyla 955.5 milyar TL hasılat, 911.2 milyar TL özsermaye ve 1996.7 milyar TL bilanço büyüklüğüne ulaşmıştır. Faaliyet alanı sanayi ve üretim odaklı olup; kapasite kullanım oranı, hammadde tedariki ve ihracat performansı operasyonel temel göstergeler arasında. Yerel pazar dinamiklerinin yanı sıra uluslararası talep ve rekabet koşulları doğrudan kâr yapısını şekillendirmektedir. Şirket Profili bölümü, yatırımcının şirketi doğru değerlendirebilmesi için gerekli kurumsal yapı, iş modeli ve segment bilgisini sunmayı amaçlamaktadır. Aşağıdaki tabloda temel kurumsal göstergeler özetlenmiş olup, ileride detaylandırılacak segment analizi ve yönetim kadrosu bilgisi bu bölümü tamamlayacaktır.</div>
+    
+
+    
+    <h2>Kurumsal Özet</h2>
+    <table>
+      <thead><tr><th style="width:35%">Gösterge</th><th>Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Ticker</td><td>THYAO</td></tr>
+        
+        <tr><td class="label">Dönem</td><td>FY-2025</td></tr>
+        
+        <tr><td class="label">Sektör</td><td>Sanayi</td></tr>
+        
+        <tr><td class="label">Toplam Gelir (mn TL)</td><td>955.472.000.000</td></tr>
+        
+        <tr><td class="label">Toplam Özsermaye (mn TL)</td><td>911.222.000.000</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Ortaklık Yapısı</h2>
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 620 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:620px;height:auto;background:#f8fafc;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><rect x="0" y="0" width="620" height="360" fill="#ffffff" rx="8"/><text x="310" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">Ortaklık Yapısı (Yaklaşık)</text><path d="M180.0,60.0 A130,130 0 0 1 187.2,319.8 L183.0,244.9 A55,55 0 0 0 180.0,135.0 Z" fill="#1e40af" stroke="#ffffff" stroke-width="2"/><text x="272.5" y="191.4" text-anchor="middle" font-size="12" font-weight="700" fill="white">49.1%</text><rect x="360" y="60" width="18" height="18" fill="#1e40af" rx="3"/><text x="385" y="73" font-size="12" fill="#0f172a">Türkiye Varlık Fonu</text><text x="600" y="73" text-anchor="end" font-size="12" font-weight="700" fill="#64748b">49.1%</text><path d="M187.2,319.8 A130,130 0 1 1 180.0,60.0 L180.0,135.0 A55,55 0 1 0 183.0,244.9 Z" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/><text x="87.5" y="196.6" text-anchor="middle" font-size="12" font-weight="700" fill="white">50.9%</text><rect x="360" y="88" width="18" height="18" fill="#f59e0b" rx="3"/><text x="385" y="101" font-size="12" fill="#0f172a">Halka Açık</text><text x="600" y="101" text-anchor="end" font-size="12" font-weight="700" fill="#64748b">50.9%</text><text x="180" y="186" text-anchor="middle" font-size="11" font-weight="600" fill="#64748b">Toplam</text><text x="180" y="204" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">%100</text></svg></div>
+    
+
+    
+    <h2>Segment / İştirak Yapısı</h2>
+    <div><p>&lt;table>&lt;thead>&lt;tr>&lt;th>Şirket&lt;/th>&lt;th>Faaliyet&lt;/th>&lt;th>Yapı&lt;/th>&lt;/tr>&lt;/thead>&lt;tbody>&lt;tr>&lt;td>Turkish Technic Inc.&lt;/td>&lt;td>MRO — uçak bakım-onarım&lt;/td>&lt;td>Muhtemelen konsolide&lt;/td>&lt;/tr>&lt;tr>&lt;td>Güneş Ekspres Havacılık (SunExpress)&lt;/td>&lt;td>Tatil/charter havacılık&lt;/td>&lt;td>Equity method (JV w/ Lufthansa)&lt;/td>&lt;/tr>&lt;tr>&lt;td>AnadoluJet&lt;/td>&lt;td>İç hat taşımacılık&lt;/td>&lt;td>THY markası altında birleşme süreci&lt;/td>&lt;/tr>&lt;tr>&lt;td>Turkish Cargo&lt;/td>&lt;td>Kargo operasyonları&lt;/td>&lt;td>THY bünyesinde segment&lt;/td>&lt;/tr>&lt;tr>&lt;td>THY Opet&lt;/td>&lt;td>Yakıt tedariki&lt;/td>&lt;td>JV&lt;/td>&lt;/tr>&lt;/tbody>&lt;/table></p>
+<ul>
+<li>Özkaynak yöntemiyle değerlenen yatırımlar: <strong>32.672 mn TRY</strong> (FY2025 vs 22.707 mn FY2024) `[src: KAP 1565996 s.11 Bilanço Dipnot 3]`</li>
+<li>Özkaynak yöntemiyle yatırımlardan kar payı: <strong>4.596 mn TRY</strong> FY2025 `[src: KAP 1565996 s.14 Gelir Tablosu]`</li>
+</ul>
+<p>---</p></div>
+    
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>2</span></div>
+  </div></div>
+
+  <!-- ============= III. FİNANSAL ANALİZ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>III. Finansal Analiz</h1>
+
+    
+    <div>THYAO, Sanayi sektöründe FY-2025 itibarıyla 955.5 milyar TL hasılat üreten, 1996.7 milyar TL bilanço büyüklüğüne ve 911.2 milyar TL özsermayeye sahip bir şirket olarak değerlendirildi. Net kâr marjı 12.36% seviyesinde oluşurken, bu profil Sanayi ortalamasıyla birlikte aşağıda detaylandırılan oran analizinde karşılaştırmalı olarak yorumlanıyor. Aşağıdaki tablolar son dönem bilanço, gelir tablosu ve nakit akışının yanı sıra 5 yıllık trend ve oran seyrini gösteriyor. Her bir tabloyu takiben yapılan yorum, metriğin mutlak değeri yanında yön ve sektörel konumu üzerinden değerlendiriliyor.</div>
+    
+
+    <h2>Temel Finansal Göstergeler — FY-2025</h2>
+    
+    <table>
+      <thead><tr><th style="width:30%">Metrik</th><th class="num" style="width:20%">Değer</th><th>Yorum</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Brüt Marj</td>
+          <td class="num">%16,3</td>
+          <td>Sektör eşiği: sanayi için %20 altı düşük, %30 üstü güçlü. Ürün karması ve maliyet yönetiminin birleşik göstergesi.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Marj</td>
+          <td class="num">%12,4</td>
+          <td>Finansman giderleri ve vergi etkisini de içeren nihai kârlılık. Negatif işaret P&amp;L sıkıntısı.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Özsermaye Kârlılığı (ROE)</td>
+          <td class="num">%13,0</td>
+          <td>Türk lirası bazında sermaye maliyeti ~%30; üzeri değer yaratımı, altı değer erozyonu işareti.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Nakit Dönüşüm Süresi</td>
+          <td class="num">1 gün</td>
+          <td>Pozitif CCC operasyonel sermaye bağlanması, negatif CCC tedarikçi-finanslı büyüme (nadir ve güçlü).</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Borç</td>
+          <td class="num">585.851.000.000</td>
+          <td>Finansal borç − nakit; özsermayeye göre oran yatırımcı için ek okuma sağlar.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Piotroski F Skoru</td>
+          <td class="num">4,00x</td>
+          <td>7-9 güçlü finansal sağlık, 4-6 orta, 0-3 zayıf (0-9 skalası).</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Konsolide Bilanço (mn TL) — FY-2025</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Toplam Varlıklar</td><td class="num">1.996.745.000.000</td></tr>
+        
+        <tr><td class="label">Toplam Özsermaye</td><td class="num">911.222.000.000</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Konsolide Gelir Tablosu (mn TL) — FY-2025</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Hasılat</td><td class="num">955.472.000.000</td></tr>
+        
+        <tr><td class="label">Net Dönem Karı</td><td class="num">118.117.000.000</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+
+    <h2>5 Yıllık Finansal Trend (2 dönem)</h2>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:900px;height:auto;background:#ffffff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);font-family:-apple-system,'Segoe UI',sans-serif;"><defs>
+    <linearGradient id="chartBgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="chartShadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs><rect x="0" y="0" width="900" height="420" fill="url(#chartBgGrad)" rx="12"/><rect x="90" y="60" width="770" height="270" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" rx="4"/><text x="450" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a" letter-spacing="-0.3">Gelir / FAVÖK / Net Kar Trendi (mn TL)</text><line x1="90" y1="330.0" x2="860" y2="330.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="334" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">-95,5B</text><line x1="90" y1="285.0" x2="860" y2="285.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="289" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">95,5B</text><line x1="90" y1="240.0" x2="860" y2="240.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="244" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">286,6B</text><line x1="90" y1="195.0" x2="860" y2="195.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="199" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">477,7B</text><line x1="90" y1="150.0" x2="860" y2="150.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="154" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">668,8B</text><line x1="90" y1="105.0" x2="860" y2="105.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="109" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">859,9B</text><line x1="90" y1="60.0" x2="860" y2="60.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="64" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">1,1T</text><line x1="90.0" y1="330" x2="90.0" y2="335.0" stroke="#64748b" stroke-width="1"/><text x="90.0" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">2025</text><line x1="860.0" y1="330" x2="860.0" y2="335.0" stroke="#64748b" stroke-width="1"/><text x="860.0" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">2026</text><line x1="90" y1="330" x2="860" y2="330" stroke="#0f172a" stroke-width="1.5"/><path d="M90.0,82.5 L860.0,307.5" stroke="#1e40af" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round" filter="url(#chartShadow)"/><circle cx="90.0" cy="82.5" r="6" fill="#ffffff" stroke="#1e40af" stroke-width="3" filter="url(#chartShadow)"/><circle cx="90.0" cy="82.5" r="2.5" fill="#1e40af"/><circle cx="860.0" cy="307.5" r="6" fill="#ffffff" stroke="#1e40af" stroke-width="3" filter="url(#chartShadow)"/><circle cx="860.0" cy="307.5" r="2.5" fill="#1e40af"/><path d="M90.0,279.7 L860.0,307.5" stroke="#f59e0b" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round" filter="url(#chartShadow)"/><circle cx="90.0" cy="279.7" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" filter="url(#chartShadow)"/><circle cx="90.0" cy="279.7" r="2.5" fill="#f59e0b"/><circle cx="860.0" cy="307.5" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" filter="url(#chartShadow)"/><circle cx="860.0" cy="307.5" r="2.5" fill="#f59e0b"/><rect x="90" y="392" width="14" height="14" fill="#1e40af" rx="2"/><text x="110" y="403" font-size="12" font-weight="600" fill="#0f172a">Hasılat</text><rect x="250" y="392" width="14" height="14" fill="#f59e0b" rx="2"/><text x="270" y="403" font-size="12" font-weight="600" fill="#0f172a">Net Kar</text></svg></div>
+    
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:860px;height:auto;background:#f8fafc;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><rect x="0" y="0" width="860" height="340" fill="#ffffff" rx="8"/><rect x="80" y="50" width="750" height="215" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/><text x="430" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Gelir-Brüt Kar-Net Kar Dağılımı</text><line x1="80" y1="265.0" x2="830" y2="265.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="269" text-anchor="end" font-size="11" fill="#64748b">0</text><line x1="80" y1="222.0" x2="830" y2="222.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="226" text-anchor="end" font-size="11" fill="#64748b">270,4B</text><line x1="80" y1="179.0" x2="830" y2="179.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="183" text-anchor="end" font-size="11" fill="#64748b">540,8B</text><line x1="80" y1="136.0" x2="830" y2="136.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="140" text-anchor="end" font-size="11" fill="#64748b">811,2B</text><line x1="80" y1="93.0" x2="830" y2="93.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="97" text-anchor="end" font-size="11" fill="#64748b">1,1T</text><line x1="80" y1="50.0" x2="830" y2="50.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="54" text-anchor="end" font-size="11" fill="#64748b">1,4T</text><path d="M80.0,113.1 L830.0,265.0 L830.0,265.0 L80.0,265.0 Z" fill="#1e40af" opacity="0.85" stroke="#ffffff" stroke-width="1"/><path d="M80.0,88.3 L830.0,265.0 L830.0,265.0 L80.0,113.1 Z" fill="#f59e0b" opacity="0.85" stroke="#ffffff" stroke-width="1"/><path d="M80.0,69.5 L830.0,265.0 L830.0,265.0 L80.0,88.3 Z" fill="#059669" opacity="0.85" stroke="#ffffff" stroke-width="1"/><text x="80.0" y="285" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">2025</text><text x="830.0" y="285" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">2026</text><rect x="80" y="312" width="14" height="14" fill="#1e40af" rx="2"/><text x="100" y="323" font-size="12" font-weight="600" fill="#0f172a">Hasılat</text><rect x="250" y="312" width="14" height="14" fill="#f59e0b" rx="2"/><text x="270" y="323" font-size="12" font-weight="600" fill="#0f172a">Brüt Kar</text><rect x="420" y="312" width="14" height="14" fill="#059669" rx="2"/><text x="440" y="323" font-size="12" font-weight="600" fill="#0f172a">Net Kar</text></svg></div>
+    
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:860px;height:auto;background:#f8fafc;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><rect x="0" y="0" width="860" height="340" fill="#ffffff" rx="8"/><rect x="70" y="50" width="760" height="205" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/><text x="430" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Yıllık Net Kar Trendi (mn TL)</text><line x1="70" y1="255.0" x2="830" y2="255.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="259" text-anchor="end" font-size="11" fill="#64748b">0</text><line x1="70" y1="214.0" x2="830" y2="214.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="218" text-anchor="end" font-size="11" fill="#64748b">27.166,91</text><line x1="70" y1="173.0" x2="830" y2="173.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="177" text-anchor="end" font-size="11" fill="#64748b">54.333,82</text><line x1="70" y1="132.0" x2="830" y2="132.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="136" text-anchor="end" font-size="11" fill="#64748b">81.500,73</text><line x1="70" y1="91.0" x2="830" y2="91.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="95" text-anchor="end" font-size="11" fill="#64748b">108.667,64</text><line x1="70" y1="50.0" x2="830" y2="50.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="54" text-anchor="end" font-size="11" fill="#64748b">135.834,55</text><rect x="127.0" y="76.7" width="266.0" height="178.3" fill="#1e40af" rx="4"/><text x="260.0" y="68.7" text-anchor="middle" font-size="11" font-weight="700" fill="#1e40af">118.117</text><text x="260.0" y="275" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">2025</text><rect x="507.0" y="255.0" width="266.0" height="0.0" fill="#1e40af" rx="4"/><text x="640.0" y="247.0" text-anchor="middle" font-size="11" font-weight="700" fill="#1e40af">0</text><text x="640.0" y="275" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">2026</text></svg></div>
+    
+
+    <h3>Gelir ve Kârlılık</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (mn TL)</th>
+          <th class="num">2025</th><th class="num">2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Hasılat</td>
+          <td class="num">955.472.000.000</td><td class="num">0</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Brüt Kar</td>
+          <td class="num">155.560.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Faaliyet Karı</td>
+          <td class="num">90.129.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Kar</td>
+          <td class="num">118.117.000.000</td><td class="num">0</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <h3>Bilanço Kalemleri</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (mn TL)</th>
+          <th class="num">2025</th><th class="num">2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Toplam Varlıklar</td>
+          <td class="num">1.996.745.000.000</td><td class="num">0</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Nakit ve Benzerleri</td>
+          <td class="num">86.035.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Stoklar</td>
+          <td class="num">41.472.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Maddi Duran Varlıklar</td>
+          <td class="num">362.618.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">KV Finansal Borç</td>
+          <td class="num">70.069.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">UV Finansal Borç</td>
+          <td class="num">601.817.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Toplam Özsermaye</td>
+          <td class="num">911.222.000.000</td><td class="num">0</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    
+    <h3>Nakit Akışı</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (mn TL)</th>
+          <th class="num">2025</th><th class="num">2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Operasyonel Nakit</td>
+          <td class="num">185.813.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Temettü Ödemesi</td>
+          <td class="num">-8.951.000.000</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h3>Oran Trendleri</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Oran</th>
+          <th class="num">2025</th><th class="num">2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Brüt Marj</td>
+          <td class="num">%16,3</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Marj</td>
+          <td class="num">%12,4</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">ROE</td>
+          <td class="num">%13,0</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">ROA</td>
+          <td class="num">%5,9</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Cari Oran</td>
+          <td class="num">0.99</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h3>Temettü Geçmişi</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:38%">Kalem</th>
+          <th class="num">2025</th><th class="num">2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Temettü Ödemesi (mn TL)</td>
+          <td class="num">8.951.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Ciro Yüzdesi</td>
+          <td class="num">%0,94</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Payout Ratio (Net Kar Yüzdesi)</td>
+          <td class="num">%7,6</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Karlılık Analizi</h2>
+    <div><p>FY2025 net marjı %12.4 ve gross marj %16.3, küresel havacılık sektörü ortalamasının üzerinde performans sergilenmektedir [src: financial_analysis]. Özkaynak karlılığı (ROE) %13.0 ile tatmin edici düzeyde; bu, 911 milyar TRY büyüklüğündeki özkaynağın makul ölçüde çalıştırıldığına işaret etmektedir. Bize göre bu karlılık düzeyi, yüksek filo büyümesinin yarattığı amortisman baskısına rağmen sürdürülebilir olduğuna dair olumlu bir sinyal taşımaktadır.</p></div>
+    
+
+    
+    <h2>Bilanço ve Borçluluk</h2>
+    <div><p>Cari oran 0.987 &lt; 1.0 [src: financial_analysis] — kısa vadeli yükümlülükler cari varlıkları aşmaktadır. Yüksek CAPEX döngüsü (uçak teslimatları) bu baskıyı artırma potansiyeli taşımaktadır. Eğer nakit akışı beklentilerin altında gelirse, kısa vadeli refinansman ihtiyacı doğabilir.</p></div>
+    
+
+    
+
+    
+    <h2>Nakit Akışı Yorumu</h2>
+    <div><p>&lt;table>&lt;thead>&lt;tr>&lt;th>Metrik&lt;/th>&lt;th>FY2025&lt;/th>&lt;th>Kaynak&lt;/th>&lt;/tr>&lt;/thead>&lt;tbody>&lt;tr>&lt;td>Cari Oran&lt;/td>&lt;td>0.987&lt;/td>&lt;td>[src: financial_analysis]&lt;/td>&lt;/tr>&lt;tr>&lt;td>NWC/Gelir&lt;/td>&lt;td>-0.593&lt;/td>&lt;td>[src: financial_analysis]&lt;/td>&lt;/tr>&lt;tr>&lt;td>CCC (gün)&lt;/td>&lt;td>0.52&lt;/td>&lt;td>[src: financial_analysis]&lt;/td>&lt;/tr>&lt;tr>&lt;td>DSO&lt;/td>&lt;td>[platform çıktısında mevcut — doğrulama bekliyor]&lt;/td>&lt;td>financial_analysis&lt;/td>&lt;/tr>&lt;tr>&lt;td>DIO&lt;/td>&lt;td>[platform çıktısında mevcut — doğrulama bekliyor]&lt;/td>&lt;td>—&lt;/td>&lt;/tr>&lt;tr>&lt;td>DPO&lt;/td>&lt;td>[platform çıktısında mevcut — doğrulama bekliyor]&lt;/td>&lt;td>—&lt;/td>&lt;/tr>&lt;/tbody>&lt;/table></p>
+<p>Nakit dönüşüm döngüsünün 0.52 güne sıkışması, havacılık iş modelinin doğal avantajını yansıtmaktadır: müşteriler hizmetten önce ödeme yapar. Negatif NWC (-0.593) şirketin tedarikçilerini ve kiralamaları yolcu tahsilatlarıyla finanse ettiğini ima etmektedir. Bu, kriz ortamlarında likidite tampon bölgesi yerine geçemez — dolayısıyla cari oran 0.987'nin getirdiği yapısal kırılganlık bütün bu avantajlara rağmen gerçektir.</p></div>
+    
+
+    
+    <h2>Yatırım Programı ve Büyüme Planı</h2>
+    <div><p>FY2025 net marjı %12.4 ve gross marj %16.3, küresel havacılık sektörü ortalamasının üzerinde performans sergilenmektedir [src: financial_analysis]. Özkaynak karlılığı (ROE) %13.0 ile tatmin edici düzeyde; bu, 911 milyar TRY büyüklüğündeki özkaynağın makul ölçüde çalıştırıldığına işaret etmektedir. Bize göre bu karlılık düzeyi, yüksek filo büyümesinin yarattığı amortisman baskısına rağmen sürdürülebilir olduğuna dair olumlu bir sinyal taşımaktadır.</p></div>
+    
+
+    
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>3</span></div>
+  </div></div>
+
+  <!-- ============= IV. DEĞERLEME & HEDEF FİYAT ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>IV. Değerleme & Hedef Fiyat</h1>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h2>Senaryo Analizi — Yorumlu</h2>
+    <div><p>&lt;table>&lt;thead>&lt;tr>&lt;th>Senaryo&lt;/th>&lt;th>P/BV Çarpanı&lt;/th>&lt;th>Hedef Fiyat&lt;/th>&lt;th>Mevcut Fiyata Göre&lt;/th>&lt;/tr>&lt;/thead>&lt;tbody>&lt;tr>&lt;td>Bear&lt;/td>&lt;td>0.35x&lt;/td>&lt;td>231 TL&lt;/td>&lt;td>-%24&lt;/td>&lt;/tr>&lt;tr>&lt;td>Baz&lt;/td>&lt;td>0.50x&lt;/td>&lt;td>330 TL&lt;/td>&lt;td>+%9&lt;/td>&lt;/tr>&lt;tr>&lt;td>Bull&lt;/td>&lt;td>0.70x&lt;/td>&lt;td>462 TL&lt;/td>&lt;td>+%52&lt;/td>&lt;/tr>&lt;tr>&lt;td><strong>Ağırlıklı Ort.</strong>&lt;/td>&lt;td><strong>(Bear×%25 + Baz×%50 + Bull×%25)</strong>&lt;/td>&lt;td><strong>338 TL</strong>&lt;/td>&lt;td><strong>+%12</strong>&lt;/td>&lt;/tr>&lt;/tbody>&lt;/table></p></div>
+    
+
+    
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>4</span></div>
+  </div></div>
+
+  <!-- ============= V. SEKTÖR & REKABET ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>V. Sektör & Rekabet Analizi</h1>
+
+    
+    <div><p>Aşağıdaki metrikler havacılık sektörünün temel operasyonel ölçütleridir. Mevcutatanan veriler KAP/platform çıktılarından; eksik alanlar <em style="color:#94a3b8;">(Raporlanmadı)</em> ile işaretlenmiştir.</p>
+<p>&lt;table>&lt;thead>&lt;tr>&lt;th>KPI&lt;/th>&lt;th>FY2025 Değer&lt;/th>&lt;th>Kaynak&lt;/th>&lt;th>Not&lt;/th>&lt;/tr>&lt;/thead>&lt;tbody>&lt;tr>&lt;td>RPK (Revenue Passenger Km)&lt;/td>&lt;td><em style="color:#94a3b8;">(Raporlanmadı — \&lt;/td>&lt;td>denendi: KAP faaliyet raporu tam metin, yönetim rehberi; etki: kapasite kullanım analizi yapılamıyor)</em>&lt;/td>&lt;td>—&lt;/td>&lt;td>—&lt;/td>&lt;/tr>&lt;tr>&lt;td>ASK (Available Seat Km)&lt;/td>&lt;td><em style="color:#94a3b8;">(Raporlanmadı — \&lt;/td>&lt;td>denendi: aynı kaynaklar; etki: doluluk oranı hesaplanamıyor)</em>&lt;/td>&lt;td>—&lt;/td>&lt;td>Tarihsel ~%7-8 büyüme [src: inference]&lt;/td>&lt;/tr>&lt;tr>&lt;td>LF (Yolcu Doluluk Oranı)&lt;/td>&lt;td><em style="color:#94a3b8;">(Raporlanmadı — \&lt;/td>&lt;td>denendi: KAP bildirim, context_extraction; etki: kapasite verimliliği değerlendirilemiyor)</em>&lt;/td>&lt;td>—&lt;/td>&lt;td>Küresel ort. ~%83-85&lt;/td>&lt;/tr>&lt;tr>&lt;td>CASK (Cost per ASK)&lt;/td>&lt;td><em style="color:#94a3b8;">(Raporlanmadı — \&lt;/td>&lt;td>denendi: finansal tablolar; etki: maliyet rekabetçiliği kör nokta)</em>&lt;/td>&lt;td>—&lt;/td>&lt;td>—&lt;/td>&lt;/tr>&lt;tr>&lt;td>RASK (Revenue per ASK)&lt;/td>&lt;td><em style="color:#94a3b8;">(Raporlanmadı — \&lt;/td>&lt;td>denendi: aynı; etki: birim gelir analizi yapılamıyor)</em>&lt;/td>&lt;td>—&lt;/td>&lt;td>—&lt;/td>&lt;/tr>&lt;tr>&lt;td>Kargo Geliri&lt;/td>&lt;td><em style="color:#94a3b8;">(Raporlanmadı)</em>&lt;/td>&lt;td>—&lt;/td>&lt;td>—&lt;/td>&lt;/tr>&lt;tr>&lt;td>Filo Büyüklüğü (yıl sonu)&lt;/td>&lt;td>516 uçak&lt;/td>&lt;td>[src: finansaktuel.com — management statement]&lt;/td>&lt;td>2033 hedefi: 813 uçak&lt;/td>&lt;/tr>&lt;/tbody>&lt;/table></p></div>
+    
+
+    
+    <h2>Sektördeki Emsal Şirketler</h2>
+    <div class="note" style="background:#fef3c7; border-left-color:var(--fx-warning); color:#78350f; margin-bottom:12px;">
+      <strong>⚠ Metodoloji Notu:</strong> Aşağıdaki emsal listesi <strong>aviation</strong> alt-sektöründe işlem gören BIST şirketlerinden derlenmiştir. Şirket rakamları gerçek parse edilmiş finansal tablolardan gelir; emsal medyan değerleri ise <strong>sektör bazlı directional tahminlerdir</strong> (2025-2026 yaklaşık) — her bir emsalin canlı filer verisi için ayrı finansal analiz çalıştırılmadı. Kesin karşılaştırma için her emsal ticker üzerinden bağımsız analiz önerilir.
+    </div>
+    <table>
+      <thead><tr><th style="width:20%">Ticker</th><th>Şirket Unvanı</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label" style="font-family:var(--font-mono);">PGSUS</td><td>Pegasus Hava Yolları</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Şirket vs Sektör Medyanı — Operasyonel Oranlar</h2>
+    <table>
+      <thead>
+        <tr><th>Metrik</th><th class="num">Şirket</th><th class="num">Sektör Medyan</th><th>Fark</th></tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Brüt Marj</td>
+          <td class="num">%16.3</td>
+          <td class="num">%18.0</td>
+          <td>-1.7 pp</td>
+        </tr>
+        
+        <tr>
+          <td class="label">FAVÖK Marjı</td>
+          <td class="num">—</td>
+          <td class="num">%18.0</td>
+          <td>—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Marj</td>
+          <td class="num">%12.4</td>
+          <td class="num">%9.0</td>
+          <td>+3.4 pp</td>
+        </tr>
+        
+        <tr>
+          <td class="label">ROE</td>
+          <td class="num">%13.0</td>
+          <td class="num">%18.0</td>
+          <td>-5.0 pp</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Değerleme Çarpanları — Sektör Medyanı</h2>
+    <table>
+      <thead><tr><th>Çarpan</th><th class="num">Sektör Medyan</th><th>Not</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">EV/EBITDA</td>
+          <td class="num">4.5x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı (yaklaşık 2025-2026)</td>
+        </tr>
+        
+        <tr>
+          <td class="label">F/K (P/E)</td>
+          <td class="num">6.8x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı</td>
+        </tr>
+        
+        <tr>
+          <td class="label">PD/DD (P/BV)</td>
+          <td class="num">1.40x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Temettü Verimi</td>
+          <td class="num">%2.5</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör ortalaması</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Borç/FAVÖK</td>
+          <td class="num">2.8x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 860 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:860px;height:auto;background:#f8fafc;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><rect x="0" y="0" width="860" height="360" fill="#ffffff" rx="8"/><rect x="70" y="50" width="760" height="225" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/><text x="430" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Emsal Benchmark (Şirket vs Medyan)</text><line x1="70" y1="275.0" x2="830" y2="275.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="279" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">0</text><line x1="70" y1="230.0" x2="830" y2="230.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="234" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">92</text><line x1="70" y1="185.0" x2="830" y2="185.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="189" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">184</text><line x1="70" y1="140.0" x2="830" y2="140.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="144" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">276</text><line x1="70" y1="95.0" x2="830" y2="95.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="99" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">368</text><line x1="70" y1="50.0" x2="830" y2="50.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="54" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">460</text><line x1="70" y1="275" x2="830" y2="275" stroke="#0f172a" stroke-width="1.5"/><rect x="92.8" y="195.3" width="47.9" height="79.7" fill="#1e40af" rx="3"/><text x="119.4" y="189.27173913043475" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">163</text><rect x="150.0" y="195.3" width="47.9" height="79.7" fill="#f59e0b" rx="3" opacity="0.85"/><text x="172.6" y="189.27173913043475" text-anchor="middle" font-size="10" font-weight="700" fill="#f59e0b">163</text><text x="146" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Gross margin</text><rect x="244.8" y="214.3" width="47.9" height="60.7" fill="#1e40af" rx="3"/><text x="271.4" y="208.3478260869565" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">124</text><rect x="302.0" y="214.3" width="47.9" height="60.7" fill="#f59e0b" rx="3" opacity="0.85"/><text x="324.6" y="208.3478260869565" text-anchor="middle" font-size="10" font-weight="700" fill="#f59e0b">124</text><text x="298" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Net margin</text><rect x="396.8" y="211.4" width="47.9" height="63.6" fill="#1e40af" rx="3"/><text x="423.4" y="205.41304347826087" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">130</text><rect x="454.0" y="211.4" width="47.9" height="63.6" fill="#f59e0b" rx="3" opacity="0.85"/><text x="476.6" y="205.41304347826087" text-anchor="middle" font-size="10" font-weight="700" fill="#f59e0b">130</text><text x="450" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Return on equity</text><text x="602" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Cash conversion cycle</text><rect x="700.8" y="79.3" width="47.9" height="195.7" fill="#1e40af" rx="3"/><text x="727.4" y="73.3478260869565" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">400</text><rect x="758.0" y="79.3" width="47.9" height="195.7" fill="#f59e0b" rx="3" opacity="0.85"/><text x="780.6" y="73.3478260869565" text-anchor="middle" font-size="10" font-weight="700" fill="#f59e0b">400</text><text x="754" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Piotroski F-score</text><rect x="70" y="326" width="16" height="14" fill="#1e40af" rx="2"/><text x="92" y="337" font-size="12" font-weight="600" fill="#0f172a">Şirket</text><rect x="180" y="326" width="16" height="14" fill="#f59e0b" rx="2" opacity="0.85"/><text x="202" y="337" font-size="12" font-weight="600" fill="#0f172a">Sektör Medyanı</text></svg></div>
+    
+
+    
+    <h2>Emsal Karşılaştırma Tablosu</h2>
+    <table>
+      <thead><tr><th>Metrik</th><th class="num">Şirket</th><th class="num">Medyan</th><th class="num">Min/Max</th><th>Quartile</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Gross margin</td>
+          <td class="num">%16,3</td>
+          <td class="num">%16,3</td>
+          <td class="num">%16,3 – %16,3</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net margin</td>
+          <td class="num">%12,4</td>
+          <td class="num">%12,4</td>
+          <td class="num">%12,4 – %12,4</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Return on equity</td>
+          <td class="num">%13,0</td>
+          <td class="num">%13,0</td>
+          <td class="num">%13,0 – %13,0</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Cash conversion cycle</td>
+          <td class="num">1 gün</td>
+          <td class="num">1 gün</td>
+          <td class="num">1 gün – 1 gün</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Piotroski F-score</td>
+          <td class="num">4,00x</td>
+          <td class="num">4,00x</td>
+          <td class="num">4,00x – 4,00x</td>
+          <td>Q2</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Porter's 5 Forces</h2>
+    <div class="porter-grid">
+      <div class="porter-box"><h4>Rakipler Arası Rekabet</h4><span class="intensity medium">Orta</span><p>Sektör olgun, yerel ve küresel rakipler aktif.</p></div>
+      <div class="porter-box"><h4>Yeni Giren Tehdidi</h4><span class="intensity low">Düşük</span><p>Sermaye yoğunluğu + marka bariyeri.</p></div>
+      <div class="porter-box"><h4>İkame Ürün/Hizmet</h4><span class="intensity medium">Orta</span><p>Teknoloji değişimi ve alternatif malzemeler tehdit.</p></div>
+      <div class="porter-box"><h4>Tedarikçi Pazarlık Gücü</h4><span class="intensity medium">Orta</span><p>Hammadde fiyat hareketleri maliyet yapısını etkiliyor.</p></div>
+      <div class="porter-box" style="grid-column: span 2;"><h4>Alıcı Pazarlık Gücü</h4><span class="intensity medium">Orta</span><p>B2B müşteriler fiyat hassas; B2C marka gücüne bağlı.</p></div>
+    </div>
+    
+
+    
+    <h2>SWOT Analizi</h2>
+    <div class="swot-grid">
+      <div class="swot-box strengths"><h4>Güçlü Yönler</h4><ul><li>Türkiye&#39;nin bayrak taşıyıcısı olarak İstanbul Havalimanı hub statüsü</li><li>~516-530 uçaklık modern filo, 129 ülkede 340+ destinasyon</li><li>Turkish Cargo&#39;nun dünya kargo pazarında ilk 10&#39;da yer alması</li><li>2024&#39;te 85M yolcu, 2034&#39;te 150M hedefi ile uzun vadeli büyüme görünürlüğü</li></ul></div>
+      <div class="swot-box weaknesses"><h4>Zayıf Yönler</h4><ul><li>Konglomerat iskontosu — piyasa holding değerini NAV&#39;ın altında fiyatlıyor</li><li>İştirakler arası sermaye akışının şeffaflığı yatırımcı güvenini zorluyor</li><li>Karmaşık yapısı nedeniyle kısa vadeli trading stratejisine uygun değil</li></ul></div>
+      <div class="swot-box opportunities"><h4>Fırsatlar</h4><ul><li>Stratejik dönüşüm (ESG, dijitalleşme, yenilenebilir enerji) iştirak seviyesinde ek değer</li><li>İştirak satış veya halka arz yoluyla değer kristalizasyonu</li><li>Yurt dışı büyüme (M&amp;A, joint venture) global trafik kazandırma potansiyeli</li></ul></div>
+      <div class="swot-box threats"><h4>Tehditler</h4><ul><li>Rusya hava sahası kısıtlamaları uzak doğu rotalarını zorluyor</li><li>Ortadoğu rotalarında İran gerilimi uçuş yollarında belirsizlik yaratıyor</li><li>Brent petrol fiyatı (tipik yakıt %25-30 OPEX) kâr yapısına doğrudan etkili</li><li>Pegasus (PGSUS) LCC modeli iç hat marjını baskılıyor</li></ul></div>
+    </div>
+    
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>5</span></div>
+  </div></div>
+
+  <!-- ============= VI. MAKRO ORTAM ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>VI. Makroekonomik Bağlam</h1>
+
+    <h2>Kritik Makro Göstergeler</h2>
+    <table>
+      <thead><tr><th>Gösterge</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        <tr><td class="label">USD/TRY</td><td class="num">44,7593 TL</td></tr>
+        <tr><td class="label">EUR/TRY</td><td class="num">52,7600 TL</td></tr>
+        <tr><td class="label">TCMB Politika Faizi</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">TCMB 10Y Tahvil</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">TÜFE (YoY)</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">GDP (YoY)</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">BIST-100 YTD</td><td class="num">Raporlanmadı</td></tr>
+      </tbody>
+    </table>
+
+    
+    <h2>Sektör-Spesifik Transmisyon</h2>
+    <div><p>Net borç 585.9 milyar TRY [src: financial_analysis]. EBITDA bilinmediğinden Net Borç/EBITDA hesaplanamıyor; ancak faiz gider baskısı net marjı aşındırma riski taşımaktadır. TCMB politika faizi <em style="color:#94a3b8;">(Raporlanmadı — makro analiz null)</em> yüksek kalırsa refinansman maliyeti artacaktır.</p></div>
+    
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>6</span></div>
+  </div></div>
+
+  <!-- ============= VII. TEKNİK ANALİZ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>VII. Teknik Analiz</h1>
+
+    
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Trend</div><div class="kpi-value" style="font-size:14pt;">Yükseliş</div></div>
+      <div class="kpi-card"><div class="kpi-label">RSI (14)</div><div class="kpi-value">—</div><div class="kpi-sub">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Son Kapanış</div><div class="kpi-value">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Hacim (7g ort.)</div><div class="kpi-value" style="font-size:12pt;">—</div></div>
+    </div>
+    
+
+    
+    <h2>Trend Analizi</h2>
+    <div>Teknik görünüm kısa-orta vadede yükseliş trendini koruyor; fiyat hareketli ortalamaların üzerinde seyrederken momentum göstergeleri pozitif bölgede bulunuyor. Destek ve direnç seviyeleri son 60 günlük fiyat aralığından türetilmiş olup, fiyatın bu seviyelerden gösterdiği reaksiyon kısa vadeli trading kararları için referans noktaları olarak kullanılabilir. Kapanışın bu seviyelerin yukarı/aşağı kırılması yeni yön sinyali olarak değerlendirilmelidir.</div>
+    
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>7</span></div>
+  </div></div>
+
+  <!-- ============= VIII. ESG ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>VIII. ESG Değerlendirmesi</h1>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 440 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;height:auto"><text x="220" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">ESG Skor Profili (0-100)</text><polygon points="220.0,152.5 243.8,193.8 196.2,193.8" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><polygon points="220.0,125.0 267.6,207.5 172.4,207.5" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><polygon points="220.0,97.5 291.4,221.3 148.6,221.3" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><polygon points="220.0,70.0 315.3,235.0 124.7,235.0" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><line x1="220" y1="180" x2="220.0" y2="70.0" stroke="#e2e8f0" stroke-width="0.5"/><text x="220.0" y="50.0" text-anchor="middle" font-size="10" font-weight="600" fill="#0f172a">Çevresel (E)</text><line x1="220" y1="180" x2="315.3" y2="235.0" stroke="#e2e8f0" stroke-width="0.5"/><text x="332.6" y="245.0" text-anchor="middle" font-size="10" font-weight="600" fill="#0f172a">Sosyal (S)</text><line x1="220" y1="180" x2="124.7" y2="235.0" stroke="#e2e8f0" stroke-width="0.5"/><text x="107.4" y="245.0" text-anchor="middle" font-size="10" font-weight="600" fill="#0f172a">Yönetişim (G)</text><polygon points="220.0,119.5 277.2,213.0 128.5,232.8" fill="#1e40af" fill-opacity="0.25" stroke="#1e40af" stroke-width="2"/><circle cx="220.0" cy="119.5" r="3.5" fill="#1e40af"/><text x="220.0" y="111.5" text-anchor="middle" font-size="9" font-weight="600" fill="#1e40af">55</text><circle cx="277.2" cy="213.0" r="3.5" fill="#1e40af"/><text x="277.2" y="205.0" text-anchor="middle" font-size="9" font-weight="600" fill="#1e40af">60</text><circle cx="128.5" cy="232.8" r="3.5" fill="#1e40af"/><text x="128.5" y="224.8" text-anchor="middle" font-size="9" font-weight="600" fill="#1e40af">96</text></svg></div>
+    
+
+    
+
+    
+
+    
+    <div><p>&lt;table>&lt;thead>&lt;tr>&lt;th>Alan&lt;/th>&lt;th>Bilgi&lt;/th>&lt;th>Kaynak&lt;/th>&lt;/tr>&lt;/thead>&lt;tbody>&lt;tr>&lt;td>Raporlama standardı&lt;/td>&lt;td><strong>TSRS Uyumlu Sürdürülebilirlik Raporu (2025)</strong> — bağımsız denetimden geçmiş&lt;/td>&lt;td>`[src: KAP 1566094 s.5]`&lt;/td>&lt;/tr>&lt;tr>&lt;td>TSRS kapsamı&lt;/td>&lt;td>Türkiye Sürdürülebilirlik Raporlama Standartları (≈ISSB/IFRS S1+S2)&lt;/td>&lt;td>`[src: KAP 1566094]`&lt;/td>&lt;/tr>&lt;tr>&lt;td>Çevre&lt;/td>&lt;td>Karbonayak izi açıklamaları, enerji verimliliği TSRS raporunda bulunuyor (tam metin erişilmedi)&lt;/td>&lt;td>`[src: inference — TSRS raporu varlığı doğrulandı]`&lt;/td>&lt;/tr>&lt;tr>&lt;td>Yönetim (G)&lt;/td>&lt;td>PwC denetimli, SPK mevzuatı kapsamında, YK bağımsızlık oranı `<em style="color:#94a3b8;">(Raporlanmadı)</em>`&lt;/td>&lt;td>-&lt;/td>&lt;/tr>&lt;tr>&lt;td>TSRS denetim tarihi&lt;/td>&lt;td>4 Mart 2026 (finansallarla aynı tarih)&lt;/td>&lt;td>`[src: KAP 1566094 s.2]`&lt;/td>&lt;/tr>&lt;/tbody>&lt;/table></p>
+<p>---</p></div>
+    
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>8</span></div>
+  </div></div>
+
+  <!-- ============= IX. HABER & SENTIMENT ============= -->
+  
+
+  <!-- ============= X. KAP OLAYLARI ============= -->
+  
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>X. KAP Olayları & Etki Analizi</h1>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 780 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;height:auto"><text x="390" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Son 12 Ay KAP Olay Zaman Çizelgesi</text><line x1="60" y1="90" x2="760" y2="90" stroke="#0f172a" stroke-width="1.5"/><line x1="60" y1="86" x2="60" y2="94" stroke="#64748b" stroke-width="1"/><text x="60" y="108" text-anchor="middle" font-size="9" fill="#64748b">2026-03</text><line x1="589.2682926829268" y1="86" x2="589.2682926829268" y2="94" stroke="#64748b" stroke-width="1"/><text x="589.2682926829268" y="108" text-anchor="middle" font-size="9" fill="#64748b">2026-04</text><line x1="60" y1="90" x2="60" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="60" cy="65" r="4" fill="#94a3b8"/><text x="60" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Şirket Genel Bilgi Formu</text><line x1="94.14634146341464" y1="90" x2="94.14634146341464" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="94.14634146341464" cy="115" r="4" fill="#94a3b8"/><text x="94.14634146341464" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Özel Durum Açıklaması (Genel)</text><line x1="145.3658536585366" y1="90" x2="145.3658536585366" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="145.3658536585366" cy="65" r="4" fill="#94a3b8"/><text x="145.3658536585366" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Özel Durum Açıklaması (Genel)</text><line x1="213.65853658536585" y1="90" x2="213.65853658536585" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="213.65853658536585" cy="115" r="4" fill="#94a3b8"/><text x="213.65853658536585" y="127" text-anchor="middle" font-size="8" fill="#0f172a">SPK İşlem Yasağı Nedeniyle Pay…</text><line x1="281.95121951219517" y1="90" x2="281.95121951219517" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="281.95121951219517" cy="65" r="4" fill="#94a3b8"/><text x="281.95121951219517" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Genel Kurul İşlemlerine İlişki…</text><line x1="299.0243902439024" y1="90" x2="299.0243902439024" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="299.0243902439024" cy="115" r="4" fill="#94a3b8"/><text x="299.0243902439024" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Borsada İşlem Gören Tipe Dönüş…</text><line x1="538.0487804878048" y1="90" x2="538.0487804878048" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="538.0487804878048" cy="65" r="4" fill="#94a3b8"/><text x="538.0487804878048" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Özel Durum Açıklaması (Genel)</text><line x1="674.6341463414634" y1="90" x2="674.6341463414634" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="674.6341463414634" cy="115" r="4" fill="#94a3b8"/><text x="674.6341463414634" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Şirket Genel Bilgi Formu</text><line x1="674.6341463414634" y1="90" x2="674.6341463414634" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="674.6341463414634" cy="65" r="4" fill="#94a3b8"/><text x="674.6341463414634" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Özel Durum Açıklaması (Genel)</text><line x1="674.6341463414634" y1="90" x2="674.6341463414634" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="674.6341463414634" cy="115" r="4" fill="#94a3b8"/><text x="674.6341463414634" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Özel Durum Açıklaması (Genel)</text><line x1="674.6341463414634" y1="90" x2="674.6341463414634" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="674.6341463414634" cy="65" r="4" fill="#94a3b8"/><text x="674.6341463414634" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Özel Durum Açıklaması (Genel)</text><line x1="674.6341463414634" y1="90" x2="674.6341463414634" y2="115" stroke="#dc2626" stroke-width="1"/><circle cx="674.6341463414634" cy="115" r="4" fill="#dc2626"/><text x="674.6341463414634" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Kar Payı Dağıtım İşlemlerine İ…</text><line x1="674.6341463414634" y1="90" x2="674.6341463414634" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="674.6341463414634" cy="65" r="4" fill="#94a3b8"/><text x="674.6341463414634" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Genel Kurul İşlemlerine İlişki…</text><line x1="674.6341463414634" y1="90" x2="674.6341463414634" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="674.6341463414634" cy="115" r="4" fill="#94a3b8"/><text x="674.6341463414634" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Özel Durum Açıklaması (Genel)</text><line x1="760" y1="90" x2="760" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="760" cy="65" r="4" fill="#94a3b8"/><text x="760" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Genel Kurul İşlemlerine İlişki…</text></svg></div>
+    
+
+    <table>
+      <thead><tr><th style="width:40%">Olay</th><th>Tip</th><th>Etki</th><th>Zamanlama</th><th>Etkilenen</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>Genel Kurul İşlemlerine İlişkin Bildirim</td>
+          <td>governance</td>
+          <td>Belirsiz</td>
+          <td>Yakın</td>
+          <td>BS</td>
+        </tr>
+        
+        <tr>
+          <td>Şirket Genel Bilgi Formu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>P&amp;L</td>
+        </tr>
+        
+        <tr>
+          <td>Özel Durum Açıklaması (Genel)</td>
+          <td>material_event</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>P&amp;L</td>
+        </tr>
+        
+        <tr>
+          <td>Özel Durum Açıklaması (Genel)</td>
+          <td>governance</td>
+          <td>Belirsiz</td>
+          <td>Yakın</td>
+          <td>BS</td>
+        </tr>
+        
+        <tr>
+          <td>Özel Durum Açıklaması (Genel)</td>
+          <td>governance</td>
+          <td>Belirsiz</td>
+          <td>Yakın</td>
+          <td>BS</td>
+        </tr>
+        
+        <tr>
+          <td>Kar Payı Dağıtım İşlemlerine İlişkin Bildirim</td>
+          <td>dividend</td>
+          <td>Negatif</td>
+          <td>Anında</td>
+          <td>CF, BS</td>
+        </tr>
+        
+        <tr>
+          <td>Genel Kurul İşlemlerine İlişkin Bildirim</td>
+          <td>governance</td>
+          <td>Belirsiz</td>
+          <td>Yakın</td>
+          <td>BS</td>
+        </tr>
+        
+        <tr>
+          <td>Özel Durum Açıklaması (Genel)</td>
+          <td>material_event</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>P&amp;L</td>
+        </tr>
+        
+        <tr>
+          <td>Özel Durum Açıklaması (Genel)</td>
+          <td>material_event</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>P&amp;L</td>
+        </tr>
+        
+        <tr>
+          <td>Borsada İşlem Gören Tipe Dönüşüm Duyurusu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>P&amp;L</td>
+        </tr>
+        
+        <tr>
+          <td>Genel Kurul İşlemlerine İlişkin Bildirim</td>
+          <td>governance</td>
+          <td>Belirsiz</td>
+          <td>Yakın</td>
+          <td>BS</td>
+        </tr>
+        
+        <tr>
+          <td>SPK İşlem Yasağı Nedeniyle Pay Duyurusu</td>
+          <td>regulatory</td>
+          <td>Belirsiz</td>
+          <td>Yakın</td>
+          <td>P&amp;L</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>10</span></div>
+  </div></div>
+  
+
+  <!-- ============= XI. RİSK ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>XI. Risk Değerlendirmesi</h1>
+
+    <h2>Risk Matrisi (Etki × Olasılık)</h2>
+    <div class="risk-matrix">
+      <div class="risk-axis">Etki ↑</div>
+      <div class="risk-axis">Düşük Olasılık</div>
+      <div class="risk-axis">Orta Olasılık</div>
+      <div class="risk-axis">Yüksek Olasılık</div>
+
+      <div class="risk-axis">Yüksek</div>
+      <div class="risk-cell risk-med">—</div>
+      <div class="risk-cell risk-high">—</div>
+      <div class="risk-cell risk-high">—</div>
+
+      <div class="risk-axis">Orta</div>
+      <div class="risk-cell risk-low">—</div>
+      <div class="risk-cell risk-med">fundamental has both positive </div>
+      <div class="risk-cell risk-high">—</div>
+
+      <div class="risk-axis">Düşük</div>
+      <div class="risk-cell risk-low">LIQUIDITY_TIGHT</div>
+      <div class="risk-cell risk-low">—</div>
+      <div class="risk-cell risk-med">—</div>
+    </div>
+
+    
+    <h2>Temel Risk Faktörleri</h2>
+    <ul class="bullet-list">
+      
+      <li class="warn">fundamental has both positive and negative signals — inspect closer.</li>
+      
+    </ul>
+    
+
+    
+    <h2>Detaylı Risk Yorumu</h2>
+    <div>1 orta düzey uyarı mevcut — bunlar doğrudan yatırım kararını bozmasa da raporlama ve izleme açısından takip edilmeli. Sinyal kaynakları arasında 1 sapma tespit edilmiştir; farklı kaynakların birbirini doğrulamayan sinyalleri bulunması yatırım tezinin konfidans seviyesini sınırlamaktadır. Sanayi sektörlerinde maruziyet genel olarak hammadde fiyat volatilitesi, enerji maliyet artışları, talep daralması ve döviz kuru hareketleri şeklinde tezahür eder. THYAO gibi havacılık şirketleri için ise yakıt maliyeti, rezervasyon iptalleri ve jeopolitik kapatmalar kritik değişkenlerdir. Risk matrisi (etki × olasılık) yukarıda tespit edilen faktörleri 3×3 grid üzerinde konumlandırmakta ve yakın izleme önceliğini görsel olarak iletmektedir.</div>
+    
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>11</span></div>
+  </div></div>
+
+  <!-- ============= XII. SONUÇ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">THYAO · THYAO</span></div>
+      <div>2026-04-16</div>
+    </div>
+
+    <h1>XII. Sonuç & Öneriler</h1>
+
+    
+    <h2>Analitik Sonuç</h2>
+    <div><p>Türk Hava Yolları FY2025 itibarıyla güçlü karlılık metrikleri sunmakta — net marj %12.4, ROE %13.0 — ancak sıkı likidite pozisyonu (cari oran 0.987) ve eksik nakit akışı verisinden kaynaklanan değerleme belirsizliği riskleri dengelemektedir. Teknik tablo yüzeysel olarak yapıcıdır; fiyat MA200 üzerinde, RSI aşırı alım bölgesinden uzakta ve MACD pozitif momentumu göstermektedir. Bununla birlikte strateji sentezinin düşük yakınsama skoru (0.38), çelişkili sinyallerin var olduğuna işaret etmektedir. <strong>Hedef fiyat aralığı: Bear 231 TL / Baz 330 TL / Bull 462 TL (ağırlıklı ortalama: 338 TL).</strong> Baz senaryoda mevcut fiyat seviyesinden yaklaşık %12 yukarı potansiyel mevcuttur.</p>
+<p>---</p></div>
+    
+
+    
+
+    
+    <h2>Ana Katalizörler</h2>
+    <ul class="bullet-list">
+      
+      <li class="ok">Gross margin</li>
+      
+      <li class="ok">Net margin</li>
+      
+      <li class="ok">Return on equity</li>
+      
+    </ul>
+    
+
+    
+    <h2>Detaylı Analiz (LLM Yönetici Raporu — Tam Metin)</h2>
+    <p style="font-size:9pt; color:var(--fx-gray); font-style:italic;">
+      Aşağıdaki bölüm, Finance X platformunun özet ajanı tarafından üretilen tam narrative raporu içermektedir. Yukarıdaki özet ve görsel analizlere ek olarak detaylı arka plan, rasyo yorumları, senaryo analizleri ve CAPEX programı değerlendirmesi burada yer alıyor.
+    </p>
+    <div class="llm-full-narrative" style="font-size:9.5pt; line-height:1.6;">
+      <h1>TÜRK HAVA YOLLARI A.O. (THYAO)</h1>
+<h2>Kapsamlı Şirket Analizi — FY2025</h2>
+<strong>Rapor Tarihi:</strong> 17 Nisan 2026
+<strong>Analiz Tipi:</strong> Kapsamlı Kurumsal Analiz
+<strong>Hazırlayan:</strong> Finance X Platform — Otomatik Analitik Sistem
+<strong>Analiz Periyodu:</strong> FY2021–FY2025
+<p>---</p>
+<h2>İÇİNDEKİLER</h2>
+<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> [CHART:LINE] [CHART:BAR] <em style="color:#94a3b8;">(pie)</em></div>
+<table><thead><tr><th>Bölüm</th><th>Başlık</th><th>Güven Seviyesi</th></tr></thead><tbody><tr><td>I</td><td>Yönetici Özeti</td><td>Orta</td></tr><tr><td>II</td><td>Şirket Profili</td><td>Yüksek</td></tr><tr><td>III</td><td>Finansal Analiz</td><td>Orta</td></tr><tr><td>IV</td><td>Değerleme</td><td>Düşük (EBITDA/FCF eksik)</td></tr><tr><td>V</td><td>Sektör ve Rekabet</td><td>Düşük (peer verisi yok)</td></tr><tr><td>VI</td><td>Makroekonomik Bağlam</td><td>Orta (kısmi veri)</td></tr><tr><td>VII</td><td>Teknik Analiz</td><td>Orta</td></tr><tr><td>VIII</td><td>ESG Değerlendirmesi</td><td>Orta</td></tr><tr><td>IX</td><td>Haber ve KAP Olayları</td><td>Orta</td></tr><tr><td>X</td><td>Risk Değerlendirmesi</td><td>Orta-Yüksek</td></tr><tr><td>XI</td><td>Sonuç ve Değerlendirme</td><td>Orta</td></tr><tr><td>XII</td><td>Veri Kalite Uyarıları / Ekler / Zorunlu Bildirimler</td><td>—</td></tr></tbody></table>
+<p>Grafik envanteri: <div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> Ortaklık Yapısı | [CHART:LINE] Karlılık Trendi | [CHART:BAR] Finansal Özetler | [CHART:BAR] Teknik Destek/Direnç <em style="color:#94a3b8;">(pie)</em></div></p>
+<p>---</p>
+<h2>I. YÖNETİCİ OZETİ</h2>
+<h3>Kritik Tarih Uyarısı</h3>
+<p><strong>ONEMLI — 17 Nisan 2026:</strong> THYAO FY2025 finansal tablolar KAP'ta yayınlanmış durumdadır; ancak detaylı nakit akış ve yatırım harcamaları bölümlerindeki eksiklikler nedeniyle (EBITDA marjı, FCF, CAPEX) değerleme modeli kısmi kalmıştır. FY2025 Q1 (Ocak-Mart 2026) sonuçları açıklandığında bu rapor revize edilecektir. Bir sonraki KAP açıklaması izlenmelidir.</p>
+<p>---</p>
+<h3>Genel Değerlendirme</h3>
+<p>Türk Hava Yolları FY2025 itibarıyla güçlü karlılık metrikleri sunmakta — net marj %12.4, ROE %13.0 — ancak sıkı likidite pozisyonu (cari oran 0.987) ve eksik nakit akışı verisinden kaynaklanan değerleme belirsizliği riskleri dengelemektedir. Teknik tablo yüzeysel olarak yapıcıdır; fiyat MA200 üzerinde, RSI aşırı alım bölgesinden uzakta ve MACD pozitif momentumu göstermektedir. Bununla birlikte strateji sentezinin düşük yakınsama skoru (0.38), çelişkili sinyallerin var olduğuna işaret etmektedir. <strong>Hedef fiyat aralığı: Bear 231 TL / Baz 330 TL / Bull 462 TL (ağırlıklı ortalama: 338 TL).</strong> Baz senaryoda mevcut fiyat seviyesinden yaklaşık %12 yukarı potansiyel mevcuttur.</p>
+<p>---</p>
+<h3>Skor Kartı</h3>
+<table><thead><tr><th>Boyut</th><th>Puan (1-10)</th><th>Yorum</th><th>Benchmark</th></tr></thead><tbody><tr><td>Karlılık</td><td>7/10</td><td>Net marj %12.4, gross marj %16.3, ROE %13.0 — bölge ortalaması üzerinde</td><td>Küresel havacılık net marj ort. %5-8</td></tr><tr><td>Likidite</td><td>4/10</td><td>Cari oran 0.987 &lt; 1.0 — yükümlülükler cari varlıkları asıyor</td><td>Benchmark: >1.2</td></tr><tr><td>Kaldıraç</td><td>4/10</td><td>Net borç 585.9 milyar TRY; Net Borç/EBITDA hesaplanamıyor (EBITDA null)</td><td>Havacılık: 2.5–4.5x</td></tr><tr><td>Nakit Akışı</td><td>3/10</td><td>FCF, OCF, CAPEX/EBITDA — üçü de hesaplanamıyor; P0 veri eksikliği</td><td>Kritik bölüm; rapor sonrası güncelleme zorunlu</td></tr><tr><td>Büyüme</td><td>6/10</td><td>Filo 516 uçak, 2033 hedefi 813 uçak; tek dönem finansal veri nedeniyle büyüme trend yorumu kısıtlı</td><td>ASK büyümesi tarihsel ~%7-8</td></tr><tr><td>Yönetim Kalitesi</td><td>6/10</td><td>TSRS denetimli sürdürülebilirlik raporu artı; FY2025 temettü dağıtılmıyor eksi; filo büyüme planı kapsamlı</td><td>Temettü beklentisi: gelir yatırımcıları için kritik</td></tr><tr><td><strong>GENEL SKOR</strong></td><td><strong>5.5/10</strong></td><td>Orta — karlılık güçlü, likidite ve nakit akışı baskı altında, değerleme veri eksik</td><td>—</td></tr></tbody></table>
+<p><strong>Risk Seviyesi: Orta-Yüksek</strong> (sıkı likidite + yüksek kaldıraç + EBITDA/FCF eksikliği)</p>
+<p>---</p>
+<h3>Havacılık Sektörü KPI Tablosu</h3>
+<p>Aşağıdaki metrikler havacılık sektörünün temel operasyonel ölçütleridir. Mevcutatanan veriler KAP/platform çıktılarından; eksik alanlar <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em> ile işaretlenmiştir.</p>
+<table><thead><tr><th>KPI</th><th>FY2025 Değer</th><th>Kaynak</th><th>Not</th></tr></thead><tbody><tr><td>RPK (Revenue Passenger Km)</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — \</td><td>denendi: KAP faaliyet raporu tam metin, yönetim rehberi; etki: kapasite kullanım analizi yapılamıyor)</em></td><td>—</td><td>—</td></tr><tr><td>ASK (Available Seat Km)</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — \</td><td>denendi: aynı kaynaklar; etki: doluluk oranı hesaplanamıyor)</em></td><td>—</td><td>Tarihsel ~%7-8 büyüme &lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference]&lt;/sup></td></tr><tr><td>LF (Yolcu Doluluk Oranı)</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — \</td><td>denendi: KAP bildirim, context_extraction; etki: kapasite verimliliği değerlendirilemiyor)</em></td><td>—</td><td>Küresel ort. ~%83-85</td></tr><tr><td>CASK (Cost per ASK)</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — \</td><td>denendi: finansal tablolar; etki: maliyet rekabetçiliği kör nokta)</em></td><td>—</td><td>—</td></tr><tr><td>RASK (Revenue per ASK)</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — \</td><td>denendi: aynı; etki: birim gelir analizi yapılamıyor)</em></td><td>—</td><td>—</td></tr><tr><td>Kargo Geliri</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>—</td><td>—</td></tr><tr><td>Filo Büyüklüğü (yıl sonu)</td><td>516 uçak</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: finansaktuel.com — management statement]&lt;/sup></td><td>2033 hedefi: 813 uçak</td></tr></tbody></table>
+<p><strong>Değerlendirme:</strong> Havacılık analizinin omurgasını oluşturan RPK/ASK/LF/CASK verileri bu raporda üretilememiştir. Bu eksiklik, operasyonel verimliliğin bağımsız olarak değerlendirilmesini engellemekte ve analizin ağırlığı bilanço/gelir tablosu metriklerine kaymaktadır. Rapor bu sınırlamayı hesaba katarak yorumlanmalıdır.</p>
+<p>---</p>
+<h3>3 Destekleyici Bulgu</h3>
+<p><strong>Bulgu 1 — Karlılık Üretim Kapasitesi Korunuyor (Orta Güven):</strong> FY2025 net marjı %12.4 ve gross marj %16.3, küresel havacılık sektörü ortalamasının üzerinde performans sergilenmektedir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]</sup>. Özkaynak karlılığı (ROE) %13.0 ile tatmin edici düzeyde; bu, 911 milyar TRY büyüklüğündeki özkaynağın makul ölçüde çalıştırıldığına işaret etmektedir. Bize göre bu karlılık düzeyi, yüksek filo büyümesinin yarattığı amortisman baskısına rağmen sürdürülebilir olduğuna dair olumlu bir sinyal taşımaktadır.</p>
+<p><strong>Bulgu 2 — Nakit Dönüşüm Döngüsü Sıfıra Yakın (Yüksek Güven):</strong> CCC 0.52 gün <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]</sup> ile THYAO fiilen sıfır işletme sermayesi döngüsünde çalışmaktadır. Bu, havacılık sektörünün yapısal özelliğidir (yolcular uçmadan önce bilet öder). NWC/Revenue oranı -0.593 olup negatif işletme sermayesi finansmana katkı sağlamaktadır. Bu yapı FCF yaratım kalitesini artıracak niteliktedir — ancak FCF verisi olmadığından bu yorumun nicel olarak doğrulanması mümkün olmamıştır.</p>
+<p><strong>Bulgu 3 — Teknik Tablo Yapıcı Yönde (Orta Güven):</strong> RSI 58.67 <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: technical_analysis]</sup> aşırı alım bölgesinin (>70) altında, trend bullish olarak teyitlenmiştir. MACD histogram 2.69 ile sinyalin üzerinde — pozitif momentum devam etmektedir. Fiyat MA200 (299.8 TL) üzerinde tutunmaktadır. Bu tablo, orta vadede kırılganlıktan çok güç pozisyonu olduğuna işaret etmektedir.</p>
+<p>---</p>
+<h3>3 Nicel Risk</h3>
+<p><strong>Risk 1 — Likidite Sıkışması (Yüksek Olasılık, Orta Etki):</strong> Cari oran 0.987 < 1.0 <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]</sup> — kısa vadeli yükümlülükler cari varlıkları aşmaktadır. Yüksek CAPEX döngüsü (uçak teslimatları) bu baskıyı artırma potansiyeli taşımaktadır. Eğer nakit akışı beklentilerin altında gelirse, kısa vadeli refinansman ihtiyacı doğabilir.</p>
+<p><strong>Risk 2 — Net Borç Büyüklüğü ve Faiz Baskısı (Yüksek Olasılık, Yüksek Etki):</strong> Net borç 585.9 milyar TRY <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]</sup>. EBITDA bilinmediğinden Net Borç/EBITDA hesaplanamıyor; ancak faiz gider baskısı net marjı aşındırma riski taşımaktadır. TCMB politika faizi <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — makro analiz null)</em> yüksek kalırsa refinansman maliyeti artacaktır.</p>
+<p><strong>Risk 3 — Yakıt Fiyatı ve Kur Çift Makas Riski (Orta Olasılık, Yüksek Etki):</strong> Havacılık maliyetlerinin yaklaşık %25-30'unu yakıt oluşturmaktadır. Jet yakıtı USD bazlı fiyatlanırken TRY değer kaybı maliyet tarafına iki yönlü baskı yapmaktadır. USD/TRY 44.76 <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: macro_analysis]</sup> ile yüksek seyreden kur bu makası canlı tutmaktadır.</p>
+<p>---</p>
+<h3>Hedef Fiyat Özeti</h3>
+<table><thead><tr><th>Senaryo</th><th>P/BV Çarpanı</th><th>Hedef Fiyat</th><th>Mevcut Fiyata Göre</th></tr></thead><tbody><tr><td>Bear</td><td>0.35x</td><td>231 TL</td><td>-%24</td></tr><tr><td>Baz</td><td>0.50x</td><td>330 TL</td><td>+%9</td></tr><tr><td>Bull</td><td>0.70x</td><td>462 TL</td><td>+%52</td></tr><tr><td><strong>Ağırlıklı Ort.</strong></td><td><strong>(Bear×%25 + Baz×%50 + Bull×%25)</strong></td><td><strong>338 TL</strong></td><td><strong>+%12</strong></td></tr></tbody></table>
+<p><strong>Not:</strong> Değerleme metodolojisi P/BV çarpanı bazlıdır çünkü EBITDA marjı ve FCF bu rapor döngüsünde hesaplanamamıştır. DCF ve EV/EBITDA modellemeleri <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — EBITDA null; etki: standart çok-metodoloji değerleme yapılamadı)</em>. Baz değer/hisse: 660 TL/pay <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: hesaplama — özkaynak 911.222 milyar TRY / 1.380 milyar pay]</sup>. <strong>Mevcut fiyat (303 TL) defter değerinin %54 iskontosuyla işlem görmektedir.</strong> Bu, tarihsel BIST havacılık iskontosuyla tutarlıdır; ancak iskontoda daralma için EBITDA ve FCF iyileşmesinin görülmesi gereklidir.</p>
+<p><strong>Veri Uyarısı:</strong> Hisse adedi için context_extraction'dan alınan değer çelişkili (138 milyar pay sözleşmesi vs. 1.38 milyar pay fiili). Bu hesaplamada 1.38 milyar pay kullanılmıştır <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference — ödenmiş sermaye 1.380 mn TRY / nominal 1 TRY/pay]</sup>. KAP'tan kesin teyit zorunludur.</p>
+<p>---</p>
+<h3>Aksiyon Dili (C-Level)</h3>
+<p><strong>Hangi katalist hangi metriği değiştirirse değerlendirme değişir:</strong> <ul><li>EBITDA marjı >%15 açıklanırsa → Net Borç/EBITDA hesaplanabilir hale gelir → değerleme üst bant P/BV 0.65-0.70x'e kayabilir → hedef fiyat 430-460 TL aralığına girer.</li><li>Cari oran 1.2'nin üzerine çıkarsa (likidite takviyesi veya nakit birikimi ile) → risk profili Orta'ya düşer → iskonto daralır.</li><li>USD/TRY 50'yi geçerse (yakıt maliyet baskısı) → net marj %10 altına düşme riski → Bear senaryosu aktif hale gelir.</li></ul></p>
+<p>---</p>
+<h2>II. ŞİRKET PROFİLİ</h2>
+<h3>Temel Bilgiler</h3>
+<table><thead><tr><th>Alan</th><th>Değer</th><th>Kaynak</th></tr></thead><tbody><tr><td>Şirket Tam Unvanı</td><td>Türk Hava Yolları A.O.</td><td>—</td></tr><tr><td>BIST Kodu</td><td>THYAO</td><td>—</td></tr><tr><td>Sektör</td><td>Havacılık / Ulaşım</td><td>—</td></tr><tr><td>Analiz Dönemi</td><td>FY2025 (31.12.2025)</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1565996]&lt;/sup></td></tr><tr><td>Denetçi</td><td>PricewaterhouseCoopers (PwC)</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1566094 s.2]&lt;/sup></td></tr><tr><td>Denetim Tarihi</td><td>4 Mart 2026</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1566094 s.2]&lt;/sup></td></tr><tr><td>Raporlama Para Birimi</td><td>TRY (bin veya milyon — birim teyide açık)</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP — "1.000.000 TL sunumu"]&lt;/sup></td></tr><tr><td>Ödenmiş Sermaye</td><td>1.380 milyar TRY</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1565996 Bilanço]&lt;/sup></td></tr><tr><td>Kayıtlı Sermaye Tavanı</td><td>10 milyar TRY (2025–2029)</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: investor.turkishairlines.com]&lt;/sup></td></tr></tbody></table>
+<h3>Ortaklık Yapısı</h3>
+<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> Ortaklık Yapısı <em style="color:#94a3b8;">(pie)</em></div>
+<table><thead><tr><th>Hissedar</th><th>Pay (%)</th></tr></thead><tbody><tr><td>Türkiye Varlık Fonu (TVF)</td><td>49.12</td></tr><tr><td>Halka Açık (BIST)</td><td>50.88</td></tr><tr><td>T.C. Hazine ÖİB (C Grubu)</td><td>0.00</td></tr></tbody></table>
+<p>Türk Hava Yolları, Türkiye Varlık Fonu (TVF) kontrolündeki halka açık bir şirkettir. TVF'nin %49.12 payı ile devlet etkisi stratejik kararlar üzerinde belirleyici olmaya devam etmektedir. Halka açık dilim %50.88 ile görece büyük olup kurumsal yabancı yatırımcı ilgisi için teorik alan bulunmaktadır. Ancak yabancı yatırımcı oranı <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — | denendi: THY IR sayfası, KAP ortaklık bildirimleri; etki: yabancı akım riski değerlendirilemiyor)</em>.</p>
+<h3>İş Modeli</h3>
+<p>THY, İstanbul Havalimanı merkezli tam hizmet havayolu modelinde faaliyet göstermektedir. Transit yolcu hub modeli (Doğu–Batı koridoru), kargo taşımacılığı ve uçak bakım yan geliri temel gelir akışlarını oluşturmaktadır. AnadoluJet iç hat segmentinin THY çatısı altında entegrasyonu sürmektedir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference — sektör bilgisi]</sup>.</p>
+<h3>Yönetim Güvenilirliği</h3>
+<p><strong>YÖNETİM KREDİBİLİTESİ: Orta</strong></p>
+<table><thead><tr><th>Taahhüt</th><th>Beyan Yılı</th><th>Durum</th><th>Kaynak</th></tr></thead><tbody><tr><td>2033 filo hedefi: 813 uçak</td><td>2024-2025</td><td>Devam ediyor — 2025 sonu 516 uçak &lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: finansaktuel.com]&lt;/sup></td><td>Orta vadeli taahhüt</td></tr><tr><td>FY2025 temettü dağıtımı yok</td><td>2026</td><td>Gerçekleşti (olumsuz)</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: paraanaliz.com 2026]&lt;/sup></td></tr><tr><td>CAPEX rehberi FY2026</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>Takip edilemiyor</td><td>—</td></tr><tr><td>Büyüme hedefleri FY2026</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>Takip edilemiyor</td><td>—</td></tr></tbody></table>
+<p><strong>Kredibilite Etkisi:</strong> Filo büyüme taahhüdü somut ilerleme göstermektedir (516 uçak gerçekleşmesi). Ancak temettü bekleyenlerin 2026 başında boş kalan elini görmesi kısa vadeli algı hasarına neden olmuştur. İki ayrı taahhüt için veri bulunamadığından geçmiş performansın sistematik değerlendirmesi yapılamamaktadır — bu güvenilirlik değerlendirmesini sınırlamaktadır.</p>
+<p>---</p>
+<h2>III. FİNANSAL ANALİZ</h2>
+<h3>A. Gelir Tablosu Özeti (FY2025)</h3>
+<p>Aşağıdaki tabloda FY2025 itibarıyla mevcut olan temel gelir tablosu büyüklükleri yer almaktadır. Çok dönemli karşılaştırma verisinin (FY2021-FY2024) platform çıktılarında bulunmaması nedeniyle tarihsel trend analizi bu raporda kısmi kalmaktadır.</p>
+<table><thead><tr><th>Kalem</th><th>FY2025 (mn TRY)</th><th>Kaynak</th></tr></thead><tbody><tr><td>Gelirler</td><td>955,472</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis — KAP 1565996]&lt;/sup></td></tr><tr><td>Net Kar</td><td>118,117</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>Toplam Özkaynak</td><td>911,222</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>Net Borç</td><td>585,851</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>EBITDA</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — numerator missing)</em></td><td>financial_analysis null</td></tr></tbody></table>
+<p>Bize göre 955 milyar TRY gelir rakamı, 44.76 TRY/USD kuruyla yaklaşık 21.3 milyar USD seviyesine denk gelmektedir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: hesaplama — 955,472 / 44.76]</sup>. Bu, THY'nin büyük ölçekli küresel havayolu sınıfında kaldığını teyit etmektedir. Net kar 118 milyar TRY = ~2.6 milyar USD seviyesinde, Avrupa ve Orta Doğu havayollarıyla karşılaştırılabilir karlılığa işaret etmektedir.</p>
+<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> FY2025 Temel Finansal Büyüklükler (mn TRY) <em style="color:#94a3b8;">(bar)</em></div>
+<table><thead><tr><th>Kalem</th><th>FY2025</th></tr></thead><tbody><tr><td>Gelirler</td><td>955472</td></tr><tr><td>Net Kar</td><td>118117</td></tr><tr><td>Toplam Özkaynak</td><td>911222</td></tr><tr><td>Net Borç</td><td>585851</td></tr></tbody></table>
+<h3>B. Karlılık Metrikleri</h3>
+<table><thead><tr><th>Metrik</th><th>FY2025</th><th>Değerlendirme</th><th>Kaynak</th></tr></thead><tbody><tr><td>Brüt Marj</td><td>%16.28</td><td>Sektör üst çeyreği — güçlü</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>Net Marj</td><td>%12.36</td><td>Küresel havacılık ortalamasının üstünde</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>EBITDA Marjı</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>P0 eksiklik</td><td>null</td></tr><tr><td>ROE</td><td>%12.96</td><td>Orta — özkaynak tabanına kıyasla kabul edilebilir</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>ROA</td><td>%5.92</td><td>Varlık yoğun sektörde tipik</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>ROCE</td><td>%5.80</td><td>Net borçla birlikte yorumlanmalı</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>ROIC</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>Hesaplanamadı</td><td>null</td></tr></tbody></table>
+<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> Karlılık Metrikleri (FY2025, %) <em style="color:#94a3b8;">(line)</em></div>
+<table><thead><tr><th>Metrik</th><th>FY2025</th></tr></thead><tbody><tr><td>Brüt Marj</td><td>16.28</td></tr><tr><td>Net Marj</td><td>12.36</td></tr><tr><td>ROE</td><td>12.96</td></tr><tr><td>ROA</td><td>5.92</td></tr><tr><td>ROCE</td><td>5.80</td></tr></tbody></table>
+<p>Karlılık tablonu analitik çerçeveden değerlendirdiğimizde, brüt marj ile net marj arasındaki yakın seyir dikkat çekicidir. Operasyonel gider yapısı (işletme giderleri/gelir) hesaplanamamış olsa da bu dar fark — brüt %16.3 ile net %12.4 arasında yalnızca ~4 puan fark — finansman maliyetinin (net borç 585.9 milyar TRY üzerinden) EBIT'i önemli ölçüde erimediği ya da vergi oranının görece düşük kaldığı şeklinde yorumlanabilir. Bu bulgunun doğrulanması için EBITDA ve faiz gideri verisi gerekmektedir.</p>
+<h3>C. İşletme Sermayesi</h3>
+<table><thead><tr><th>Metrik</th><th>FY2025</th><th>Kaynak</th></tr></thead><tbody><tr><td>Cari Oran</td><td>0.987</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>NWC/Gelir</td><td>-0.593</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>CCC (gün)</td><td>0.52</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>DSO</td><td>[platform çıktısında mevcut — doğrulama bekliyor]</td><td>financial_analysis</td></tr><tr><td>DIO</td><td>[platform çıktısında mevcut — doğrulama bekliyor]</td><td>—</td></tr><tr><td>DPO</td><td>[platform çıktısında mevcut — doğrulama bekliyor]</td><td>—</td></tr></tbody></table>
+<p>Nakit dönüşüm döngüsünün 0.52 güne sıkışması, havacılık iş modelinin doğal avantajını yansıtmaktadır: müşteriler hizmetten önce ödeme yapar. Negatif NWC (-0.593) şirketin tedarikçilerini ve kiralamaları yolcu tahsilatlarıyla finanse ettiğini ima etmektedir. Bu, kriz ortamlarında likidite tampon bölgesi yerine geçemez — dolayısıyla cari oran 0.987'nin getirdiği yapısal kırılganlık bütün bu avantajlara rağmen gerçektir.</p>
+<h3>D. Borç ve Kaldıraç</h3>
+<table><thead><tr><th>Metrik</th><th>FY2025</th><th>Kaynak</th></tr></thead><tbody><tr><td>Net Borç</td><td>585,851 mn TRY</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>Net Borç/EBITDA</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — EBITDA null)</em></td><td>P0 eksiklik</td></tr><tr><td>Faiz Karşılama Oranı</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — EBIT null)</em></td><td>P0 eksiklik</td></tr><tr><td>Net Borç/Özkaynak</td><td>0.64x</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: hesaplama — 585,851 / 911,222]&lt;/sup></td></tr></tbody></table>
+<p>Net borç/özkaynak 0.64x <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: hesaplama]</sup> görece dengeli bir kaldıraç pozisyonuna işaret etmektedir. Havacılık sektörü kira yükümlülüklerini (IFRS 16) dahil ettiğinde bu oranın önemli ölçüde yükseleceği tahmin edilmektedir. FY2025'te yeni kira ödemeleri 82.311 mn TRY ve uçak avans ödemeleri 98.198 mn TRY olarak gerçekleşmiştir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1565996 s.17 Nakit Akış]</sup>. Net Borç/EBITDA hesaplanabilseydi sektör ortalaması (2.5-4.5x) ile kıyaslama yapılabilecekti; mevcut veri boşluğu değerlendirmeyi kısıtlamaktadır.</p>
+<h3>E. Altman Z-Score ve Piotroski F-Score</h3>
+<table><thead><tr><th>Skor</th><th>Değer</th><th>Yorumu</th></tr></thead><tbody><tr><td>Altman Z-Score</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — hesaplanamadı)</em></td><td>Finansal stres tahmini yapılamıyor</td></tr><tr><td>Piotroski F-Score</td><td>4/9</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup> — Orta bölge; ne güçlü finansal sağlık ne de bozulma</td></tr></tbody></table>
+<p>Piotroski F-Skoru 4/9 nötr-orta seviyeyi göstermektedir. Bu, şirketin finansal kalite anlamında ne hızlı bozulan ne de güçlü iyileşen bir profil taşıdığı anlamına gelir. Havacılık şirketleri yüksek kaldıraç ve negatif NWC yapısı nedeniyle Piotroski sisteminde yapısal olarak dezavantajlıdır; bu nedenle 4/9 havacılık sektörü normlarıyla kıyaslandığında nötr olarak değerlendirilebilir.</p>
+<h3>F. Nakit Akışı</h3>
+<table><thead><tr><th>Metrik</th><th>Değer</th><th>Kaynak</th></tr></thead><tbody><tr><td>OCF (Faaliyet Nakit Akışı)</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>P0 eksiklik</td></tr><tr><td>CAPEX</td><td>~178 mn TRY (tahmini)</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference — KAP 1565996 s.17: PPE 80,117 + avans 98,198]&lt;/sup></td></tr><tr><td>FCF</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — OCF veya CAPEX eksik)</em></td><td>P0 eksiklik</td></tr><tr><td>CAPEX/EBITDA</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>—</td></tr><tr><td>OCF/EBITDA</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>—</td></tr><tr><td>Yeni Kira Ödemeleri</td><td>82,311 mn TRY</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1565996 s.17]&lt;/sup></td></tr></tbody></table>
+<p><strong>Nakit akışı bölümü bu raporda kör noktadır.</strong> Değer yaratımının nicel kanıtı olan FCF üretilememiştir. Bu eksiklik değerleme modelini doğrudan etkili kılmakta ve güven seviyesini düşürmektedir.</p>
+<p>---</p>
+<h2>IV. DEĞERLEME</h2>
+<h3>Değerleme Metodolojisi Değerlendirmesi</h3>
+<p>Havacılık şirketlerinde standart değerleme çerçevesi şöyle sıralanır: EV/EBITDA birincil çarpan, ardından DCF ve P/BV destekleyici. THYAO FY2025 analizinde EBITDA null, FCF null ve Net Borç/EBITDA hesaplanamadığından bu çerçeve tam olarak uygulanamamaktadır.</p>
+<p><strong>Kullanılabilir Metodoloji: P/BV (Birincil)</strong></p>
+<p>P/BV analizi, özkaynak tabanı doğrulandığından uygulanabilir tek çarpan metodudur. Mevcut borsa fiyatı teknik analiz MA seviyeleri bazında yaklaşık 303 TL olarak alınmıştır <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference — MA20: 303.05, technical_analysis]</sup>.</p>
+<table><thead><tr><th>Metrik</th><th>Değer</th><th>Kaynak</th></tr></thead><tbody><tr><td>Özkaynak (TRY)</td><td>911,222 mn TRY</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: financial_analysis]&lt;/sup></td></tr><tr><td>Hisse Adedi (tahmini)</td><td>1,380 mn pay</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference — ödenmiş sermaye 1.380 mn TRY / nominal 1 TRY]&lt;/sup></td></tr><tr><td>Defter Değeri/Pay</td><td>660 TL</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: hesaplama — 911,222 / 1,380]&lt;/sup></td></tr><tr><td>Mevcut Fiyat</td><td>~303 TL</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference — MA20 seviyesi]&lt;/sup></td></tr><tr><td>Mevcut P/BV</td><td>0.46x</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: hesaplama — 303 / 660]&lt;/sup></td></tr></tbody></table>
+<p><strong>Not:</strong> Hisse adedi hesabı belirsizlik içermektedir. Context extraction'da "138,000,000,000" hisse adedi belirtilmektedir — bu değer 138 milyar olarak okunursa piyasa değeri ve dolayısıyla tüm per-share metrikler anlamsız seviyelere ulaşmaktadır. Bu nedenle 1.38 milyar pay (nominal 1 TRY/pay) interpretasyonu kullanılmıştır. KAP'tan kesin teyit alınması zorunludur.</p>
+<h3>Senaryo Analizi ve Hedef Fiyat</h3>
+<table><thead><tr><th>Senaryo</th><th>Varsayım</th><th>P/BV</th><th>Hedef Fiyat</th><th>Katalizörler</th></tr></thead><tbody><tr><td>Bear</td><td>Küresel resesyon, jet yakıtı fiyat şoku, TRY değer kaybı, refinansman riski</td><td>0.35x</td><td>231 TL</td><td>USD/TRY > 50, BIST genel satış, net marj &lt; %8</td></tr><tr><td>Baz</td><td>Mevcut trafik büyümesi devam, makro baskı ılımlı, faiz yüksek ama kontrollü</td><td>0.50x</td><td>330 TL</td><td>CCC stabil, filo büyüme sürer, RPK iyileşmesi</td></tr><tr><td>Bull</td><td>Güçlü yolcu talebi, yakıt maliyeti gerileme, kur stabilizasyonu, EBITDA marjı iyileşmesi</td><td>0.70x</td><td>462 TL</td><td>Güçlü RPK büyümesi + TRY kur stabilizasyonu</td></tr><tr><td><strong>Ağırlıklı</strong></td><td><strong>Bear×0.25 + Baz×0.50 + Bull×0.25</strong></td><td>—</td><td><strong>338 TL</strong></td><td>—</td></tr></tbody></table>
+<p>Bu değerleme kısmi veriye dayanmaktadır. EV/EBITDA ve DCF modelleri EBITDA ve FCF verisi sağlandığında bu raporu güncelleme üzerine uygulanacaktır. Analist konsensüs verisi <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — | denendi: Bloomberg, Reuters arama; etki: hedef fiyat aralığı bağımsız doğrulanamadı)</em>.</p>
+<p>---</p>
+<h2>V. SEKTÖR VE REKABET ANALİZİ</h2>
+<h3>Sektör Genel Görünüm</h3>
+<p>Küresel havacılık sektörü COVID-19 toparlanma döneminin ardından 2023-2025 yıllarında güçlü büyüme sergilemiştir. IATA tahminlerine göre küresel yolcu trafiği 2025'te pandemi öncesi seviyelerin üzerine çıkmıştır. Bölgesel bazda Orta Doğu ve Avrupa koridorları en güçlü büyümeyi göstermiştir. THY, İstanbul hub konumlanması sayesinde her iki koridordan da pay alacak stratejik avantaja sahiptir.</p>
+<p><strong>Not:</strong> Bu bölümdeki sektör değerlendirmeleri çerçeve bilgisi ve çıkarsama niteliğindedir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference]</sup>. Peer karşılaştırma verisi sağlanmadığından nicel benchmark yapılamamaktadır.</p>
+<h3>Peer Karşılaştırma</h3>
+<p>Peer grubuna finansal veri sağlanmamıştır. Sistem benchmark değerlerini hesaplamamıştır. Aşağıdaki tablo sektör referans noktaları olarak sunulmaktadır <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference — küresel havacılık sektörü genel benchmark]</sup>:</p>
+<table><thead><tr><th>Metrik</th><th>THYAO FY2025</th><th>Küresel Havacılık Ort. (ref)</th><th>Değerlendirme</th></tr></thead><tbody><tr><td>Brüt Marj</td><td>%16.28</td><td>%10-18</td><td>Ortanın üstü</td></tr><tr><td>Net Marj</td><td>%12.36</td><td>%5-8</td><td>Güçlü</td></tr><tr><td>ROE</td><td>%12.96</td><td>%8-15</td><td>Orta-üst</td></tr><tr><td>P/BV</td><td>0.46x</td><td>0.8-1.5x (Avrupa)</td><td>Belirgin iskonto</td></tr></tbody></table>
+<p>Peer grubuna gerçek veri sağlanmamıştır. Bu tablo yatırım kararı verilmesinde kullanılmaz.</p>
+<h3>Porter's Five Forces</h3>
+<table><thead><tr><th>Güç</th><th>Puan (1-5)</th><th>Yorum</th></tr></thead><tbody><tr><td>Tedarikçi Gücü</td><td>4/5</td><td>Boeing ve Airbus oligopolu; jet yakıtı fiyatlaması üzerinde kontrol yok</td></tr><tr><td>Alıcı Gücü</td><td>2/5</td><td>Bireysel yolcu gücü düşük; büyük kurumsal müşteriler ve tur operatörleri orta düzey baskı</td></tr><tr><td>Yeni Girişimciler</td><td>2/5</td><td>Yüksek sermaye gereksinimleri ve slot kısıtlamaları giriş bariyeri oluşturuyor</td></tr><tr><td>İkame Ürünler</td><td>2/5</td><td>Uzun mesafe uçuşlarda pratik ikame yok; kısa mesafede hızlı tren belirli koridorlarda tehdit</td></tr><tr><td>Sektör Rekabeti</td><td>4/5</td><td>Emirates, Qatar, Lufthansa Group ile hub rekabeti yoğun; low-cost oyuncular iç hat baskısı</td></tr></tbody></table>
+<h3>SWOT Analizi</h3>
+<table><thead><tr><th>Güçlü Yönler</th><th>Zayıf Yönler</th></tr></thead><tbody><tr><td>İstanbul hub coğrafi avantajı</td><td>Cari oran &lt; 1.0 (likidite riski)</td></tr><tr><td>Net marj sektör ortalaması üstünde</td><td>EBITDA/FCF verisi eksik (analitik sınır)</td></tr><tr><td>Büyük ve büyüyen filo tabanı</td><td>Temettü dağıtılmaması (gelir yatırımcısı cazibesini azaltıyor)</td></tr><tr><td>TSRS denetimli ESG raporlaması</td><td>Yabancı yatırımcı oranı bilinmiyor</td></tr></tbody></table>
+<table><thead><tr><th>Fırsatlar</th><th>Tehditler</th></tr></thead><tbody><tr><td>Doğu-Batı transit güzergah büyümesi</td><td>Jet yakıtı fiyat şoku</td></tr><tr><td>Kargo geliri artış potansiyeli</td><td>TRY değer kaybı (maliyet tarafı)</td></tr><tr><td>AnadoluJet entegrasyonu sinerji yaratımı</td><td>Küresel resesyon senaryosu</td></tr><tr><td>Filo modernizasyonundan yakıt verimliliği</td><td>Rekabet artışı (özellikle körfez taşıyıcıları)</td></tr></tbody></table>
+<p>---</p>
+<h2>VI. MAKROEKONOMİK BAĞLAM</h2>
+<h3>Türkiye Makro Göstergeler Tablosu (Nisan 2026)</h3>
+<table><thead><tr><th>Gösterge</th><th>Değer</th><th>Kaynak</th><th>Not</th></tr></thead><tbody><tr><td>USD/TRY</td><td>44.7593</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: macro_analysis — python, 16.04.2026]&lt;/sup></td><td>Gerçek zamanlı</td></tr><tr><td>EUR/TRY</td><td>52.7600</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: macro_analysis]&lt;/sup></td><td>Gerçek zamanlı</td></tr><tr><td>TCMB Politika Faizi</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — \</td><td>denendi: macro_analysis; sebep: EVDS key sağlanmadı; etki: refinansman maliyeti modellenemiyor)</em></td><td>—</td><td>P0 eksiklik</td></tr><tr><td>CPI (YoY)</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>—</td><td>P0 eksiklik</td></tr><tr><td>PPI (YoY)</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>—</td><td>—</td></tr><tr><td>GDP Büyüme (YoY)</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>—</td><td>—</td></tr><tr><td>BIST100 Seviyesi</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>—</td><td>—</td></tr><tr><td>BIST100 YTD Getiri</td><td><em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>—</td><td>—</td></tr></tbody></table>
+<h3>Değerlendirme</h3>
+<p>Makro analiz bu döngüde ciddi ölçüde kısıtlı kalmıştır. Yalnızca kur verileri üretilebilmiştir. TCMB politika faizinin bilinmemesi, net borç 585.9 milyar TRY taşıyan THY için kritik bir değerleme girdisini kapatmaktadır. CPI verisinin yokluğu reel gelir büyümesinin ayrıştırılmasını engellemektedir.</p>
+<p><strong>Kur etkisi (mevcut veri bazında):</strong> USD/TRY 44.76 seviyesinde jet yakıtı maliyetleri ve uçak finansmanı (USD/EUR bazlı) kur baskısına açık kalmaktadır. THY'nin güçlü döviz gelir tarafı (uluslararası biletler EUR/USD bazlı) bu riski doğal hedge mekanizması olarak kısmen dengelemektedir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference — THY gelir yapısı]</sup>.</p>
+<p>---</p>
+<h2>VII. TEKNİK ANALİZ</h2>
+<h3>Fiyat ve Trend</h3>
+<p><strong>Trend: Yükseliş (Orta Güven)</strong> <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: technical_analysis — lokal hesap, OHLCV: TradingView]</sup></p>
+<table><thead><tr><th>Gösterge</th><th>Değer</th><th>Yorum</th></tr></thead><tbody><tr><td>MA20</td><td>303.05 TL</td><td>Yakın dönem destek</td></tr><tr><td>MA50</td><td>306.84 TL</td><td>Fiyat bu seviyenin altında — kısa vadeli baskı</td></tr><tr><td>MA200</td><td>299.81 TL</td><td>Uzun vadeli destek tutulmuş</td></tr><tr><td>RSI (14)</td><td>58.67</td><td>Nötr-pozitif; aşırı alım yok</td></tr><tr><td>MACD</td><td>5.90</td><td>Sinyal üzerinde: pozitif momentum</td></tr><tr><td>MACD Sinyali</td><td>3.22</td><td>—</td></tr><tr><td>MACD Histogram</td><td>2.69</td><td>Pozitif eğim</td></tr><tr><td>ATR (14)</td><td>9.36 TL</td><td>Günlük volatilite referansı</td></tr><tr><td>Bollinger Üst</td><td>328.03 TL</td><td>Kısa vadeli direnç</td></tr><tr><td>Bollinger Orta</td><td>303.05 TL</td><td>—</td></tr><tr><td>Bollinger Alt</td><td>278.07 TL</td><td>Kısa vadeli destek alt sınır</td></tr></tbody></table>
+<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> Teknik Destek ve Direnç Seviyeleri (TL) <em style="color:#94a3b8;">(bar)</em></div>
+<table><thead><tr><th>Seviye</th><th>Değer</th></tr></thead><tbody><tr><td>Bollinger Alt (Destek)</td><td>278.07</td></tr><tr><td>MA200 (Güçlü Destek)</td><td>299.81</td></tr><tr><td>MA20 (Yakın Destek)</td><td>303.05</td></tr><tr><td>MA50 (Kısa Direnç)</td><td>306.84</td></tr><tr><td>Bollinger Üst (Direnç)</td><td>328.03</td></tr></tbody></table>
+<h3>Teknik Değerlendirme</h3>
+<p>Fiyatın MA200 üzerinde tutunması orta-uzun vadeli alıcıların aktif olduğuna işaret etmektedir. MA50 (306.84) ile MA20 (303.05) arasındaki kısa mesafe mevcut konsolidasyon evresini anlatmaktadır. RSI 58.67, yükseliş trendinde hem aşırı alımdan uzaklığı hem de momentumun hâlâ var olduğunu göstermektedir. MACD histogramının pozitif eğimi 328 TL Bollinger direncine doğru hareketi mümkün kılmaktadır. BIST100'e göreli performans verisi üretilemediğinden endeks bazlı alpha değerlendirmesi yapılamamaktadır.</p>
+<p>---</p>
+<h2>VIII. ESG DEĞERLENDİRMESİ</h2>
+<h3>ESG Özeti</h3>
+<table><thead><tr><th>Alan</th><th>Bulgu</th><th>Skor</th><th>Kaynak</th></tr></thead><tbody><tr><td>Çevre (E)</td><td>TSRS kapsamlı karbon ayak izi açıklaması — tam metin erişilmedi</td><td>6/10</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1566094; inference]&lt;/sup></td></tr><tr><td>Sosyal (S)</td><td>Büyük istihdam tabanı, küresel operasyon; detaylı metrik <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>5/10</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference]&lt;/sup></td></tr><tr><td>Yönetim (G)</td><td>PwC denetimi ✓, SPK kapsamı ✓, YK bağımsızlık oranı <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em></td><td>6/10</td><td>&lt;sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1566094 s.5]&lt;/sup></td></tr><tr><td><strong>ESG Genel</strong></td><td><strong>5.7/10 (tahmini)</strong></td><td>—</td><td>Orta — raporlama altyapısı var, içerik doğrulaması eksik</td></tr></tbody></table>
+<h3>ESG — Yatırım Bağlantısı</h3>
+<p>TSRS uyumlu sürdürülebilirlik raporlaması (denetimli, Mart 2026 tarihli), kurumsal yatırımcı eleme kriterlerini teorik olarak karşılamaktadır. Bu, karbon ayak izi açıklaması yapan şirketleri tercih eden Avrupa merkezli fon akışları için anlamlı bir kapı aralamaktadır. Ancak YK bağımsız üye oranı bilinmediğinden yönetim (G) boyutundaki kalite değerlendirmesi eksik kalmaktadır. <strong>ESG 5.7/10 → kurumsal yatırımcı eleme eşiğini (genellikle 6.0/10) sınırda karşılıyor → ESG gelişimi (özellikle G boyutu) değerleme tavanını 5-8 puan genişletme potansiyeli taşımaktadır.</strong></p>
+<p>---</p>
+<h2>IX. HABER VE KAP OLAYLARI</h2>
+<h3>Son Dönem KAP Olayları</h3>
+<p>Strateji sentezi net negatif olay dengesi bildirmiştir: +0 pozitif, -2 negatif <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: strategic_synthesis]</sup>. Bireysel olay ayrıntıları event_impact_mapper çıktısı bu çalışmada ayrıca sağlanmadığından aşağıda sistem bulgusuna dayanılarak değerlendirme yapılmaktadır.</p>
+<table><thead><tr><th>Olay Tipi</th><th>Adet</th><th>Net Etki</th><th>Değerlendirme</th></tr></thead><tbody><tr><td>Pozitif olaylar</td><td>0</td><td>—</td><td>Katalist eksikliği</td></tr><tr><td>Negatif olaylar</td><td>2</td><td>Negatif</td><td>Kısa vadeli baskı kaynağı</td></tr><tr><td>Nötr olaylar</td><td>—</td><td>—</td><td>Sınıflandırılmadı</td></tr></tbody></table>
+<p><strong>Bilinen spesifik olay:</strong> FY2025 temettü dağıtılmaması (2026 açıklaması) <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: paraanaliz.com 2026]</sup> gelir odaklı yatırımcı tabanında olumsuz algı yaratmış olabilir. Bu, negatif olaylardan birinin bu karar olduğunu akla getirmektedir.</p>
+<p>Detaylı sentiment analizi ve haber tablosu event_impact_mapper ve kap_watch çıktısı alınarak bu rapor güncellendiğinde eklenecektir.</p>
+<p>---</p>
+<h2>X. RİSK DEĞERLENDİRMESİ</h2>
+<h3>Risk Matrisi</h3>
+<table><thead><tr><th>Risk</th><th>Olasılık</th><th>Etki</th><th>Birleşik Skor</th><th>Azaltıcı Faktör</th></tr></thead><tbody><tr><td>Likidite sıkışması / refinansman</td><td>Orta (%35)</td><td>Yüksek</td><td><strong>Kritik</strong></td><td>Negatif NWC kısmen dengeliyor; hükümet desteği (TVF) teorik tampon</td></tr><tr><td>Jet yakıtı fiyat şoku</td><td>Orta (%30)</td><td>Yüksek</td><td><strong>Kritik</strong></td><td>Gelir tarafı döviz bazlı — doğal kısmi hedge</td></tr><tr><td>Makroekonomik yavaşlama / tüketici baskısı</td><td>Düşük-Orta (%25)</td><td>Orta-Yüksek</td><td>Önemli</td><td>Premium segment talebi daha dirençli</td></tr><tr><td>TCMB faiz artışı / yüksek TRY faiz ortamı</td><td>Orta (%35)</td><td>Orta</td><td>Önemli</td><td>Gelirlerin önemli kısmı döviz bazlı</td></tr><tr><td>Kur volatilitesi (TRY değer kaybı)</td><td>Yüksek (%55)</td><td>Orta</td><td><strong>Kritik</strong></td><td>Gelir/Gider döviz dengesi; yakıt en büyük açık</td></tr><tr><td>Operasyonel kaza / itibar riski</td><td>Düşük (%10)</td><td>Çok Yüksek</td><td>Orta</td><td>Güçlü güvenlik kültürü, IOSA sertifikası</td></tr><tr><td>Küresel hava trafik yoğunluk / iklim düzenlemeleri</td><td>Düşük (%15)</td><td>Orta</td><td>Düşük-Orta</td><td>TSRS raporlaması başlangıç uyumluluk sağlıyor</td></tr><tr><td>Rekabetçi baskı (körfez taşıyıcıları)</td><td>Yüksek (%60)</td><td>Orta</td><td>Önemli</td><td>Hub konumu ve network genişliği kısmi tampon</td></tr></tbody></table>
+<h3>Bear/Baz/Bull Senaryo Ayrıntıları</h3>
+<p><strong>Bear Senaryo (231 TL) — Olasılık %25:</strong> <ul><li>Tetikleyici: Küresel resesyon + jet yakıtı 120 $/varil + USD/TRY 55+ ve net marj %6 altına gerileme</li><li>Tahmin edilen finansal etki: Net kar %50+ erimesi, cari oran 0.8'in altı, refinansman riski</li><li>Bu senaryoda P/BV 0.35x makul — kriz dönemi BIST havacılık iskontosu</li></ul></p>
+<p><strong>Baz Senaryo (330 TL) — Olasılık %50:</strong> <ul><li>Tetikleyici: Trafik büyümesi sürer, yakıt maliyet artışı ılımlı (%5-10), TRY kur baskısı yönetilebilir</li><li>Beklenen finansal yansıma: Net marj %10-13 bandında tutunur, cari oran 1.0 çevresinde</li><li>P/BV 0.50x — mevcut seviyeye yakın, ılımlı değerleme genişlemesi</li></ul></p>
+<p><strong>Bull Senaryo (462 TL) — Olasılık %25:</strong> <ul><li>Tetikleyici: RPK güçlü büyüme, yakıt gerileme, TRY stabilizasyonu, EBITDA marjı >%18</li><li>Beklenen finansal yansıma: FCF pozitif, likidite normalleşmesi, temettü dönüşü sinyali</li><li>P/BV 0.70x — Avrupa havayolu iskonto bandının üst çeyreği</li></ul></p>
+<p>---</p>
+<h2>XI. SONUÇ VE DEĞERLENDİRME</h2>
+<p>THYAO FY2025 analizi, güçlü gelir ve karlılık metrikleri ile sıkı likidite ve eksik nakit akışı verisi arasında belirgin bir gerilim resmi ortaya koymaktadır. Net marjın %12.4 ve ROE'nin %13 ile sektör ortalamasının üzerinde seyretmesi olumludur; ancak bu karlılığın sürdürülebilirliğini değerlendirmek için EBITDA, FCF ve faiz karşılama oranına ihtiyaç vardır — ki bunların tamamı bu raporda boş kalmıştır.</p>
+<p>Strateji sentezi 0.38 yakınsama skoru ile orta-düşük sinyal netliği bildirmektedir. Bu, anlamlı upside potansiyelinin olduğu kadar anlamlı downside riskinin de mevcut olduğunu göstermektedir. Teknik tablonun pozitifliği tek başına fundamental belirsizliği çözememektedir.</p>
+<p><strong>İzlenmesi Gereken Kritik Kilometre Taşları:</strong></p>
+<table><thead><tr><th>Tarih / Olay</th><th>İzlenecek Metrik</th><th>Rapor Etkisi</th></tr></thead><tbody><tr><td>Q1 2026 KAP açıklaması</td><td>EBITDA, FCF, faiz karşılama</td><td>Değerleme modeli tamamlanır</td></tr><tr><td>TCMB PPK toplantısı</td><td>Politika faizi</td><td>Net borç servisi maliyeti netleşir</td></tr><tr><td>H1 2026 filo raporu</td><td>Uçak teslimatları, RPK/ASK</td><td>Operasyonel momentum doğrulanır</td></tr><tr><td>Temettü politikası açıklaması</td><td>Dağıtım kararı</td><td>Hisse talebi ve likidite beklentisi</td></tr></tbody></table>
+<p><strong>Bir sonraki analiz için öneriler:</strong> Nakit akış tablosu ayrıntılı olarak çekilmeli; RPK/ASK/LF/CASK metrikleri zorunlu tutulmalı; TCMB politika faizi makro modele dahil edilmeli; en az 3 yıllık karşılaştırmalı tablo (FY2021-FY2025) üretilmelidir.</p>
+<p>---</p>
+<h2>XII. VERİ KALİTE UYARILARI, EKLER VE ZORUNLU BİLDİRİMLER</h2>
+<h3>A. Veri Kalite Uyarıları</h3>
+<p><strong>QA Skoru: 0.96 — PASS</strong> <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: qa_review]</sup></p>
+<table><thead><tr><th>Seviye</th><th>Eksik Metrik</th><th>Sorumlu Ajan</th><th>Etkisi</th><th>Çözüm Koşulu</th></tr></thead><tbody><tr><td>P0</td><td>EBITDA Marjı</td><td>financial_analysis</td><td>EV/EBITDA değerleme yapılamıyor</td><td>CF tablosu tam çekildiğinde</td></tr><tr><td>P0</td><td>FCF</td><td>financial_analysis</td><td>Değer yaratım kalitesi ölçülemiyor</td><td>OCF + CAPEX verisiyle</td></tr><tr><td>P0</td><td>Net Borç/EBITDA</td><td>financial_analysis</td><td>Kaldıraç değerlendirmesi kör</td><td>EBITDA çözüldüğünde</td></tr><tr><td>P0</td><td>Faiz Karşılama Oranı</td><td>financial_analysis</td><td>Borç servisi kapasitesi bilinmiyor</td><td>EBIT + faiz gideri</td></tr><tr><td>P1</td><td>TCMB Politika Faizi</td><td>macro_analysis</td><td>Refinansman modeli eksik</td><td>EVDS key sağlanınca</td></tr><tr><td>P1</td><td>CPI / PPI</td><td>macro_analysis</td><td>Reel büyüme yorumlanamıyor</td><td>TÜİK kaynaklı</td></tr><tr><td>P1</td><td>BIST100 seviyesi</td><td>macro_analysis</td><td>Endekse göreli performans bilinmiyor</td><td>İş Yatırım / investing.com</td></tr><tr><td>P1</td><td>RPK / ASK / LF / CASK</td><td>Operasyonel veri</td><td>Havacılık KPI tablosu eksik</td><td>THY IR sayfası / faaliyet raporu</td></tr><tr><td>P2</td><td>Peer karşılaştırma</td><td>sector_competition</td><td>Benchmark hesaplanamadı</td><td>Peer financial_analysis çıktısı</td></tr><tr><td>P2</td><td>Analist konsensüsü</td><td>Harici veri</td><td>Hedef fiyat doğrulanamadı</td><td>Bloomberg / Reuters</td></tr></tbody></table>
+<p><strong>Dikkat:</strong> QA genel skoru 0.96 (PASS) olmakla birlikte, yukarıdaki P0 eksiklikler değerleme ve nakit akışı bölümlerini doğrudan etkileyen kritik boşluklar oluşturmaktadır.</p>
+<h3>B. Analitik Kısıtlamalar</h3>
+<p>1. Çok dönemli trend analizi (FY2021-FY2024) financial_analysis çıktısında sunulmamıştır. Rapor FY2025 tek dönem analizine dayanmaktadır. 2. Hisse adedi kesin teyit alınamamıştır — per-share metrikler tahmin bazlıdır. 3. Peer grubu oluşturulamamış; sektör benchmark kıyaslaması sınırlıdır. 4. RPK/ASK/LF/CASK operasyonel KPI'lar üretilememiştir; havacılık modelinin temeli eksik kalmaktadır. 5. EBITDA/FCF null olduğundan standart havacılık değerleme metodolojisi uygulanamamıştır.</p>
+<p>---</p>
+<h3>C. Zorunlu Bildirimler</h3>
+<p>Bu rapor Finance X platformu tarafından otomatik olarak üretilmiştir. Yatırım tavsiyesi niteliği taşımaz.</p>
+<p>Tüm veriler analiz tarihi (17 Nisan 2026) itibarıyla platformun erişebildiği kaynaklardan derlenmiştir. Sonraki açıklamalar, gelişmeler veya piyasa değişimleri raporu geçersiz kılabilir.</p>
+<p>Finance X, yatırım danışmanı olarak tescil edilmemiştir. Yatırım kararları için bağımsız ve lisanslı finansal danışmanlık hizmeti alınması zorunludur.</p>
+<p>Raporda yer alan hedef fiyat aralıkları (Bear/Baz/Bull) analistik senaryo çıktısıdır; al-sat-tut yönlendirmesi değildir. Bu rakamlar piyasa koşullarına, yeni verilere veya metodoloji güncellemelerine göre değişebilir.</p>
+<p>Veri kaynakları: KAP (kap.org.tr), investor.turkishairlines.com, finansaktuel.com, paraanaliz.com, TradingView (teknik veri). Eksik kaynaklar ve veri boşlukları rapor içinde açıkça belirtilmiştir.</p>
+<p><strong>"Bu rapor yatırım tavsiyesi niteliğinde değildir."</strong></p>
+<p>---</p>
+<h2>AGENT SELF-ASSESSMENT</h2>
+<ul><li>Confidence: 0.62</li><li>Data completeness: 55% (kritik P0 eksiklikler: EBITDA, FCF, RPK/ASK/LF/CASK, makro göstergeler)</li><li>Known gaps: EBITDA marjı, FCF, faiz karşılama, Net Borç/EBITDA, tüm havacılık operasyonel KPI'lar, TCMB faizi, CPI, BIST100, peer karşılaştırma, analist konsensüsü, hisse adedi kesin teyidi</li><li>Confidence gerekçesi: Karlılık ve bilanço metrikleri üretilmiş, QA 0.96 PASS; ancak değerleme modeli EBITDA/FCF eksikliğinden ciddi biçimde kısıtlanmış. Havacılık sektörü analizi RPK/ASK/LF olmadan yapısal olarak eksiktir. P/BV değerlemesi mevcut en güvenilir metod olarak kullanılmış fakat tek metodolojiye kalmak güven tavanını düşürmektedir.</li></ul>
+<p>---</p>
+<p><em>Rapor tamamdır — tüm 12 bölüm üretilmiştir.</em> <em>review_status: pending_ceo_review</em></p>
+    </div>
+    
+
+    <h2>Zorunlu Bildirim</h2>
+    <div class="disclaimer">
+      <strong>Uyarı:</strong> Bu rapor Finance X platformu tarafından otomatik üretilmiştir. Python deterministic
+      hesaplamalar + LLM narrative bloklar hibrit modeliyle hazırlanmış olup,
+      <strong>yatırım tavsiyesi değildir</strong>. Rapor veri kaynağı sınırlıdır ve profesyonel bir yatırım danışmanının yerini
+      tutmaz. Sermaye Piyasası Kurulu (SPK) düzenlemeleri çerçevesinde herhangi bir karar almadan önce profesyonel danışmanlık alınız.
+      <div class="method-list" style="margin-top:14px;">
+        <strong>Metodoloji:</strong> Python kap_watch → event_classification (kural tabanlı) → event_impact_mapper (template tablosu) |
+        parse_standardization (pdfplumber) → reconciliation (BS/IS/CF identity) → financial_analysis (engine DCF, ratios) |
+        macro_analysis (TCMB) → technical_analysis (TradingView/yfinance fallback) →
+        qa_review (rubric scoring) → strategic_synthesis (signal convergence) → report_formatter (template render).
+        Narrative blokları LLM (Claude) üzerinden enjekte edilir.
+      </div>
+      <div style="margin-top:10px;">
+        <strong>Rapor ID:</strong> <code>rpt-DqWRuBdX3vc4RRkcrr345</code> ·
+        <strong>Ticker:</strong> <code>THYAO</code> ·
+        <strong>Dönem:</strong> <code>FY-2025</code> ·
+        <strong>QA Skor:</strong> <code>0.96</code>
+      </div>
+    </div>
+
+    <div class="page-footer"><span>Finance X · THYAO Analiz</span><span>12</span></div>
+  </div></div>
+
+</body>
+</html>

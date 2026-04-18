@@ -5,10 +5,13 @@ the documents a ticker's analysis will need. The LLM layer downstream
 interprets them; we just get them on disk.
 
 Behaviour:
-  1. Window the KAP query (default: last 6 years).
-  2. For every disclosure, classify it coarsely (financial_report,
+  1. **Local cache first**: check output/bist30/{TICKER}/ for pre-downloaded
+     financial reports and activity reports (>200KB = real reports).
+  2. If local cache has sufficient data, skip KAP entirely (fast path).
+  3. Otherwise, window the KAP query (default: last 6 years).
+  4. For every disclosure, classify it coarsely (financial_report,
      activity_report, disclosure, other) using title + category keywords.
-  3. Download the PDF behind each financial_report and activity_report,
+  5. Download the PDF behind each financial_report and activity_report,
      hash it, write it to the configured `pdf_dir`, record everything
      in a DataCollectionManifest.
 
@@ -18,6 +21,9 @@ Design notes:
     financial + activity reports matter for downstream parsing.
   - Idempotent: if a PDF with the same SHA256 already exists, we reuse
     it and skip the network hit.
+  - BIST30 local cache: the download_bist30_attachments.py script
+    pre-downloads all BIST30 reports to output/bist30/. We use this
+    as a fast, rate-limit-free source before hitting KAP live.
 """
 
 from __future__ import annotations
@@ -125,6 +131,73 @@ def _filename_for(ticker: str, idx: str, kind: str, published_at: datetime) -> s
     return f"{ticker}_{kind}_{stamp}_{idx}.pdf"
 
 
+# ---------- Local BIST30 cache ----------------------------------------
+
+# The download_bist30_attachments.py script pre-downloads all BIST30
+# financial + activity reports to output/bist30/{TICKER}/{YEAR}/{QUARTER}/.
+# We scan this tree first — it's instant and avoids KAP rate limits.
+
+_BIST30_CACHE_DIR = Path(__file__).resolve().parents[4] / "output" / "bist30"
+_MIN_REAL_PDF_SIZE = 200_000  # PDFs below this are notification pages, not real reports
+
+
+def _scan_local_cache(
+    ticker: str, since: date, until: date
+) -> list[CollectedDocument]:
+    """Scan output/bist30/{TICKER}/ for pre-downloaded PDFs."""
+    cache_dir = _BIST30_CACHE_DIR / ticker.upper()
+    if not cache_dir.exists():
+        return []
+
+    docs: list[CollectedDocument] = []
+    for pdf_path in sorted(cache_dir.rglob("*.pdf")):
+        if pdf_path.stat().st_size < _MIN_REAL_PDF_SIZE:
+            continue  # skip notification PDFs
+
+        name = pdf_path.name
+        upper_ticker = ticker.upper()
+
+        # Determine kind from filename
+        if f"{upper_ticker}_financial_report" in name or f"{upper_ticker}_bildirim" in name:
+            kind = "financial_report"
+        elif f"{upper_ticker}_activity_report" in name:
+            kind = "activity_report"
+        else:
+            continue
+
+        # Extract year from folder path (e.g. .../2025/Q4-2025/...)
+        year: int | None = None
+        period_label: str | None = None
+        for part in pdf_path.parts:
+            if part.isdigit() and 2020 <= int(part) <= 2030:
+                year = int(part)
+            if part.startswith("Q") and "-" in part:
+                period_label = part  # e.g. "Q4-2025"
+
+        if year is None:
+            continue
+        if year < since.year or year > until.year:
+            continue
+
+        sha = _sha256(pdf_path.read_bytes())
+        docs.append(
+            CollectedDocument(
+                kind=kind,
+                disclosure_index=f"local-{pdf_path.stem}",
+                title=f"{upper_ticker} {kind.replace('_', ' ').title()} (local cache)",
+                published_at=datetime(year, 12, 31, tzinfo=UTC),
+                source_url=f"file://{pdf_path}",
+                local_path=str(pdf_path),
+                content_sha256=sha,
+                size_bytes=pdf_path.stat().st_size,
+                period_label=period_label or f"FY{year}",
+                year=year,
+            )
+        )
+
+    return docs
+
+
 # ---------- Main runner ------------------------------------------------
 
 def run_data_collection(
@@ -145,15 +218,57 @@ def run_data_collection(
     byCriteria POST entirely and go straight to PDF downloads. This
     avoids tripping KAP's back-to-back rate-limit.
     """
-    http_client = client or HttpKapClient()
-    _owns_client = client is None
     ceiling = until or date.today()
-
     pdf_dir.mkdir(parents=True, exist_ok=True)
 
     documents: list[CollectedDocument] = []
     errors: list[str] = []
     warnings: list[str] = []
+
+    # ------------------------------------------------------------------
+    # Fast path: scan local BIST30 cache first
+    # ------------------------------------------------------------------
+    local_docs = _scan_local_cache(ticker, since, ceiling)
+    if local_docs:
+        local_fr = {d.year for d in local_docs if d.kind == "financial_report" and d.year}
+        local_ar = {d.year for d in local_docs if d.kind == "activity_report" and d.year}
+        expected_years = set(range(since.year, ceiling.year + 1))
+        fr_coverage = len(local_fr & expected_years) / max(len(expected_years), 1)
+
+        print(f"[data_collection] {ticker}: local cache has {len(local_docs)} PDFs "
+              f"({len(local_fr)} FR years, {len(local_ar)} AR years, {fr_coverage:.0%} coverage)")
+
+        if fr_coverage >= 0.8:
+            # Good enough — use local cache, skip KAP entirely
+            print(f"[data_collection] {ticker}: using local cache (skipping KAP)")
+            return DataCollectionManifest(
+                ticker=ticker.upper(),
+                collected_at=datetime.now(UTC),
+                since=since,
+                until=ceiling,
+                documents=local_docs,
+                sources_consulted=[
+                    SourceRef(
+                        source_id="local_bist30_cache",
+                        url=f"file://{_BIST30_CACHE_DIR / ticker.upper()}",
+                        fetched_at=datetime.now(UTC),
+                        detail="Pre-downloaded BIST30 reports from output/bist30/",
+                    )
+                ],
+                errors=[],
+                warnings=[],
+                coverage_gaps=[],
+            )
+        else:
+            # Partial cache — use what we have, fill gaps from KAP
+            documents.extend(local_docs)
+            warnings.append(f"Local cache partial ({fr_coverage:.0%}); supplementing from KAP.")
+
+    # ------------------------------------------------------------------
+    # KAP live fetch (original path)
+    # ------------------------------------------------------------------
+    http_client = client or HttpKapClient()
+    _owns_client = client is None
 
     if prefetched_disclosures is not None:
         # Orchestrator already has the list from kap_watch — reuse it

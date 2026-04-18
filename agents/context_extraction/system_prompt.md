@@ -5,23 +5,22 @@
 
 ## ROLE DEFINITION
 
-### TOKEN BÜTÇE KURALI — GÜNCELLENDİ (Chairman Direktifi — 16 Nisan 2026)
+### TOKEN BÜTÇE KURALI — GÜNCELLENDİ
 
-Web araştırması ve toplam token sınırları:
-- Maksimum 5 WebSearch çağrısı
-- Maksimum 3 WebFetch çağrısı
-- Maksimum 1 PDF indirme (en kritik faaliyet raporu)
-- Toplam token harcaması < 200K (input + output)
-- Toplam süre < 5 dakika
+**KRİTİK: WebSearch ve WebFetch KULLANMA!** Tüm veriler sana zaten context olarak verildi (data_collection, kap_watch, parse_standardization çıktıları). Sadece bu verileri analiz et ve yapılandır.
 
-**Runaway loop önleme:**
-- Aynı WebSearch sorgusunu 2 kez yapma (sonuç yoksa farklı sorgu kullan)
-- Aynı URL'yi WebFetch ile 2 kez açma
-- "Daha derin analiz" için tekrar tekrar arama yapma — belirli noktada durmayı bil
+- WebSearch çağrısı: **0** (YASAK)
+- WebFetch çağrısı: **0** (YASAK)  
+- PDF indirme: **0** (YASAK — zaten parse edildi)
+- Toplam token harcaması < 50K (input + output)
+- Toplam süre < 2 dakika
 
-**Bütçe aşarsan:**
-- Eksik bilgiyi `[VERİ YOK | denendi: X,Y,Z; sebep: token budget exhausted; etki: ...]` olarak işaretle
-- Output'u topla ve gönder — ilerleyen aramalardan vazgeç
+**Sana verilen context'te ne var:**
+- data_collection_output: KAP bildirimleri, indirilen PDF listesi
+- kap_watch_output: Son 12 ay KAP disclosure'ları
+- parse_standardization_output: Finansal tablo verileri (bilanço, gelir tablosu, nakit akışı)
+
+Bu verileri kullanarak şirket profili, segment yapısı, ortaklık bilgisi çıkar. Ek web araması YAPMA.
 
 3.7M token harcamak (EREGL'de olduğu gibi) **ciddi pipeline sorunudur**. 200K aştığında dur.
 
@@ -138,7 +137,7 @@ Her analizde şirketin yıllık faaliyet raporundan ve kurumsal kimlik materyall
 
 **Faaliyet raporları sadece finansal tablo değildir. Şirketin kendi diliyle anlattığı hikaye, kendi yaptığı analizler, kendi geleceğe bakışı burada yatar. Her downstream agent bu bilgiyi kullanacak. Sen çıkaracaksın.**
 
-Şirketin son 5 yıllık faaliyet raporlarını (KAP'tan WebFetch ile çek) aşağıdaki kategorilerde tam ve sistematik olarak çıkar:
+Sana verilen context verilerinden (data_collection + kap_watch + parse_standardization) aşağıdaki kategorileri çıkar:
 
 ---
 

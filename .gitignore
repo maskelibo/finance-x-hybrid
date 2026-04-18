@@ -7,6 +7,10 @@ dist/
 
 # Generated PDFs and binary output (kept off git)
 output/pdfs/
+output/bist30/
+output/*.txt
+output/*.md
+output/*.json
 backend/finance_x.db
 backend/finance-x.db
 evals/results/

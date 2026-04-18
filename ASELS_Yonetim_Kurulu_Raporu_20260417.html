@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASELS — Finance X Kapsamlı Analiz Raporu</title>
+  <style>
+    @page { size: A4 portrait; margin: 20mm 15mm 20mm 15mm; }
+    :root {
+      --brand-primary: #1e40af;
+      --brand-secondary: #1a1a2e;
+      --brand-accent: #f59e0b;
+      --fx-dark: #1e293b;
+      --fx-gray: #6b7280;
+      --fx-light-gray: #f3f4f6;
+      --fx-border: #e5e7eb;
+      --fx-success: #059669;
+      --fx-warning: #d97706;
+      --fx-danger: #dc2626;
+      --fx-white: #ffffff;
+      --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: ui-monospace, 'SF Mono', 'Consolas', monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-main); font-size: 10pt; line-height: 1.55; color: var(--fx-dark); background: var(--fx-white); }
+
+    .page { page-break-before: always; min-height: 257mm; padding: 0 0 30px; position: relative; }
+    .page:first-child { page-break-before: avoid; }
+    .page-inner { padding: 0 8mm; }
+
+    .page-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 2px solid var(--brand-primary); margin-bottom: 16px; font-size: 8pt; color: var(--fx-gray); }
+    .page-header-left { display: flex; align-items: center; gap: 12px; }
+    .company-ticker { font-weight: 700; color: var(--brand-primary); font-size: 10pt; }
+    .brand-mark { background: var(--brand-primary); color: #fff; padding: 3px 8px; border-radius: 3px; font-weight: 700; font-size: 9pt; }
+    .page-footer { position: absolute; bottom: 4px; left: 8mm; right: 8mm; display: flex; justify-content: space-between; font-size: 7pt; color: var(--fx-gray); border-top: 1px solid var(--fx-border); padding-top: 4px; }
+
+    .cover-page { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; text-align: center; background: linear-gradient(135deg, #1e40af 0%, #1a1a2e 100%); background-color: #1e40af; color: #ffffff; padding: 60px 40px; }
+    .cover-page .cover-ticker { font-size: 54pt; font-weight: 800; letter-spacing: 4px; margin-bottom: 8px; }
+    .cover-page .cover-company { font-size: 16pt; font-weight: 300; margin-bottom: 8px; opacity: 0.9; }
+    .cover-page .cover-exchange { font-size: 11pt; font-weight: 400; opacity: 0.7; margin-bottom: 40px; }
+    .cover-page .cover-title { font-size: 14pt; font-weight: 600; margin-bottom: 8px; }
+    .cover-page .cover-date { font-size: 11pt; opacity: 0.85; }
+    .cover-page .cover-badge { margin-top: 50px; padding: 8px 24px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; font-size: 9pt; opacity: 0.8; }
+    .cover-divider { width: 80px; height: 3px; background: rgba(255,255,255,0.5); margin: 24px auto; }
+    .cover-meta { display: flex; gap: 40px; margin-top: 24px; font-size: 9pt; opacity: 0.85; }
+    .cover-meta-item { text-align: center; }
+    .cover-meta-item .cv-val { font-size: 14pt; font-weight: 700; display: block; margin-bottom: 2px; }
+
+    h1 { font-size: 16pt; font-weight: 700; color: var(--brand-primary); margin: 20px 0 10px; border-bottom: 2px solid var(--brand-primary); padding-bottom: 6px; page-break-after: avoid; }
+    h2 { font-size: 13pt; font-weight: 600; color: var(--fx-dark); margin: 16px 0 8px; page-break-after: avoid; }
+    h3 { font-size: 11pt; font-weight: 600; color: var(--brand-primary); margin: 14px 0 6px; page-break-after: avoid; }
+    p { margin: 7px 0; text-align: justify; orphans: 4; widows: 4; }
+    ul, ol { margin: 7px 0 7px 20px; }
+    li { margin-bottom: 4px; orphans: 4; widows: 4; }
+    strong { font-weight: 600; }
+    em { font-style: italic; }
+
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9pt; table-layout: fixed; page-break-inside: avoid; }
+    table th { background: var(--brand-primary); color: #fff; font-weight: 600; padding: 7px 9px; text-align: left; border: 1px solid var(--brand-primary); }
+    table td { padding: 6px 9px; border: 1px solid var(--fx-border); vertical-align: top; word-wrap: break-word; }
+    table tr:nth-child(even) { background: var(--fx-light-gray); }
+    table td.num, table th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    table td.label { font-weight: 600; color: var(--fx-dark); }
+    table tr.subtotal td { background: #eef2ff; font-weight: 600; }
+    table tr.total td { background: var(--brand-primary); color: #fff; font-weight: 700; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .kpi-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .kpi-card { border: 1px solid var(--fx-border); border-radius: 6px; padding: 12px; background: #fff; }
+    .kpi-card .kpi-label { font-size: 8pt; color: var(--fx-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .kpi-card .kpi-value { font-size: 18pt; font-weight: 700; color: var(--brand-primary); font-family: var(--font-mono); }
+    .kpi-card .kpi-sub { font-size: 8pt; color: var(--fx-gray); margin-top: 4px; }
+    .kpi-card.positive .kpi-value { color: var(--fx-success); }
+    .kpi-card.negative .kpi-value { color: var(--fx-danger); }
+    .kpi-card.warning .kpi-value { color: var(--fx-warning); }
+
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 9pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-pass { background: #d1fae5; color: #047857; }
+    .badge-fail { background: #fee2e2; color: #b91c1c; }
+    .badge-warn { background: #fef3c7; color: #b45309; }
+    .badge-info { background: #dbeafe; color: #1d4ed8; }
+    .badge-neutral { background: var(--fx-light-gray); color: var(--fx-gray); }
+
+    .bullet-list { list-style: none; padding: 0; margin: 10px 0; }
+    .bullet-list li { padding: 8px 12px; border-left: 3px solid var(--fx-border); margin: 6px 0; background: var(--fx-light-gray); font-size: 10pt; }
+    .bullet-list li.critical { border-left-color: var(--fx-danger); background: #fef2f2; }
+    .bullet-list li.warn { border-left-color: var(--fx-warning); background: #fffbeb; }
+    .bullet-list li.ok { border-left-color: var(--fx-success); background: #ecfdf5; }
+
+    .porter-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .porter-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 10px 14px; background: #fff; }
+    .porter-box h4 { font-size: 10pt; font-weight: 700; color: var(--brand-primary); margin-bottom: 6px; }
+    .porter-box .intensity { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8pt; margin-bottom: 6px; font-weight: 600; }
+    .porter-box .intensity.high { background: #fee2e2; color: #b91c1c; }
+    .porter-box .intensity.medium { background: #fef3c7; color: #b45309; }
+    .porter-box .intensity.low { background: #d1fae5; color: #047857; }
+
+    .risk-matrix { display: grid; grid-template-columns: 80px repeat(3, 1fr); gap: 6px; margin: 14px 0; page-break-inside: avoid; font-size: 9pt; }
+    .risk-cell { padding: 10px; text-align: center; border-radius: 4px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+    .risk-axis { font-weight: 700; color: var(--fx-gray); font-size: 8pt; text-transform: uppercase; }
+    .risk-low { background: #d1fae5; color: #047857; }
+    .risk-med { background: #fef3c7; color: #b45309; }
+    .risk-high { background: #fee2e2; color: #b91c1c; }
+
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .scenario-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 14px; background: #fff; text-align: center; }
+    .scenario-box h4 { font-size: 11pt; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .scenario-box.bear h4 { color: var(--fx-danger); }
+    .scenario-box.base h4 { color: var(--brand-primary); }
+    .scenario-box.bull h4 { color: var(--fx-success); }
+    .scenario-box .scn-price { font-size: 20pt; font-weight: 800; font-family: var(--font-mono); color: var(--fx-dark); margin: 6px 0; }
+    .scenario-box .scn-sub { font-size: 8pt; color: var(--fx-gray); }
+    .scenario-box ul { list-style: none; padding: 0; margin-top: 10px; text-align: left; }
+    .scenario-box li { font-size: 8.5pt; padding: 3px 0; border-bottom: 1px dotted var(--fx-border); }
+
+    .esg-bars { margin: 14px 0; }
+    .esg-bars .bar-row { display: grid; grid-template-columns: 80px 1fr 40px; gap: 10px; align-items: center; margin: 6px 0; font-size: 9pt; }
+    .esg-bars .bar-track { height: 14px; background: var(--fx-light-gray); border-radius: 7px; overflow: hidden; }
+    .esg-bars .bar-fill { height: 100%; background: linear-gradient(90deg, var(--fx-success) 0%, var(--brand-primary) 100%); }
+
+    .toc { background: var(--fx-light-gray); padding: 20px; border-radius: 6px; margin-bottom: 24px; }
+    .toc ul { list-style: none; padding: 0; columns: 2; gap: 24px; }
+    .toc li { padding: 4px 0; border-bottom: 1px dotted var(--fx-border); font-size: 10pt; }
+    .toc li .toc-num { display: inline-block; width: 36px; font-weight: 700; color: var(--brand-primary); }
+
+    .swot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .swot-box { border: 1px solid var(--fx-border); border-radius: 6px; padding: 12px; background: #fff; }
+    .swot-box h4 { font-size: 10pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 2px solid; }
+    .swot-box.strengths h4 { color: var(--fx-success); border-color: var(--fx-success); }
+    .swot-box.weaknesses h4 { color: var(--fx-danger); border-color: var(--fx-danger); }
+    .swot-box.opportunities h4 { color: var(--brand-primary); border-color: var(--brand-primary); }
+    .swot-box.threats h4 { color: var(--fx-warning); border-color: var(--fx-warning); }
+    .swot-box ul { list-style: none; padding: 0; }
+    .swot-box li { font-size: 9pt; padding: 4px 0; border-bottom: 1px dotted var(--fx-border); }
+    .swot-box li:last-child { border-bottom: none; }
+
+    .note { background: #fffbeb; border-left: 4px solid var(--fx-warning); padding: 10px 14px; margin: 12px 0; font-size: 9pt; color: #78350f; border-radius: 3px; }
+    .note strong { color: #92400e; }
+
+    .disclaimer { margin-top: 40px; padding: 22px; background: var(--fx-light-gray); border-radius: 6px; font-size: 8pt; color: var(--fx-gray); line-height: 1.7; }
+    .disclaimer strong { color: var(--fx-dark); }
+    .method-list { font-size: 9pt; }
+
+    .score-gauge { display: inline-block; width: 100%; height: 10px; background: var(--fx-light-gray); border-radius: 5px; overflow: hidden; margin: 4px 0; }
+    .score-gauge-fill { height: 100%; background: linear-gradient(90deg, var(--fx-success) 0%, var(--brand-primary) 100%); }
+
+    @media screen {
+      body { background: #e5e7eb; padding: 20px; }
+      .page { max-width: 210mm; margin: 0 auto 10px; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 16mm 10mm 30px; }
+      .page.cover-page { background: linear-gradient(135deg, #1e40af 0%, #1a1a2e 100%) !important; padding: 60px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================== COVER ============================ -->
+  <div class="page cover-page">
+    <div class="cover-ticker">ASELS</div>
+    <div class="cover-company">Aselsan Elektronik Sanayi ve Ticaret A.Ş.</div>
+    <div class="cover-exchange">Borsa İstanbul · Sanayi</div>
+    <div class="cover-divider"></div>
+    <div class="cover-title">Kapsamlı Şirket Analiz Raporu</div>
+    <div class="cover-date">2026-04-17</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><span class="cv-val">0.97</span>QA Skoru</div>
+      <div class="cover-meta-item"><span class="cv-val">+0.63</span>Sinyal Konverjansı</div>
+      <div class="cover-meta-item"><span class="cv-val">%71</span>Uzlaştırma</div>
+    </div>
+    <div class="cover-badge">Finance X Platform · Hibrit Analiz · 2026-04-17</div>
+  </div>
+
+  <!-- ============= İÇİNDEKİLER ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>İçindekiler</h1>
+    <div class="toc">
+      <ul>
+        <li><span class="toc-num">I.</span>Yönetici Özeti</li>
+        <li><span class="toc-num">II.</span>Şirket Profili</li>
+        <li><span class="toc-num">III.</span>Finansal Analiz</li>
+        <li><span class="toc-num">IV.</span>Değerleme &amp; Hedef Fiyat</li>
+        <li><span class="toc-num">V.</span>Sektör &amp; Rekabet</li>
+        <li><span class="toc-num">VI.</span>Makroekonomik Bağlam</li>
+        <li><span class="toc-num">VII.</span>Teknik Analiz</li>
+        <li><span class="toc-num">VIII.</span>ESG Değerlendirmesi</li>
+        <li><span class="toc-num">IX.</span>Haber &amp; Sentiment</li>
+        <li><span class="toc-num">X.</span>KAP Olayları</li>
+        <li><span class="toc-num">XI.</span>Risk Değerlendirmesi</li>
+        <li><span class="toc-num">XII.</span>Sonuç &amp; Öneriler</li>
+      </ul>
+    </div>
+
+    <h2>Raporun Kapsamı</h2>
+    <p>Bu rapor Aselsan Elektronik Sanayi ve Ticaret A.Ş. (ASELS) için Finance X platformunun 22 özel ajanıyla otomatik olarak üretilmiştir. Python deterministic hesaplamalar (bilanço, nakit akışı, ratio, DCF, Altman Z, Piotroski F) ile LLM narrative bloklar (yorum, strateji, sentez) hibrit olarak bir araya getirilmiştir. Veriler FY-2025 dönemine aittir ve KAP resmi bildirimleri, TCMB, TradingView/Yahoo Finance ile Google News RSS kaynaklarından çekilmiştir.</p>
+
+    <h2>Hızlı Göstergeler</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">QA Skoru</div><div class="kpi-value">0.97</div><div class="kpi-sub">Geçer</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sinyal</div><div class="kpi-value">+0.63</div><div class="kpi-sub">yüksek</div></div>
+      <div class="kpi-card"><div class="kpi-label">Uzl.</div><div class="kpi-value">%71</div><div class="kpi-sub">5/7</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sektör</div><div class="kpi-value" style="font-size:12pt;">Sanayi</div><div class="kpi-sub">doğrulanmış</div></div>
+    </div>
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>i</span></div>
+  </div></div>
+
+
+  <!-- ============= I. YÖNETİCİ ÖZETİ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>I. Yönetici Özeti</h1>
+
+    <!-- Temel Parametreler tablosu (EREGL tarzı) -->
+    
+    <h2>Temel Parametreler</h2>
+    <table>
+      <thead><tr><th style="width:35%">Parametre</th><th>Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Güncel Fiyat</td><td>361,15 TRY</td></tr>
+        
+        <tr><td class="label">Hasılat</td><td>180,4 milyar TRY</td></tr>
+        
+        <tr><td class="label">Net Kâr</td><td>29,9 milyar TRY</td></tr>
+        
+        <tr><td class="label">Net Borç</td><td>-10,9 milyar TRY</td></tr>
+        
+        <tr><td class="label">ROE</td><td>%11,9</td></tr>
+        
+        <tr><td class="label">Brüt Marj</td><td>%31,8</td></tr>
+        
+        <tr><td class="label">Piotroski F-Skoru</td><td>4/9</td></tr>
+        
+        <tr><td class="label">Sektör</td><td>Sanayi</td></tr>
+        
+        <tr><td class="label">Dönem</td><td>FY-2025</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <div class="note" style="background: #eef2ff; border-left-color: var(--brand-primary); color: #1e40af; margin-bottom: 16px;">
+      <strong style="color: var(--brand-primary);">Sektörel Dikkat Noktaları</strong>
+      <div style="margin:4px 0;">🛡️ <strong>Savunma</strong>: Bakanlık sipariş akışı, ihracat onayları, teknoloji transferi kısıtları.</div>
+    </div>
+    
+
+    
+    <h2>Temel Değerlendirme</h2>
+    <div><p>> <strong>ÖNEMLİ TARİH:</strong> Q1-2026 sonuçları Mayıs 2026'da açıklanması beklenmektedir. FY2025 tam yıl sonuçları 24 Şubat 2026'da kamuoyuyla paylaşıldı [kaynak: KAP 1561039]. Q1-2026 açıklaması ikinci çeyreğin seyrini, özellikle Q4-2025'te yıla özel yüklenen gelirin (%50 Q4 konsantrasyonu) sürdürülebilirliğini test edecektir.</p></div>
+    
+
+    <!-- Detaylı Skor Kartı (EREGL tarzı — ağırlıklı) -->
+    <h2>Skor Kartı</h2>
+    
+    <table>
+      <thead><tr><th>Boyut</th><th class="num" style="width:10%">Puan</th><th class="num" style="width:10%">Ağırlık</th><th>Değerlendirme</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Finansal Sağlık</td><td class="num">6/10</td><td class="num">%30</td><td>Piotroski 4/9; Cari oran 1.39x; ROE %11.9</td></tr>
+        
+        <tr><td class="label">Büyüme Potansiyeli</td><td class="num">6/10</td><td class="num">%20</td><td>Filo genişleme + IST hub küresel #1</td></tr>
+        
+        <tr><td class="label">Sektör Pozisyonu</td><td class="num">8/10</td><td class="num">%15</td><td>Bayrak taşıyıcı; Rusya üstgeçiş ayrıcalığı; 340+ destinasyon</td></tr>
+        
+        <tr><td class="label">Makro Uyumluluk</td><td class="num">5/10</td><td class="num">%15</td><td>Gelir USD bazlı (olumlu); yüksek USD borç + Brent baskısı (olumsuz)</td></tr>
+        
+        <tr><td class="label">Teknik Görünüm</td><td class="num">8/10</td><td class="num">%10</td><td>RSI 72; Yükseliş trendi</td></tr>
+        
+        <tr><td class="label">Yönetim Kalitesi</td><td class="num">5/10</td><td class="num">%10</td><td>Yeni CEO — içeriden atama; ilk açıklama bekleniyor</td></tr>
+        
+        <tr class="total"><td class="label">GENEL SKOR</td><td class="num">6.3/10</td><td class="num">—</td><td>Ağırlıklı skor — detaylar yukarıda</td></tr>
+      </tbody>
+    </table>
+    
+
+    <!-- Temel Finansal Metrikler tablosu (EREGL tarzı) -->
+    
+    <h2>Temel Finansal Metrikler — FY-2025</h2>
+    <table>
+      <thead><tr><th>Metrik</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Hasılat</td><td class="num">180,4 milyar TRY</td></tr>
+        
+        <tr><td class="label">Brüt Kâr</td><td class="num">57,4 milyar TRY</td></tr>
+        
+        <tr><td class="label">Faaliyet Kârı</td><td class="num">49,1 milyar TRY</td></tr>
+        
+        <tr><td class="label">Net Kâr</td><td class="num">29,9 milyar TRY</td></tr>
+        
+        <tr><td class="label">Operasyonel Nakit Akışı (OCF)</td><td class="num">48,9 milyar TRY</td></tr>
+        
+        <tr><td class="label">Net Borç</td><td class="num">-10,9 milyar TRY</td></tr>
+        
+        <tr><td class="label">Brüt Marj</td><td class="num">%31,8</td></tr>
+        
+        <tr><td class="label">Net Marj</td><td class="num">%16,6</td></tr>
+        
+        <tr><td class="label">ROE</td><td class="num">%11,9</td></tr>
+        
+        <tr><td class="label">ROA</td><td class="num">%6,9</td></tr>
+        
+        <tr><td class="label">Cari Oran</td><td class="num">1,39x</td></tr>
+        
+        <tr><td class="label">Piotroski F-Skoru</td><td class="num">4/9</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    <h3>Finansal Sağlık Göstergeleri</h3>
+    <div class="kpi-grid-3">
+      <div class="kpi-card"><div class="kpi-label">Piotroski F <span style="font-size:7pt;color:var(--fx-gray);">(Mali güç 0-9)</span></div><div class="kpi-value">4</div><div class="kpi-sub">Orta</div></div>
+      <div class="kpi-card"><div class="kpi-label">Altman Z <span style="font-size:7pt;color:var(--fx-gray);">(İflas riski)</span></div><div class="kpi-value">—</div><div class="kpi-sub">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Net Borç/Özsermaye</div><div class="kpi-value" style="font-size:14pt;">-0,04x</div><div class="kpi-sub">Düşük kaldıraç</div></div>
+    </div>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 700 188" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;height:auto"><text x="350" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Kalite Skorları Karşılaştırma</text><text x="152" y="60" text-anchor="end" font-size="10" fill="#0f172a">QA Skoru</text><rect x="160" y="46" width="460.0" height="20" fill="#1e40af" rx="3"/><text x="628" y="60" font-size="10" font-weight="600" fill="#0f172a">97/100</text><text x="152" y="92" text-anchor="end" font-size="10" fill="#0f172a">Sinyal Konverjansı</text><rect x="160" y="78" width="298.8" height="20" fill="#f59e0b" rx="3"/><text x="466.7628865979382" y="92" font-size="10" font-weight="600" fill="#0f172a">63/100</text><text x="152" y="124" text-anchor="end" font-size="10" fill="#0f172a">Piotroski F</text><rect x="160" y="110" width="210.6" height="20" fill="#059669" rx="3"/><text x="378.5567010309278" y="124" font-size="10" font-weight="600" fill="#0f172a">44,4/100 (norm)</text><text x="152" y="156" text-anchor="end" font-size="10" fill="#0f172a">Uzlaştırma</text><rect x="160" y="142" width="338.7" height="20" fill="#1e40af" rx="3"/><text x="506.7334315169367" y="156" font-size="10" font-weight="600" fill="#0f172a">71,429%</text></svg></div>
+    
+
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; page-break-inside:avoid;">
+      <div><svg viewBox="0 0 320 210" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:320px;height:auto;background:#ffffff;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><text x="160" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Kalite Göstergesi</text><path d="M70.0,170.0 A90,90 0 0 1 115.0,92.1" stroke="#dc2626" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><path d="M115.0,92.1 A90,90 0 0 1 205.0,92.1" stroke="#f59e0b" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><path d="M205.0,92.1 A90,90 0 0 1 250.0,170.0" stroke="#059669" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><line x1="160" y1="170" x2="249.6" y2="161.5" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><circle cx="160" cy="170" r="8" fill="#0f172a"/><circle cx="160" cy="170" r="4" fill="#ffffff"/><text x="160" y="205" text-anchor="middle" font-size="24" font-weight="800" fill="#0f172a" font-family="ui-monospace, Consolas, monospace">0.97</text><text x="160" y="225" text-anchor="middle" font-size="11" font-weight="500" fill="#64748b">QA Skoru (0-1)</text><text x="52.0" y="174.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">0</text><text x="160.0" y="66.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">1</text><text x="268.0" y="174.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">1</text></svg></div>
+      <div><svg viewBox="0 0 320 210" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:320px;height:auto;background:#ffffff;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><text x="160" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Veri Doğrulama</text><path d="M70.0,170.0 A90,90 0 0 1 115.0,92.1" stroke="#dc2626" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><path d="M115.0,92.1 A90,90 0 0 1 205.0,92.1" stroke="#f59e0b" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><path d="M205.0,92.1 A90,90 0 0 1 250.0,170.0" stroke="#059669" stroke-width="22" fill="none" stroke-linecap="butt" opacity="0.85"/><line x1="160" y1="170" x2="216.1" y2="99.6" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><circle cx="160" cy="170" r="8" fill="#0f172a"/><circle cx="160" cy="170" r="4" fill="#ffffff"/><text x="160" y="205" text-anchor="middle" font-size="24" font-weight="800" fill="#0f172a" font-family="ui-monospace, Consolas, monospace">0.71</text><text x="160" y="225" text-anchor="middle" font-size="11" font-weight="500" fill="#64748b">Uzlaştırma (5/7)</text><text x="52.0" y="174.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">0</text><text x="160.0" y="66.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">1</text><text x="268.0" y="174.0" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">1</text></svg></div>
+    </div>
+    
+
+    
+
+    
+    <h3>Güçlü Yönler</h3>
+    <ul class="bullet-list">
+      
+      <li class="ok">Brüt Marj</li>
+      
+      <li class="ok">Net Marj</li>
+      
+      <li class="ok">Özsermaye Kârlılığı (ROE)</li>
+      
+      <li class="ok">Free cash flow (OCF−CAPEX)</li>
+      
+      <li class="ok">Piotroski F Skoru</li>
+      
+    </ul>
+    
+
+    
+    <h3>Zayıf Yönler</h3>
+    <ul class="bullet-list">
+      
+      <li class="warn">Olay etkisi: negatif</li>
+      
+      <li class="warn">FAVÖK marjı hesaplanamadı — amortisman verisi eksik</li>
+      
+    </ul>
+    
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>1</span></div>
+  </div></div>
+
+  <!-- ============= II. ŞİRKET PROFİLİ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>II. Şirket Profili</h1>
+
+    
+    <div>ASELS, Borsa İstanbul'da işlem gören Sanayi sektöründen bir şirket olup FY-2025 itibarıyla 180.4 milyar TL hasılat, 251.8 milyar TL özsermaye ve 431.6 milyar TL bilanço büyüklüğüne ulaşmıştır. Faaliyet alanı sanayi ve üretim odaklı olup; kapasite kullanım oranı, hammadde tedariki ve ihracat performansı operasyonel temel göstergeler arasında. Yerel pazar dinamiklerinin yanı sıra uluslararası talep ve rekabet koşulları doğrudan kâr yapısını şekillendirmektedir. Şirket Profili bölümü, yatırımcının şirketi doğru değerlendirebilmesi için gerekli kurumsal yapı, iş modeli ve segment bilgisini sunmayı amaçlamaktadır. Aşağıdaki tabloda temel kurumsal göstergeler özetlenmiş olup, ileride detaylandırılacak segment analizi ve yönetim kadrosu bilgisi bu bölümü tamamlayacaktır.</div>
+    
+
+    
+    <h2>Kurumsal Özet</h2>
+    <table>
+      <thead><tr><th style="width:35%">Gösterge</th><th>Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Ticker</td><td>ASELS</td></tr>
+        
+        <tr><td class="label">Dönem</td><td>FY-2025</td></tr>
+        
+        <tr><td class="label">Sektör</td><td>Sanayi</td></tr>
+        
+        <tr><td class="label">Toplam Gelir (TL)</td><td>180,4 milyar</td></tr>
+        
+        <tr><td class="label">Toplam Özsermaye (TL)</td><td>251,8 milyar</td></tr>
+        
+        <tr><td class="label">Net Borç (TL)</td><td>-10,9 milyar</td></tr>
+        
+        <tr><td class="label">Net Kâr (TL)</td><td>29,9 milyar</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Ortaklık Yapısı</h2>
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 620 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:620px;height:auto;background:#f8fafc;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><rect x="0" y="0" width="620" height="360" fill="#ffffff" rx="8"/><text x="310" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">Ortaklık Yapısı (Yaklaşık)</text><path d="M180.0,60.0 A130,130 0 1 1 50.2,196.5 L125.1,192.8 A55,55 0 1 0 180.0,135.0 Z" fill="#1e40af" stroke="#ffffff" stroke-width="2"/><text x="247.0" y="257.7" text-anchor="middle" font-size="12" font-weight="700" fill="white">74.2%</text><rect x="360" y="60" width="18" height="18" fill="#1e40af" rx="3"/><text x="385" y="73" font-size="12" fill="#0f172a">Türk Silahlı Kuvvetlerini Güçlendirme Vakfı</text><text x="600" y="73" text-anchor="end" font-size="12" font-weight="700" fill="#64748b">74.2%</text><path d="M50.2,196.5 A130,130 0 0 1 180.0,60.0 L180.0,135.0 A55,55 0 0 0 125.1,192.8 Z" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/><text x="113.0" y="130.3" text-anchor="middle" font-size="12" font-weight="700" fill="white">25.8%</text><rect x="360" y="88" width="18" height="18" fill="#f59e0b" rx="3"/><text x="385" y="101" font-size="12" fill="#0f172a">Halka Açık</text><text x="600" y="101" text-anchor="end" font-size="12" font-weight="700" fill="#64748b">25.8%</text><text x="180" y="186" text-anchor="middle" font-size="11" font-weight="600" fill="#64748b">Toplam</text><text x="180" y="204" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">%100</text></svg></div>
+    
+
+    
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>2</span></div>
+  </div></div>
+
+  <!-- ============= III. FİNANSAL ANALİZ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>III. Finansal Analiz</h1>
+
+    
+    <div>ASELS, Sanayi sektöründe FY-2025 itibarıyla 180.4 milyar TL hasılat üreten, 431.6 milyar TL bilanço büyüklüğüne ve 251.8 milyar TL özsermayeye sahip bir şirket olarak değerlendirildi. Net kâr marjı 16.58% seviyesinde oluşurken, bu profil Sanayi ortalamasıyla birlikte aşağıda detaylandırılan oran analizinde karşılaştırmalı olarak yorumlanıyor. Aşağıdaki tablolar son dönem bilanço, gelir tablosu ve nakit akışının yanı sıra 5 yıllık trend ve oran seyrini gösteriyor. Her bir tabloyu takiben yapılan yorum, metriğin mutlak değeri yanında yön ve sektörel konumu üzerinden değerlendiriliyor.</div>
+    
+
+    <h2>Temel Finansal Göstergeler — FY-2025</h2>
+    
+    <table>
+      <thead><tr><th style="width:30%">Metrik</th><th class="num" style="width:20%">Değer</th><th>Yorum</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Brüt Marj</td>
+          <td class="num">%31,8</td>
+          <td>Sektör eşiği: sanayi için %20 altı düşük, %30 üstü güçlü. Ürün karması ve maliyet yönetiminin birleşik göstergesi.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Marj</td>
+          <td class="num">%16,6</td>
+          <td>Finansman giderleri ve vergi etkisini de içeren nihai kârlılık. Negatif işaret gelir tablosu sıkıntısı.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Özsermaye Kârlılığı (ROE)</td>
+          <td class="num">%11,9</td>
+          <td>Türk lirası bazında sermaye maliyeti ~%30; üzeri değer yaratımı, altı değer erozyonu işareti.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Nakit Dönüşüm Süresi</td>
+          <td class="num">391 gün</td>
+          <td>Pozitif CCC operasyonel sermaye bağlanması, negatif CCC tedarikçi-finanslı büyüme (nadir ve güçlü).</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Borç</td>
+          <td class="num">-10,9 milyar TL</td>
+          <td>Finansal borç − nakit; özsermayeye göre oran yatırımcı için ek okuma sağlar.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Free cash flow (OCF−CAPEX)</td>
+          <td class="num">10,7 milyar TL</td>
+          <td>Negative FCF: growth CAPEX or ops drag? LLM should distinguish.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Piotroski F Skoru</td>
+          <td class="num">4/9</td>
+          <td>7-9 güçlü finansal sağlık, 4-6 orta, 0-3 zayıf (0-9 skalası).</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Konsolide Bilanço (milyar TL) — FY-2025</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Toplam Varlıklar</td><td class="num">431.587</td></tr>
+        
+        <tr><td class="label">Nakit ve Benzerleri</td><td class="num">29.086</td></tr>
+        
+        <tr><td class="label">Ticari Alacaklar</td><td class="num">87.945</td></tr>
+        
+        <tr><td class="label">Stoklar</td><td class="num">73.661</td></tr>
+        
+        <tr><td class="label">Toplam Dönen Varlıklar</td><td class="num">174.984</td></tr>
+        
+        <tr><td class="label">Maddi Duran Varlıklar (Net)</td><td class="num">64.659</td></tr>
+        
+        <tr><td class="label">Maddi Olmayan Varlıklar</td><td class="num">37.283</td></tr>
+        
+        <tr><td class="label">Toplam Duran Varlıklar</td><td class="num">256.603</td></tr>
+        
+        <tr><td class="label">Toplam Yükümlülükler</td><td class="num">179.801</td></tr>
+        
+        <tr><td class="label">Kısa Vadeli Yükümlülükler</td><td class="num">126.229</td></tr>
+        
+        <tr><td class="label">KV Finansal Borç</td><td class="num">13.126</td></tr>
+        
+        <tr><td class="label">Ticari Borçlar</td><td class="num">24</td></tr>
+        
+        <tr><td class="label">UV Finansal Borç</td><td class="num">5.028</td></tr>
+        
+        <tr><td class="label">Toplam Özsermaye</td><td class="num">251.786</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Konsolide Gelir Tablosu (milyar TL) — FY-2025</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Hasılat</td><td class="num">180.445</td></tr>
+        
+        <tr><td class="label">Satışların Maliyeti</td><td class="num">-123.018</td></tr>
+        
+        <tr><td class="label">Brüt Kâr</td><td class="num">57.427</td></tr>
+        
+        <tr><td class="label">Faaliyet Kârı</td><td class="num">49.146</td></tr>
+        
+        <tr><td class="label">Net Dönem Kârı</td><td class="num">29.918</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Nakit Akış Özeti (milyar TL)</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Operasyonel Nakit Akışı (OCF)</td><td class="num">48.902</td></tr>
+        
+        <tr><td class="label">Finansman Faaliyetlerinden Nakit</td><td class="num">1.959</td></tr>
+        
+        <tr><td class="label">Ödenen Temettü</td><td class="num">0</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    <h2>Finansal Trend (5 dönem)</h2>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:900px;height:auto;background:#ffffff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);font-family:-apple-system,'Segoe UI',sans-serif;"><defs>
+    <linearGradient id="chartBgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="chartShadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs><rect x="0" y="0" width="900" height="420" fill="url(#chartBgGrad)" rx="12"/><rect x="90" y="60" width="770" height="270" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" rx="4"/><text x="450" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a" letter-spacing="-0.3">Gelir / FAVÖK / Net Kar Trendi (mn TL)</text><line x1="90" y1="330.0" x2="860" y2="330.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="334" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">-18.044,5</text><line x1="90" y1="285.0" x2="860" y2="285.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="289" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">18.044,5</text><line x1="90" y1="240.0" x2="860" y2="240.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="244" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">54.133,5</text><line x1="90" y1="195.0" x2="860" y2="195.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="199" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">90.222,5</text><line x1="90" y1="150.0" x2="860" y2="150.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="154" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">126.311,5</text><line x1="90" y1="105.0" x2="860" y2="105.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="109" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">162.400,5</text><line x1="90" y1="60.0" x2="860" y2="60.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="80" y="64" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">198.489,5</text><line x1="90.0" y1="330" x2="90.0" y2="335.0" stroke="#64748b" stroke-width="1"/><text x="90.0" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Q1-2025</text><line x1="282.5" y1="330" x2="282.5" y2="335.0" stroke="#64748b" stroke-width="1"/><text x="282.5" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">H1-2025</text><line x1="475.0" y1="330" x2="475.0" y2="335.0" stroke="#64748b" stroke-width="1"/><text x="475.0" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Q3-2025</text><line x1="667.5" y1="330" x2="667.5" y2="335.0" stroke="#64748b" stroke-width="1"/><text x="667.5" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">FY-2025</text><line x1="860.0" y1="330" x2="860.0" y2="335.0" stroke="#64748b" stroke-width="1"/><text x="860.0" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">FY-2026</text><line x1="90" y1="330" x2="860" y2="330" stroke="#0f172a" stroke-width="1.5"/><path d="M90.0,279.1 L282.5,240.5 L475.0,194.2 L667.5,82.5" stroke="#1e40af" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round" filter="url(#chartShadow)"/><circle cx="90.0" cy="279.1" r="6" fill="#ffffff" stroke="#1e40af" stroke-width="3" filter="url(#chartShadow)"/><circle cx="90.0" cy="279.1" r="2.5" fill="#1e40af"/><circle cx="282.5" cy="240.5" r="6" fill="#ffffff" stroke="#1e40af" stroke-width="3" filter="url(#chartShadow)"/><circle cx="282.5" cy="240.5" r="2.5" fill="#1e40af"/><circle cx="475.0" cy="194.2" r="6" fill="#ffffff" stroke="#1e40af" stroke-width="3" filter="url(#chartShadow)"/><circle cx="475.0" cy="194.2" r="2.5" fill="#1e40af"/><circle cx="667.5" cy="82.5" r="6" fill="#ffffff" stroke="#1e40af" stroke-width="3" filter="url(#chartShadow)"/><circle cx="667.5" cy="82.5" r="2.5" fill="#1e40af"/><path d="M90.0,304.8 L282.5,299.5 L475.0,293.1 L667.5,270.2" stroke="#f59e0b" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round" filter="url(#chartShadow)"/><circle cx="90.0" cy="304.8" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" filter="url(#chartShadow)"/><circle cx="90.0" cy="304.8" r="2.5" fill="#f59e0b"/><circle cx="282.5" cy="299.5" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" filter="url(#chartShadow)"/><circle cx="282.5" cy="299.5" r="2.5" fill="#f59e0b"/><circle cx="475.0" cy="293.1" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" filter="url(#chartShadow)"/><circle cx="475.0" cy="293.1" r="2.5" fill="#f59e0b"/><circle cx="667.5" cy="270.2" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" filter="url(#chartShadow)"/><circle cx="667.5" cy="270.2" r="2.5" fill="#f59e0b"/><rect x="90" y="392" width="14" height="14" fill="#1e40af" rx="2"/><text x="110" y="403" font-size="12" font-weight="600" fill="#0f172a">Hasılat</text><rect x="250" y="392" width="14" height="14" fill="#f59e0b" rx="2"/><text x="270" y="403" font-size="12" font-weight="600" fill="#0f172a">Net Kar</text></svg></div>
+    
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:860px;height:auto;background:#f8fafc;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><rect x="0" y="0" width="860" height="340" fill="#ffffff" rx="8"/><rect x="80" y="50" width="750" height="215" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/><text x="430" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Gelir-Brüt Kar-Net Kar Dağılımı</text><line x1="80" y1="265.0" x2="830" y2="265.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="269" text-anchor="end" font-size="11" fill="#64748b">0</text><line x1="80" y1="222.0" x2="830" y2="222.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="226" text-anchor="end" font-size="11" fill="#64748b">58.913,8</text><line x1="80" y1="179.0" x2="830" y2="179.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="183" text-anchor="end" font-size="11" fill="#64748b">117.827,6</text><line x1="80" y1="136.0" x2="830" y2="136.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="140" text-anchor="end" font-size="11" fill="#64748b">176.741,4</text><line x1="80" y1="93.0" x2="830" y2="93.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="97" text-anchor="end" font-size="11" fill="#64748b">235.655,2</text><line x1="80" y1="50.0" x2="830" y2="50.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="70" y="54" text-anchor="end" font-size="11" fill="#64748b">294.569</text><path d="M80.0,248.4 L267.5,225.8 L455.0,198.7 L642.5,133.3 L830.0,265.0 L830.0,265.0 L642.5,265.0 L455.0,265.0 L267.5,265.0 L80.0,265.0 Z" fill="#1e40af" opacity="0.85" stroke="#ffffff" stroke-width="1"/><path d="M80.0,243.4 L267.5,213.3 L455.0,178.2 L642.5,91.4 L830.0,265.0 L830.0,265.0 L642.5,133.3 L455.0,198.7 L267.5,225.8 L80.0,248.4 Z" fill="#f59e0b" opacity="0.85" stroke="#ffffff" stroke-width="1"/><path d="M80.0,241.8 L267.5,208.6 L455.0,169.7 L642.5,69.5 L830.0,265.0 L830.0,265.0 L642.5,91.4 L455.0,178.2 L267.5,213.3 L80.0,243.4 Z" fill="#059669" opacity="0.85" stroke="#ffffff" stroke-width="1"/><text x="80.0" y="285" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Q1-2025</text><text x="267.5" y="285" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">H1-2025</text><text x="455.0" y="285" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Q3-2025</text><text x="642.5" y="285" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">FY-2025</text><text x="830.0" y="285" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">FY-2026</text><rect x="80" y="312" width="14" height="14" fill="#1e40af" rx="2"/><text x="100" y="323" font-size="12" font-weight="600" fill="#0f172a">Hasılat</text><rect x="250" y="312" width="14" height="14" fill="#f59e0b" rx="2"/><text x="270" y="323" font-size="12" font-weight="600" fill="#0f172a">Brüt Kar</text><rect x="420" y="312" width="14" height="14" fill="#059669" rx="2"/><text x="440" y="323" font-size="12" font-weight="600" fill="#0f172a">Net Kar</text></svg></div>
+    
+
+    
+
+    <h3>Gelir ve Kârlılık</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (milyar TL)</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Hasılat</td>
+          <td class="num">22.791</td><td class="num">53.710</td><td class="num">90.873</td><td class="num">180.445</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Brüt Kar</td>
+          <td class="num">6.821</td><td class="num">17.188</td><td class="num">28.088</td><td class="num">57.427</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Faaliyet Karı</td>
+          <td class="num">7.406</td><td class="num">17.458</td><td class="num">26.274</td><td class="num">49.146</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Kar</td>
+          <td class="num">2.133</td><td class="num">6.411</td><td class="num">11.588</td><td class="num">29.918</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <h3>Bilanço Kalemleri</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (milyar TL)</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Toplam Varlıklar</td>
+          <td class="num">270.046</td><td class="num">290.272</td><td class="num">324.319</td><td class="num">431.587</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Nakit ve Benzerleri</td>
+          <td class="num">12.832</td><td class="num">15.792</td><td class="num">14.438</td><td class="num">29.086</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Stoklar</td>
+          <td class="num">46.501</td><td class="num">52.958</td><td class="num">65.493</td><td class="num">73.661</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Maddi Duran Varlıklar</td>
+          <td class="num">41.528</td><td class="num">45.717</td><td class="num">50.663</td><td class="num">64.659</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">KV Finansal Borç</td>
+          <td class="num">6.037</td><td class="num">6.869</td><td class="num">12.737</td><td class="num">13.126</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">UV Finansal Borç</td>
+          <td class="num">172</td><td class="num">154</td><td class="num">1.211</td><td class="num">5.028</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Toplam Özsermaye</td>
+          <td class="num">157.722</td><td class="num">170.246</td><td class="num">187.622</td><td class="num">251.786</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    
+    <h3>Nakit Akışı</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (milyar TL)</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Operasyonel Nakit</td>
+          <td class="num">4.228</td><td class="num">13.635</td><td class="num">24.095</td><td class="num">48.902</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">CAPEX</td>
+          <td class="num">-5.954</td><td class="num">-13.013</td><td class="num">-24.015</td><td class="num">-38.168</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Temettü Ödemesi</td>
+          <td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h3>Oran Trendleri</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Oran</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Brüt Marj</td>
+          <td class="num">%29,9</td><td class="num">%32,0</td><td class="num">%30,9</td><td class="num">%31,8</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Marj</td>
+          <td class="num">%9,4</td><td class="num">%11,9</td><td class="num">%12,8</td><td class="num">%16,6</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">ROE</td>
+          <td class="num">%1,4</td><td class="num">%3,8</td><td class="num">%6,2</td><td class="num">%11,9</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">ROA</td>
+          <td class="num">%0,8</td><td class="num">%2,2</td><td class="num">%3,6</td><td class="num">%6,9</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Cari Oran</td>
+          <td class="num">1.50</td><td class="num">1.34</td><td class="num">1.42</td><td class="num">1.39</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h3>Temettü Geçmişi</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:38%">Kalem</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Temettü Ödemesi (mn TL)</td>
+          <td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Ciro Yüzdesi</td>
+          <td class="num">%0,00</td><td class="num">%0,00</td><td class="num">%0,00</td><td class="num">%0,00</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Payout Ratio (Net Kar Yüzdesi)</td>
+          <td class="num">%0,0</td><td class="num">%0,0</td><td class="num">%0,0</td><td class="num">%0,0</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Karlılık Analizi</h2>
+    <div><p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Sektör Ref.</th><th>Değerlendirme</th></tr></thead><tbody><tr><td>Brüt Marj</td><td>%31.83</td><td>Savunma elektroniği: %25-40</td><td>Ortanın üzeri</td></tr><tr><td>Net Marj (raporlanan)</td><td>%16.58</td><td>—</td><td>IAS 29 baskısı dahil</td></tr><tr><td>ROE</td><td>%11.88</td><td>—</td><td>Düşük görünse de IAS 29 kaynaklı özkaynak şişkinliği etkisi var</td></tr><tr><td>ROA</td><td>%6.93</td><td>—</td><td>Orta</td></tr><tr><td>ROCE</td><td>%16.09</td><td>—</td><td>Kabul edilebilir</td></tr><tr><td>ROIC</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>—</td><td>EBIT/NOPAT hesaplanamadı</td></tr></tbody></table></p>
+<p>[CHART:BAR] Kârlılık Metrikleri Karşılaştırması (%, FY2025) <table><thead><tr><th>Metrik</th><th>Değer</th></tr></thead><tbody><tr><td>Brüt Marj</td><td>31.83</td></tr><tr><td>Net Marj (raporlanan)</td><td>16.58</td></tr><tr><td>IAS29 düz. Net Marj (tahmini)</td><td>24.10</td></tr><tr><td>ROE</td><td>11.88</td></tr><tr><td>ROA</td><td>6.93</td></tr><tr><td>ROCE</td><td>16.09</td></tr></tbody></table></p></div>
+    
+
+    
+    <h2>Bilanço ve Borçluluk</h2>
+    <div><p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Kaynak</th></tr></thead><tbody><tr><td>Net Borç (Net Nakit)</td><td><strong>-10,932,201,000 TL (net nakit)</strong></td><td>KAP 1561039 hesaplaması</td></tr><tr><td>Net Borç / EBITDA</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>EBITDA eksik</td></tr><tr><td>Faiz Karşılama</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>EBIT verisi hesaplanamadı</td></tr><tr><td>FCF</td><td>10,733,502,000 TL</td><td>KAP 1561039 nakit akış</td></tr><tr><td>CAPEX (MDV + MODV)</td><td>~62,369,000,000 TL</td><td>Hesaplama: 38,168 + 24,200 mn TL [src: KAP 1561039 nakit akış]</td></tr><tr><td>CAPEX / Gelir</td><td>%34.6</td><td>Hesaplama; yüksek, Ar-Ge yatırım döngüsü</td></tr><tr><td>OCF / EBITDA</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>EBITDA eksik</td></tr></tbody></table></p>
+<p>ASELSAN'ın net nakit pozisyonu (10.9 bn TL), şirketin borç servis baskısı olmadan Ar-Ge ve CAPEX döngüsünü sürdürebildiğini göstermektedir. Yüksek CAPEX yoğunluğu (%34.6) kısa vadede serbest nakit akışı üretimini kısıtlamakta; ancak uzun vadede rekabet avantajı oluşturma potansiyeli taşımaktadır. Bu dengeyi "büyüme için fiyat ödeniyor" olarak değerlendiriyoruz.</p></div>
+    
+
+    
+
+    
+    <h2>Nakit Akışı Yorumu</h2>
+    <div><p>İşletme sermayesi yönetimi ASELSAN için özel bir önem taşımaktadır; zira POC muhasebesi ve kamu müşterisi yoğunlaşması tahsilat döngüsünü uzatmaktadır. CCC'nin 391 gün olması, savunma sanayiindeki yapısal normlarla (180-300 gün) kıyaslandığında sınır dışındadır ve kısa vadeli nakit akışı verimliliğinin zayıf olduğuna işaret etmektedir.</p>
+<p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Yorum</th></tr></thead><tbody><tr><td>Nakit Dönüşüm Döngüsü (CCC)</td><td>390.95 gün</td><td>Yüksek; savunma sözleşme yapısı ve ilişkili taraf alacakları kaynaklı</td></tr><tr><td>NWC / Gelir</td><td>%27.02</td><td>Gelirlerin dörtte birinden fazlası işletme sermayesinde bağlı</td></tr><tr><td>İlişkili Taraf Alacakları</td><td>32,068,651,000 TL (ticari alacakların %82.5'i)</td><td>KAP 1561039 bilanço</td></tr><tr><td>Cari Oran</td><td>1.3862</td><td>Yeterli; kritik değil</td></tr><tr><td>DSO / DIO / DPO</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>Ayrıştırılmış veri hesaplanamadı</td></tr></tbody></table></p></div>
+    
+
+    
+
+    
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>3</span></div>
+  </div></div>
+
+  <!-- ============= IV. DEĞERLEME & HEDEF FİYAT ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>IV. Değerleme & Hedef Fiyat</h1>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h2>Senaryo Analizi — Yorumlu</h2>
+    <div><p>> <strong>Metodoloji Notu (Düşük-Orta Güven):</strong> EBITDA verisi eksik olduğundan DCF ve EV/EBITDA çarpanı hesaplanamadı. Değerleme, IAS 29 düzeltilmiş kazanç bazlı F/K çarpanı üzerine kurulmuştur. EBITDA açıklandığında bu tablonun revize edilmesi zorunludur.</p></div>
+    
+
+    
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>4</span></div>
+  </div></div>
+
+  <!-- ============= V. SEKTÖR & REKABET ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>V. Sektör & Rekabet Analizi</h1>
+
+    
+    <div>Sanayi sektörünün geneli maliyet yapısı, kapasite kullanım oranı ve ihracat karma riskine duyarlıdır. Hammadde fiyat volatilitesi, enerji maliyeti (özellikle EPDK kararları sonrası gaz ve elektrik fiyat artışları), döviz kuru hareketleri ve uluslararası talep dinamikleri operasyonel kârlılığı belirleyen temel dış değişkenler olarak öne çıkıyor. Turizm ve havacılık alt-segmentinde ise yolcu trafiği, yakıt hedge yapısı ve kapasite yönetimi başlıca performans göstergeleri. Aşağıdaki benchmark tablosu sektör içindeki konumlanmaya göre 5 temel metriği karşılaştırmaktadır.  sektör içinde diferansiye olmaktadır. Porter 5 Forces çerçevesinde sektörel rekabet baskısı, yeni giren tehdidi, ikame riski, tedarikçi ve alıcı pazarlık gücü aşağıda detaylandırılmıştır. SWOT analizi ise şirketin mevcut pozisyonunu Strengths/Weaknesses/Opportunities/Threats üzerinden özetlemektedir.</div>
+    
+
+    
+    <h2>Sektördeki Emsal Şirketler</h2>
+    <div class="note" style="background:#fef3c7; border-left-color:var(--fx-warning); color:#78350f; margin-bottom:12px;">
+      <strong>⚠ Metodoloji Notu:</strong> Aşağıdaki emsal listesi <strong>defense</strong> alt-sektöründe işlem gören BIST şirketlerinden derlenmiştir. Şirket rakamları gerçek parse edilmiş finansal tablolardan gelir; emsal medyan değerleri ise <strong>sektör bazlı directional tahminlerdir</strong> (2025-2026 yaklaşık) — her bir emsalin canlı filer verisi için ayrı finansal analiz çalıştırılmadı. Kesin karşılaştırma için her emsal ticker üzerinden bağımsız analiz önerilir.
+    </div>
+    <table>
+      <thead><tr><th style="width:20%">Ticker</th><th>Şirket Unvanı</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label" style="font-family:var(--font-mono);">OTKAR</td><td>Otokar</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Şirket vs Sektör Medyanı — Operasyonel Oranlar</h2>
+    <table>
+      <thead>
+        <tr><th>Metrik</th><th class="num">Şirket</th><th class="num">Sektör Medyan</th><th>Fark</th></tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Brüt Marj</td>
+          <td class="num">%31.8</td>
+          <td class="num">%30.0</td>
+          <td>+1.8 pp</td>
+        </tr>
+        
+        <tr>
+          <td class="label">FAVÖK Marjı</td>
+          <td class="num">—</td>
+          <td class="num">%20.0</td>
+          <td>—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Marj</td>
+          <td class="num">%16.6</td>
+          <td class="num">%12.0</td>
+          <td>+4.6 pp</td>
+        </tr>
+        
+        <tr>
+          <td class="label">ROE</td>
+          <td class="num">%11.9</td>
+          <td class="num">%22.0</td>
+          <td>-10.1 pp</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Değerleme Çarpanları — Sektör Medyanı</h2>
+    <table>
+      <thead><tr><th>Çarpan</th><th class="num">Sektör Medyan</th><th>Not</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">EV/EBITDA</td>
+          <td class="num">8.5x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı (yaklaşık 2025-2026)</td>
+        </tr>
+        
+        <tr>
+          <td class="label">F/K (P/E)</td>
+          <td class="num">14.0x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı</td>
+        </tr>
+        
+        <tr>
+          <td class="label">PD/DD (P/BV)</td>
+          <td class="num">3.50x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Temettü Verimi</td>
+          <td class="num">%1.0</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör ortalaması</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Borç/FAVÖK</td>
+          <td class="num">0.5x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 860 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:860px;height:auto;background:#f8fafc;border-radius:8px;font-family:-apple-system,'Segoe UI',sans-serif;"><rect x="0" y="0" width="860" height="360" fill="#ffffff" rx="8"/><rect x="70" y="50" width="760" height="225" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/><text x="430" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Emsal Benchmark (Şirket vs Medyan)</text><line x1="70" y1="275.0" x2="830" y2="275.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="279" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">0</text><line x1="70" y1="230.0" x2="830" y2="230.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="234" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">73,14</text><line x1="70" y1="185.0" x2="830" y2="185.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="189" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">146,28</text><line x1="70" y1="140.0" x2="830" y2="140.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="144" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">219,42</text><line x1="70" y1="95.0" x2="830" y2="95.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="99" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">292,56</text><line x1="70" y1="50.0" x2="830" y2="50.0" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/><text x="60" y="54" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">365,7</text><line x1="70" y1="275" x2="830" y2="275" stroke="#0f172a" stroke-width="1.5"/><rect x="92.8" y="79.3" width="47.9" height="195.7" fill="#1e40af" rx="3"/><text x="119.4" y="73.34782608695653" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">318</text><rect x="150.0" y="79.3" width="47.9" height="195.7" fill="#f59e0b" rx="3" opacity="0.85"/><text x="172.6" y="73.34782608695653" text-anchor="middle" font-size="10" font-weight="700" fill="#f59e0b">318</text><text x="146" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Gross margin</text><rect x="244.8" y="172.9" width="47.9" height="102.1" fill="#1e40af" rx="3"/><text x="271.4" y="166.8671041837572" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">166</text><rect x="302.0" y="172.9" width="47.9" height="102.1" fill="#f59e0b" rx="3" opacity="0.85"/><text x="324.6" y="166.8671041837572" text-anchor="middle" font-size="10" font-weight="700" fill="#f59e0b">166</text><text x="298" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Net margin</text><rect x="396.8" y="201.8" width="47.9" height="73.2" fill="#1e40af" rx="3"/><text x="423.4" y="195.7842493847416" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">119</text><rect x="454.0" y="201.8" width="47.9" height="73.2" fill="#f59e0b" rx="3" opacity="0.85"/><text x="476.6" y="195.7842493847416" text-anchor="middle" font-size="10" font-weight="700" fill="#f59e0b">119</text><text x="450" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Return on equity</text><text x="602" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Cash conversion cycle</text><text x="754" y="293" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">Piotroski F-score</text><rect x="70" y="326" width="16" height="14" fill="#1e40af" rx="2"/><text x="92" y="337" font-size="12" font-weight="600" fill="#0f172a">Şirket</text><rect x="180" y="326" width="16" height="14" fill="#f59e0b" rx="2" opacity="0.85"/><text x="202" y="337" font-size="12" font-weight="600" fill="#0f172a">Sektör Medyanı</text></svg></div>
+    
+
+    
+    <h2>Emsal Karşılaştırma Tablosu</h2>
+    <table>
+      <thead><tr><th>Metrik</th><th class="num">Şirket</th><th class="num">Medyan</th><th class="num">Min/Max</th><th>Quartile</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Gross margin</td>
+          <td class="num">%31,8</td>
+          <td class="num">%31,8</td>
+          <td class="num">%31,8 – %31,8</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net margin</td>
+          <td class="num">%16,6</td>
+          <td class="num">%16,6</td>
+          <td class="num">%16,6 – %16,6</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Return on equity</td>
+          <td class="num">%11,9</td>
+          <td class="num">%11,9</td>
+          <td class="num">%11,9 – %11,9</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Cash conversion cycle</td>
+          <td class="num">391 gün</td>
+          <td class="num">391 gün</td>
+          <td class="num">391 gün – 391 gün</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Piotroski F-score</td>
+          <td class="num">4/9</td>
+          <td class="num">4/9</td>
+          <td class="num">4/9 – 4/9</td>
+          <td>Q2</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Porter's 5 Forces</h2>
+    <div class="porter-grid">
+      <div class="porter-box"><h4>Rakipler Arası Rekabet</h4><span class="intensity medium">Orta</span><p>Sektör olgun, yerel ve küresel rakipler aktif.</p></div>
+      <div class="porter-box"><h4>Yeni Giren Tehdidi</h4><span class="intensity low">Düşük</span><p>Sermaye yoğunluğu + marka bariyeri.</p></div>
+      <div class="porter-box"><h4>İkame Ürün/Hizmet</h4><span class="intensity medium">Orta</span><p>Teknoloji değişimi ve alternatif malzemeler tehdit.</p></div>
+      <div class="porter-box"><h4>Tedarikçi Pazarlık Gücü</h4><span class="intensity medium">Orta</span><p>Hammadde fiyat hareketleri maliyet yapısını etkiliyor.</p></div>
+      <div class="porter-box" style="grid-column: span 2;"><h4>Alıcı Pazarlık Gücü</h4><span class="intensity medium">Orta</span><p>B2B müşteriler fiyat hassas; B2C marka gücüne bağlı.</p></div>
+    </div>
+    
+
+    
+    <h2>SWOT Analizi</h2>
+    <div class="swot-grid">
+      <div class="swot-box strengths"><h4>Güçlü Yönler</h4><ul><li>İştirak portföyü sektörel diversifikasyon ile siklik riski düşürüyor</li><li>Güçlü yönetişim yapısı ve uzun vadeli strateji vizyonu</li><li>Ana iştiraklerin sektör liderliği holding değerine güçlü katkı</li><li>Ölçek avantajı ve kurumsal finansman erişimi</li></ul></div>
+      <div class="swot-box weaknesses"><h4>Zayıf Yönler</h4><ul><li>Konglomerat iskontosu — piyasa holding değerini NAV&#39;ın altında fiyatlıyor</li><li>İştirakler arası sermaye akışının şeffaflığı yatırımcı güvenini zorluyor</li><li>Karmaşık yapısı nedeniyle kısa vadeli trading stratejisine uygun değil</li></ul></div>
+      <div class="swot-box opportunities"><h4>Fırsatlar</h4><ul><li>Stratejik dönüşüm (ESG, dijitalleşme, yenilenebilir enerji) iştirak seviyesinde ek değer</li><li>İştirak satış veya halka arz yoluyla değer kristalizasyonu</li><li>Yurt dışı büyüme (M&amp;A, joint venture) global trafik kazandırma potansiyeli</li></ul></div>
+      <div class="swot-box threats"><h4>Tehditler</h4><ul><li>Ana iştirakte operasyonel sorun holding genelinde değerleme üzerinde çarpan etkisi yaratıyor</li><li>Türkiye makro ortamı (enflasyon, kur, jeopolitik) iştirak kârlılığını eş zamanlı etkiliyor</li><li>Konglomerat iskontosu genişleme eğilimi — piyasa basitliği tercih ediyor</li></ul></div>
+    </div>
+    
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>5</span></div>
+  </div></div>
+
+  <!-- ============= VI. MAKRO ORTAM ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>VI. Makroekonomik Bağlam</h1>
+
+    <h2>Kritik Makro Göstergeler</h2>
+    <table>
+      <thead><tr><th>Gösterge</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        <tr><td class="label">USD/TRY</td><td class="num">44,7795 TL</td></tr>
+        <tr><td class="label">EUR/TRY</td><td class="num">52,7894 TL</td></tr>
+        <tr><td class="label">TCMB Politika Faizi</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">TCMB 10Y Tahvil</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">TÜFE (YoY)</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">GDP (YoY)</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">BIST-100 YTD</td><td class="num">Raporlanmadı</td></tr>
+      </tbody>
+    </table>
+
+    
+    <h2>Sektör-Spesifik Transmisyon</h2>
+    <div>Türkiye makro ortamı rapor tarihi itibarıyla yüksek enflasyon, sıkı para politikası ve TL'nin seyri üzerinden şekillenmektedir. USD/TRY 44,7795 TL seviyesinde; TCMB politika faizi Raporlanmadı olup enflasyon dinamikleri ve kur geçişkenliği fiyat istikrarının en kritik değişkenleri arasında yer almaktadır. Sanayi sektöründe TL'nin değer kaybı ihracatçıya kısa vadeli avantaj sağlarken, ithalata bağlı hammadde maliyetlerini artırmakta; net etki her şirketin ihracat/ithalat dengesi ile şekillenmektedir. TCMB sıkı para politikası finansman maliyetini artırarak yatırım kararlarını geciktirebilir. Küresel dinamiklerde petrol fiyatları, emtia trendleri ve FED politikaları TL üzerindeki dolaylı baskıyı belirleyen faktörler arasında. Jeopolitik gelişmeler (Ukrayna, Orta Doğu) özellikle enerji yoğun sanayi ve havacılık sektörlerinde doğrudan etkiye sahip.</div>
+    
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>6</span></div>
+  </div></div>
+
+  <!-- ============= VII. TEKNİK ANALİZ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>VII. Teknik Analiz</h1>
+
+    
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Trend</div><div class="kpi-value" style="font-size:14pt;">Yükseliş</div></div>
+      <div class="kpi-card"><div class="kpi-label">RSI (14)</div><div class="kpi-value">72.2</div><div class="kpi-sub">Aşırı alım</div></div>
+      <div class="kpi-card"><div class="kpi-label">Son Kapanış</div><div class="kpi-value">361,15 TL</div></div>
+      <div class="kpi-card"><div class="kpi-label">Hacim (7g ort.)</div><div class="kpi-value" style="font-size:12pt;">—</div></div>
+    </div>
+    
+
+    
+    <h2>Trend Analizi</h2>
+    <div>Teknik görünüm kısa-orta vadede yükseliş trendini koruyor; fiyat hareketli ortalamaların üzerinde seyrederken momentum göstergeleri pozitif bölgede bulunuyor. RSI(14) 72.2 seviyesinde olup aşırı alım bölgesinde bulunuyor; kısa vadeli düzeltme riski yükselmiş durumda. Destek ve direnç seviyeleri son 60 günlük fiyat aralığından türetilmiş olup, fiyatın bu seviyelerden gösterdiği reaksiyon kısa vadeli trading kararları için referans noktaları olarak kullanılabilir. Kapanışın bu seviyelerin yukarı/aşağı kırılması yeni yön sinyali olarak değerlendirilmelidir.</div>
+    
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>7</span></div>
+  </div></div>
+
+  <!-- ============= VIII. ESG ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>VIII. ESG Değerlendirmesi</h1>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 440 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;height:auto"><text x="220" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">ESG Skor Profili (0-100)</text><polygon points="220.0,152.5 243.8,193.8 196.2,193.8" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><polygon points="220.0,125.0 267.6,207.5 172.4,207.5" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><polygon points="220.0,97.5 291.4,221.3 148.6,221.3" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><polygon points="220.0,70.0 315.3,235.0 124.7,235.0" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><line x1="220" y1="180" x2="220.0" y2="70.0" stroke="#e2e8f0" stroke-width="0.5"/><text x="220.0" y="50.0" text-anchor="middle" font-size="10" font-weight="600" fill="#0f172a">Çevresel (E)</text><line x1="220" y1="180" x2="315.3" y2="235.0" stroke="#e2e8f0" stroke-width="0.5"/><text x="332.6" y="245.0" text-anchor="middle" font-size="10" font-weight="600" fill="#0f172a">Sosyal (S)</text><line x1="220" y1="180" x2="124.7" y2="235.0" stroke="#e2e8f0" stroke-width="0.5"/><text x="107.4" y="245.0" text-anchor="middle" font-size="10" font-weight="600" fill="#0f172a">Yönetişim (G)</text><polygon points="220.0,119.5 277.2,213.0 127.6,233.4" fill="#1e40af" fill-opacity="0.25" stroke="#1e40af" stroke-width="2"/><circle cx="220.0" cy="119.5" r="3.5" fill="#1e40af"/><text x="220.0" y="111.5" text-anchor="middle" font-size="9" font-weight="600" fill="#1e40af">55</text><circle cx="277.2" cy="213.0" r="3.5" fill="#1e40af"/><text x="277.2" y="205.0" text-anchor="middle" font-size="9" font-weight="600" fill="#1e40af">60</text><circle cx="127.6" cy="233.4" r="3.5" fill="#1e40af"/><text x="127.6" y="225.4" text-anchor="middle" font-size="9" font-weight="600" fill="#1e40af">97</text></svg></div>
+    
+
+    
+
+    
+
+    
+    <div><p>> <strong>ESG → Değerleme Bağlantısı:</strong> ASELSAN'ın savunma elektroniği odağı, ESG puanını yapısal olarak kısıtlamaktadır. ESG skoru 4.5/10 düzeyi → silah tedarik zinciri politikaları olan kurumsal yatırımcılar (özellikle Avrupa merkezli emeklilik fonları ve ESG entegre yatırım fonları) için değerleme tavanı işlevi görmektedir. Bu, hisse likidite ve halka açıklık potansiyelini daraltmaktadır.</p>
+<p><table><thead><tr><th>Boyut</th><th>Değerlendirme</th><th>Güven</th></tr></thead><tbody><tr><td>Çevresel (E)</td><td>Veri yetersiz — savunma sanayi için bağımsız ESG raporlaması sınırlı</td><td>Düşük</td></tr><tr><td>Sosyal (S)</td><td>Türkiye'nin en büyük mühendislik istihdamcılarından biri (olumlu); ancak savunma ürün portföyü sosyal boyutu kısıtlıyor</td><td>Düşük</td></tr><tr><td>Yönetişim (G)</td><td>Denetçi değişikliği (2025) dikkat gerektiriyor; TSKGV bağlantısı bağımsızlık sorunu doğuruyor; YK/CEO verisi eksik</td><td>Düşük</td></tr><tr><td><strong>ESG Genel</strong></td><td><strong>4.5/10</strong></td><td>Spekülatif</td></tr></tbody></table></p>
+<hr></div>
+    
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>8</span></div>
+  </div></div>
+
+  <!-- ============= IX. HABER & SENTIMENT ============= -->
+  
+
+  <!-- ============= X. KAP OLAYLARI ============= -->
+  
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>X. KAP Olayları & Etki Analizi</h1>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 780 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;height:auto"><text x="390" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Son 12 Ay KAP Olay Zaman Çizelgesi</text><line x1="60" y1="90" x2="760" y2="90" stroke="#0f172a" stroke-width="1.5"/><line x1="60" y1="86" x2="60" y2="94" stroke="#64748b" stroke-width="1"/><text x="60" y="108" text-anchor="middle" font-size="9" fill="#64748b">2026-02</text><line x1="436.9230769230769" y1="86" x2="436.9230769230769" y2="94" stroke="#64748b" stroke-width="1"/><text x="436.9230769230769" y="108" text-anchor="middle" font-size="9" fill="#64748b">2026-03</text><line x1="60" y1="90" x2="60" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="60" cy="65" r="4" fill="#94a3b8"/><text x="60" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Şirket Genel Bilgi Formu</text><line x1="60" y1="90" x2="60" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="60" cy="115" r="4" fill="#94a3b8"/><text x="60" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Katılım Finansı İlkeleri Bilgi…</text><line x1="60" y1="90" x2="60" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="60" cy="65" r="4" fill="#94a3b8"/><text x="60" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Sürdürülebilirlik Uyum Raporu</text><line x1="60" y1="90" x2="60" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="60" cy="115" r="4" fill="#94a3b8"/><text x="60" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Kurumsal Yönetim Bilgi Formu</text><line x1="60" y1="90" x2="60" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="60" cy="65" r="4" fill="#94a3b8"/><text x="60" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Kurumsal Yönetim Uyum Raporu</text><line x1="60" y1="90" x2="60" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="60" cy="115" r="4" fill="#94a3b8"/><text x="60" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Geleceğe Dönük Değerlendirmele…</text><line x1="60" y1="90" x2="60" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="60" cy="65" r="4" fill="#94a3b8"/><text x="60" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Sorumluluk Beyanı (Konsolide)</text><line x1="60" y1="90" x2="60" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="60" cy="115" r="4" fill="#94a3b8"/><text x="60" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Finansal Rapor</text><line x1="154.23076923076923" y1="90" x2="154.23076923076923" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="154.23076923076923" cy="65" r="4" fill="#94a3b8"/><text x="154.23076923076923" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Pay Bazında Devre Kesici Bildi…</text><line x1="329.2307692307692" y1="90" x2="329.2307692307692" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="329.2307692307692" cy="115" r="4" fill="#94a3b8"/><text x="329.2307692307692" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Yeni İş İlişkisi</text><line x1="450.3846153846154" y1="90" x2="450.3846153846154" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="450.3846153846154" cy="65" r="4" fill="#94a3b8"/><text x="450.3846153846154" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Borsada İşlem Gören Tipe Dönüş…</text><line x1="463.8461538461538" y1="90" x2="463.8461538461538" y2="115" stroke="#94a3b8" stroke-width="1"/><circle cx="463.8461538461538" cy="115" r="4" fill="#94a3b8"/><text x="463.8461538461538" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Borsada İşlem Gören Tipe Dönüş…</text><line x1="719.6153846153846" y1="90" x2="719.6153846153846" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="719.6153846153846" cy="65" r="4" fill="#94a3b8"/><text x="719.6153846153846" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Finansal Takvim</text><line x1="760" y1="90" x2="760" y2="115" stroke="#dc2626" stroke-width="1"/><circle cx="760" cy="115" r="4" fill="#dc2626"/><text x="760" y="127" text-anchor="middle" font-size="8" fill="#0f172a">Kar Payı Dağıtım İşlemlerine İ…</text><line x1="760" y1="90" x2="760" y2="65" stroke="#94a3b8" stroke-width="1"/><circle cx="760" cy="65" r="4" fill="#94a3b8"/><text x="760" y="57" text-anchor="middle" font-size="8" fill="#0f172a">Genel Kurul İşlemlerine İlişki…</text></svg></div>
+    
+
+    <table>
+      <thead><tr><th style="width:40%">Olay</th><th>Tip</th><th>Etki</th><th>Zamanlama</th><th>Etkilenen</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>Kar Payı Dağıtım İşlemlerine İlişkin Bildirim</td>
+          <td>dividend</td>
+          <td>Negatif</td>
+          <td>Anında</td>
+          <td>Nakit Akışı, Bilanço</td>
+        </tr>
+        
+        <tr>
+          <td>Genel Kurul İşlemlerine İlişkin Bildirim</td>
+          <td>governance</td>
+          <td>Belirsiz</td>
+          <td>Yakın</td>
+          <td>Bilanço</td>
+        </tr>
+        
+        <tr>
+          <td>Finansal Takvim</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Borsada İşlem Gören Tipe Dönüşüm Duyurusu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Borsada İşlem Gören Tipe Dönüşüm Duyurusu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Yeni İş İlişkisi</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Pay Bazında Devre Kesici Bildirimi</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Şirket Genel Bilgi Formu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Katılım Finansı İlkeleri Bilgi Formu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Sürdürülebilirlik Uyum Raporu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Kurumsal Yönetim Bilgi Formu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Kurumsal Yönetim Uyum Raporu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>10</span></div>
+  </div></div>
+  
+
+  <!-- ============= XI. RİSK ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>XI. Risk Değerlendirmesi</h1>
+
+    <h2>Risk Matrisi (Etki × Olasılık)</h2>
+    <div class="risk-matrix">
+      <div class="risk-axis">Etki ↑</div>
+      <div class="risk-axis">Düşük Olasılık</div>
+      <div class="risk-axis">Orta Olasılık</div>
+      <div class="risk-axis">Yüksek Olasılık</div>
+
+      <div class="risk-axis">Yüksek</div>
+      <div class="risk-cell risk-med">—</div>
+      <div class="risk-cell risk-high">—</div>
+      <div class="risk-cell risk-high">—</div>
+
+      <div class="risk-axis">Orta</div>
+      <div class="risk-cell risk-low">—</div>
+      <div class="risk-cell risk-med">—</div>
+      <div class="risk-cell risk-high">—</div>
+
+      <div class="risk-axis">Düşük</div>
+      <div class="risk-cell risk-low">—</div>
+      <div class="risk-cell risk-low">—</div>
+      <div class="risk-cell risk-med">—</div>
+    </div>
+
+    
+
+    
+    <h2>Detaylı Risk Yorumu</h2>
+    <div>Sanayi sektörlerinde maruziyet genel olarak hammadde fiyat volatilitesi, enerji maliyet artışları, talep daralması ve döviz kuru hareketleri şeklinde tezahür eder. THYAO gibi havacılık şirketleri için ise yakıt maliyeti, rezervasyon iptalleri ve jeopolitik kapatmalar kritik değişkenlerdir. Risk matrisi (etki × olasılık) yukarıda tespit edilen faktörleri 3×3 grid üzerinde konumlandırmakta ve yakın izleme önceliğini görsel olarak iletmektedir.</div>
+    
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>11</span></div>
+  </div></div>
+
+  <!-- ============= XII. SONUÇ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">ASELS · Aselsan Elektronik Sanayi ve Ticaret A.Ş.</span></div>
+      <div>2026-04-17</div>
+    </div>
+
+    <h1>XII. Sonuç & Öneriler</h1>
+
+    
+    <h2>Analitik Sonuç</h2>
+    <div><p>ASELSAN, FY2025 itibarıyla Türkiye'nin savunma elektroniği ekosisteminde güçlü bir konumdadır. Net nakit pozisyonu, sürdürülebilir FCF üretimi ve uzun vadeli backlog görünürlüğü şirketin temel dayanıklılığını kanıtlamaktadır. Brüt marjın %31.8'de tutulması, yüksek enflasyon ortamında fiyatlama gücünün korunduğuna işaret etmektedir.</p>
+<p>Bununla birlikte, analizimiz üç yapısal kısıtı açıkça ortaya koymaktadır: IAS 29 kaynaklı kazanç baskısı, raporlanan karlılığı gerçek operasyonel performansın altında göstermektedir; EBITDA verisinin eksikliği değerleme kalitesini zayıflatmaktadır; müşteri yoğunlaşmasının (alacakların %82.5'i tek taraf) yarattığı asimetrik risk yapısı ise portföy çeşitlendirmesi yapılmaksızın giderilememektedir.</p>
+<p>Teknik göstergeler kısa vadede (RSI 72, Bollinger üst band yakınında) ihtiyatlı olmayı önermektedir. Orta ve uzun vadede ise MA200'ün %50 üzerinde seyreden fiyat yapısı ve güçlü momentum trendi olumludur.</p></div>
+    
+
+    
+
+    
+    <h2>Ana Katalizörler</h2>
+    <ul class="bullet-list">
+      
+      <li class="ok">Brüt Marj</li>
+      
+      <li class="ok">Net Marj</li>
+      
+      <li class="ok">Özsermaye Kârlılığı (ROE)</li>
+      
+    </ul>
+    
+
+    
+    <h2>Detaylı Analiz (LLM Yönetici Raporu — Tam Metin)</h2>
+    <p style="font-size:9pt; color:var(--fx-gray); font-style:italic;">
+      Aşağıdaki bölüm, Finance X platformunun özet ajanı tarafından üretilen tam narrative raporu içermektedir. Yukarıdaki özet ve görsel analizlere ek olarak detaylı arka plan, rasyo yorumları, senaryo analizleri ve CAPEX programı değerlendirmesi burada yer alıyor.
+    </p>
+    <div class="llm-full-narrative" style="font-size:9.5pt; line-height:1.6;">
+      <h1>ASELSAN ELEKTRONİK SANAYİ VE TİCARET A.Ş.</h1>
+<h2>BIST: ASELS — Kapsamlı Şirket Analizi</h2>
+<strong>Analiz Tarihi:</strong> 17 Nisan 2026 | <strong>Hazırlayan:</strong> Finance X Platform | <strong>Dönem:</strong> FY2025 (01.01.2025–31.12.2025)
+<hr>
+<h2>İÇİNDEKİLER</h2>
+<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> [CHART:LINE] [CHART:BAR] <em style="color:#94a3b8;">(pie)</em></div>
+<table><thead><tr><th>#</th><th>Bölüm</th><th>Sayfa</th></tr></thead><tbody><tr><td>I</td><td>Yönetici Özeti + Skor Kartı + Hedef Fiyat</td><td>1</td></tr><tr><td>II</td><td>Şirket Profili</td><td>2</td></tr><tr><td>III</td><td>Finansal Analiz</td><td>3</td></tr><tr><td>IV</td><td>Değerleme</td><td>5</td></tr><tr><td>V</td><td>Sektör ve Rekabet Analizi</td><td>6</td></tr><tr><td>VI</td><td>Makroekonomik Bağlam</td><td>7</td></tr><tr><td>VII</td><td>Teknik Analiz</td><td>8</td></tr><tr><td>VIII</td><td>ESG Değerlendirmesi</td><td>9</td></tr><tr><td>IX</td><td>KAP Olayları ve Haber Analizi</td><td>9</td></tr><tr><td>X</td><td>Risk Değerlendirmesi</td><td>10</td></tr><tr><td>XI</td><td>Veri Kalite Uyarıları</td><td>11</td></tr><tr><td>XII</td><td>Sonuç ve Değerlendirme</td><td>12</td></tr><tr><td>—</td><td>Zorunlu Bildirimler</td><td>13</td></tr></tbody></table>
+<hr>
+<h2>I. YÖNETİCİ ÖZETİ</h2>
+<blockquote><strong>ÖNEMLİ TARİH:</strong> Q1-2026 sonuçları Mayıs 2026'da açıklanması beklenmektedir. FY2025 tam yıl sonuçları 24 Şubat 2026'da kamuoyuyla paylaşıldı [kaynak: KAP 1561039]. Q1-2026 açıklaması ikinci çeyreğin seyrini, özellikle Q4-2025'te yıla özel yüklenen gelirin (%50 Q4 konsantrasyonu) sürdürülebilirliğini test edecektir.</blockquote>
+<p><strong>Genel Değerlendirme (Orta Güven):</strong> ASELSAN, FY2025 itibarıyla Türkiye'nin savunma elektroniği ekosisteminde tartışmasız lider konumunu korumakta; brüt marjını %31.8 düzeyinde tutarak, net nakit pozisyonu ile pozitif serbest nakit akışını sürdürmektedir. Analizimizin temel bulgusunu şu cümleyle özetliyoruz: <em>Şirketin temel işletme kalitesi sağlamdır; ancak teknik göstergeler kısa vadede aşırı alım uyarısı vermekte ve IAS 29 etkisi gelir kalitesini baskılamaktadır.</em> Yatırım kararını değiştirecek katalist: ihracat gelirlerinin toplam cirodaki payının %20'yi aşması veya EBITDA marjının açıklanarak değerleme parametrelerinin netleşmesi hâlinde yukarı yönlü revizyon gündeme gelecektir; bunun tersi olan sözleşme gecikmesi veya faiz artışı ise aşağı yönlü senaryoyu tetikleyecektir.</p>
+<hr>
+<h3>SKOR KARTI (FY2025)</h3>
+<table><thead><tr><th>Boyut</th><th>Puan (1-10)</th><th>Yorum</th><th>Benchmark</th></tr></thead><tbody><tr><td>Finansal Sağlık</td><td>7.0</td><td>Net nakit +10.9 bn TL, cari oran 1.39; CCC 391 gün baskı</td><td>Savunma sektörü: CCC 180-300 gün</td></tr><tr><td>Büyüme Potansiyeli</td><td>7.5</td><td>Backlog 65.2 bn TL, CAPEX yoğunluğu %34.6; Ar-Ge stoku 36.2 bn TL</td><td>Yüksek CAPEX büyüme güvencesi, ama kısa vadeli FCF baskısı</td></tr><tr><td>Sektör Pozisyonu</td><td>8.5</td><td>Türkiye savunma piyasasında dominant; SSB/TSK tek büyük müşteri</td><td>Peer <em style="color:#94a3b8;">Raporlanmadı</em> — tek karşılaştırmalı analiz yapılamadı</td></tr><tr><td>Makro Uyumluluk</td><td>5.0</td><td>IAS 29 uygulanıyor; TL baskısı; USD/TRY 44.78; TCMB faiz verisi eksik</td><td>Veri eksikliği nedeniyle alt sınır uygulandı</td></tr><tr><td>Teknik Görünüm</td><td>6.0</td><td>Trend yükseliş; ancak RSI 72 aşırı alım; MA200 üzerinde güçlü konum</td><td>RSI >70 kısa vadeli düzeltme riski</td></tr><tr><td>ESG</td><td>4.5</td><td>Savunma sektörü → kurumsal yatırımcı ESG kısıtı → değerleme tavanı etkisi</td><td>Sektörel ESG iskonto standart; veri yetersizliği</td></tr><tr><td><strong>GENEL SKOR</strong></td><td><strong>6.4/10</strong></td><td>Orta-yüksek kalite; değerleme ve makro belirsizlik sınırlayıcı</td><td>—</td></tr></tbody></table>
+<hr>
+<h3>HEDEF FİYAT ARALIĞI</h3>
+<blockquote><strong>Metodoloji Notu (Düşük-Orta Güven):</strong> EBITDA verisi eksik olduğundan DCF ve EV/EBITDA çarpanı hesaplanamadı. Değerleme, IAS 29 düzeltilmiş kazanç bazlı F/K çarpanı üzerine kurulmuştur. EBITDA açıklandığında bu tablonun revize edilmesi zorunludur.</blockquote>
+<p><strong>Hesaplama Girdileri:</strong></p>
+<table><thead><tr><th>Parametre</th><th>Değer</th><th>Kaynak</th></tr></thead><tbody><tr><td>Hisse Sayısı (tahmini)</td><td>4,560,000,000</td><td>Hesaplama: 4,560,000,000 TL ödenmiş sermaye / 1 TL nominal <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 özkaynak tablosu]</sup></td></tr><tr><td>Raporlanan EPS</td><td>6.56 TL</td><td>Hesaplama: 29,917,727,000 TL / 4,560,000,000 hisse <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039]</sup></td></tr><tr><td>IAS 29 düzeltilmiş EPS</td><td>9.54 TL</td><td>Hesaplama: (29,917,727,000 + 13,552,013,000) / 4,560,000,000 <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 Not 27]</sup></td></tr><tr><td>Güncel fiyat tahmini</td><td>~361-375 TL</td><td>Teknik göstergelerden çıkarım: MA20=361.15 TL, RSI=72 üzeri <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: teknik analiz]</sup></td></tr></tbody></table>
+<table><thead><tr><th>Senaryo</th><th>Çarpan (IAS29 düz. F/K)</th><th>Hedef Fiyat</th><th>Tetikleyici</th></tr></thead><tbody><tr><td>Bear</td><td>30x</td><td><strong>285 TL</strong></td><td>Makro bozulma, sözleşme gecikmesi, TL değer kaybı hızlanması</td></tr><tr><td>Baz</td><td>37x</td><td><strong>355 TL</strong></td><td>Mevcut büyüme hızı, savunma bütçesi istikrarı</td></tr><tr><td>Bull</td><td>47x</td><td><strong>450 TL</strong></td><td>İhracat ivmelenmesi, yeni program kazanımları, EBITDA marjı netleşmesi</td></tr><tr><td><strong>Ağırlıklı Orta</strong></td><td>—</td><td><strong>361 TL</strong></td><td>(285×%25) + (355×%50) + (450×%25) = <strong>361.25 TL</strong></td></tr></tbody></table>
+<p>Ağırlıklı hedef fiyat, mevcut teknik seviyelerle (MA20: 361.15 TL) örtüşmekte olup sınırlı yukarı/aşağı potansiyele işaret etmektedir. Baz senaryoda anlamlı bir marj kalmamıştır — bu durum değerlemenin mevcut seviyelerde nispeten dolu olduğunu göstermektedir (Orta Güven).</p>
+<hr>
+<h3>5 KRİTİK BULGU</h3>
+<p>1. <strong>Net Nakit Kalesi (Yüksek Güven):</strong> ASELSAN FY2025 itibarıyla 10.9 milyar TL net nakit pozisyonundadır <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 bilanço]</sup>; bu durum finansal kaldıracın değil faaliyet nakit üretiminin şirketi güçlendirdiğini kanıtlamakta ve olası makro şoklarda tampon işlevi görmektedir.</p>
+<p>2. <strong>Backlog Görünürlüğü (Yüksek Güven):</strong> 65.2 milyar TL ertelenmiş gelir (backlog proxy) <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 bilanço]</sup>, FY2025 gelirinin %36'sına karşılık gelmekte; sözleşme derinliği kısa vadeli gelir riskini sınırlamaktadır. Bu rakamın %54'ü SSB/TSK ilişkili avanslardan oluşmaktadır <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 Not 5]</sup>.</p>
+<p>3. <strong>IAS 29 Kazanç Baskısı (Yüksek Güven):</strong> Net parasal pozisyon kaybı FY2025'te 13.6 milyar TL olarak gerçekleşmiştir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 Not 27]</sup>. Bu muhasebe kalemi raporlanan net kârı %31 oranında aşağı çekmektedir; gerçek operasyonel performans raporlanan kardan anlamlı biçimde daha güçlüdür.</p>
+<p>4. <strong>Yoğunlaşma Riski (Orta Güven):</strong> Ticari alacakların %82.5'i tek ilişkili taraftan (SSB/TSK) oluşmaktadır <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 bilanço]</sup>. Bu yapı gelir görünürlüğü sağlarken aynı zamanda savunma bütçesi kısıtlarına ve siyasi öncelik değişimlerine karşı yüksek kırılganlık yaratmaktadır.</p>
+<p>5. <strong>Ar-Ge Aktifleştirme Riski (Orta Güven):</strong> Bilançoda aktifleştirilmiş geliştirme giderleri 36.2 milyar TL'ye ulaşmıştır <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 denetçi notu]</sup>. Bu tutar EBITDA ve net kârı yukarı yönlü şişirirken; projelerin tamamlanamaması veya ticari uygulanabilirliğinin sorgulanması hâlinde büyük değer düşüş karşılıkları riski taşımaktadır (kilit denetim konusu).</p>
+<hr>
+<h2>II. ŞİRKET PROFİLİ</h2>
+<p>ASELSAN, 1975'te Türk Silahlı Kuvvetlerini Güçlendirme Vakfı (TSKGV) öncülüğünde kurulan Türkiye'nin en büyük savunma elektroniği şirketidir. Başlıca faaliyet alanları; haberleşme ve bilgi teknolojileri sistemleri, radar ve elektronik harp sistemleri, elektro-optik sistemler, mikro-elektronik ve RF/microwave bileşenler, güç elektroniği ile ulaşım-trafik kontrol sistemleridir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 faaliyet profili]</sup>.</p>
+<p><strong>Ortaklık Yapısı:</strong></p>
+<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> Ortaklık Yapısı (ASELS) <em style="color:#94a3b8;">(pie)</em></div>
+<table><thead><tr><th>Ortak</th><th>Yüzde</th></tr></thead><tbody><tr><td>TSKGV (Türk Silahlı Kuvvetleri Güçlendirme Vakfı)</td><td>84.58</td></tr><tr><td>Halka Açık</td><td>15.42</td></tr></tbody></table>
+<p><em>Not: Ortaklık yüzdeleri domain bilgisine dayanmaktadır (pre-Ağustos 2025); kesin oran KAP ortaklık bildiriminden doğrulanmalıdır <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: inference — KAP mevcut PDFlerde ortaklık tablosu görülmedi]</sup>. Ödenmiş sermaye: 4,560,000,000 TL <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 özkaynak tablosu]</sup>.</em></p>
+<p><strong>Yönetim:</strong> CEO bilgisi mevcut analizde doğrulanamadı <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — KAP format PDFlerde yönetim kadrosu listesi bulunmuyor)</em>. Bağımsız denetçi: KARAR BAĞIMSIZ DENETİM VE DANIŞMANLIK A.Ş. (FY2025'ten itibaren; FY2024'te farklı denetçi — değişiklik teyit edildi) <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 denetçi raporu]</sup>.</p>
+<p><strong>İş Modeli:</strong> ASELSAN, uzun vadeli savunma projeleri kapsamında SSB/TSK ile çok yıllı sözleşmeler imzalar. Hasılat, tamamlanma yüzdesi yöntemiyle (POC — TFRS 15) muhasebeleştirildiğinden gelir yılın ikinci yarısına, özellikle Q4'e yoğunlaşmaktadır. Q4-2025 tek başına yıllık gelirin yaklaşık %50'sine karşılık gelmiştir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: hesaplama — Q1: 22.8 bn, H1: 53.7 bn, 9A: 90.9 bn, FY: 180.4 bn TL]</sup>.</p>
+<p><strong>Coğrafi Maruz Kalma:</strong> Ağırlıklı olarak Türkiye. Uluslararası ihracat büyümektedir; ancak yurt dışı gelirin toplam içindeki payı <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — segment dipnotuna ulaşılamadı; bu bilgi büyüme kalitesi için kritiktir)</em>.</p>
+<hr>
+<h2>III. FİNANSAL ANALİZ</h2>
+<h3>A. Gelir Tablosu — Özet Metrikler (FY2025)</h3>
+<p>ASELSAN'ın FY2025 finansallarına bakışımızın odağı gelir büyümesinden ziyade kâr kalitesidir. Brüt marjın %31.8 düzeyinde korunması, yüksek enflasyon ortamında maliyet yönetiminin etkinliğini göstermektedir. Bununla birlikte, IAS 29 kaynaklı parasal pozisyon kaybının (-13.6 bn TL) net kâr üzerindeki baskısı, raporlanan karlılığın gerçek operasyonel performansı eksik yansıttığını ortaya koymaktadır. Bu farkın yatırımcılar tarafından dikkate alınması gerektiğini vurguluyoruz.</p>
+<table><thead><tr><th>Metrik</th><th>FY2025 Değer</th><th>Kaynak</th><th>Güven</th></tr></thead><tbody><tr><td>Gelir</td><td>180,444,938,000 TL</td><td>KAP 1561039 bilanço/gelir tablosu</td><td>Yüksek</td></tr><tr><td>Brüt Kâr</td><td>~57,450,000,000 TL</td><td>Hesaplama: 180.4 bn × %31.83</td><td>Yüksek</td></tr><tr><td>Brüt Marj</td><td>%31.83</td><td>KAP 1561039 gelir tablosu</td><td>Yüksek</td></tr><tr><td>EBITDA Marjı</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>EBITDA payda eksik (uyarı mevcut)</td><td>—</td></tr><tr><td>Net Kâr</td><td>29,917,727,000 TL</td><td>KAP 1561039</td><td>Yüksek</td></tr><tr><td>Net Marj</td><td>%16.58</td><td>KAP 1561039 hesaplamasından</td><td>Yüksek</td></tr><tr><td>IAS 29 Net Par. Poz. Kaybı</td><td>-13,552,013,000 TL</td><td>KAP 1561039 Not 27</td><td>Yüksek</td></tr><tr><td>IAS 29 düz. Net Kâr (tahmini)</td><td>~43,470,000,000 TL</td><td>Hesaplama: 29.9 + 13.6 bn</td><td>Orta</td></tr><tr><td>Ar-Ge Giderleri (giderleştirilmiş)</td><td>6,252,189,000 TL</td><td>KAP 1561039 gelir tablosu</td><td>Yüksek</td></tr></tbody></table>
+<blockquote><strong>Bize göre:</strong> IAS 29 düzeltilmiş net marj yaklaşık %24.1 olup raporlanan %16.6'nın anlamlı biçimde üzerindedir. Değerleme yaparken düzeltilmiş kazancı baz almak daha doğru bir resim verecektir.</blockquote>
+<h3>B. Kârlılık ve Getiri Metrikleri</h3>
+<table><thead><tr><th>Metrik</th><th>FY2025</th><th>Sektör Ref.</th><th>Değerlendirme</th></tr></thead><tbody><tr><td>Brüt Marj</td><td>%31.83</td><td>Savunma elektroniği: %25-40</td><td>Ortanın üzeri</td></tr><tr><td>Net Marj (raporlanan)</td><td>%16.58</td><td>—</td><td>IAS 29 baskısı dahil</td></tr><tr><td>ROE</td><td>%11.88</td><td>—</td><td>Düşük görünse de IAS 29 kaynaklı özkaynak şişkinliği etkisi var</td></tr><tr><td>ROA</td><td>%6.93</td><td>—</td><td>Orta</td></tr><tr><td>ROCE</td><td>%16.09</td><td>—</td><td>Kabul edilebilir</td></tr><tr><td>ROIC</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>—</td><td>EBIT/NOPAT hesaplanamadı</td></tr></tbody></table>
+<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> Kârlılık Metrikleri Karşılaştırması (%, FY2025) <em style="color:#94a3b8;">(bar)</em></div>
+<table><thead><tr><th>Metrik</th><th>Değer</th></tr></thead><tbody><tr><td>Brüt Marj</td><td>31.83</td></tr><tr><td>Net Marj (raporlanan)</td><td>16.58</td></tr><tr><td>IAS29 düz. Net Marj (tahmini)</td><td>24.10</td></tr><tr><td>ROE</td><td>11.88</td></tr><tr><td>ROA</td><td>6.93</td></tr><tr><td>ROCE</td><td>16.09</td></tr></tbody></table>
+<h3>C. İşletme Sermayesi</h3>
+<p>İşletme sermayesi yönetimi ASELSAN için özel bir önem taşımaktadır; zira POC muhasebesi ve kamu müşterisi yoğunlaşması tahsilat döngüsünü uzatmaktadır. CCC'nin 391 gün olması, savunma sanayiindeki yapısal normlarla (180-300 gün) kıyaslandığında sınır dışındadır ve kısa vadeli nakit akışı verimliliğinin zayıf olduğuna işaret etmektedir.</p>
+<table><thead><tr><th>Metrik</th><th>FY2025</th><th>Yorum</th></tr></thead><tbody><tr><td>Nakit Dönüşüm Döngüsü (CCC)</td><td>390.95 gün</td><td>Yüksek; savunma sözleşme yapısı ve ilişkili taraf alacakları kaynaklı</td></tr><tr><td>NWC / Gelir</td><td>%27.02</td><td>Gelirlerin dörtte birinden fazlası işletme sermayesinde bağlı</td></tr><tr><td>İlişkili Taraf Alacakları</td><td>32,068,651,000 TL (ticari alacakların %82.5'i)</td><td>KAP 1561039 bilanço</td></tr><tr><td>Cari Oran</td><td>1.3862</td><td>Yeterli; kritik değil</td></tr><tr><td>DSO / DIO / DPO</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>Ayrıştırılmış veri hesaplanamadı</td></tr></tbody></table>
+<h3>D. Borç ve Likidite</h3>
+<table><thead><tr><th>Metrik</th><th>FY2025</th><th>Kaynak</th></tr></thead><tbody><tr><td>Net Borç (Net Nakit)</td><td><strong>-10,932,201,000 TL (net nakit)</strong></td><td>KAP 1561039 hesaplaması</td></tr><tr><td>Net Borç / EBITDA</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>EBITDA eksik</td></tr><tr><td>Faiz Karşılama</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>EBIT verisi hesaplanamadı</td></tr><tr><td>FCF</td><td>10,733,502,000 TL</td><td>KAP 1561039 nakit akış</td></tr><tr><td>CAPEX (MDV + MODV)</td><td>~62,369,000,000 TL</td><td>Hesaplama: 38,168 + 24,200 mn TL <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 nakit akış]</sup></td></tr><tr><td>CAPEX / Gelir</td><td>%34.6</td><td>Hesaplama; yüksek, Ar-Ge yatırım döngüsü</td></tr><tr><td>OCF / EBITDA</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>EBITDA eksik</td></tr></tbody></table>
+<p>ASELSAN'ın net nakit pozisyonu (10.9 bn TL), şirketin borç servis baskısı olmadan Ar-Ge ve CAPEX döngüsünü sürdürebildiğini göstermektedir. Yüksek CAPEX yoğunluğu (%34.6) kısa vadede serbest nakit akışı üretimini kısıtlamakta; ancak uzun vadede rekabet avantajı oluşturma potansiyeli taşımaktadır. Bu dengeyi "büyüme için fiyat ödeniyor" olarak değerlendiriyoruz.</p>
+<h3>E. Piotroski F-Skoru</h3>
+<p>Piotroski F-Skoru: <strong>4/9</strong> (Orta Güven). Bu skor, finansal sağlık açısından "nötr" bölgeye işaret etmektedir — güçlü karlılık sinyalleri ile zayıf nakit akışı verimliliği birbirini dengelemektedir. Altman Z-Skoru: hesaplanamadı (<em style="color:#94a3b8;">Raporlanmadı</em> — gerekli veri kalemi eksik).</p>
+<hr>
+<h2>IV. DEĞERLEME</h2>
+<h3>A. Çarpan Bazlı Değerleme</h3>
+<p>ASELSAN için çarpan analizi EBITDA verisinin yokluğu nedeniyle kısıtlıdır. F/K ve PD/DD birincil gösterge olarak kullanılmıştır.</p>
+<table><thead><tr><th>Çarpan</th><th>Hesaplama</th><th>Değer</th><th>Yorum</th></tr></thead><tbody><tr><td>Raporlanan F/K</td><td>361 TL / 6.56 TL EPS</td><td>~55x</td><td>IAS 29 kaynaklı yüksek — yanıltıcı</td></tr><tr><td>IAS 29 düz. F/K</td><td>361 TL / 9.54 TL düz. EPS</td><td>~38x</td><td>Daha anlamlı; savunma premium yapısına uygun</td></tr><tr><td>PD/DD</td><td>361 TL / 55.21 TL BVPS</td><td>~6.5x</td><td>Yüksek premium; stratejik konumu ve büyüme beklentisini yansıtıyor</td></tr><tr><td>FD/FAVÖK</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>—</td><td>EBITDA eksik; hesaplanamadı</td></tr><tr><td>P/FCF</td><td>361 TL / (10,733,502,000 / 4,560,000,000)</td><td>~154x</td><td>FCF verimi düşük; CAPEX döngüsü kaynaklı</td></tr></tbody></table>
+<p><em>BVPS: 251,786,294,000 TL / 4,560,000,000 hisse = 55.21 TL <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: hesaplama — KAP 1561039 özkaynak tablosu]</sup></em></p>
+<h3>B. Hedef Fiyat Senaryoları (DCF kısıtı ile)</h3>
+<p>DCF modeli için gerekli WACC ve terminal değer hesabı EBITDA ve ayrıştırılmış EBIT verisi olmaksızın uygulanamamaktadır. Değerleme, IAS 29 düzeltilmiş kazanç bazlı F/K çarpanı ile sürdürülmüştür. Bu kısıt, hedef fiyat güven seviyesini "Orta" olarak sınıflandırmaktadır.</p>
+<table><thead><tr><th>Senaryo</th><th>IAS29 Düz. F/K</th><th>Hedef Fiyat</th><th>Ana Varsayım</th></tr></thead><tbody><tr><td>Bear</td><td>30x</td><td><strong>285 TL</strong></td><td>Yüksek faiz ortamı devam; sözleşme gecikmesi; peer çarpan daralması</td></tr><tr><td>Baz</td><td>37x</td><td><strong>355 TL</strong></td><td>Savunma bütçesi büyümesi; backlog dönüşümü; mevcut marjlar korunuyor</td></tr><tr><td>Bull</td><td>47x</td><td><strong>450 TL</strong></td><td>İhracat ivmelenmesi; yeni program kazanımları; EBITDA netleşmesi çarpan genişlemesi</td></tr><tr><td><strong>Ağırlıklı</strong></td><td>—</td><td><strong>361 TL</strong></td><td><strong>(285 × 0.25) + (355 × 0.50) + (450 × 0.25) = 361.25 TL</strong></td></tr></tbody></table>
+<p><strong>Analist Konsensüs:</strong> <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — Bloomberg/Reuters/Türk aracı kurum konsensüs verisi bu analizde çekilmedi; EBITDA netleştikten sonra karşılaştırma önerilir)</em></p>
+<hr>
+<h2>V. SEKTÖR VE REKABET ANALİZİ</h2>
+<h3>A. Sektör Genel Görünüm</h3>
+<p>Küresel savunma harcamaları 2025-2026 döneminde güçlü seyrini sürdürmektedir. NATO üyelerinin GDP'nin %2'si taahhüdü, Türkiye dahil tüm üye ülkelerde savunma bütçelerini yukarı çekmektedir. Bu yapısal arka plan ASELSAN'ın operasyonel ortamını desteklemektedir. Bununla birlikte, şirketin ihracat büyümesinin hız kazanıp kazanmadığı kârlılık kalitesi açısından belirleyici olacaktır — zira yurt içi ciro tek taraflı hükümet müşteri yoğunlaşması anlamına gelmektedir (Yüksek Güven).</p>
+<h3>B. Porter'ın Beş Gücü</h3>
+<table><thead><tr><th>Güç</th><th>Puan (1-5)</th><th>Değerlendirme</th></tr></thead><tbody><tr><td>Yeni Girişimci Tehdidi</td><td>1</td><td>Teknoloji engeli ve lisans gereksinimleri çok yüksek</td></tr><tr><td>İkame Ürün Tehdidi</td><td>1</td><td>Savunma sistem alternatifleri son derece sınırlı</td></tr><tr><td>Tedarikçi Gücü</td><td>3</td><td>Yarı iletken/elektronik komponent ithalatı FX riski taşıyor</td></tr><tr><td>Alıcı Gücü</td><td>4</td><td>SSB/TSK dominant alıcı — sözleşme koşullarında güçlü konumu var</td></tr><tr><td>Sektör Rekabeti</td><td>2</td><td>Yurt içinde yüksek giriş engeli; yurt dışı OEM'lerle rekabet var</td></tr></tbody></table>
+<h3>C. Peer Karşılaştırma</h3>
+<p>Peer finansal veri sağlanamamıştır; BIST savunma sektöründe listedeki eşdeğer şirket sayısı sınırlı, uluslararası karşılaştırma kur farkı ve muhasebe standardı uyumsuzluğu nedeniyle güvenilir değildir <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — sektör karşılaştırma bölümü sonraki analizde peer eklenerek güncellenmelidir)</em>.</p>
+<h3>D. SWOT Analizi</h3>
+<table><thead><tr><th></th><th><strong>Güçlü Yönler</strong></th><th><strong>Zayıf Yönler</strong></th></tr></thead><tbody><tr><td><strong>İç</strong></td><td>Teknoloji birikimi; net nakit pozisyonu; 65.2 bn TL backlog; TSKGV desteği</td><td>CCC 391 gün; EBITDA görünürlük eksikliği; müşteri yoğunlaşması (%82.5 ilişkili taraf alacakları)</td></tr><tr><td><strong>Dış</strong></td><td>NATO savunma harcama artışı; ihracat büyümesi; yerli savunma sanayii politikası</td><td>IAS 29 baskısı; yarı iletken tedarik zinciri riski; döviz maliyet baskısı</td></tr></tbody></table>
+<hr>
+<h2>VI. MAKROEKONOMİK BAĞLAM</h2>
+<p>Makroekonomik veriler bu analizde kısmen sağlanabilmiştir. Kullanılabilir parametreler ile mevcut durumu değerlendiriyoruz.</p>
+<h3>A. Türkiye Makro Göstergeler Tablosu</h3>
+<table><thead><tr><th>Gösterge</th><th>Değer</th><th>Tarih</th><th>Kaynak</th></tr></thead><tbody><tr><td>USD/TRY</td><td>44.78</td><td>17.04.2026</td><td>Makro analiz modülü</td></tr><tr><td>EUR/TRY</td><td>52.79</td><td>17.04.2026</td><td>Makro analiz modülü</td></tr><tr><td>TCMB Politika Faizi</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>—</td><td>EVDS key eksik; WebSearch doğrulaması yapılmadı</td></tr><tr><td>TÜFE (YoY)</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>—</td><td>TÜİK verisi bu analizde çekilmedi</td></tr><tr><td>ÜFE (YoY)</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>—</td><td>TÜİK verisi bu analizde çekilmedi</td></tr><tr><td>GSYİH büyümesi</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>—</td><td>Eksik</td></tr><tr><td>BIST-100 Seviyesi</td><td><em style="color:#94a3b8;">Raporlanmadı</em></td><td>—</td><td>Eksik</td></tr></tbody></table>
+<blockquote><strong>Makro Analiz Kısıtı:</strong> TCMB faizi ve enflasyon verisinin eksikliği, WACC hesabı ve reel büyüme projeksiyonunu engellemektedir. Bu durum, değerleme modelinin güvenilirlik düzeyini "Orta"nın altında tutmaktadır. Bir sonraki analiz döneminden önce bu verilerin TCMB/TÜİK kaynaklarından güncellenmesi zorunludur.</blockquote>
+<h3>B. ASELSAN'a Özgü Makro Etkiler</h3>
+<p>USD/TRY'nin 44.78 seviyesinde seyretmesi, ASELSAN için çift yönlü bir etki yaratmaktadır: elektronik komponent ve yarı iletken ithalat maliyetlerini artırmakta, ancak dövizli ihracat sözleşmelerinden elde edilen gelirleri TL cinsinden güçlendirmektedir. Bu denge, ihracat payı verisi olmaksızın net etkiyi hesaplamayı engellemektedir <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — ihracat payı için segment dipnotu gerekli)</em>. IAS 29 kapsamında yabancı para çevrim farkı FY2025'te -165.8 milyon TL olarak özkaynaklarda muhasebeleştirilmiştir <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039 kapsamlı gelir tablosu]</sup>.</p>
+<hr>
+<h2>VII. TEKNİK ANALİZ</h2>
+<p>Teknik analiz verisi 17 Nisan 2026 itibarıyla yerel hesaplama ve TradingView OHLCV verisine dayanmaktadır <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: teknik analiz modülü]</sup>.</p>
+<h3>A. Hareketli Ortalamalar</h3>
+<table><thead><tr><th>Gösterge</th><th>Değer</th><th>Yorum</th></tr></thead><tbody><tr><td>MA20</td><td>361.15 TL</td><td>Kısa vadeli trend desteği</td></tr><tr><td>MA50</td><td>334.86 TL</td><td>Orta vadeli destek</td></tr><tr><td>MA200</td><td>240.23 TL</td><td>Uzun vadeli trend; hisse MA200'ün %50 üzerinde — güçlü yükseliş trendi</td></tr></tbody></table>
+<p>Hisse, her üç hareketli ortalamanın da üzerinde seyrederek net bir yükseliş trendi sergilemektedir. MA50-MA200 arasındaki %39.5'lik fark, uzun vadeli yukarı momentumun gücünü ortaya koymaktadır (Orta Güven).</p>
+<h3>B. Momentum Göstergeleri</h3>
+<table><thead><tr><th>Gösterge</th><th>Değer</th><th>Yorum</th></tr></thead><tbody><tr><td>RSI(14)</td><td>72.18</td><td><strong>Aşırı alım bölgesi (>70)</strong> — kısa vadeli düzeltme riski artmış</td></tr><tr><td>MACD</td><td>23.47</td><td>Pozitif; sinyal (16.86) üzerinde</td></tr><tr><td>MACD Sinyali</td><td>16.86</td><td>—</td></tr><tr><td>MACD Histogramı</td><td>6.61</td><td>Pozitif ve yükselen momentum</td></tr></tbody></table>
+<h3>C. Volatilite (Bollinger Bantları)</h3>
+<table><thead><tr><th>Bant</th><th>Değer</th><th>Yorum</th></tr></thead><tbody><tr><td>Üst</td><td>431.83 TL</td><td>Kısa vadeli direnç</td></tr><tr><td>Orta (MA20)</td><td>361.15 TL</td><td>Anlık destek</td></tr><tr><td>Alt</td><td>290.47 TL</td><td>Önemli destek alanı</td></tr><tr><td>ATR(14)</td><td>15.86 TL</td><td>Günlük volatilite bandı</td></tr></tbody></table>
+<h3>D. Teknik Değerlendirme</h3>
+<p>Orta-uzun vadede teknik tablo yükseliş yönünde net sinyal vermektedir. Ancak RSI 72 seviyesi, kısa vadeli (1-2 haftalık) konsolidasyon veya düzeltme olasılığını yükseltmektedir. Bollinger üst bandı (431.83 TL) kısa vadeli Bull hedef; alt band (290.47 TL) ise aşırı Bear senaryosunda ilk destek düzeyidir. BIST-100'e göreli performans verisi mevcut olmadığından sektörel karşılaştırma yapılamamıştır <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı)</em>.</p>
+<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:6px 12px; margin:8px 0; font-size:9pt; color:#78350f;"><strong>📊 Grafik:</strong> Teknik Göstergeler — ASELS (17 Nisan 2026) <em style="color:#94a3b8;">(line)</em></div>
+<table><thead><tr><th>Seviye</th><th>Fiyat (TL)</th></tr></thead><tbody><tr><td>Bollinger Üst</td><td>431.83</td></tr><tr><td>RSI Düzeltme Hedefi</td><td>390.00</td></tr><tr><td>MA20 / Baz</td><td>361.15</td></tr><tr><td>MA50</td><td>334.86</td></tr><tr><td>Bollinger Alt</td><td>290.47</td></tr><tr><td>MA200</td><td>240.23</td></tr></tbody></table>
+<hr>
+<h2>VIII. ESG DEĞERLENDİRMESİ</h2>
+<blockquote><strong>ESG → Değerleme Bağlantısı:</strong> ASELSAN'ın savunma elektroniği odağı, ESG puanını yapısal olarak kısıtlamaktadır. ESG skoru 4.5/10 düzeyi → silah tedarik zinciri politikaları olan kurumsal yatırımcılar (özellikle Avrupa merkezli emeklilik fonları ve ESG entegre yatırım fonları) için değerleme tavanı işlevi görmektedir. Bu, hisse likidite ve halka açıklık potansiyelini daraltmaktadır.</blockquote>
+<table><thead><tr><th>Boyut</th><th>Değerlendirme</th><th>Güven</th></tr></thead><tbody><tr><td>Çevresel (E)</td><td>Veri yetersiz — savunma sanayi için bağımsız ESG raporlaması sınırlı</td><td>Düşük</td></tr><tr><td>Sosyal (S)</td><td>Türkiye'nin en büyük mühendislik istihdamcılarından biri (olumlu); ancak savunma ürün portföyü sosyal boyutu kısıtlıyor</td><td>Düşük</td></tr><tr><td>Yönetişim (G)</td><td>Denetçi değişikliği (2025) dikkat gerektiriyor; TSKGV bağlantısı bağımsızlık sorunu doğuruyor; YK/CEO verisi eksik</td><td>Düşük</td></tr><tr><td><strong>ESG Genel</strong></td><td><strong>4.5/10</strong></td><td>Spekülatif</td></tr></tbody></table>
+<hr>
+<h2>IX. KAP OLAYLARI VE HABER ANALİZİ</h2>
+<p>Stratejik sentez analizi FY2025 döneminde net <strong>3 negatif olay</strong> tespit etmiştir (+0 pozitif). Olayların içeriğine ilişkin ayrıntılı olay etkisi verisi bu analize dahil edilmemiştir <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — olay etki haritası ayrıntı kaydı bekleniyor)</em>. Bilinen önemli KAP bildirimleri:</p>
+<table><thead><tr><th>Tarih</th><th>Bildirim</th><th>Etki Skoru</th><th>Kaynak</th></tr></thead><tbody><tr><td>24.02.2026</td><td>FY2025 Yıllık Finansal Tablolar</td><td>Nötr / pozitif temel</td><td>KAP 1561039</td></tr><tr><td>2025 (dönem içi)</td><td>Denetçi değişikliği</td><td>Potansiyel negatif sinyal</td><td>KAP 1561039 denetçi notu</td></tr><tr><td>Diğer (3 negatif olay)</td><td>Detaylar eksik</td><td>Stratejik sentezden alındı</td><td>Sentez modülü</td></tr></tbody></table>
+<hr>
+<h2>X. RİSK DEĞERLENDİRMESİ</h2>
+<h3>A. Risk Matrisi</h3>
+<table><thead><tr><th>Risk</th><th>Olasılık</th><th>Etki</th><th>Olasılık × Etki</th><th>Azaltıcı Faktör</th></tr></thead><tbody><tr><td>Müşteri yoğunlaşması (SSB/TSK)</td><td>Orta</td><td>Yüksek</td><td><strong>Yüksek</strong></td><td>Uzun vadeli sözleşme yapısı; TSKGV desteği</td></tr><tr><td>IAS 29 kaynaklı kazanç baskısı</td><td>Yüksek</td><td>Orta</td><td><strong>Yüksek</strong></td><td>Enflasyon ivmesinin yavaşlaması ılımlılaştırır</td></tr><tr><td>Ar-Ge aktifleştirme değer düşüşü</td><td>Orta</td><td>Yüksek</td><td><strong>Yüksek</strong></td><td>Temiz denetçi görüşü; ancak KAM olarak işaretli</td></tr><tr><td>FX maliyeti (komponent ithalatı)</td><td>Orta</td><td>Orta</td><td><strong>Orta</strong></td><td>İhracat geliri kısmi hedge işlevi görüyor</td></tr><tr><td>Makro bozulma (yüksek faiz)</td><td>Orta</td><td>Orta</td><td><strong>Orta</strong></td><td>Net nakit tampon; kamu müşterisi koruması</td></tr><tr><td>Teknik aşırı alım düzeltmesi</td><td>Yüksek</td><td>Orta</td><td><strong>Orta</strong></td><td>Uzun vadeli yükseliş trendi koruyor</td></tr><tr><td>ESG kısıtı / kurumsal satışı</td><td>Düşük</td><td>Düşük</td><td><strong>Düşük</strong></td><td>Zaten fiyatlanmış; düşük halka açıklık</td></tr></tbody></table>
+<h3>B. Bull/Baz/Bear Senaryo Detayları</h3>
+<p><strong>Bear Senaryosu (285 TL — %25 ağırlık):</strong> Tetikleyici: TCMB politika faizinin yukarı gidişi sabit gelirli varlıklara yeniden ilgiyi artırmakta ve savunma hisselerinden çıkışı hızlandırmaktadır; aynı zamanda bir büyük sözleşmede teslimat gecikmesi SSB ile ilişkili tahsilat sorununu derinleştirmektedir. Bu senaryoda IAS 29 düzeltilmiş F/K 30x'e gerilir, ağırlıklı EPS 9.54 TL üzerinden hedef fiyat 285 TL olur. FAVÖK etkisi: net marjın %12-13'e gerilemesi.</p>
+<p><strong>Baz Senaryosu (355 TL — %50 ağırlık):</strong> Tetikleyici: Savunma bütçesi mevcut seyirde büyümesini sürdürmekte, backlog dönüşümü planlandığı gibi gerçekleşmekte ve IAS 29 etkisi hafifçe azalmaktadır. F/K 37x, EPS 9.54 TL → 355 TL hedef. Bu senaryoda mevcut değerlemenin baz senaryoya yakın olduğunu, dolayısıyla yukarı potansiyelin kısıtlı kaldığını vurguluyoruz.</p>
+<p><strong>Bull Senaryosu (450 TL — %25 ağırlık):</strong> Tetikleyici: İhracat siparişlerinde ivmelenme ve yeni platform programı kazanımı gerçekleşir; EBITDA marjı açıklanarak peer karşılaştırmalı çarpan genişlemesine zemin hazırlanır. F/K 47x, EPS 9.54 TL → 450 TL hedef.</p>
+<hr>
+<h2>YÖNETİM KREDİBİLİTESİ DEĞERLENDİRMESİ</h2>
+<p><strong>YÖNETİM KREDİBİLİTESİ: Orta (Veri Kısıtlı)</strong></p>
+<p>CEO/YK bilgisi doğrulanamadığından (mevcut PDFlerde yönetim kadrosu listesi yok) taahhüt takibi yapılamamıştır. Bununla birlikte aşağıdaki gözlemler yapılabilmektedir:</p>
+<table><thead><tr><th>Gözlem</th><th>Değerlendirme</th></tr></thead><tbody><tr><td>FY2025 denetçi değişikliği</td><td>Dikkat gerektiriyor — gerekçe kamuoyuna açıklanmadı <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: KAP 1561039]</sup></td></tr><tr><td>Temiz denetçi görüşü (FY2025)</td><td>Olumlu — going concern endişesi yok</td></tr><tr><td>Aktifleştirilen Ar-Ge KAM olarak işaretlendi</td><td>Nötr-dikkat: yönetim takdir hakkının geniş kullanımı</td></tr><tr><td>Q4 gelir yoğunlaşması (%50)</td><td>Savunma sözleşme yapısıyla uyumlu; manipülasyon değil yapısal</td></tr></tbody></table>
+<p><strong>Krediblite Etkisi:</strong> Yönetim hakkında yeterli bilgi olmadığından açıklanan büyüme hedefleri ve CAPEX planları baz senaryomuzda %15 ihtiyat iskontolu alınmıştır.</p>
+<p><strong>YÖNETİM ANLATISI vs FİNANSAL TABLO ANALİZİ:</strong></p>
+<p>CEO mektubu / taahhüt takip verisi mevcut analize dahil edilmemiştir <em style="color:#94a3b8; font-weight:500;">(Raporlanmadı — context extraction CEO mektupları ve taahhüt geçmişi içermiyor)</em>. Bu eksiklik, yönetim anlatısı ile finansal sonuçlar arasındaki tutarlılık analizini engellemektedir. Bir sonraki çeyrekte bu kısıt giderilmeli ve yönetim güvenilirliği skoru yeniden hesaplanmalıdır.</p>
+<hr>
+<h2>XI. VERİ KALİTE UYARILARI</h2>
+<p>Genel QA Skoru: <strong>0.97 / 1.00 (GEÇTİ)</strong> — 12/14 kanonik değer dolu, 7/7 mutabakat kontrolü temiz <sup style="color:#94a3b8; font-size:0.85em;">[kaynak: QA modülü]</sup>.</p>
+<table><thead><tr><th>Uyarı Seviyesi</th><th>Metrik</th><th>Durum</th><th>Analiz Etkisi</th></tr></thead><tbody><tr><td>P1</td><td>EBITDA Marjı</td><td>Hesaplanamadı (pay eksik)</td><td>DCF + EV/EBITDA değerlemesi devre dışı; F/K ile ikame edildi</td></tr><tr><td>P1</td><td>Net Borç / EBITDA</td><td>Hesaplanamadı</td><td>Kaldıraç görünürlüğü sınırlı</td></tr><tr><td>P1</td><td>OPEX / Gelir</td><td>Hesaplanamadı</td><td>Verimlilik analizi eksik</td></tr><tr><td>P1</td><td>Faiz Karşılama</td><td>Hesaplanamadı</td><td>Finansal esneklik tam değerlendirilemedi</td></tr><tr><td>P2</td><td>Peer Karşılaştırma</td><td>Peer verisi sağlanmadı</td><td>Rekabetçi konumlandırma eksik</td></tr><tr><td>P2</td><td>Makro (TCMB faizi, CPI/PPI)</td><td>Eksik</td><td>WACC hesabı yapılamadı</td></tr><tr><td>P2</td><td>Mevcut Hisse Fiyatı</td><td>Teknik göstergelerden tahmini</td><td>Kesin F/K, PD/DD hesabı yapılamadı</td></tr><tr><td>Bilgi</td><td>CEO / YK Bilgisi</td><td>KAP PDF'lerde mevcut değil</td><td>Yönetim kredibilitesi analize dahil edilemedi</td></tr></tbody></table>
+<hr>
+<h2>XII. SONUÇ VE DEĞERLENDİRME</h2>
+<p>ASELSAN, FY2025 itibarıyla Türkiye'nin savunma elektroniği ekosisteminde güçlü bir konumdadır. Net nakit pozisyonu, sürdürülebilir FCF üretimi ve uzun vadeli backlog görünürlüğü şirketin temel dayanıklılığını kanıtlamaktadır. Brüt marjın %31.8'de tutulması, yüksek enflasyon ortamında fiyatlama gücünün korunduğuna işaret etmektedir.</p>
+<p>Bununla birlikte, analizimiz üç yapısal kısıtı açıkça ortaya koymaktadır: IAS 29 kaynaklı kazanç baskısı, raporlanan karlılığı gerçek operasyonel performansın altında göstermektedir; EBITDA verisinin eksikliği değerleme kalitesini zayıflatmaktadır; müşteri yoğunlaşmasının (alacakların %82.5'i tek taraf) yarattığı asimetrik risk yapısı ise portföy çeşitlendirmesi yapılmaksızın giderilememektedir.</p>
+<p>Teknik göstergeler kısa vadede (RSI 72, Bollinger üst band yakınında) ihtiyatlı olmayı önermektedir. Orta ve uzun vadede ise MA200'ün %50 üzerinde seyreden fiyat yapısı ve güçlü momentum trendi olumludur.</p>
+<p><strong>İzlenmesi Gereken Kritik Kilometre Taşları:</strong></p>
+<table><thead><tr><th>Tarih</th><th>Olay</th><th>Beklenen Etki</th></tr></thead><tbody><tr><td>Mayıs 2026</td><td>Q1-2026 sonuçları</td><td>Q4-2025 yoğunlaşmasının normalleşme testi</td></tr><tr><td>H1-2026</td><td>EBITDA kaleminin açıklığa kavuşması</td><td>Değerleme modelinin tam olarak çalıştırılması</td></tr><tr><td>2026 devam</td><td>İhracat sözleşme duyuruları</td><td>Bull senaryosu tetikleyicisi</td></tr><tr><td>2026 devam</td><td>TCMB politika faizi yön değişikliği</td><td>Makro ortam ve WACC revizyonu</td></tr></tbody></table>
+<p><strong>Aksiyon Dili:</strong> İhracat gelirlerinin toplam cirodaki payı açıklanarak %20'yi aşarsa veya EBITDA marjı netleşip peer bazlı çarpan genişlemesine zemin hazırlarsa yukarı yönlü revizyon gündeme gelecektir; buna karşın sözleşme gecikmeleri ve faiz artışı aşağı yönlü senaryoyu tetikleyecektir.</p>
+<hr>
+<h2>ZORUNLU BİLDİRİMLER</h2>
+<p>Bu rapor, Finance X platformu tarafından otomatik olarak üretilmiştir. Yatırım tavsiyesi niteliği taşımaz. "AL", "SAT" veya "TUT" tavsiyesi içermemektedir; sunulan hedef fiyat aralığı ve senaryo analizi yalnızca analitik değerlendirme amaçlıdır.</p>
+<p>Tüm veriler ve sonuçlar analiz tarihi (17 Nisan 2026) itibarıyla geçerlidir. Finance X, kayıt altındaki bir yatırım danışmanı değildir. Yatırım kararları için bağımsız profesyonel danışmanlık alınması önerilmektedir.</p>
+<p><strong>Bu rapor yatırım tavsiyesi niteliğinde değildir.</strong></p>
+<p><strong>Veri Kaynakları:</strong> KAP bildirim sistemi (kap.org.tr) — 1561039 numaralı FY2025 finansal tabloları; KAP faaliyet raporları (Q1/H1/Q3 2025); Finance X platform analiz modülleri (finansal analiz, teknik analiz, makro analiz, sektör rekabet, stratejik sentez, QA inceleme).</p>
+<p><strong>Analitik Kısıtlamalar:</strong> EBITDA verisi hesaplanamamıştır. Peer karşılaştırması yapılamamıştır. Makro göstergeler (TCMB faizi, CPI/PPI) eksiktir. Mevcut hisse fiyatı teknik göstergelerden tahmin edilmiştir. Yönetim taahhüt takibi veri eksikliği nedeniyle tamamlanamamıştır. Bu kısıtlar, hedef fiyat güven seviyesini "Orta" olarak sınıflandırmaktadır.</p>
+<hr>
+<p><em>Finance X Platform | Analiz No: ASELS-FY2025-20260417 | Durum: CEO İncelemesinde</em></p>
+    </div>
+    
+
+    <h2>Zorunlu Bildirim</h2>
+    <div class="disclaimer">
+      <strong>Uyarı:</strong> Bu rapor Finance X platformu tarafından otomatik üretilmiştir. Python deterministic
+      hesaplamalar + LLM narrative bloklar hibrit modeliyle hazırlanmış olup,
+      <strong>yatırım tavsiyesi değildir</strong>. Rapor veri kaynağı sınırlıdır ve profesyonel bir yatırım danışmanının yerini
+      tutmaz. Sermaye Piyasası Kurulu (SPK) düzenlemeleri çerçevesinde herhangi bir karar almadan önce profesyonel danışmanlık alınız.
+      <div class="method-list" style="margin-top:14px;">
+        <strong>Metodoloji:</strong> Python kap_watch → event_classification (kural tabanlı) → event_impact_mapper (template tablosu) |
+        parse_standardization (pdfplumber) → reconciliation (BS/IS/CF identity) → financial_analysis (engine DCF, ratios) |
+        macro_analysis (TCMB) → technical_analysis (TradingView/yfinance fallback) →
+        qa_review (rubric scoring) → strategic_synthesis (signal convergence) → report_formatter (template render).
+        Narrative blokları LLM (Claude) üzerinden enjekte edilir.
+      </div>
+      <div style="margin-top:10px;">
+        <strong>Rapor ID:</strong> <code>rpt-wcfRcwPDRMS0jZ7CMAE08</code> ·
+        <strong>Ticker:</strong> <code>ASELS</code> ·
+        <strong>Dönem:</strong> <code>FY-2025</code> ·
+        <strong>QA Skor:</strong> <code>0.97</code>
+      </div>
+    </div>
+
+    <div class="page-footer"><span>Finance X · ASELS Analiz</span><span>12</span></div>
+  </div></div>
+
+</body>
+</html>

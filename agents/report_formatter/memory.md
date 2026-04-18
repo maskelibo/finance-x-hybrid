@@ -164,6 +164,69 @@
 - Formatter yalniz sunum katmani degil, `deliverable contract` koruyucusu olarak calisacak; `<!DOCTYPE>` disi metin, eksik kapanis, eksik PDF veya eksik chart inventory varsa teslim etmeyecek.
 - `content blocker` ve `presentation blocker` ayri tablolar halinde raporlanacak; content blocker aciksa guzel HTML bile release-ready sayilmayacak.
 
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Remediation (thyao-remediation-20260416)
+
+### Eksikler:
+- **HTML_ENVELOPE eksik — COO doğru BLOCKED ketti ✓** — HTML envelope olmadan report teslim edilemez. COO'nun bu kontrolü yapması olumlu iyileşme.
+- **SPK_DISCLAIMER eksik** — Zorunlu Bildirimler bölümü dahil edilmedi. SPK disclaimer olmadan rapor yayımlanamaz.
+- **~8KB içerik — 50KB direktifi 4. kez ihlal edildi** — MIN_PAYLOAD_SIZE = 50KB direktifi 4 rapordur uygulanmıyor. Havacılık raporu minimum: Yönetici Özeti + Finansal Analiz + Değerleme + Sektör + Risk = 50KB+ zorunlu.
+- **Self-check döngüsü tetiklenmedi** — HTML oluşturulmadan önce kendi zorunlu kontrol listesi çalıştırılmadı; HTML_ENVELOPE ve SPK_DISCLAIMER eksikliği önceden tespit edilebilirdi.
+- **THY marka kimliği belirsiz** — Kırmızı (#E31E24), Noto Sans tipografisi, IST havalimanı / uçak görseli kapak — marka kimliği şablona bağlanmadı.
+
+### Bundan Sonra:
+- **HTML tesliminden önce zorunlu self-check (4. direktif, kesinleşti):**
+  1. HTML_ENVELOPE mevcut mu?
+  2. SPK_DISCLAIMER var mı?
+  3. Toplam boyut ≥50KB mı?
+  4. THY brand identity (kırmızı #E31E24) uygulandı mı?
+  Bu 4 kontrol geçmeden COO'ya teslim etme.
+- **MIN_PAYLOAD_SIZE 50KB = hard bloker** — 50KB altı HTML COO tarafından reddedilecek; bu kontrolü COO delivery checklist'te sabit.
+- **THYAO brand identity checklist:** (1) THY kırmızı #E31E24 başlık/accent, (2) IST/uçak görseli kapakta, (3) IATA kodu + hisse kodu kapak tablosunda, (4) Yönetim beyanı bölümü.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu
+
+### Eksikler:
+- **HTML_ENVELOPE eksik** — `<html>` veya `</html>` tag'i yok; COO tarafından BLOCKED. Bu hata basit kontrol; formatter kendi çıktısında `<html lang="tr">...</html>` olduğunu teyit etmeli.
+- **SPK_DISCLAIMER eksik** — "yatırım tavsiyesi değildir" footer'da veya zorunlu bildirimler bölümünde olmak zorunda; her THYAO raporunda şart.
+- **8KB içerik — 15 sayfa standard rapor için yetersiz** — Delta'da 7KB, standard'da 8KB. final_summary içeriği HTML'ye aktarılmadı ya da çok minimal işlendi.
+- **THY brand identity uygulandı mı belirsiz** — context_extraction çok detaylı brand bilgisi üretmişti (#E81932 kırmızı, turkuaz tablo headerları, İstanbul silueti kapak motifi). Bu bilgiler HTML'ye yansıtıldı mı doğrulanamadı.
+- **SVG grafik sayısı bilinmiyor** — 8KB HTML'de min 4 SVG grafik üretilmiş olamaz.
+
+### Bundan Sonra:
+- **Çıktı göndermeden önce self-check zorunlu:**
+  1. `<html lang="tr">...</html>` tam envelope mevcut?
+  2. Footer veya Zorunlu Bildirimler bölümünde "yatırım tavsiyesi değildir" var?
+  3. Boyut ≥ 50KB? (7-8KB = içerik yok anlamına gelir)
+  4. Min 4 SVG grafik var?
+  5. 12 bölüm başlığı HTML'de mevcut?
+- **THYAO brand checklist (her THYAO raporunda):**
+  1. Kırmızı (#E81932) header bantları + tablo arka planları
+  2. THY logosu (kuş silueti) kapak + iç sayfa header
+  3. Turkuaz (#008B8B) tablo header rengi (KAP finansal tablo standardı)
+  4. İstanbul silueti kapak görseli (açık gri grafik)
+  5. Footer: kırmızı sayfa numarası + "Finance X Platform | Confidential"
+- **final_summary içeriğini 12 bölüme map et** — final_summary markdown/metin geldiğinde formatter şunu yapar: Bölüm I = Yönetici Özeti → Skor Kartı + hedef fiyat tablo; Bölüm III → Finansal tablolar; vb. Mapping olmadan "boş HTML" çıktısı yasak.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Delta-Update Raporu
+
+### Eksikler:
+- **HTML 7073 bytes — gerçek içerik YOK** — COO "MIN_PAYLOAD_SIZE ≥ 5KB PASS" verdi ama 7KB bir sayfaya denk gelir; min 15 sayfa = 50KB+ beklenir. CSS + iskelet + minimal içerik ile gerçek rapor üretilmedi.
+- **12 bölüm içeriği yok** — Sadece HTML envelope, style ve tek tablo (COO check tablosu gibi görünen basit yapı) mevcut. 12 bölümün hiçbirinin içeriği yok.
+- **SVG grafik yok** — Min 4 SVG grafik zorunlu; çıktıda hiçbiri yok.
+- **THY brand identity uygulanmadı** — Kırmızı (#E81C28) başlık bantları, THY logosu, kapak görsel formatı, uçak ikonu — hiçbiri uygulanmadı.
+- **final_summary metin içeriği HTML'ye dönüştürülmedi** — final_summary kapsamlı içerik üretti (yönetim analizi, senaryo anlatısı, risk bölümleri); formatter bunları HTML formatına çevirmedi.
+- **QA FAIL durumunda formatter çalışmamalıydı** — QA score 0 ile formatter aktifleşmeli değil. Ancak COO "approved" kararı verdiği için formatter çalıştı. Gerçekte formatter da "QA FAIL → içerik yok → BLOCKED" kararı verebilirdi.
+
+### Bundan Sonra:
+- **MIN_PAYLOAD_SIZE eşiği 50KB olarak güncelle** — 5KB eşik anlamsız; 15 sayfa A4 rapor = 50-150KB HTML. COO ile birlikte bu eşiği güncellemeyi talep et.
+- **THY brand identity checklist (THYAO her raporunda):**
+  1. Kırmızı (#E81C28) header bantları + tablo header arka planı
+  2. THY logosu (kuş/daire silueti) kapak ortası + iç sayfa sağ üst
+  3. Kapak: tam sayfa fotoğraf benzeri arka plan + kırmızı overlay + "Türk Hava Yolları AO — THYAO"
+  4. Footer: kırmızı sayfa numarası + "Finance X Platform | Confidential"
+- **QA FAIL sinyali geldiğinde formatter self-check ekle** — `if qa_decision in ["fail", "conditional_pass"] → formatter_status = "BLOCKED — QA kapısı geçilmedi"; içerik üretme, COO'ya bildir.`
+- **final_summary içeriğini HTML'ye dönüştür** — final_summary markdown/metin gelirse formatter bunu 12 bölüme map eder. Mapping olmadan "boş HTML" üretmek YASAK.
+
 ## CEO Direktifi — 2026-04-16 — EREGL Deep Dive Raporu (UNBLOCKED)
 
 **Session:** eregl-deep-dive-20260415
@@ -209,3 +272,115 @@
 - Metin sandviç kuralı tüm tablolarda uygulanmış
 - `content_frozen: true` kontrolü render öncesi
 - Teslim sinyali: `HTML path + PDF path + page count + chart inventory + override_conditions_met: [COND-1✅, COND-2✅, COND-3✅, COND-4✅]`
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Tam Analiz (thyao-full-20260416)
+
+### Eksikler:
+- **HTML_ENVELOPE eksik → COO BLOCKED ✓** — COO doğru karar verdi. `<html lang="tr">...</html>` tam sarmalayıcı olmadan HTML çıktısı geçersiz. Self-check bu hatayı yakalamamış.
+- **SPK disclaimer eksik** — "Bu rapor yatırım tavsiyesi değildir" footer notu zorunlu; atlandı.
+- **8KB içerik — 50KB min eşiği çok altında** — Gerçek rapor içeriği 8KB; hedef minimum 50KB (~15 sayfa A4). Bu eşik 3 analizdir uygulanmıyor.
+- **4 SVG grafik kontrolü yapılmadı** — Kural min 4 SVG; self-check sırasında grafik sayısı doğrulanmadı.
+- **Self-check döngüsü çalışmadı** — Format completion check (HTML envelope, SPK, boyut, SVG sayısı, 12 bölüm) teslimden önce yapılmalıydı; yapılmadı.
+- **THY marka renkleri uygulanmadı** — #E81932 kırmızı (heading/accent), turkuaz tablo başlıkları THYAO raporunun görsel kimliği. Uygulanıp uygulanmadığı kontrol edilmedi.
+
+### Bundan Sonra:
+- **Self-check THYAO zorunlu 6 kontrol (teslimden önce):**
+  1. HTML tam envelope: `<html lang="tr">` açılış + `</html>` kapanış → PASS/FAIL
+  2. SPK disclaimer footer: "Bu rapor yatırım tavsiyesi değildir" → PASS/FAIL
+  3. Dosya boyutu ≥50KB → PASS/FAIL (50KB altı = BLOCKED)
+  4. SVG grafik sayısı ≥4 → PASS/FAIL
+  5. 12 bölüm başlığı mevcut → PASS/FAIL
+  6. Marka renkleri: #E81932 THYAO kırmızı header → PASS/FAIL
+  Herhangi biri FAIL → teslim YOK, fix yapılır.
+- **THY marka kimliği:** Kırmızı #E81932 (heading/accent), turkuaz tablo başlıkları, her sayfada THY logosu üst sol. Kapak: THYAO BIST kodu + rapor tarihi + "Finance X Platform | Kurumsal Analiz".
+- **50KB minimum = konfigürasyon olarak güncel** — Min 50KB eşiği kod seviyesinde yeni standart; 8KB eşiği artık geçersiz.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Deep Dive (thyao-deep-20260417)
+
+### Eksikler:
+- **HTML_ENVELOPE eksik — COO BLOCKED ✓ — 6. THYAO ihlali** — `<html>` veya `</html>` tag'i yok. Self-check tetiklenmedi; COO bu hatayı tespit etti. 6 turda aynı hata.
+- **SPK_DISCLAIMER eksik — 6. ihlal** — "yatırım tavsiyesi değildir" footer/zorunlu bildirimler bölümünde yok. Şablona gömülü olması gereken bu direktif hâlâ uygulanmıyor.
+- **8KB içerik — 50KB eşiği 6. kez ihlal edildi** — 8000 bytes PASS geçildi. Formatter'ın kendisi 50KB altı içerik üretmemeli; bu self-check adımının parçası.
+- **Self-check döngüsü 6. THYAO'da da çalışmadı** — Zorunlu 6 kontrol (HTML envelope, SPK, boyut, SVG sayısı, 12 bölüm, marka rengi) teslimden önce çalıştırılmadı.
+- **THYAO marka kimliği (#E81932/#1C2B50) uygulanıp uygulanmadığı belirsiz** — Report formatter çıktısında Finance X mavi/amber palet görünüyor; THYAO kırmızı-lacivert uygulanmadı.
+
+### Bundan Sonra:
+- **HTML_ENVELOPE + SPK_DISCLAIMER = şablona gömülü sabit (6. direktif, kod zorunlu)** — Bu iki element dinamik içerik yokken bile şablonda bulunmalı. Template dosyasına hard-coded.
+- **Self-check 6 adım teslimden önce otomatik (değiştirilemez):**
+  1. `<html lang="tr">...</html>` tam envelope → PASS/FAIL
+  2. "yatırım tavsiyesi değildir" footer → PASS/FAIL
+  3. Boyut ≥50KB → PASS/FAIL
+  4. SVG grafik ≥4 → PASS/FAIL
+  5. 12 bölüm başlığı mevcut → PASS/FAIL
+  6. #E81932 header rengi (THYAO) → PASS/FAIL
+  Herhangi biri FAIL → teslim YOK, otomatik fix + tekrar kontrol.
+- **THYAO marka kimliği sabit:** #E81932 kırmızı (heading/accent), #1C2B50 lacivert, turkuaz tablo başlıkları. Finance X paleti THYAO raporunda kullanılamaz.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Full Analiz (thyao-full-20260416-v4)
+
+### Eksikler:
+- **HTML_ENVELOPE eksik → COO BLOCKED ✓** — COO doğru karar verdi. `<html lang="tr">...</html>` tam sarmalayıcı olmadan HTML çıktısı geçersiz; self-check bu hatayı yakalamamış.
+- **SPK_DISCLAIMER eksik — 5. ihlal** — "Bu rapor yatırım tavsiyesi değildir" footer zorunlu direktif; 5 turda uygulanmadı. Artık kod seviyesinde şablona gömülmeli.
+- **Dosya boyutu 8KB — 50KB eşiğinin çok altında (5. ihlal)** — Her turda aynı hata; MIN_PAYLOAD_SIZE direktifi 5 kez verildi. Kod değişikliği olmadan bu hata tekrarlanacak.
+- **THYAO marka renkleri (#E81932, lacivert #1C2B50) uygulanmadı** — Finance X mavi/amber renk paleti kullanıldı; THYAO kurumsal kimliği uygulanmadı.
+- **4 SVG grafik kontrolü yapılmadı** — Kural min 4 SVG; self-check sırasında grafik sayısı doğrulanmadı.
+- **Self-check döngüsü çalışmadı** — 6 zorunlu kontrol (HTML envelope, SPK, boyut, SVG, bölümler, marka rengi) teslimden önce yapılmadı.
+
+### Bundan Sonra:
+- **HTML_ENVELOPE + SPK_DISCLAIMER = şablon olarak sabit (kod değişikliği gerekli)** — Bu iki element hiçbir koşulda atlanamaz. Template dosyasına gömülü; dinamik içerik eksik olsa bile sarmalayıcı ve footer sabit kalır.
+- **50KB minimum = renderer seviyesinde kontrol** — Çıktı render edilmeden önce byte size ölçülür; <50KB → padding mekanizması veya "İçerik genişlet" tetikleyicisi. 8KB ile teslim artık teknik olarak bloke.
+- **THYAO self-check 6 zorunlu adım (teslimden önce otomatik):**
+  1. HTML tam envelope: `<html lang="tr">` + `</html>` → PASS/FAIL
+  2. SPK disclaimer footer mevcut → PASS/FAIL
+  3. Dosya boyutu ≥50KB → PASS/FAIL (altı = BLOCKED)
+  4. SVG grafik sayısı ≥4 → PASS/FAIL
+  5. 12 bölüm başlığı mevcut → PASS/FAIL
+  6. Marka rengi #E81932 header'da → PASS/FAIL
+  Herhangi biri FAIL → teslim YOK; otomatik fix + tekrar kontrol.
+- **THYAO marka kimliği sabit referans:** #E81932 kırmızı (heading/accent), #1C2B50 lacivert (sidebar/nav), turkuaz tablo başlıkları. Finance X mavi/amber paleti THYAO raporunda kullanılamaz.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Raporu
+
+### Eksikler:
+- **HTML_ENVELOPE eksik → COO BLOCKED ✓** — COO doğru karar verdi. `<html lang="tr">...</html>` tam sarmalayıcı olmadan HTML geçersiz; self-check bu hatayı yakalamadı.
+- **SPK_DISCLAIMER eksik — 7. ihlal** — "Bu rapor yatırım tavsiyesi değildir" footer zorunlu; 7 turda uygulanmadı. Artık şablona gömülmesi zorunlu.
+- **Dosya boyutu ~8KB — 50KB eşiğinin çok altında (7. ihlal)** — 6 kez direktif verildi, hiçbir zaman uygulanmadı. Kod değişikliği olmadan bu hata tekrarlanacak.
+- **THYAO marka renkleri (#E81932, #1C2B50) uygulanmadı — 7. ihlal** — Finance X mavi/amber renk paleti kullanıldı. Self-check sırasında marka rengi kontrolü yapılmadı.
+- **SVG grafik sayısı kontrolü yapılmadı** — Kural min 4 SVG; self-check sırasında sayı doğrulanmadı.
+- **Self-check döngüsü 7. turda da çalışmadı** — 6 zorunlu kontrol teslimden önce yapılmadı.
+
+### Bundan Sonra:
+- **HTML_ENVELOPE + SPK_DISCLAIMER = şablon olarak sabit (kod değişikliği gerekli — 7. direktif sonrası memory'de tekrar yazılmıyor)** — Template dosyasına gömülü olmalı; dinamik içerik eksik olsa bile sarmalayıcı ve footer sabit kalır.
+- **50KB minimum = renderer seviyesinde kontrol** — Çıktı render edilmeden önce byte size ölçülür; <50KB → bloker. Kod değişikliği olmadan düzelmez.
+- **THYAO self-check 6 zorunlu adım (teslimden önce otomatik):**
+  1. HTML tam envelope → PASS/FAIL
+  2. SPK disclaimer footer → PASS/FAIL
+  3. Dosya boyutu ≥50KB → PASS/FAIL
+  4. SVG grafik sayısı ≥4 → PASS/FAIL
+  5. 12 bölüm başlığı → PASS/FAIL
+  6. Marka rengi #E81932 header'da → PASS/FAIL
+
+## CEO Geri Bildirimi — 2026-04-17 — ASELS Raporu
+
+### Eksikler:
+- **HTML_ENVELOPE eksik → COO BLOCKED ✓** — COO doğru karar verdi. `<html lang="tr">...</html>` tam sarmalayıcı olmadan HTML geçersiz; self-check bu hatayı önceden yakalayamadı.
+- **SPK_DISCLAIMER eksik** — "Bu rapor yatırım tavsiyesi değildir" footer zorunlu; şablona gömülü olmadığından yine eksik kaldı.
+- **Dosya boyutu ~8KB — 50KB eşiğinin çok altında** — THYAO'da tekrarlayan aynı hata; ASELS'e de taşındı.
+- **Finance X mavi (#1e40af) kullanıldı — ASELS bordo (#8B1A1A) değil** — Her şirket için marka rengi self-check listesinde olmalı. ASELS = bordo (#8B1A1A), THYAO = kırmızı (#E81932), standart = Finance X mavi (#1e40af).
+- **Self-check döngüsü çalışmadı** — 6 zorunlu kontrol teslimden önce yapılmadı.
+
+### Bundan Sonra:
+- **Şirket marka rengi tablosu (her analizde lookup et):**
+  | Şirket | Birincil Renk | İkincil Renk |
+  | THYAO | #E81932 (kırmızı) | #1C2B50 (lacivert) |
+  | ASELS | #8B1A1A (bordo) | #1C3A5F (koyu mavi) |
+  | EREGL | #E63329 (çelik kırmızı) | #1A3A5C (lacivert) |
+  | Finance X default | #1e40af (mavi) | #f59e0b (amber) |
+- **HTML_ENVELOPE + SPK_DISCLAIMER = şablon sabit (kod değişikliği — 2. ASELS direktifi)** — Template dosyasına gömülü olmalı; dinamik içerik eksik olsa bile sarmalayıcı ve footer sabit kalır.
+- **Self-check 6 adım ASELS için de geçerli:**
+  1. HTML tam envelope → PASS/FAIL
+  2. SPK disclaimer footer → PASS/FAIL
+  3. Dosya boyutu ≥50KB → PASS/FAIL
+  4. SVG grafik sayısı ≥4 → PASS/FAIL
+  5. 12 bölüm başlığı → PASS/FAIL
+  6. Marka rengi #8B1A1A (ASELS bordo) header'da → PASS/FAIL

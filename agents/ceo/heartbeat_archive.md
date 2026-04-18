@@ -5,6 +5,102 @@ Tarih: 2026-04-10
 
 ---
 
+## HEARTBEAT #124 — 2026-04-17 TSİ — WTI $85.54 -9.66% KONSOLİDASYON / BIST KAPALIŞ / PPK 5 GÜN
+**Ozet:** WTI **$85.54** (-9.66%). Hormuz açık, $83-86 konsolidasyon bandı. BIST100 14,588. EREGL 32.04, THYAO 329.00, TUPRS 253.00, ASELS 414.00, KCHOL 211.80. PPK 22 Nisan, EREGL Q1 23 Nisan. KAP JS-render engeli. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #123 — 2026-04-17 TSİ — WTI $84.80 -10.44% KONSOLİDASYON / BIST KAPANIŞ DEĞİŞMEDİ / PPK 5 GÜN
+**Ozet:** WTI **$84.80** (-10.44%). Hormuz açık teyidi korunuyor, $83-85 konsolidasyon bandı devam. BIST100 14,588 (+2.72%). EREGL 32.04 (+3.69%), THYAO 329.00 (+3.70%), TUPRS 253.00 (-5.60%), ASELS 414.00 (+0.73%), KCHOL 211.80 (+3.57%). PPK 22 Nisan, EREGL Q1 23 Nisan. KAP JS-render engeli. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #122 — 2026-04-17 TSİ — WTI $84.66 -10.59% KONSOLİDASYON / BIST KAPANIŞ DEĞİŞMEDİ / PPK 5 GÜN
+**Ozet:** WTI **$84.66** (-10.59%). Hormuz açık teyidi korunuyor, $83-85 konsolidasyon bandı devam ediyor. BIST100 14,588 (+2.72%). EREGL 32.04 (+3.69%), THYAO 329.00 (+3.70%), TUPRS 253.00 (-5.60%), ASELS 414.00 (+0.73%), KCHOL 211.80 (+3.57%). NTV "PPK nisan kararı" haberi — yeni bilgi değil. PPK 22 Nisan, EREGL Q1 23 Nisan. KAP JS-render engeli. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #121 — 2026-04-17 TSİ — WTI $84.57 -10.69% HORMUZ KONSOLİDASYON / BIST KAPANIŞ DEĞİŞMEDİ
+**Ozet:** WTI **$84.57** (-10.69%). Hormuz açık teyidi korunuyor, fiyat $83-85 konsolidasyon bandında. BIST100 14,588 (+2.72%). EREGL 32.04 (+3.69%), THYAO 329.00 (+3.70%), TUPRS 253.00 (-5.60%), ASELS 414.00 (+0.73%), KCHOL 211.80 (+3.57%). PPK 22 Nisan, EREGL Q1 23 Nisan. KAP JS-render engeli. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #120 — 2026-04-17 TSİ — WTI $84.67 -10.58% HORMUZ KALICI / LUFTHANSA KÜÇÜLME / BIST +2.72%
+**Ozet:** WTI **$84.67** (-10.58%). Trump: "İran Hürmüz'ü bir daha kapatmayacağını kabul etti" — kalıcı risk primi çözümü. BIST100 14,588 (+2.72%). EREGL 32.04 (+3.69%), THYAO 329.00 (+3.70%), TUPRS 253.00 (-5.60%), ASELS 414.00 (+0.73%), KCHOL 211.80 (+3.57%). Lufthansa kapasite kısıyor → THYAO Avrupa-MENA rekabet avantajı. İsrail-Lübnan ateşkesi yürürlükte. PPK 22 Nisan, EREGL Q1 23 Nisan. KAP JS-render engeli. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #119 — 2026-04-17 TSİ — WTI $84.10 -11.18% HORMUZ DEVAM / TUPRS DIVERGENCE
+**Ozet:** WTI **$84.10** (-11.18%). Hormuz Boğazı açık (devam). BIST: EREGL 32.04 (+3.69%), THYAO 329.00 (+3.70%), TUPRS 253.00 (-5.60%), ASELS 414.00 (+0.73%), KCHOL 211.80 (+3.57%). PPK 22 Nisan, EREGL Q1 23 Nisan. KAP JS-render engeli. Watchlist boş. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #118 — 2026-04-17 TSİ — WTI $83.87 -11.43% HORMUZ / TUPRS -5.60% DIVERGENCE
+**Ozet:** WTI **$83.87** (-11.43%) — Hürmüz Boğazı tüm ticari trafiğe açık (İran Dışişleri resmi açıklama). BIST: EREGL 32.04 (+3.69%), THYAO 329.00 (+3.70%), TUPRS 253.00 (-5.60%, crack spread baskısı), ASELS 414.00 (+0.73%), KCHOL 211.80 (+3.57%). PPK 22 Nisan, EREGL Q1 23 Nisan. KAP JS-render engeli. Watchlist boş. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #117 — 2026-04-17 TSİ — WTI HORMUZ DEVAM / EREGL 32.04 +3.69% / TUPRS 261.25 -1.31%
+**Ozet:** WTI Hormuz hareketi devam, piyasa konsolidasyon. EREGL 32.04 (+3.69%, ex-temettü sonrası Q1 beklentisi). THYAO ~319.25 (+0.63%). TUPRS ~261.25 (-1.31%). ASELS 411 (-1.38%). KCHOL -1.59% (önceki kapanış). PPK 22 Nisan, EREGL Q1 23 Nisan. KAP JS-render engeli. Watchlist boş. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #116 — 2026-04-18 TSİ — WTI $81.22 FLAT / EREGL POST-EX-DIV +3.69% / TUPRS -5.60%
+**Ozet:** WTI **81.22 $/varil** (+$0.13, flat). Brent **88.76 $/varil** (-$0.08, flat). BIST: EREGL 32.04 (+3.69%, ex-div sonrası Q1 beklentisiyle güçlü), THYAO 329.00 (+3.70%), TUPRS 253.00 (-5.60%, crack spread baskısı), ASELS 414.00 (+0.73%), KCHOL 211.80 (+3.57%). Takvim: PPK 22 Nisan, EREGL Q1 23 Nisan. KAP JS-render engeli devam. Watchlist boş. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #115 — 2026-04-17 TSİ — WTI $81.09 FLAT / EREGL EX-DATE BUGÜN
+**Ozet:** WTI **81.09 $/varil** (+$0.11 önceki döngüden, $81 bandı devam). Brent 88.84. BIST rate-limit devam: TUPRS ~252.75, THYAO ~330.00, EREGL ~32.38. EREGL ex-date BUGÜN (17 Nisan son alım, 18 Nisan ex-date). Q1 earnings 23 Nisan. KAP JS-render engeli devam. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #114 — 2026-04-17 TSİ — WTI $81 KONSOLİDASYON / EREGL EX-DATE YARIN
+**Ozet:** WTI **80.98 $/varil** ($91.17 önceki kapanıştan -$10.19, -%11.18 kümülatif düşüş sonrası $81 bandı konsolidasyonu). Brent: ~$88 bölgesi. BIST Yahoo rate-limit (429/503) — önceki referanslar geçerli: TUPRS ~252.75, THYAO ~330.00, EREGL ~32.38. EREGL ex-date YARIN (18 Nisan, 0.55 TRY temettü) — bugün (17 Nisan) son alım günü. Q1 earnings 23 Nisan. KAP JS-render engeli devam. Watchlist boş. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #113 — 2026-04-17 TSİ — WTI -14.31% HORMUZ / TUPRS -5.69% / EREGL SON ALIM GÜNÜ
+**Ozet:** WTI **81.14 (-14.31%)** Hormuz müzakere süreci. TUPRS 252.75 (-5.69%) rafineride önemli maliyet baskısı. EREGL son alım günü. KAP JS-render engeli. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #112 — 2026-04-17 TSİ — HORMUZ AÇILMASI / WTI -11.62% / EREGL SON ALIM GÜNÜ
+**Ozet:** WTI **83.69 (-11.62%)** Hormuz Boğazı geçici açılması — tek günlük anormal düşüş, P0 event. THYAO 330.25 (+4.10%) yakıt+rota çift pozitif. EREGL 32.18 (+4.79%) BUGÜN son alım günü (ex-date 18 Nisan, 0.55 TRY). USD/TRY 44.8542. KAP JS-render engeli devam. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #111 — 2026-04-17 TSİ — ABD-İRAN MÜZAKERE / WTI -3.54%
+**Ozet:** WTI 91.34 (-3.54%) ABD-İran görüşme beklentisi. EREGL 31.48 (+1.88%) son alım günü. KCHOL 205.90 (+0.68%). USD/TRY 44.8650. KAP JS-render engeli devam. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #110 — 2026-04-17 TSİ — BRENT SERT GERİ ÇEKİLME / TUPRS NEGATİF
+**Ozet:** Brent 96.00 (-3.41%) — önemli tersine dönüş (önceki 2 gün +8.3%). THYAO 321.75 (+1.42%), EREGL 31.40 (+1.62%), KCHOL 206.00 (+0.73%), TUPRS 264.75 (-1.21%). KAP JS-render engeli. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #109 — 2026-04-17 TSİ — BRENT +3.46% İKİNCİ GÜN / EREGL SON ALIM
+**Ozet:** Brent 98.21 (+3.46%) 2 günlük kümülatif ~+8.3%. USD/TRY 44.8564. EREGL 30.90 yarın ex-date. THYAO 317.25 (-0.63%), KCHOL 204.50 (-1.59%). P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #108 — 2026-04-17 TSİ — (Bkz. archive — Brent $98 konsolidasyon, EREGL son alım, HAYIR alert)
+
+---
+
+## HEARTBEAT #107 — 2026-04-17 TSİ (Otonom Döngü #107) — EREGL SON ALIM / BRENT KONSOLİDASYON
+
+**Ozet:** KAP JS-render engeli devam. USD/TRY 44.84 (+0.08%). Brent 98.22 $/varil (konsolidasyon). EREGL 30.90 TRY (-2.34%) — son alım günü, 18 Nisan ex-date, 0.55 TRY temettü. THYAO 317.25 (-0.63%), KCHOL ~204.50 (-1.59%). Takvim: EREGL ex-date 18 Nisan, PPK 22 Nisan, EREGL Q1 earnings 23 Nisan. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
+## HEARTBEAT #105 — 2026-04-16 TSİ (Otonom Döngü #105) — KAP JS-RENDER ENGEL / BIST KAPAT / EREGL EX-DATE YARIN
+
+**Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, EREGL takvimi, kalıcı kurallar]. KAP JS-render engeli devam. BIST 100: 14,252.38 (+0.35% — 15 Nis kapanış), USD/TRY 44.76, EUR/TRY 52.95, Altın ~6,957 TRY/gr (+0.94%). IMF yüksek petrol fiyatı global risk uyarısı. Dünya Bankası €1.67 Mrd INRAIL Türkiye finansmanı. Fed Beige Book hafif-ılımlı büyüme. EREGL ex-date YARIN (18 Nisan, 0.55 TRY avans temettü). PPK 22 Nisan, EREGL earnings 23 Nisan. P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+---
+
 ## HEARTBEAT #104 — 2026-04-16 TSİ (Otonom Döngü #104) — KAP JS-RENDER ENGEL / TÜRKİYE CDS İYİLEŞME / US-İRAN ATEŞKES / EREGL SON ALIM GÜNÜ
 
 **Ozet:** Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, EREGL takvimi, kalıcı kurallar]. KAP JS-render engeli devam. BIST 100: ~14,252 / 13,934 (farklı zaman dilimi), USD/TRY 44.77, EUR/TRY 52.97, Altın 6,952 TRY/gr (+0.89%). Türkiye CDS savaş öncesi seviyelere döndü (AA ✓). US-Iran ateşkes umudu → Brent baskı → TUPRS marjı anlık pozitif. S&P 500 + Nikkei rekor, Çin GSYİH Q1 %5.0 ✓. Kardemir D +2.99%. EREGL son alım günü BUGÜN (ex-date 18 Nisan, 0.55 TRY avans temettü, earnings 23 Nisan). PPK 22 Nisan. P0/P1 yok. **Chairman ALERT: HAYIR.**

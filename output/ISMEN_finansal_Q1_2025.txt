@@ -1,0 +1,2095 @@
+# PDF Text Extraction
+# Kaynak: https://www.isyatirim.com.tr/tr-tr/bizi-taniyin/yatirimci-iliskileri/Yatirimci_Iliskileri_Belgeler/finansal-raporlar/2025/ISMEN%20Finansal%20Tablolar_31%20Mart%202025.pdf
+# Tarih: 2026-04-16T07:58:10.125Z
+# Sayfa Sayisi: 41
+# PDF Dosya: /Users/ibrahimpeyman/Documents/Finance X/output/pdfs/ISMEN%20Finansal%20Tablolar_31%20Mart%202025.pdf
+---
+--- Sayfa 1 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş.
+VE BAĞLI ORTAKLIKLARI
+1 OCAK – 31 MART 2025 TARİHİNDE
+SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLAR
+
+--- Sayfa 2 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+İÇİNDEKİLER SAYFA
+ÖZET KONSOLİDE FİNANSAL DURUM TABLOLARI ...................................................... 1-2
+ÖZET KONSOLİDE KAR VEYA ZARAR TABLOLARI…………………………………. 3
+ÖZET KONSOLİDE DİĞER KAPSAMLI GELİR TABLOLARI………………………… 4
+ÖZET KONSOLİDE ÖZKAYNAKLAR DEĞİŞİM TABLOLARI ........................................ 5
+ÖZET KONSOLİDE NAKİT AKIŞ TABLOLARI ................................................................... 6
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN TAMAMLAYICI NOTLAR ... 7-40
+1. Grup’un Organizasyonu ve Faaliyet Konusu 7-8
+2. Özet Konsolide Finansal Tabloların Sunumuna İlişkin Esaslar 8-15
+3. Bölümlere Göre Raporlama 16-19
+4. İlişkili Taraf Açıklamaları 20-22
+5. Nakit ve Nakit Benzerleri 23
+6. Finansal Yatırımlar 23
+7. Borçlanmalar 24
+8. Ticari Alacaklar ve Borçlar 24-25
+9. Özkaynak Yöntemiyle Değerlenen Yatırımlar 25-26
+10. Şerefiye 26
+11. Maddi Duran Varlıklar 26
+12. Maddi Olmayan Duran Varlıklar 26
+13. Karşılıklar, Koşullu Varlık ve Yükümlülükler 27-28
+14. Taahhütler 28
+15. Özkaynaklar 29-31
+16. Net Parasal Pozisyon Kazançları / Kayıpları 31
+17. Pay Başına Kazanç 31
+18. Finansal Araçlardan Kaynaklanan Risklerin Niteliği ve Düzeyi 32-35
+19. Finansal Araçlar 36-38
+20. Raporlama Döneminden Sonraki Olaylar 38
+21.
+Finansal Tabloları Önemli Ölçüde Etkileyen ya da Finansal Tabloların Açık, Yorumlanabilir ve
+Anlaşılabilir Olması Açısından Açıklanması Gereken Diğer Hususlar 39
+
+--- Sayfa 3 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİ İTİBARIYLA ÖZET KONSOLİDE FİNANSAL DURUM
+TABLOLARI
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+1
+Sınırlı Denetimden
+Geçmemiş
+Bağımsız Denetimden
+Geçmiş
+Cari Dönem Önceki Dönem
+Notlar 31 Mart 2025 31 Aralık 2024
+VARLIKLAR
+Dönen Varlıklar
+Nakit ve Nakit Benzerleri 5 11.947.398 9.426.054
+Finansal Yatırımlar 6 13.802.744 8.350.957
+Ticari Alacaklar 8 49.057.915 54.579.612
+İlişkili Taraflardan Ticari Alacaklar 4 324.145 365.931
+İlişkili Olmayan Taraflardan Ticari Alacaklar 48.733.770 54.213.681
+Diğer Alacaklar 3.199.573 1.641.598
+İlişkili Taraflardan Diğer Alacaklar 4 6.074 876
+İlişkili Olmayan Taraflardan Diğer Alacaklar 3.193.499 1.640.722
+Türev Araçlar 72.483 61.030
+Stoklar 153.393 133.881
+Peşin Ödenmiş Giderler 7.105.043 66.990
+Cari Dönem Vergisiyle İlgili Varlıklar 1.265 280
+Diğer Dönen Varlıklar 2.660.170 43.848
+ARA TOPLAM 87.999.984 74.304.250
+Satış Amaçlı Sınıflandırılan Varlıklar 5.091 5.586
+TOPLAM DÖNEN VARLIKLAR 88.005.075 74.309.836
+Duran Varlıklar
+Finansal Yatırımlar 6 451.130 515.086
+Diğer Alacaklar 965 284
+İlişkili Taraflardan Diğer Alacaklar 4 3 3
+İlişkili Olmayan Taraflardan Diğer Alacaklar 962 281
+Özkaynak Yöntemiyle Değerlenen Yatırımlar 9 395.137 2.077.526
+Kullanım Hakkı Varlıkları 315.377 256.584
+Maddi Duran Varlıklar 481.204 317.134
+Maddi Olmayan Duran Varlıklar 4.976.158 226.784
+Şerefiye 10 4.621.231 131.276
+Diğer Maddi Olmayan Duran Varlıklar 354.927 95.508
+Peşin Ödenmiş Giderler 6.745 1.573
+Ertelenmiş Vergi Varlığı 49.366 64.381
+TOPLAM DURAN VARLIKLAR 6.676.082 3.459.352
+TOPLAM VARLIKLAR 94.681.157 77.769.188
+İlişikteki notlar bu özet konsolide finansal tabloların ayrılmaz bir parçasıdır.
+
+--- Sayfa 4 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİ İTİBARIYLA ÖZET KONSOLİDE FİNANSAL DURUM
+TABLOLARI
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+2
+Sınırlı Denetimden
+Geçmemiş
+Bağımsız
+Denetimden Geçmiş
+Cari Dönem Önceki Dönem
+Notlar 31 Mart 2025 31 Aralık 2024
+KAYNAKLAR
+Kısa Vadeli Yükümlülükler
+Kısa Vadeli Borçlanmalar 7 11.348.418 1.532.287
+İlişkili Taraflardan Kısa Vadeli Borçlanmalar 1.181.802 1.154.995
+Banka kredileri 4 1.144.862 1.110.900
+Kiralama İşlemlerinden Borçlar 4 36.940 44.095
+İlişkili olmayan Taraflardan Kısa Vadeli Borçlanmalar 10.166.616 377.292
+Banka kredileri 10.131.607 369.726
+Kiralama İşlemlerinden Borçlar 35.009 7.566
+Uzun Vadeli Borçlanmaların Kısa Vadeli Kısımları 7 79.903 2.971
+İlişkili Taraflardan Uzun Vadeli Borçlanmaların Kısa Vadeli Kısımları 78.045 -
+Banka kredileri 78.045 -
+İlişkili Olmayan Taraflardan Uzun Vadeli Borçlanmaların Kısa Vadeli Kısımları 1.858 2.971
+Kiralama İşlemlerinden Borçlar 1.858 2.971
+Diğer Finansal Yükümlülükler 622.460 -
+Ticari Borçlar 8 44.493.282 41.357.131
+İlişkili Taraflara Ticari Borçlar 4 27.678 25.119
+İlişkili Olmayan Taraflara Ticari Borçlar 44.465.604 41.332.012
+Çalışanlara Sağlanan Faydalar Kapsamında Borçlar 104.662 33.528
+Diğer Borçlar 464.729 312.515
+İlişkili Taraflara Diğer Borçlar 4 19.675 40.760
+İlişkili Olmayan Taraflara Diğer Borçlar 445.054 271.755
+Türev Araçlar 203.691 147.275
+Dönem Karı Vergi Yükümlülüğü 2.390.206 1.584.104
+Kısa Vadeli Karşılıklar 292.963 326.722
+Çalışanlara Sağlanan Faydalara İlişkin Kısa Vadeli Karşılıklar 277.416 305.845
+Diğer Kısa Vadeli Karşılıklar 13 15.547 20.877
+Diğer Kısa Vadeli Yükümlülükler 6.865.553 136.811
+TOPLAM KISA VADELİ YÜKÜMLÜLÜKLER 66.865.867 45.433.344
+Uzun Vadeli Yükümlülükler
+Uzun Vadeli Borçlanmalar 7 1.780.802 92.844
+İlişkili Taraflardan Uzun Vadeli Borçlanmalar 1.729.805 42.268
+Banka kredileri 4 1.657.540 -
+Kiralama İşlemlerinden Borçlar 4 72.265 42.268
+İlişkili Olmayan Taraflardan Uzun Vadeli Borçlanmalar 50.997 50.576
+Banka kredileri 12.500 13.758
+Kiralama İşlemlerinden Borçlar 38.497 36.818
+Uzun Vadeli Karşılıklar 70.162 47.939
+Çalışanlara Sağlanan Faydalara İlişkin U. V. Karşılıklar 70.162 47.939
+Ertelenmiş Vergi Yükümlülüğü 133.926 35.145
+Diğer Uzun Vadeli Yükümlülükler 368.608 405.700
+TOPLAM UZUN VADELİ YÜKÜMLÜLÜKLER 2.353.498 581.628
+ÖZKAYNAKLAR
+Ana Ortaklığa Ait Özkaynaklar 21.969.294 29.286.960
+Ödenmiş Sermaye 15 1.500.000 1.500.000
+Sermaye Düzeltme Farkları 7.297.373 7.297.373
+Pay ihraç primleri 44.629 44.629
+Kar veya Zararda Yeniden Sınıflandırılmayacak Birikmiş Diğer Kapsamlı Gelirler
+veya Giderler 142.234 215.177
+Tanımlanmış Fayda Planları Yeniden Ölçüm Kazançları ve (Kayıpları) (27.647) (30.462)
+Yeniden Değerleme ve Ölçüm Kazançları (Kayıpları) 15 169.881 245.639
+Kar veya Zararda Yeniden Sınıflandırılacak Birikmiş Diğer Kapsamlı Gelirler
+veya Giderler 422 (46.168)
+Yabancı Para Çevrim Farkları 422 (46.168)
+Diğer Yedekler 15 4.326.423 3.026.423
+Kardan Ayrılan Kısıtlanmış Yedekler 15 3.692.092 2.725.071
+Geçmiş Yıllar Kar/Zararları 15 3.827.062 8.464.236
+Net Dönem Karı/Zararı 1.139.059 6.060.219
+Kontrol Gücü Olmayan Paylar 15 3.492.498 2.467.256
+TOPLAM ÖZKAYNAKLAR 25.461.792 31.754.216
+TOPLAM KAYNAKLAR 94.681.157 77.769.188
+İlişikteki notlar bu özet konsolide finansal tabloların ayrılmaz bir parçasıdır.
+
+--- Sayfa 5 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 VE 31 MART 2024 TARİHLERİ İTİBARIYLA
+ÖZET KONSOLİDE KAR VEYA ZARAR TABLOLARI
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+3
+Sınırlı Denetimden
+Geçmemiş
+Sınırlı Denetimden
+Geçmemiş
+Cari Dönem Önceki Dönem
+1 Ocak - 31 Mart 1 Ocak -31 Mart
+Notlar 2025 2024
+KAR VE ZARAR KISMI
+Hasılat 316.264.402 314.696.959
+Satışların Maliyeti (-) (315.185.241) (313.352.258)
+TİCARİ FAALİYETLERDEN BRÜT KAR 1.079.161 1.344.701
+Finans Sektörü Faaliyetlerinden Gelirler (Net) 5.380.166 5.029.527
+FİNANS SEKTÖRÜ FAALİYETLERDEN BRÜT KAR 5.380.166 5.029.527
+BRÜT KAR/ZARAR 6.459.327 6.374.228
+Genel Yönetim Giderleri (-) (1.473.504) (1.173.188)
+Pazarlama Giderleri (-) (436.977) (394.504)
+Araştırma ve Geliştirme Giderleri (-) (1.010) -
+Esas Faaliyetlerden Diğer Gelirler 97.197 309.907
+Esas Faaliyetlerden Diğer Giderler (-) (65.129) (340.156)
+ESAS FAALİYET KARI/ZARARI 4.579.904 4.776.287
+Özkaynak Yöntemiyle Değerlenen Yatırımların Karlarından /
+Zararlarından Paylar 9 34.301 5.247
+Yatırım Faaliyetlerinden Gelirler 9 1.777.835 -
+FİNANSMAN GİDERİ ÖNCESİ FAALİYET KARI/ZARARI 6.392.040 4.781.534
+Finansman Gelirleri 169.048 230.096
+Finansman Giderleri (-) (660.163) (141.482)
+Net Parasal Kazançları / (Kayıpları) (2.478.453) (3.277.902)
+SÜRDÜRÜLEN FAALİYETLER VERGİ ÖNCESİ
+KARI/ZARARI 3.422.472 1.592.246
+Sürdürülen Faaliyetler Vergi Gideri (1.315.029) (1.336.983)
+Dönem Vergi Gideri (1.212.094) (1.307.700)
+Ertelenmiş Vergi Geliri /(Gideri) (102.935) (29.283)
+SÜRDÜRÜLEN FAALİYETLER DÖNEM KARI 2.107.443 255.263
+DURDURULAN FAALİYETLER DÖNEM KARI - -
+DÖNEM KARI/ZARARI 2.107.443 255.263
+Dönem Karı/Zararının dağılımı:
+Kontrol Gücü Olmayan Paylar 968.384 (111.240)
+Ana Ortaklık Payları 1.139.059 366.503
+2.107.443 255.263
+Pay Başına Kazanç
+Sürdürülen faaliyetlerden pay başına kazanç 17 0,7594 0,2443
+Durdurulan faaliyetlerden pay başına kazanç - -
+Sulandırılmış Pay Başına Kazanç
+Sürdürülen faaliyetlerden sulandırılmış pay başına kazanç 17 0,7594 0,2443
+Durdurulan faaliyetlerden sulandırılmış pay başına kazanç - -
+İlişikteki notlar bu özet konsolide finansal tabloların ayrılmaz bir parçasıdır.
+
+--- Sayfa 6 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 VE 31 MART 2024 TARİHLERİ İTİBARIYLA
+ÖZET KONSOLİDE DİĞER KAPSAMLI GELİR TABLOLARI
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+4
+Sınırlı Denetimden
+Geçmemiş
+Sınırlı Denetimden
+Geçmemiş
+Cari Dönem Önceki Dönem
+1 Ocak -31 Mart 1 Ocak -31 Mart
+Notlar 2025 2024
+DÖNEM KARI 2.107.443 255.263
+DİĞER KAPSAMLI GELİRLER:
+Kar veya Zararda Yeniden Sınıflandırılmayacaklar (75.947) (22.092)
+Tanımlanmış fayda planları yeniden ölçüm kazançları/(kayıpları) 6.263 (15.626)
+Diğer yeniden değerleme ve ölçüm kazançları / (kayıpları) (94.507) (12.061)
+Kar veya zararda yeniden sınıflandırılmayacak diğer kapsamlı gelire
+ilişkin vergiler 12.297 5.595
+Kar veya Zararda Yeniden Sınıflandırılacaklar 23.526 34.274
+Yabancı para çevrim farkları 23.526 34.274
+DİĞER KAPSAMLI GELİR (52.421) 12.182
+TOPLAM KAPSAMLI GELİR 2.055.022 267.445
+Toplam kapsamlı gelirin dağılımı:
+Kontrol gücü olmayan paylar 942.306 (112.863)
+Ana ortaklık payları 1.112.716 380.308
+2.055.022 267.445
+İlişikteki notlar bu özet konsolide finansal tabloların ayrılmaz bir parçasıdır.
+
+--- Sayfa 7 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 VE 31 MART 2024 TARİHLERİ İTİBARIYLA ÖZET KONSOLİDE ÖZKAYNAKLAR DEĞİŞİM TABLOLARI
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+5
+Kar veya Zararda Yeniden
+Sınıflandırılmayacak Birikmiş Diğer
+Kapsamlı Gelirler veya Giderler
+Kar veya
+Zararda
+Yeniden
+Sınıflandırılacak
+Birikmiş Diğer
+Kapsamlı
+Gelirler veya
+Giderler Birikmiş Karlar
+Ödenmiş
+Sermaye
+Sermaye
+Düzeltme
+Farkları
+Pay
+İhraç
+Primleri
+Tanımlanmış
+Fayda Planları
+Yeniden
+Ölçüm Kazanç
+ve Kayıpları
+Diğer Yeniden
+Değerleme ve Ölçüm
+Kazançları
+(Kayıpları)
+Yabancı Para
+Çevrim Farkları
+Diğer
+Yedekler
+Kardan
+Ayrılan
+Kısıtlanmış
+Yedekler
+Geçmiş
+Yıllar
+Karları /
+(Zararları)
+Net Dönem
+Karı /
+(Zararı)
+Ana
+Ortaklığa
+Ait
+Özkaynaklar
+Kontrol
+Gücü
+Olmayan
+Paylar Özkaynaklar
+1 Ocak 2024 itibarıyla bakiyeler 1.500.000 7.297.373 44.629 (25.095) 268.685 (19.535) 1.821.799 2.250.276 3.440.901 8.803.154 25.382.187 2.030.743 27.412.930
+Transferler - - - - - - 53.941 (291.837) 9.018.527 (8.803.154) (22.523) - (22.523)
+Toplam kapsamlı gelir - - - (4.444) (9.328) 27.577 - - - 366.503 380.308 (112.863) 267.445
+Kontrol Gücü Olmayan Pay
+Sahipleriyle Yapılan İşlemler
+- - - 6.329 (31.782) - - 194.316 (188.662) - (19.799) (82.519) (102.318)
+Kar payları - - - - - - - - - - - - -
+31 Mart 2024 itibarıyla bakiyeler 1.500.000 7.297.373 44.629 (23.210) 227.575 8.042 1.875.740 2.152.755 12.270.766 366.503 25.720.173 1.835.361 27.555.534
+Kar veya Zararda Yeniden
+Sınıflandırılmayacak Birikmiş Diğer
+Kapsamlı Gelirler veya Giderler
+Kar veya
+Zararda
+Yeniden
+Sınıflandırılacak
+Birikmiş Diğer
+Kapsamlı
+Gelirler veya
+Giderler Birikmiş Karlar
+Ödenmiş
+Sermaye
+Sermaye
+Düzeltme
+Farkları
+Pay
+İhraç
+Primleri
+Tanımlanmış
+Fayda Planları
+Yeniden
+Ölçüm Kazanç
+ve Kayıpları
+Diğer Yeniden
+Değerleme ve Ölçüm
+Kazançları
+(Kayıpları)
+Yabancı Para
+Çevrim Farkları
+Diğer
+Yedekler
+Kardan
+Ayrılan
+Kısıtlanmış
+Yedekler
+Geçmiş
+Yıllar
+Karları /
+(Zararları)
+Net Dönem
+Karı /
+(Zararı)
+Ana
+Ortaklığa
+Ait
+Özkaynaklar
+Kontrol
+Gücü
+Olmayan
+Paylar Özkaynaklar
+1 Ocak 2025 itibarıyla bakiyeler 1.500.000 7.297.373 44.629 (30.462) 245.639 (46.168) 3.026.423 2.725.071 8.464.236 6.060.219 29.286.960 2.467.256 31.754.216
+Transferler - - - - - - 1.300.000 943.813 3.816.406 (6.060.219) - - -
+Toplam kapsamlı gelir - - - 2.825 (75.758) 46.590 - - - 1.139.059 1.112.716 942.306 2.055.022
+Kontrol Gücü Olmayan Pay
+Sahipleriyle Yapılan İşlemler - - - (10) - - - 23.208 46.420 - 69.618 112.936 182.554
+Kar payları - - - - - - - - (8.500.000) - (8.500.000) (30.000) (8.530.000)
+31 Mart 2025 itibarıyla bakiyeler 1.500.000 7.297.373 44.629 (27.647) 169.881 422 4.326.423 3.692.092 3.827.062 1.139.059 21.969.294 3.492.498 25.461.792
+İlişikteki notlar bu özet konsolide finansal tabloların ayrılmaz bir parçasıdır.
+
+--- Sayfa 8 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 VE 31 MART 2024 TARİHLERİ İTİBARIYLA
+ÖZET KONSOLİDE NAKİT AKIŞ TABLOLARI
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+6
+Sınırlı Denetimden
+Geçmemiş
+Cari Dönem
+Sınırlı Denetimden
+Geçmemiş
+Önceki Dönem
+Notlar
+1 Ocak –31 Mart
+2025
+1 Ocak –31 Mart
+2024
+A. İŞLETME FAALİYETLERİNDEN NAKİT AKIŞLARI 495.026 (1.345.514)
+Dönem karı 2.107.443 255.263
+Dönem Net Karı/Zararı Mutabakatı İle İlgili Düzeltmeler - -
+Amortisman ve itfa gideri ile ilgili düzeltmeler 104.315 145.075
+Karşılıklar ile ilgili düzeltmeler (15.681) (327.457)
+Faiz gelirleri ile ilgili düzeltmeler (3.964.302) (4.133.775)
+Faiz gideri ile ilgili düzeltmeler (618.682) 1.149.127
+Pay bazlı ödemeler ile ilgili düzeltmeler (14) (15)
+Gerçeğe uygun değer kayıpları/kazançları ile ilgili düzeltmeler 4.498.342 379.314
+Vergi gideri/geliri ile ilgili düzeltmeler 1.315.029 1.336.983
+Duran varlıkların elden çıkarılmasından kaynaklanan kayıp/kazançlar ile ilgili
+düzeltmeler (949) (604)
+Kar/zarar mutabakatı ile ilgili diğer düzeltmeler 3.797.240 (38.793)
+Net parasal kazançlar/(kayıplar) 1.172.507 933.318
+İşletme Sermayesinde Gerçekleşen Değişimler
+Stoklardaki (artış)/azalışla ilgili düzeltmeler (19.512) 18.539
+Ticari alacaklardaki artışla ilgili düzeltmeler 5.521.697 (6.371.450)
+Finansal yatırımlardaki (artış) / azalış (10.001.020) 4.098.512
+Faaliyetlerle ilgili diğer alacaklardaki artışla ilgili düzeltmeler (8.669.362) (369.474)
+Ticari borçlardaki azalışla ilgili düzeltmeler 3.136.151 (188.809)
+Faaliyetlerle ilgili diğer borçlardaki (artış)/azalışla ilgili düzeltmeler 153.774 3.933
+Faaliyetlerden Elde Edilen Nakit Akışları
+Vergi ödemeleri (395.131) (491.530)
+Alınan faiz 2.302.047 2.212.756
+Çalışanlara sağlanan faydalara ilişkin (ödemeler)/iadeler 71.134 43.573
+B. YATIRIM FAALİYETLERİNDEN KAYNAKLANAN
+NAKİT AKIŞLARI (1.642.335) 1.793.875
+İştiraklar Pay Alımı veya Sermaye Artırımı Sebebiyle Oluşan Nakit Çıkışları 9 1.682.389 (11.032)
+Maddi duran varlıkların satışından kaynaklanan nakit girişleri 28.139 1.137
+Maddi duran varlıkların alımından kaynaklanan nakit çıkışları (219.327) (103.340)
+Alınan temettüler 14 15
+Maddi olmayan duran varlıkların satışından kaynaklanan nakit girişleri 232.008 128
+Maddi olmayan duran varlıkların alımından kaynaklanan nakit çıkışları (5.027.813) (14.051)
+Alınan faiz 1.662.255 1.921.018
+C. FİNANSMAN FAALİYETLERİNDEN NAKİT AKIŞLARI 4.348.579 5.546.336
+Borçlanmadan kaynaklanan nakit girişleri 13.191.585 157.230.276
+Borç ödemelerine ilişkin nakit çıkışları (8.511.997) (155.154.869)
+Ödenen temettüler (8.530.000) (77.538)
+Diğer finansal yükümlülüklerdeki değişim 678.876 80.795
+Finansman bonosu ihracına ilişkin nakit girişleri 1.823.471 4.616.799
+Finansman bonosu ödemelerine ilişkin nakit çıkışları 5.077.962 -
+Ödenen faiz 618.682 (1.149.127)
+YABANCI PARA ÇEVRİM FARKLARININ ETKİSİNDEN ÖNCE
+NAKİT VE NAKİT BENZERLERİNDEKİ NET ARTIŞ/AZALIŞ (A+B+C) 3.201.270 5.994.697
+D. YABANCI PARA ÇEVRİM FARKLARININ NAKİT VE
+NAKİT BENZERLERİ ÜZERİNDEKİ ETKİSİ 46.589 27.577
+E. NAKIT VE NAKIT BENZERLERINDEKI ENFLASYON ETKISI (985.810) (975.735)
+NAKİT VE NAKİT BENZERLERİNDEKİ NET ARTIŞ/(AZALIŞ)
+(A+B+C+D+E) 2.262.049 5.046.539
+F. DÖNEM BAŞI NAKİT VE NAKİT BENZERLERİ 5 9.351.499 3.733.223
+DÖNEM SONU NAKİT VE NAKİT BENZERLERİ (A+B+C+D+E+F) 5 11.613.548 8.779.762
+İlişikteki notlar bu özet konsolide finansal tabloların ayrılmaz bir parçasıdır
+
+--- Sayfa 9 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+7
+1. GRUP’UN ORGANİZASYONU VE FAALİYET KONUSU
+İş Yatırım Menkul Değerler A.Ş.’nin (“Şirket”) amacı, Sermaye Piyasası Kanunu ve ilgili mevzuat
+hükümlerine uygun olarak ana sözleşmesinde belirtilen sermaye piyasası faaliyetlerinde bulunmaktır.
+Bu çerçevede, Sermaye Piyasası Kurulu'nun (“SPK”) 5 Aralık 1996 tarih ve 51/1515 sayılı kararı ile
+kuruluş izni alınmıştır. Şirket “Geniş Yetkili Aracı Kurum” olarak faaliyetini sürdürmektedir.
+Şirket Türkiye’de kayıtlıdır ve genel müdürlüğü aşağıdaki adreste faaliyet göstermektedir. Şirket’in
+genel müdürlüğünün iletişim bilgileri ve Şirket’in internet sayfası aşağıda belirtilmiştir.
+Levent Mahallesi Meltem Sokak İş Kuleleri Kule - 2 Kat 13, 34330, Beşiktaş / İstanbul / Türkiye
+Telefon: + 90 (212) 350 20 00 Faks: + 90 (212) 350 20 01
+http://www.isyatirim.com.tr
+Şirket’in ana ortağı Türkiye İş Bankası A.Ş.’dir. Şirket’in hisse senetleri borsada işlem görmektedir.
+Cari dönem itibarıyla Şirket’in çalışan sayısı 627’dir (31 Aralık 2024: 627).
+31 Mart 2025 tarihi itibarıyla Şirket’in konsolidasyona dahil edilen bağlı ortaklıklarının detayları
+aşağıdaki gibidir:
+Bağlı Ortaklıklar:
+Şirket Kuruluş ve faaliyet yeri Esas faaliyet konusu
+Efes Varlık Yönetim A.Ş. İstanbul Varlık yönetimi
+İş Girişim Sermayesi Yatırım Ortaklığı A.Ş.(*) İstanbul Girişim sermayesi
+İş Portföy Yönetimi A.Ş. İstanbul Portföy yönetimi
+İş Yatırım Ortaklığı A.Ş. İstanbul Yatırım ortaklığı
+Maxis Girişim Sermayesi Portföy Yönetimi A.Ş. İstanbul Portföy yönetimi
+Levent Varlık Kiralama A.Ş. İstanbul Varlık kiralama
+Maxis Investments Ltd. Londra Aracı kurum
+(*) İş Girişim Sermayesi Yatırım Ortaklığı AŞ’nin bağlı ortaklıklarına Not 2.1’de yer verilmiştir.
+Bu rapor kapsamında Şirket ve konsolidasyona dahil edilen bağlı ortaklık, iş ortaklığı ve iştirakleri hep
+birlikte “Grup” olarak nitelendirilmektedir. Konsolidasyona dahil edilen bağlı ortaklıkların faaliyet
+alanları aşağıda açıklanmıştır:
+Efes Varlık Yönetim A.Ş.:
+Bağlı ortaklığın faaliyeti, mevduat bankaları, katılım bankaları ve diğer mali kurumların alacakları ile
+diğer varlıklarını satın almak ve satmaktır.
+İş Girişim Sermayesi Yatırım Ortaklığı A.Ş. (“İş Girişim Sermayesi”):
+Bağlı ortaklığın faaliyet konusu, esas olarak Türkiye’de kurulmuş veya kurulacak olan, gelişme
+potansiyeli taşıyan ve kaynak ihtiyacı olan girişim şirketlerine uzun vadeli yatırımlar yapmaktır.
+İş Portföy Yönetimi A.Ş.:
+Sermaye Piyasası Kanunu ve ilgili mevzuat hükümlerine uygun olarak ana sözleşmesinde belirtilen
+sermaye piyasası faaliyetlerinde bulunan bağlı ortaklık, sermaye piyasası faaliyetleri kapsamında
+kurumsal yatırımcılara portföy yönetimi ve yatırım danışmanlığı hizmeti sunmaktadır.
+İş Yatırım Ortaklığı A.Ş.:
+Sermaye Piyasası Kanunu ve ilgili mevzuat hükümlerine uygun olarak ana sözleşmesinde belirtilen
+sermaye piyasası faaliyetlerini yürüten bağlı ortaklık, sermaye piyasası işlemleri ile portföy işletmeciliği
+faaliyetlerinde bulunmaktadır.
+Maxis Girişim Sermayesi Portföy Yönetimi A.Ş.:
+Bağlı ortaklık, Sermaye Piyasası Kanunu ve ilgili mevzuat hükümleri çerçevesinde girişim sermayesi
+yatırım fonlarının kurulması ve yönetimi ile iştigal etmektedir.
+
+--- Sayfa 10 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+8
+1. GRUP’UN ORGANİZASYONU VE FAALİYET KONUSU (devamı)
+Bağlı Ortaklıklar: (devamı)
+Levent Varlık Kiralama A.Ş.:
+Münhasıran kira sertifikası ihraç etmek üzere kurulmuştur. Kira sertifikası ihracına yönelik taleplerin
+karşılanması ve katılım fonları ve diğer kira sertifikası yatırımcılarına hizmet vermek amacındadır.
+Maxis Investments Ltd.:
+“The Official Seal Of The Registrar of Companies” tarafından tescil edilerek, Londra / İngiltere’de
+kurulan bağlı ortaklık, sermaye piyasalarında faaliyetlerde bulunmaktadır.
+İştirakler ve İş Ortaklıkları
+İştirakler, Grup’un önemli derecede etkide bulunduğu, bağlı ortaklıkların dışında kalan işletmelerdir.
+Önemli derecede etkinlik, bir işletmenin finansal ve operasyonel politikalarına ilişkin kararlarına
+münferiden veya müştereken kontrol yetkisi olmaksızın katılma gücünün olmasıdır. İş ortaklıkları ise
+Grup’un sözleşmeye dayanan bir anlaşma ile müştereken kontrol yetkisine sahip olduğu ve stratejik,
+finansal ve operasyonel kararlar için oy birliği gereken işletmelerdir. 31 Mart 2025 tarihi itibarıyla
+Grup’un iştiraklerinin ve iş ortaklıklarının detayı aşağıdaki gibidir:
+İştirakler
+Şirket Adı Faaliyet
+Türleri Esas faaliyet konuları
+Radore Veri Hizmetleri A.Ş. (“Radore”) Hizmet Bilişim teknolojileri sektörünün veri merkezi
+işletmeciliği ve ana sözleşmesinde yazılı diğer işler
+Sportive Spor Malzemeleri Ticaret AŞ (“Sportive”) Hizmet Perakende Mağazacılık
+Ege Tarım Ürünleri Lisanslı Depoculuk A.Ş. (“Elidaş”) Hizmet Lisanslı Depoculuk
+ElüsMarket Ürün Piyasası Aracı Kurumu A.Ş. (“ElüsMarket”) Hizmet Aracı Kurum
+2. ÖZET KONSOLİDE FİNANSAL TABLOLARIN SUNUMUNA İLİŞKİN ESASLAR
+2.1. Sunuma İlişkin Temel Esaslar
+Uygulanan Muhasebe Standartları
+Finansal Tabloların Onaylanması:
+Grup’un 31 Mart 2025 tarihi itibarıyla hazırlanan özet konsolide finansal tabloları, Yönetim Kurulu
+tarafından onaylanmış ve 12 Mayıs 2025 tarihinde yayımlanması için yetki verilmiştir. Genel kurul ve
+belirli düzenleyici kuruluşlar, finansal tabloların yayımlanmasından sonra değiştirme gücüne sahiptir.
+Finansal Tabloların Hazırlanış Şekli ve TMS’ye Uygunluk Beyanı
+İlişikteki özet konsolide finansal tablolar, Sermaye Piyasası Kurulu’nun (“SPK”) 13 Haziran 2013 tarih
+ve 28676 sayılı Resmi Gazete’de yayımlanan II-14.1 No’lu “Sermaye Piyasasında Finansal
+Raporlamaya İlişkin Esaslar Tebliği” (“Tebliğ”) hükümleri uyarınca Kamu Gözetimi Muhasebe ve
+Denetim Standartları Kurumu (“KGK”) tarafından yayımlanan Türkiye Muhasebe Standartları’na
+(“TMS”) ve Türkiye Finansal Raporlama Standartları’na (“TFRS”) uygun olarak hazırlanmıştır.
+Grup’un ilişikteki özet konsolide finansal tabloları KGK tarafından yayımlanan TMS ve TFRS’lere
+uygun olarak sunulmuştur. Şirket ve Türkiye’de yerleşik bağlı ortaklıkları, yasal defterlerini ve kanuni
+finansal tablolarını Türk Ticaret Kanunu (“TTK”) ve vergi mevzuatınca belirlenen muhasebe ilkelerine
+uygun olarak tutmakta ve hazırlamaktadır. Yabancı ülkelerde faaliyet gösteren bağlı ortaklık tarafından
+kontrol edilen işletmeler muhasebe kayıtlarını ve yasal finansal tablolarını faaliyette bulundukları
+ülkelerin para birimleri cinsinden ve o ülkelerin mevzuatına uygun olarak hazırlamaktadırlar.
+
+--- Sayfa 11 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+9
+2. ÖZET KONSOLİDE FİNANSAL TABLOLARIN SUNUMUNA İLİŞKİN ESASLAR (devamı)
+2.1. Sunuma İlişkin Temel Esaslar (devamı)
+Uygulanan Muhasebe Standartları (devamı)
+Yüksek enflasyonlu ekonomilerde finansal raporlama
+TFRS’leri uygulayan işletmeler, Kamu Gözetimi Muhasebe ve Denetim Standartları Kurumu (KGK)
+tarafından 23 Kasım 2023 tarihinde yapılan açıklamayla birlikte, 31 Aralık 2023 tarihinde sona eren
+yıllık raporlama dönemine ait finansal tablolarından itibaren TMS 29 Yüksek Enflasyonlu
+Ekonomilerde Finansal Raporlama Standardına göre enflasyon muhasebesi uygulamaya başlamıştır.
+TMS 29, geçerli para birimi yüksek enflasyonlu bir ekonominin para birimi olan işletmelerin, özet
+konsolide finansal tabloları da dahil olmak üzere, finansal tablolarında uygulanmaktadır.
+İlişikteki finansal tablolar ile önceki dönemlere ait karşılaştırmalı tüm tutarlar, TMS 29 uyarınca Türk
+lirasının genel satın alma gücünde meydana gelen değişimlere göre düzeltilmiş ve nihayetinde Türk
+lirasının 31 Mart 2025 tarihindeki satın alma gücü cinsinden ifade edilmiştir. Tüm parasal olmayan
+varlıkların, parasal olmayan yükümlülüklerin ve gelir tablosunun endekslemesi TÜİK tarafından
+yayımlanan Tüketici Fiyat Endeksleri (TÜFE) kullanılarak yapılmıştır.
+31 Mart 2025 tarihi itibarıyla ekte sunulan mali tabloların düzeltilmesinde kullanılan endeks ve
+katsayılar aşağıda belirtilmiştir:
+Tarihler Endeks Düzeltme Katsayısı
+31 Mart 2024 2.139,47 1,3810
+31 Aralık 2024 2.684,55 1,1006
+31 Mart 2025 2.954,69 1,0000
+TMS 29 uyarınca finansal tablolarda gerekli düzeltmeleri yapmak üzere, varlık ve yükümlülükler ilk
+olarak parasal ve parasal olmayan olarak ayrıştırılmış, parasal olmayan varlık ve yükümlülükler ayrıca
+cari değeriyle ölçülenler ve maliyet değeriyle ölçülenler olarak ilave bir ayrıştırmaya tabi tutulmuştur.
+Parasal kalemler (bir endekse bağlı olanlar hariç) ile raporlama dönemi sonundaki cari değerleriyle
+ölçülen parasal olmayan kalemler halihazırda 31 Mart 2025 tarihindeki cari ölçüm biriminden ifade
+edildiklerinden enflasyon düzeltmesine tabi tutulmamıştır. 31 Mart 2025 tarihindeki ölçüm biriminden
+ifade edilmeyen parasal olmayan kalemler ise ilgili katsayı kullanılarak enflasyon düzeltmesine tabi
+tutulmuştur. Parasal olmayan kalemlerin enflasyona göre düzeltilmiş değerinin geri kazanılabilir tutarı
+ya da net gerçekleşebilir değeri aştığı durumda, ilgili TFRS uygulanarak defter değerinde azaltıma
+gidilmiştir. Bunun yanı sıra, özkaynak unsurları ile kar veya zarar ve diğer kapsamlı gelir tablosundaki
+tüm kalemlerde enflasyon düzeltmesi yapılmıştır.
+TMS 29’un uygulanması, Türk lirasının satın alma gücündeki azalıştan kaynaklı ve kar veya zarar ve
+diğer kapsamlı gelir tablosunun kar veya zarar bölümündeki Net Parasal Pozisyon Kazançları
+(Kayıpları) kaleminde sunulan düzeltmeleri gerekli kılmıştır. Parasal varlık veya yükümlülüklerin
+değeri endeksteki değişimlere bağlı olmadığı sürece, enflasyon döneminde, parasal yükümlülüklerden
+daha yüksek tutarda parasal varlık taşıyan işletmelerin satın alma gücü zayıflarken, parasal varlıklardan
+daha yüksek tutarda parasal yükümlülük taşıyan işletmelerin satın alma gücü artış gösterir. Net parasal
+pozisyon kazanç ya da kaybı, parasal olmayan kalemlerin, özkaynakların, kar veya zarar ve diğer
+kapsamlı gelir tablosundaki kalemlerin ve endekse bağlı parasal varlık ve yükümlülüklerin düzeltme
+farklarından elde edilmiştir.
+Yüksek enflasyonlu ekonomilerin para birimlerinde raporlama yapmayan bağlı ortaklıkların finansal
+tabloları TMS 21 hükümlerine tabidir. Bu kapsamda, TMS 29 yalnızca Türkiye’de mukim bağlı
+ortaklıklar için uygulanmış olup, diğer bağlı ortaklıklar ve iştirakler TMS 21 kapsamında
+değerlendirilmiş ve muhasebeleştirilmiştir.
+
+--- Sayfa 12 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+10
+2. ÖZET KONSOLİDE FİNANSAL TABLOLARIN SUNUMUNA İLİŞKİN ESASLAR (devamı)
+2.1. Sunuma İlişkin Temel Esaslar (devamı)
+Uygulanan Muhasebe Standartları (devamı)
+Geçerli ve Raporlama Para Birimi
+Grup’un her işletmesinin kendi finansal tabloları, faaliyette bulundukları temel ekonomik çevrede
+geçerli olan para birimi (geçerli para birimi) ile sunulmuştur. Her işletmenin finansal durumu ve faaliyet
+sonuçları, Şirket’in geçerli para birimi olan ve özet konsolide finansal tablolar için raporlama para birimi
+olan TL cinsinden ifade edilmiştir.
+Grup tarafından kullanılan kur bilgileri aşağıdaki gibidir:
+31 Mart 2025 31 Aralık 2024
+Amerikan Doları (“ABD Doları”) 37,7656 35,2803
+Avro 40,7019 36,7362
+İngiliz Sterlini (“GBP”) 48,7963 44,2073
+İşletmenin Sürekliliği Varsayımı
+Özet konsolide finansal tablolar, Şirket’in ve konsolidasyona dahil edilen bağlı ortaklık, iş ortaklığı ve
+iştiraklerinin önümüzdeki bir yılda ve faaliyetlerinin doğal akışı içerisinde varlıklarından fayda elde
+edeceği ve yükümlülüklerini yerine getireceği varsayımı altında işletmenin sürekliliği esasına göre
+hazırlanmıştır.
+Konsolidasyona İlişkin Esaslar
+Bağlı Ortaklıklar, İştirakler ve İş Ortaklıkları:
+Bağlı ortaklıklar, Grup tarafından kontrol edilen işletmelerdir. Grup, bir işletmeyi o işletmeyle olan
+ilişkisinden dolayı değişken getirilere maruz kaldığı veya bu getirilerde hak sahibi olduğu, aynı zamanda
+bu getirileri yatırım yaptığı işletme üzerindeki gücüyle etkileme imkanına sahip olduğu durumda kontrol
+etmektedir. Bağlı ortaklıkların finansal tabloları, kontrolün başladığı tarihten sona erdiği tarihe kadar
+özet konsolide finansal tablolara dahil edilmiştir.
+Konsolide edilen bağlı ortaklığın net aktiflerinden kontrol gücü olmayan paylarına isabet eden tutarlar
+ana ortaklığa isabet eden tutardan ayrı olarak belirlenir. Net aktiflerden kontrol gücü olmayan paylara
+isabet eden tutarlar, işletme birleşmesinin gerçekleştiği tarihte hesaplanan kontrol gücü olmayan
+paylardan ve işletme birleşmesinin gerçekleştiği tarihten sonra özkaynaklarda meydana gelen
+değişikliklerden kontrol gücü olmayan paylara isabet eden tutarlardan oluşur. Kar ya da zarar ve diğer
+kapsamlı gelirin her bir kısmı, ana ortaklık hissedarlarına ve kontrol gücü olmayan paylara aktarılır. Söz
+konusu durum kontrol gücü olmayan paylarda ters bakiye ile sonuçlansa dahi, toplam kapsamlı gelir ana
+ortaklık hissedarlarına ve kontrol gücü olmayan paylara aktarılır.
+Gerekli olması halinde, Grup’un izlediği muhasebe politikalarıyla aynı olması amacıyla bağlı
+ortaklıkların finansal tablolarında muhasebe politikalarıyla ilgili düzeltmeler yapılmıştır.
+Grup’un, finansal ve operasyonel faaliyetleri üzerinde önemli bir etkiye sahip olduğu fakat herhangi bir
+kontrole sahip olmadığı iştirakler ve sözleşmeye dayanan bir anlaşma ile müştereken kontrol yetkisine
+sahip olduğu ve stratejik, finansal ve operasyonel kararlar için oybirliği gereken iş ortaklıkları bu
+etkilerin başladığı tarih ile etkilerin bitiş tarihi arasında özkaynak yöntemi esasına göre
+muhasebeleştirilir.
+Özkaynak yöntemine göre özet konsolide finansal durum tablosunda iştirakler ve iş ortaklıkları, maliyet
+bedelinin iştirakin net varlıklarındaki alım sonrası dönemde oluşan değişimdeki Grup’un payı kadar
+düzeltilmesi sonucu bulunan tutardan iştirakte ve iş ortaklığında oluşan herhangi bir değer
+düşüklüğünün düşülmesi neticesinde elde edilen tutar üzerinden gösterilir. İştirakin ve iş ortaklığının,
+Grup’un iştirakteki ve iş ortaklığındaki payını (özünde Grup’un iştirakteki ve iş ortaklığındaki net
+yatırımının bir parçasını oluşturan herhangi bir uzun vadeli yatırımı da içeren) aşan zararları kayıtlara
+alınmaz.
+
+--- Sayfa 13 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+11
+2. ÖZET KONSOLİDE FİNANSAL TABLOLARIN SUNUMUNA İLİŞKİN ESASLAR (devamı)
+2.1. Sunuma İlişkin Temel Esaslar (devamı)
+Uygulanan Muhasebe Standartları (devamı)
+Konsolidasyona İlişkin Esaslar (devamı)
+Şirket’in bağlı ortaklıklarının, iştiraklerinin ve iş ortaklıklarının detayları aşağıdaki gibidir:
+Sermayedeki pay oranı (%)
+31 Mart 2025 31 Aralık 2024
+Efes Varlık Yönetim A.Ş. 91,14 91,14
+İş Girişim Sermayesi 29,01 29,01
+İş Portföy Yönetimi A.Ş. 70,00 70,00
+İş Yatırım Ortaklığı A.Ş. 28,93 28,93
+Maxis Girişim Sermayesi Portföy Yönetimi A.Ş. 100,00 100,00
+Levent Varlık Kiralama A.Ş. 100,00 100,00
+Maxis Investments Ltd. 100,00 100,00
+Ortopro Tıbbi Aletler Sanayi ve Ticaret A.Ş. (Ortopro)(*) 97,22 97,22
+Tatilbudur Seyahat Acenteliği ve Turizm A.Ş. (Tatilbudur) (*) 99,98 64,15
+Radore (*) 25,50 25,50
+Elidaş 10,05 10,05
+ElüsMarket 24,24 24,24
+Sportive Spor(*) 50,00 50,00
+(*) İş Girişim Sermayesi’nin yatırımları İş Girişim Sermayesi’nin bu şirketlerdeki iştirak oranı ile gösterilmiştir. Grup’un söz
+konusu yatırımlardaki etkin ortaklık oranları Not 9’da yer almaktadır.
+Şerefiye:
+Şerefiye, satın alınan bağlı ortaklığın/iştirakin/iş ortaklığının tanımlanabilen net varlıklarındaki Grup
+payının gerçeğe uygun değerinin satın alma maliyetini aşan tutarı olarak ifade edilir. İştiraklerin ve iş
+ortaklıklarının alımından elde edilen şerefiye tutarı “İştirakler/Özkaynak yöntemiyle değerlenen
+yatırımlar” hesabına dahil edilir ve genel bakiyenin bir kısmı olarak değer düşüklüğü testine tabi tutulur.
+Ayrı olarak muhasebeleştirilen şerefiye tutarı için her yıl değer düşüklüğü testi yapılır ve maliyetinden
+birikmiş değer düşüklüğü karşılıklarının düşülmesiyle gösterilir. Şerefiyedeki değer düşüklüğü
+karşılıkları iptal edilmez.
+İşletmenin elden çıkarılması sonucu oluşan kazanç veya kayıplar satılan işletmeyle ilişkili olan
+şerefiyenin defter değerini de içerir. Değer düşüklüğü testi için şerefiye nakit yaratan birimlere dağıtılır.
+Dağıtımlar, şerefiyenin oluştuğu işletme birleşmelerinden fayda sağlaması beklenen nakit yaratan
+birimlere ya da nakit yaratan birim gruplarına yapılır.
+Satın alınan tanımlanabilir varlıkların, yükümlülüklerin ve şarta bağlı yükümlülüklerin gerçeğe uygun
+değerlerinin veya birleşme maliyetinin sadece geçici olarak kayıtlı değerler üzerinden belirlenebilmesi
+nedeniyle birleşmenin gerçekleştiği dönemin sonunda birleşmenin ilk kez muhasebeleştirilmesi geçici
+olarak yapılmak durumundaysa, satın alan, söz konusu işletme birleşmesini geçici tutarlardan
+muhasebeleştirir. Geçici olarak belirlenmiş birleşme muhasebesinin birleşme tarihini takip eden 12 ay
+içerisinde tamamlanması ve şerefiye de dahil düzeltme kayıtlarının birleşme tarihinden itibaren
+yapılması gerekmektedir.
+
+--- Sayfa 14 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+12
+2. ÖZET KONSOLİDE FİNANSAL TABLOLARIN SUNUMUNA İLİŞKİN ESASLAR (devamı)
+2.1. Sunuma İlişkin Temel Esaslar (devamı)
+Uygulanan Muhasebe Standartları (devamı)
+Konsolidasyona İlişkin Esaslar (devamı)
+Konsolidasyonda düzeltme işlemleri:
+Konsolidasyona dahil edilen şirketlerin, finansal durum tabloları ve kar veya zarar tabloları tam
+konsolidasyon yöntemi kullanılarak konsolide edilmiş ve Şirket’in aktifinde yer alan kayıtlı değeri ile
+özkaynaklarındaki payları karşılıklı olarak netleştirilmiştir. Bağlı ortaklıkların net varlıklarından ana
+ortaklığın doğrudan ve/veya dolaylı kontrolü dışında kalan paylara isabet eden kısımları özet konsolide
+finansal durum tablosunda “Kontrol Gücü Olmayan Paylar” kalemi içinde sınıflanmıştır. Yine bağlı
+ortaklıkların net dönem karlarından veya zararlarından ana ortaklığın doğrudan ve/veya dolaylı kontrolü
+dışında kalan paylara isabet eden kısımları, özet konsolide kar veya zarar tablosunda “Kontrol Gücü
+Olmayan Paylar” kalemi içinde sınıflanmıştır. Konsolidasyona dahil edilen şirketler arasındaki grup içi
+işlemler ve bakiyeler elimine edilir. Grup şirketlerinden biri ile Grup’un bir iştiraki veya iş ortaklığı
+arasında gerçekleşen işlemler neticesinde oluşan kar ve zararlar, Grup’un ilgili iştirakteki/iş
+ortaklığındaki payı oranında elimine edilir.
+2.2. Muhasebe Tahminlerindeki Değişiklikler, Hatalar
+Muhasebe tahminlerindeki değişiklikler, yalnızca bir döneme ilişkin ise, değişikliğin yapıldığı cari
+dönemde, gelecek dönemlere ilişkin ise, hem değişikliğin yapıldığı dönemde hem de gelecek
+dönemlerde, ileriye yönelik olarak uygulanır. Tespit edilen önemli muhasebe hataları geriye dönük
+olarak düzeltilir ve önceki dönem finansal tabloları yeniden düzenlenir.
+2.3. Özet Konsolide Finansal Tabloların Sunumuna İlişkin Temel Esaslar
+Yeni ve düzeltilmiş standartlar ve yorumlar
+31 Mart 2025 tarihi itibarıyla sona eren hesap dönemine ait özet konsolide finansal tabloların
+hazırlanmasında esas alınan muhasebe politikaları aşağıda özetlenen 1 Ocak 2025 tarihi itibarıyla geçerli
+yeni ve değiştirilmiş TFRS standartları ve TFRYK yorumları dışında önceki yılda kullanılanlar ile tutarlı
+olarak uygulanmıştır. Bu standartların ve yorumların Grup’un mali durumu ve performansı üzerindeki
+etkileri ilgili paragraflarda açıklanmıştır.
+i) 31 Mart 2025 tarihi itibarıyla yürürlükte olan yeni standartlar ile mevcut önceki
+standartlara getirilen değişiklikler ve yorumlar
+TMS 21 – Değiştirilebilirliğin eksikliği
+1 Ocak 2025 tarihinde veya bu tarihten sonra başlayan yıllık raporlama dönemleri için geçerlidir. Bir
+işletme, belirli bir amaç için belirli bir ölçüm tarihinde başka bir para birimine çevrilemeyen yabancı
+para biriminde yapılan bir işlem veya faaliyete sahip olduğunda bu değişikliklerden etkilenir. Bir para
+birimi, başka bir para birimini elde etme olanağı mevcut olduğunda (normal bir idari gecikmeyle)
+değiştirilebilir ve işlem; uygulanabilir haklar ve yükümlülükler yaratan bir piyasa veya takas
+mekanizması yoluyla gerçekleşir. Söz konusu standardın Grup’un finansal durumu ve performansına bir
+etkisi yoktur.
+
+--- Sayfa 15 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+13
+2. ÖZET KONSOLİDE FİNANSAL TABLOLARIN SUNUMUNA İLİŞKİN ESASLAR (devamı)
+2.3. Özet Konsolide Finansal Tabloların Sunumuna İlişkin Temel Esaslar (devamı)
+Yeni ve düzeltilmiş standartlar ve yorumlar (devamı)
+ii) 31 Mart 2025 tarihi itibarıyla yayımlanmış ancak henüz yürürlüğe girmemiş olan
+standartlar, değişiklikler ve yorumlar:
+TFRS 9 ve TFRS 7’deki Finansal Araçların sınıflandırma ve ölçümüne ilişkin değişiklikler
+1 Ocak 2026 tarihinde veya bu tarihten sonra başlayan yıllık raporlama dönemleri için geçerlidir. (Erken
+uygulamaya izin verilir.) Bu değişiklikler:
+- Elektronik nakit transferi sistemi aracılığıyla ödenen bazı finansal borçlar için yeni bir istisna ile
+birlikte, bazı finansal varlık ve yükümlülüklerin muhasebeleştirilmesi ve finansal tablo dışı
+bırakılmasıyla ilgili zamanlamaya ilişkin gerekliliklere açıklık getirilmesi;
+- Bir finansal varlığın yalnızca anapara ve faiz ödemeleri kriterini karşılayıp karşılamadığının
+değerlendirilmesine ilişkin daha fazla rehberlik sağlanması ve açıklığa kavuşturulması;
+- Nakit akışlarını değiştirebilecek sözleşme şartlarına sahip belirli araçlar için yeni dipnot
+açıklamaları eklemek (çevresel, sosyal ve yönetişim (ESG) hedeflerine ulaşılmasıyla bağlantılı
+özelliklere sahip bazı araçlar gibi); ve
+- Gerçeğe uygun değer farkı diğer kapsamlı gelire yansıtılan özkaynak araçlarına ilişkin dipnot
+açıklamalarında güncellemeler yapılmasıdır.
+Söz konusu değişikliklerin, Grup’un finansal durumu ve performansına olan muhtemel etkileri
+değerlendirilmektedir.
+UFRS’lere İlişkin Yıllık İyileştirmeler – 11. Değişiklik
+1 Ocak 2026 tarihinde veya bu tarihten sonra başlayan yıllık raporlama dönemleri için geçerlidir (erken
+uygulamaya izin verilir). Yıllık iyileştirmeler, bir Muhasebe Standardındaki ifadeleri açıklığa
+kavuşturan veya Muhasebe Standartlarındaki hükümler arasındaki nispeten küçük beklenmeyen
+sonuçları, gözden kaçırılan noktaları veya tutarsızlıkları düzelten değişikliklerle sınırlıdır. 2024
+değişiklikleri aşağıdaki standartlara ilişkin yapılmıştır:
+- UFRS 1 Türkiye Finansal Raporlama Standartlarının İlk Uygulaması;
+- UFRS 7 Finansal Araçlar: Açıklamalar ve Standardın ilişiğindeki UFRS 7’nin uygulanmasına
+yönelik rehber;
+- UFRS 9 Finansal Araçlar;
+- UFRS 10 Konsolide Finansal Tablolar ve
+- UMS 7 Nakit Akış Tablosu.
+
+--- Sayfa 16 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+14
+2. ÖZET KONSOLİDE FİNANSAL TABLOLARIN SUNUMUNA İLİŞKİN ESASLAR (devamı)
+2.3. Özet Konsolide Finansal Tabloların Sunumuna İlişkin Temel Esaslar (devamı)
+Yeni ve düzeltilmiş standartlar ve yorumlar (devamı)
+ii) 31 Mart 2025 tarihi itibarıyla yayımlanmış ancak henüz yürürlüğe girmemiş olan
+standartlar, değişiklikler ve yorumlar: (devamı)
+UFRS 9 ve UFRS 7’deki doğaya bağımlı elektriğe atıfta bulunan sözleşmelere ilişkin değişiklikler
+1 Ocak 2026 tarihinde veya bu tarihten sonra başlayan yıllık raporlama dönemleri için geçerlidir (lokal
+onaylara tabi olarak erken uygulamaya izin verilir). Bu değişiklikler, UFRS 9'un 'işletmenin kendi
+kullanımı' ve korunma muhasebesi hükümlerini değiştirir ve UFRS 7'de hedeflenen açıklama
+hükümlerini getirir. Bu değişiklikler yalnızca, elektrik üretiminin kaynağının kontrol edilemeyen doğal
+koşullarına (hava durumu gibi) bağlı olması nedeniyle, bir işletmeyi temel elektrik miktarındaki
+değişkenliğe maruz bırakan sözleşmelere uygulanır. Bu sözleşmeler, “doğaya bağımlı elektriğe atıfta
+bulunan sözleşmeler” olarak tanımlanır.
+UFRS 18 – Finansal Tablolarda Sunum ve Açıklama
+1 Ocak 2027 tarihinde veya bu tarihten sonra başlayan yıllık raporlama dönemleri için geçerlidir. Bu
+standart, kar veya zarar tablosundaki güncellemelere odaklanan, mali tabloların sunumuna ve
+açıklanmasına ilişkin yeni standarttır. UFRS 18'de getirilen kavramlar temel yeni aşağıdakilerle ilgilidir:
+- Kar veya zarar tablosunun yapısı;
+- İşletmenin finansal tablolarının dışında raporlanan belirli kâr veya zarar performans ölçütleri
+(yani yönetim tarafından tanımlanan performans ölçütleri) için mali tablolarda gerekli
+açıklamalar; ve
+- Genel olarak temel finansal tablolar ve dipnotlar için geçerli olan toplama ve ayrıştırmaya ilişkin
+geliştirilmiş ilkeler.
+Söz konusu değişikliklerin, Grup’un finansal durumu ve performansına olan muhtemel etkileri
+değerlendirilmektedir.
+UFRS 19 – Kamuya Hesap Verme Yükümlülüğü Bulunmayan Bağlı Ortaklıklar: Açıklamalar
+1 Ocak 2027 tarihinde veya bu tarihten sonra başlayan yıllık raporlama dönemleri için geçerlidir. Yeni
+standart diğer UFRS’ler ile birlikte uygulanmaktadır. Şartları sağlayan bir bağlı ortaklık, açıklama
+hükümleri hariç diğer UFRS Muhasebe Standartlarındaki hükümleri uygular ve bunun yerine UFRS
+19'daki azaltılmış açıklama gerekliliklerini uygular. UFRS 19'un azaltılmış açıklama gereklilikleri,
+şartları sağlayan bağlı ortaklıkların mali tablolarının kullanıcılarının bilgi ihtiyaçları ile mali tablo
+hazırlayıcıları için maliyet tasarruflarını dengeler. UFRS 19, şartları sağlayan bağlı ortaklıklar için
+gönüllü uygulanabilecek bir standarttır. Bir bağlı ortaklık aşağıdaki durumlarda ilgili şartları sağlar.
+- Kamuya hesap verme yükümlülüğünün bulunmaması ve
+- UFRS Muhasebe Standartlarına uygun, kamunun kullanımına açık konsolide mali tablolar üreten
+bir ana veya ara ana ortaklığının olması.
+Söz konusu değişikliklerin, Grup’un finansal durumu ve performansına olan muhtemel etkileri
+değerlendirilmektedir.
+
+--- Sayfa 17 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+15
+2. ÖZET KONSOLİDE FİNANSAL TABLOLARIN SUNUMUNA İLİŞKİN ESASLAR (devamı)
+2.4. Karşılaştırmalı Bilgiler
+Finansal durum ve performans eğilimlerinin tespitine imkan vermek üzere, Grup’un özet konsolide
+finansal tabloları önceki dönemle karşılaştırmalı hazırlanmaktadır. Özet konsolide finansal tablo
+kalemlerinin karşılaştırılabilirliğini sağlamak amacıyla önceki dönem finansal tabloları da buna uygun
+olarak sınıflandırılır.
+2 Aralık 2024 tarihinde pay devir sözleşmesi imzalanarak Çetin Yılmaz'ın Tatilbudur’un sermayesinin
+%24,0553'üne tekabül eden ve toplam nominal değeri 8.900.475 TL (tam TL tutardır) olan payları İş
+Girişim tarafından 1.066.000.000 TL (tam TL tutardır) bedel (“İşlem Bedeli”) ile devralınmış, söz
+konusu işlem sonucunda İş Girişim’in Tatilbudur’daki pay sahipliği %64,15’e ulaşmıştır. İlgili pay alım
+işlemi gerçekleştikten sonra toplamda 3 kişi olan Tatilbudur Yönetim Kurulu’nda, Esas Sözleşme
+şartları kapsamında İş Girişim’in aday gösterdiği 1 kişi üye olarak atanmış olup, çoğunluk oy hakkı
+Derya Bülent Kuş’ta olmaya devam etmiştir. Bu sebeple 31 Aralık 2024 tarihi itibarıyla Tatilbudur
+müşterek yönetime tabi ortaklık olarak değerlendirilmiştir.
+İş Girişim’in 10 Ocak 2025 tarihli Yönetim Kurulu kararına ve imzalanan Pay Alım Satım Sözleşmesine
+istinaden Derya Bülent Kuş'un Tatilbudur'un sermayesinin %35,83’üne tekabül eden ve toplam nominal
+değeri 13.257.999 TL (tam TL tutardır) olan payları İş Girişim tarafından 1.775.000.000 TL (tam TL
+tutardır) bedel ("İşlem Bedeli") ile 27 Ocak 2025 tarihinde devralınmıştır. Grup, bahse konu işlem
+neticesinde 2025 yılında Tatilbudur’un kontrolünü elde etmiş olup, bu işlem, TFRS 3 gereğince aşamalı
+gerçekleşen bir işletme birleşmesi olarak muhabeleştirilmiştir. Tatilbudur'un satın alma tarihi olan 10
+Ocak 2025 tarihi itibarıyla hazırlanmış bilançosu ile 1 Ocak 2025 tarihinde hazırlanmış bilançosu
+arasında önemli bir fark olmadığı için, söz konusu satın alma işlemi 1 Ocak 2025 tarihinde
+muhasebeleştirilmiştir. TFRS 3 uyarında Tatilbudur'un net varlıklarının gerçeğe uygun değer tespitine
+ilişkin çalışmalar başlatılmış olup, standarda uygun olarak bir yıllık süre içerisinde tamamlanacaktır.
+2.5. Karşılaştırmalı Tutarlar
+Önceki raporlama dönemine ait rakamlar, karşılaştırmalı finansal tabloların raporlama dönemi sonunda
+geçerli olan paranın satın alma gücü cinsinden sunulması için genel fiyat endeksi uygulanarak yeniden
+düzenlenir. Daha önceki dönemlere ilişkin olarak açıklanan bilgiler de raporlama dönemi sonunda
+geçerli olan paranın satın alma gücünden ifade edilir.
+2.6. Önemli Muhasebe Politikalarının Özeti
+Grup’un 31 Mart 2025 tarihinde sona eren üç aylık ara döneme ilişkin olarak hazırlanan özet konsolide
+finansal tablolarının hazırlanmasında kullanılan muhasebe politikaları 1 Ocak 2025’ten itibaren geçerli
+olan yeni standartların ve değişikliklerin uygulanması dışında 31 Aralık 2024 tarihinde sona eren hesap
+dönemine ilişkin olarak hazırlanan yıllık finansal tablolarda uygulanan muhasebe politikalarıyla
+tutarlıdır.
+2.7. Önemli Muhasebe Değerlendirme, Tahmin ve Varsayımları
+Tahminler ve tahminlerin temelini teşkil eden varsayımlar sürekli olarak gözden geçirilmektedir.
+Muhasebe tahminlerindeki güncellemeler, güncellemenin yapıldığı dönemde ve bu güncellemelerden
+etkilenen müteakip dönemlerde kayıtlara alınır.
+
+--- Sayfa 18 ---
+İŞ YATIRIM MENKUL DEĞERLER ANONİM ŞİRKETİ ve BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir.)
+16
+3. BÖLÜMLERE GÖRE RAPORLAMA
+Bölümler Aracı Kurum
+Yatırım
+Ortaklığı Portföy Yönetimi
+Girişim
+Sermayesi
+Varlık Yönetim /
+Varlık Kiralama
+Eliminasyon
+düzeltmeleri Toplam
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+2025 2025 2025 2025 2025 2025 2025
+Hasılat
+Satış gelirleri 313.701.234 275.555 85.935 2.187.058 14.620 - 316.264.402
+Esas faaliyetlerden faiz ve vadeli işlem gelirleri / (giderleri) (net) 3.141.984 23.885 6.113 - 129.590 1.068 3.302.640
+Hizmet gelirleri (net) 1.046.494 - 612.003 - 46 (5.607) 1.652.936
+Esas faaliyetlerden diğer gelirler (net) 277.851 7.493 139.409 - 905 (1.068) 424.590
+Satışların Maliyeti (-) (313.038.400) (267.536) (32.878) (1.831.699) (14.620) (108) (315.185.241)
+BRÜT KAR /ZARAR 5.129.163 39.397 810.582 355.359 130.541 (5.715) 6.459.327
+Genel yönetim giderleri (-) (873.138) (9.854) (296.738) (236.891) (57.499) 616 (1.473.504)
+Pazarlama giderleri (-) (260.654) (1.504) (8.990) (171.158) - 5.329 (436.977)
+Araştırma ve geliştirme giderleri (-) - - - (1.010) - - (1.010)
+Diğer faaliyet gelirleri 18.907 - 43.618 33.952 950 (230) 97.197
+Diğer faaliyet giderleri (-) (19.974) (309) (6.978) (28.615) (9.253) - (65.129)
+FAALİYET KARI/ZARARI 3.994.304 27.730 541.494 (48.363) 64.739 - 4.579.904
+Özkaynak yöntemiyle değerlenen yatırımların karlarından /
+zararlarından paylar (525) - - 34.826 - - 34.301
+Yatrım faaliyetlerinden gelirler - - - 1.777.835 - - 1.777.835
+FİNANSMAN GİDERİ ÖNCESİ FAALİYET KARI/ZARARI 3.993.779 27.730 541.494 1.764.298 64.739 - 6.392.040
+Finansman gelirleri 146.030 3.540 62.389 24.202 2.887 (70.000) 169.048
+Finansman giderleri (-) (7.276) (420) (8.252) (615.250) (28.965) - (660.163)
+Net Parasal kazançları / (kayıpları) (2.290.810) (52.806) (233.172) 120.468 (49.372) 27.239 (2.478.453)
+SÜRDÜRÜLEN FAALİYETLER VERGİ ÖNCESİ
+KARI/ZARARI 1.841.723 (21.956) 362.459 1.293.718 (10.711) (42.761) 3.422.472
+Sürdürülen faaliyetler vergi (gideri)/geliri (1.145.198) - (152.149) 168 (17.850) - (1.315.029)
+- Dönem vergi gideri (1.056.637) - (141.716) - (13.741) - (1.212.094)
+- Ertelenmiş vergi geliri / (gideri) (88.561) - (10.433) 168 (4.109) - (102.935)
+SÜRDÜRÜLEN FAALİYETLER DÖNEM KARI 696.525 (21.956) 210.310 1.293.886 (28.561) (42.761) 2.107.443
+DURDURULAN FAALİYETLER DÖNEM KARI - - - - - - -
+DÖNEM KARI / (ZARARI) 696.525 (21.956) 210.310 1.293.886 (28.561) (42.761) 2.107.443
+Dönem kar / (zararının) dağılımı:
+Kontrol gücü olmayan paylar - (15.490) 68.139 918.529 (2.529) (265) 968.384
+Ana ortaklık payları 696.525 (6.466) 142.171 375.357 (26.032) (42.496) 1.139.059
+696.525 (21.956) 210.310 1.293.886 (28.561) (42.761) 2.107.443
+
+--- Sayfa 19 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+17
+3. BÖLÜMLERE GÖRE RAPORLAMA (devamı)
+Bölümler Aracı Kurum Yatırım Ortaklığı Portföy Yönetimi
+Girişim
+Sermayesi
+Varlık Yönetim /
+Varlık Kiralama
+Eliminasyon
+düzeltmeleri Toplam
+31 Mart 31 Mart 31 Mart 31 Mart 31 Mart 31 Mart 31 Mart
+Bilanço bilgileri 2025 2025 2025 2025 2025 2025 2025
+Varlıklar 75.959.783 556.006 3.220.435 17.078.496 1.174.847 (3.308.410) 94.681.157
+Nakit ve nakit benzerleri 10.072.398 123.207 1.405.589 334.206 11.998 - 11.947.398
+Finansal yatırımlar (kısa vadeli) 11.352.733 386.544 1.379.429 734.034 - (49.996) 13.802.744
+Finansal yatırımlar (uzun vadeli) 3.680.170 - 76.311 - - (3.305.351) 451.130
+Ticari alacaklar 47.067.514 40.877 186.025 585.272 1.139.133 39.094 49.057.915
+Diğer alacaklar 3.115.073 64 4.783 72.625 - 7.993 3.200.538
+Türev araçlar 72.483 - - - - - 72.483
+Özkaynak yöntemiyle değerlenen yatırımlar 29.117 - - 366.020 - - 395.137
+Diğer varlıklar 570.295 5.314 168.298 14.986.339 23.716 (150) 15.753.812
+Kaynaklar 54.413.336 10.069 448.058 13.793.214 565.664 (10.976) 69.219.365
+Finansal borçlar 8.110.897 3.996 61.970 4.624.220 458.036 (49.996) 13.209.123
+Diğer finansal yükümlülükler 622.460 - - - - - 622.460
+Ticari borçlar 39.392.136 5.036 - 5.052.906 2.308 40.896 44.493.282
+Diğer borçlar 429.191 636 36.290 330 158 (1.876) 464.729
+Türev araçlar 203.691 - - - - - 203.691
+Diğer kaynaklar 5.654.961 401 349.798 4.115.758 105.162 - 10.226.080
+Net varlıklar 21.546.447 545.937 2.772.377 3.285.282 609.183 (3.297.434) 25.461.792
+
+--- Sayfa 20 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+18
+3. BÖLÜMLERE GÖRE RAPORLAMA (devamı)
+Bölümler Aracı Kurum
+Yatırım
+Ortaklığı Portföy Yönetimi
+Girişim
+Sermayesi
+Varlık Yönetim /
+Varlık Kiralama
+Eliminasyon
+düzeltmeleri Toplam
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+1 Ocak –
+31 Mart
+2024 2024 2024 2024 2024 2024 2024
+Hasılat
+Satış gelirleri 312.968.472 207.353 385.026 1.136.108 - - 314.696.959
+Esas faaliyetlerden faiz ve vadeli işlem gelirleri / (giderleri) (net) 2.972.488 22.052 - - 138.040 - 3.132.580
+Hizmet gelirleri (net) 1.271.986 - 419.948 - - (8.760) 1.683.174
+Esas faaliyetlerden diğer gelirler (net) 191.984 11.073 10.362 - 354 - 213.773
+Satışların Maliyeti (-) (311.988.306) (192.094) (255.608) (916.250) - - (313.352.258)
+BRÜT KAR /ZARAR 5.416.624 48.384 559.728 219.858 138.394 (8.760) 6.374.228
+Genel yönetim giderleri (-) (829.237) (10.806) (249.945) (35.674) (55.119) 7.593 (1.173.188)
+Pazarlama giderleri (-) (195.041) (1.242) (5.015) (194.587) - 1.381 (394.504)
+Araştırma ve geliştirme giderleri (-) - - - - - - -
+Diğer faaliyet gelirleri 48.685 - 21.772 239.664 - (214) 309.907
+Diğer faaliyet giderleri (-) (23.604) (399) (1.085) (307.149) (7.919) - (340.156)
+FAALİYET KARI/ZARARI 4.417.427 35.937 325.455 (77.888) 75.356 - 4.776.287
+Özkaynak yöntemiyle değerlenen yatırımların karlarından /
+zararlarından paylar 5.026 - - 221 - - 5.247
+FİNANSMAN GİDERİ ÖNCESİ FAALİYET KARI/ZARARI 4.422.453 35.937 325.455 (77.667) 75.356 - 4.781.534
+Finansman gelirleri 113.517 19.191 53.775 43.613 - - 230.096
+Finansman giderleri (-) (6.077) (224) (5.617) (127.176) (2.388) - (141.482)
+Net parasal kazançları / (kayıpları) (2.888.022) (78.036) (307.176) 25.418 (69.089) 39.003 (3.277.902)
+SÜRDÜRÜLEN FAALİYETLER VERGİ ÖNCESİ
+KARI/ZARARI 1.641.871 (23.132) 66.437 (135.812) 3.879 39.003 1.592.246
+Sürdürülen faaliyetler vergi (gideri)/geliri (1.227.170) - (82.416) (4.436) (22.961) - (1.336.983)
+- Dönem vergi gideri (1.209.478) - (78.892) - (19.330) - (1.307.700)
+- Ertelenmiş vergi geliri / (gideri) (17.692) - (3.524) (4.436) (3.631) - (29.283)
+SÜRDÜRÜLEN FAALİYETLER DÖNEM KARI 414.701 (23.132) (15.979) (140.248) (19.082) 39.003 255.263
+DURDURULAN FAALİYETLER DÖNEM KARI - - - - - - -
+DÖNEM KARI / (ZARARI) 414.701 (23.132) (15.979) (140.248) (19.082) 39.003 255.263
+Dönem kar / (zararının) dağılımı: - - - - - - -
+Kontrol gücü olmayan paylar - (16.319) 6.448 (99.563) (1.688) (118) (111.240)
+Ana ortaklık payları 414.701 (6.813) (22.427) (40.685) (17.394) 39.121 366.503
+414.701 (23.132) (15.979) (140.248) (19.082) 39.003 255.263
+
+--- Sayfa 21 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+19
+3. BÖLÜMLERE GÖRE RAPORLAMA (devamı)
+Bölümler Aracı Kurum Yatırım Ortaklığı Portföy Yönetimi
+Girişim
+Sermayesi
+Varlık Yönetim /
+Varlık Kiralama
+Eliminasyon
+düzeltmeleri Toplam
+31 Aralık 31 Aralık 31 Aralık 31 Aralık 31 Aralık 31 Aralık 31 Aralık
+Bilanço bilgileri 2024 2024 2024 2024 2024 2024 2024
+Varlıklar 73.471.213 573.323 3.069.581 3.036.920 959.911 (3.341.760) 77.769.188
+Nakit ve nakit benzerleri 7.533.985 125.625 1.260.587 461.287 44.570 - 9.426.054
+Finansal yatırımlar (kısa vadeli) 6.785.612 254.189 1.286.555 24.601 - - 8.350.957
+Finansal yatırımlar (uzun vadeli) 3.727.652 - 94.775 - - (3.307.341) 515.086
+Ticari alacaklar 53.173.328 188.572 277.778 93.505 888.765 (42.336) 54.579.612
+Diğer alacaklar 1.607.202 51 1.685 24.813 64 8.067 1.641.882
+Türev araçlar 61.030 - - - - - 61.030
+Özkaynak yöntemiyle değerlenen yatırımlar 29.648 - - 2.047.878 - - 2.077.526
+Diğer varlıklar 552.756 4.886 148.201 384.836 26.512 (150) 1.117.041
+Kaynaklar 44.062.895 6.128 391.860 1.159.203 437.223 (42.337) 46.014.972
+Finansal borçlar 103.129 3.619 43.911 1.096.741 380.702 - 1.628.102
+Ticari borçlar 41.363.614 287 - 30.240 3.658 (40.668) 41.357.131
+Diğer borçlar 255.324 1.294 55.505 1.947 114 (1.669) 312.515
+Türev araçlar 147.275 - - - - - 147.275
+Diğer kaynaklar 2.193.553 928 292.444 30.275 52.749 - 2.569.949
+Net varlıklar 29.408.318 567.195 2.677.721 1.877.717 522.688 (3.299.423) 31.754.216
+
+--- Sayfa 22 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+20
+4. İLİŞKİLİ TARAF AÇIKLAMALARI
+Grup’un ana ortağı ile esas kontrolü elinde tutan taraf; Türkiye’de kurulmuş olan Türkiye İş Bankası
+A.Ş.’dir. Şirket ile ilişkili tarafları olan bağlı ortaklıkları arasında gerçekleşen işlemler konsolidasyon
+sırasında elimine edildiklerinden, bu notta açıklanmamıştır. Grup ile ana ortaklık ve ana ortaklığın diğer
+ilişkili tarafları arasındaki bakiye ve işlemlerin detayları aşağıda açıklanmıştır.
+Türkiye İş Bankası A.Ş.’deki mevduat 31 Mart 2025 31 Aralık 2024
+Vadesiz mevduat 95.238 117.535
+Vadeli mevduat 171.115 778.140
+266.353 895.675
+Türkiye İş Bankası A.Ş.’den alınan krediler 31 Mart 2025 31 Aralık 2024
+Kredi 2.876.670 1.102.621
+2.876.670 1.102.621
+İş Faktoring A.Ş. 31 Mart 2025 31 Aralık 2024
+Faktoring borcu 3.777 8.279
+3.777 8.279
+Kiralama işlemlerinden borçlar 31 Mart 2025 31 Aralık 2024
+Türkiye İş Bankası A.Ş. 32.543 27.601
+İş Gayrimenkul Yatırım Ortaklığı A.Ş. 63.976 55.485
+Miltaş Turizm İnşaat Ticaret A.Ş. 11.158 307
+İş Finansal Kiralama A.Ş. 828 978
+İş Merkezleri Yönetim ve İşletim A.Ş. 700 1.992
+109.205 86.363
+31 Mart 2025
+Alacaklar Borçlar
+İlişkili taraflarla olan bakiyeler Ticari
+Ticari
+olmayan Ticari
+Ticari
+olmayan
+Türkiye İş Bankası A.Ş. 35.486 5.832 22.754 11.538
+Anadolu Anonim Türk Sigorta Şirketi - - 818 440
+Anadolu Hayat Emeklilik A.Ş. 19.009 - - -
+Kurucusu ve Yöneticisi Olunan Fonlar 165.901 190 - -
+SoftTech Yazılım Tekn. Araş. Gel. ve Paz. Tic. A.Ş. - - - 1.170
+İş Net Elektronik Bilgi Üretim Dağ. Tic. ve İlet. Hiz. A.Ş. - - 191 2.762
+İş Merkezleri Yönetim ve İşletim A.Ş. - 52 3.867 3.218
+İş Gayrimenkul Yatırım Ortaklığı A.Ş. 103.550 - - -
+Diğer 199 3 48 547
+324.145 6.077 27.678 19.675
+31 Aralık 2024
+Alacaklar Borçlar
+İlişkili taraflarla olan bakiyeler Ticari
+Ticari
+olmayan Ticari
+Ticari
+olmayan
+Türkiye İş Bankası A.Ş. 13.122 3 18.703 9.693
+Anadolu Anonim Türk Sigorta Şirketi - - 2.190 5.603
+Anadolu Hayat Emeklilik A.Ş. 73.119 - - -
+Kurucusu ve Yöneticisi Olunan Fonlar 164.666 594 - -
+SoftTech Yazılım Tekn. Araş. Gel. ve Paz. Tic. AŞ - - - 6.033
+İş Net Elektronik Bilgi Üretim Dağ. Tic. ve İlet. Hiz. A.Ş. - - 392 10.544
+İş Merkezleri Yönetim ve İşletim A.Ş. 173 51 3.827 8.693
+Milli Reasürans T.A.Ş. 2.694 - - -
+İş Gayrimenkul Yatırım Ortaklığı A.Ş. 112.138 184 - -
+Diğer 19 47 7 194
+365.931 879 25.119 40.760
+
+--- Sayfa 23 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+21
+4. İLİŞKİLİ TARAF AÇIKLAMALARI (devamı)
+Ayrıca Grup’un İş Gayrimenkul Yatırım Ortaklığı A.Ş.’de gerçeğe uygun değer farkı diğer kapsamlı
+gelire yansıtılan finansal varlık olarak sınıflanan %1,13 oranında payı bulunmakta olup, rapor tarihi
+itibariyle bilanço değeri 233.551 TL’dir.
+1 Ocak – 31 Mart 2025
+Fon yönetim ve
+aracılık geliri
+Mevduat ve
+bono faiz geliri
+Alınan kar
+payı	İlişkili taraflarla olan işlemler (gelirler)
+Türkiye İş Bankası A.Ş. 175.442 51.796 9
+Anadolu Hayat Emeklilik A.Ş. 46.974 - -
+İş Finansal Kiralama A.Ş. 6.617 - -
+Anadolu Anonim Türk Sigorta Şirketi 1.364 - -
+İş Faktoring A.Ş. 2.671 - -
+T.Şişe ve Cam Fabrikaları A.Ş. 336 5.616 -
+İş Gayrimenkul Yatırım Ortaklığı A.Ş. 1.174 1.765 -
+Kurucusu ve Yöneticisi Olunan Fonlar 641.619 - -
+Diğer 1.102 1.226 14
+877.299 60.403 23
+1 Ocak-31 Mart 2024
+Fon yönetim ve
+aracılık geliri
+Mevduat ve
+bono faiz geliri
+Alınan kar
+payı	İlişkili taraflarla olan işlemler (gelirler)
+Türkiye İş Bankası A.Ş. 368.903 58.483 -
+Anadolu Hayat Emeklilik A.Ş. 41.272 - -
+İş Finansal Kiralama A.Ş. 2.766 - -
+Anadolu Anonim Türk Sigorta Şirketi 2.404 - -
+İş Faktoring A.Ş. 1.954 - -
+T.Şişe ve Cam Fabrikaları A.Ş. 4.397 - -
+İş Gayrimenkul Yatırım Ortaklığı A.Ş. 1.601 - -
+Kurucusu ve Yöneticisi Olunan Fonlar 421.307 - -
+Diğer 1.826 - -
+846.430 58.483 -
+1 Ocak - 31 Mart 1 Ocak - 31 Mart
+Üst düzey yöneticilere sağlanan faydalar 2025 2024
+Ücretler ve diğer faydalar 106.253 112.566
+106.253 112.566
+
+--- Sayfa 24 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+22
+4. İLİŞKİLİ TARAF AÇIKLAMALARI (devamı)
+1 Ocak – 31 Mart 2025
+İlişkili taraflarla olan işlemler (giderler)
+Teminat
+mektubu
+komisyonları
+Menkul
+kıymet
+saklama
+komisyonları
+Kredi faiz
+giderleri
+Diğer faiz
+giderleri
+Ödenen işlem
+komisyonları
+Personel
+sigorta
+giderleri
+İşyeri
+sigortası
+Kira
+gideri
+İşletme
+gideri
+Teknik
+yardım ve
+danışmanlık
+giderleri
+Türkiye İş Bankası A.Ş. 836 575 72.942 - 108.548 - - 4.207 - 2.040
+İş Gayrimenkul Yatırım Ortaklığı A.Ş. - - - - - - - 14.593 - -
+Anadolu Anonim Türk Sigorta Şirketi - - - 43.055 - 13.581 633 - - -
+İş Merkezleri Yönetim ve İşletim A.Ş. - - - - - - - 157 17.471 -
+İş Net Elektronik Bilgi Ür. Dağ. Tic. ve İlet. Hiz. A.Ş. - - - - - - - - 162 12.958
+Türkiye İş Bankası A.Ş. Mensupları Munzam Sosyal Güvenlik ve
+Yar.San.Vakfı - - - - - - - 1.540 - -
+Topkapı Danışmanlık Elektronik Hizmetler Pazarlama Ve Ticaret
+A.Ş. - - - - - - - - 1.810 -
+SoftTech Yazılım Tekn. Araş. Gel. ve Paz. Tic. A.Ş. - - - - - - - - - 27.710
+Diğer - - - 4 60 360 - 714 793 938
+836 575 72.942 43.059 108.608 13.941 633 21.211 20.236 43.646
+1 Ocak – 31 Mart 2024
+İlişkili taraflarla olan işlemler (giderler)
+Teminat
+mektubu
+komisyonları
+Menkul kıymet
+saklama
+komisyonları
+Kredi faiz
+giderleri
+Diğer faiz
+giderleri
+Ödenen işlem
+komisyonları
+Personel
+sigorta
+giderleri
+İşyeri
+sigortası
+Kira
+gideri
+İşletme
+gideri
+Teknik
+yardım ve
+danışmanlık
+giderleri
+Türkiye İş Bankası A.Ş. 1.034 6.440 11.360 247 81.845 621 - 3.477 - 68
+İş Gayrimenkul Yatırım Ortaklığı A.Ş. - - - - - - - 8.495 - -
+Anadolu Anonim Türk Sigorta Şirketi - - - 24.983 - 4.925 590 - 18 -
+İş Merkezleri Yönetim ve İşletim A.Ş. - - - - - - - - 11.282 -
+İş Net Elektronik Bilgi Ür. Dağ. Tic. ve İlet. Hiz. A.Ş. - - - - - - - - - 13.685
+Türkiye İş Bankası A.Ş. Mensupları Munzam Sosyal Güvenlik ve
+Yar.San.Vakfı - - - - - - - 1.353 - -
+Miltaş Turizm İnşaat Ticaret A.Ş. - - - - - - - 461 - -
+SoftTech Yazılım Tekn. Araş. Gel. ve Paz. Tic. A.Ş. - - - - - - - - - 21.902
+Diğer - - - 12 3 173 - - 1.159 333
+1.034 6.440 11.360 25.242 81.848 5.719 590 13.786 12.459 35.988
+
+--- Sayfa 25 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+23
+5. NAKİT VE NAKİT BENZERLERİ
+Grup’un 31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla konsolide nakit akış tablolarında nakit ve nakit
+benzeri değerler, nakit ve nakit benzeri değerlerden faiz tahakkukları düşülerek gösterilmektedir:
+31 Mart 2025 31 Aralık 2024
+Nakit ve nakit benzerleri 11.947.398 9.426.054
+Faiz tahakkukları (356.912) (78.825)
+Beklenen zarar karşılığı 23.062 4.270
+11.613.548 9.351.499
+6. FİNANSAL YATIRIMLAR
+Kısa vadeli finansal varlıklar 31 Mart 2025 31 Aralık 2024
+Vadesi üç aydan uzun vadeli mevduat ve Takasbank Para Piyasası (“TPP”)
+alacakları 4.197.132 340.890
+Gerçeğe uygun değer farkı kar/zarara yansıtılan finansal varlıklar 9.605.612 8.010.067
+13.802.744 8.350.957
+Uzun vadeli finansal varlıklar 31 Mart 2025 31 Aralık 2024
+Gerçeğe uygun değer farkı diğer kapsamlı gelire yansıtılan finansal varlıklar 451.130 515.086
+451.130 515.086
+Gerçeğe uygun değer farkı kar/zarara yansıtılan finansal varlıklar 31 Mart 2025 31 Aralık 2024
+Devlet tahvili ve Hazine bonoları 750.600 190.779
+Özel kesim tahvilleri 523.520 449.721
+Hisse senetleri 1.698.168 1.016.183
+Yabancı para cinsinden menkul kıymetler 683.227 973.958
+Yatırım fonları 5.950.097 5.379.426
+9.605.612 8.010.067
+31 Mart 2025 tarihi itibarıyla elde tutulan sabit getirili hazine bonolarının, devlet tahvillerinin ve özel sektör
+tahvillerinin yıllık ortalama faiz oranı %47,77’dir (31 Aralık 2024: %55,55).
+Gerçeğe uygun değer farkı diğer kapsamlı gelire yansıtılan finansal varlık olarak sınıflanan özkaynak
+araçlarının detayı aşağıdaki gibidir:
+31 Mart 2025
+Gerçeğe uygun değer farkı diğer kapsamlı gelire yansıtılan finansal varlıklar İştirak (%) Kayıtlı Değeri
+Borsada işlem gören
+İş Gayrimenkul Yatırım Ortaklığı A.Ş. 1,13 233.551
+Borsada işlem görmeyen
+İstanbul Takas ve Saklama Bankası A.Ş. 0,87 84.674
+Borsa İstanbul A.Ş. 0,38 132.566
+Yatırım Finansman Menkul Değ. A.Ş. 0,06 339
+451.130
+31 Aralık 2024
+Gerçeğe uygun değer farkı diğer kapsamlı gelire yansıtılan finansal varlıklar İştirak (%) Kayıtlı Değeri
+Borsada işlem gören
+İş Gayrimenkul Yatırım Ortaklığı A.Ş. 1,13 297.507
+Borsada işlem görmeyen
+İstanbul Takas ve Saklama Bankası A.Ş. 0,87 84.674
+Borsa İstanbul A.Ş. 0,38 132.566
+Yatırım Finansman Menkul Değ. A.Ş. 0,06 339
+515.086
+31 Mart 2025 31 Aralık 2024
+Kasa 415 17
+Bankadaki nakit 967.638 1.105.148
+Vadesiz mevduat 326.431 326.499
+Vadesi üç aydan kısa vadeli mevduat 641.207 778.649
+Ters repo işlemlerinden alacaklar 3.409.170 280.729
+Para Piyasası alacakları 6.349.285 7.119.564
+Likit fonlar ve diğer hazır değerler 1.243.952 924.866
+Beklenen zarar karşılığı (23.062) (4.270)
+11.947.398 9.426.054
+
+--- Sayfa 26 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+24
+7. BORÇLANMALAR
+Finansal borçlar 31 Mart 2025 31 Aralık 2024
+Finansman bonosundan borçlar 7.013.571 112.138
+Kısa vadeli banka kredileri 4.232.212 1.304.283
+Uzun vadeli banka kredileri 1.670.040 14.736
+Uzun vadeli banka kredilerinin kısa vadeli kısmı 78.045 -
+Banka kredileri faiz tahakkuku 26.909 54.948
+Kiralama işlemlerinden kısa vadeli borçlar 71.949 51.661
+Kiralama işlemlerinden uzun vadeli borçlar 110.762 78.108
+Uzun vadeli kiralama işlemlerinin kısa vadeli kısmı 1.858 2.971
+Finansal kiralama ve faktoring borçları 3.777 9.257
+13.209.123 1.628.102
+31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla Grup’un banka kredilerinin vadeleri ve faiz oranları
+aşağıdaki gibidir: 31 Mart 2025
+Açıklama Para Birimi Faiz Oranı (%) Vade Tutar
+Anapara TL 18,00-57,10 03.04.2025-25.02.2027 5.770.047
+Anapara ABD Doları 2,26-12,50 26.06.2025-29.01.2026 61.119
+Anapara Euro 7,00-26,00 20.11.2025 176.040
+6.007.206
+Tutar sütununda yabancı para kredilerin TL karşılığı gösterilmiştir.
+31 Aralık 2024
+Açıklama Para Birimi Faiz Oranı (%) Vade Tutar
+Anapara TL 44,00-53,00 30.01.2025-24.12.2026 1.269.887
+Anapara ABD Doları 2,26-14,00 06.01.2025-20.08.2025 104.079
+1.373.966
+Tutar sütununda yabancı para kredilerin TL karşılığı gösterilmiştir.
+31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla Grup’un ihraç ettiği borçlanma araçlarının vade ve faiz
+oranları aşağıdaki gibidir:
+31 Mart 2025
+Açıklama Para Birimi Oran (%) Vade Tutar
+Anapara TL 40,50* 29.05.2025 109.986
+Anapara TL 40,50-44,00 14.04.2025-04.08.2025 6.903.585
+7.013.571
+31 Aralık 2024
+Açıklama Para Birimi Oran (%) Vade Tutar
+Anapara TL 43,00* 01.03.2025 112.138
+112.138
+(*) Levent Varlık Kiralama A.Ş.’nin ihraç ettiği kira sertifikası
+8. TİCARİ ALACAKLAR VE BORÇLAR
+Kısa vadeli ticari alacaklar 31 Mart 2025 31 Aralık 2024
+Takas ve saklama merkezlerinden alacaklar 26.657.968 27.774.475
+Müşterilerden alacaklar 6.622.296 13.499.529
+Kredili müşterilerden alacaklar 14.336.134 12.024.050
+Satın alınan takipteki krediler 1.035.582 776.628
+İlişkili taraflardan ticari alacaklar 324.145 365.931
+Yatırım fonu yönetim ücretlerinden kaynaklanan ücret ve komisyon alacakları 34.437 30.344
+Diğer ticari alacaklar 99.243 121.528
+Beklenen kredi zarar karşılığı (-) (51.890) (12.873)
+49.057.915 54.579.612
+31 Mart 2025 tarihi itibarıyla, Grup kullandırılan krediler karşılığında müşterilerinden gerçeğe uygun
+değeri 29.229.772 TL olan teminat almıştır (31 Aralık 2024: 25.335.459 TL).
+31 Mart 2025 tarihi itibarıyla, Grup müşterilerinden vadeli işlemler için 313.077 TL tutarında teminat
+mektubu almıştır (31 Aralık 2024: 540.352 TL).
+
+--- Sayfa 27 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+25
+8. TİCARİ ALACAKLAR VE BORÇLAR (devamı)
+Beklenen kredi zarar karşılığı hareketleri 31 Mart 2025 31 Aralık 2024
+Açılış bakiyesi 12.873 64.541
+Karşılıktaki artış/(azalış) 28.866 (23.632)
+Net parasal kazançları / (kayıpları) 10.151 (28.036)
+Kapanış bakiyesi 51.890 12.873
+Kısa vadeli ticari borçlar 31 Mart 2025 31 Aralık 2024
+Vadeli işlemler müşteri teminatları 23.258.848 26.035.086
+Müşterilere borçlar 14.295.040 11.641.947
+Satıcılar 5.010.931 274
+Takas ve saklama merkezine borçlar 1.735.475 3.560.046
+Diğer ticari borçlar 165.310 94.659
+İlişkili taraflara ticari borçlar 27.678 25.119
+44.493.282 41.357.131
+9. ÖZKAYNAK YÖNTEMİYLE DEĞERLENEN YATIRIMLAR
+Grup’un 31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla özkaynak yöntemiyle değerlenen iştiraklerinin
+detayı aşağıdaki gibidir:
+Etkin ortaklık oranı (%)
+31 Mart 2025 31 Aralık 2024 Ana faaliyeti
+Radore 7,40 7,40 Veri Hizmetleri
+Tatilbudur* - 18,61 Seyahat Acenteliği
+Elidaş 10,05 10,05 Lisanslı Depoculuk
+Sportive Spor** 14,51 14,51 Perakande Mağazacılık
+ElüsMarket 24,24 24,24 Aracı Kurum
+* 2 Aralık 2024 tarihinde Çetin Yılmaz ile Pay devir sözleşmesi imzalanarak, Çetin Yılmaz'ın Tatilbudur’un sermayesinin
+%24,0553'üne tekabül eden ve toplam nominal değeri 8.900.475 TL (tam TL tutardır) olan payları İş Girişim tarafından
+1.066.000.000 TL (tam TL tutardır) bedel (“İşlem Bedeli”) ile devralınmıştır. İlgili pay alım işlemi gerçekleştikten sonra
+toplamda 3 kişi olan Tatilbudur Yönetim Kurulu’nda, Esas Sözleşme şartları kapsamında İş Girişim’in aday gösterdiği 1 kişi
+üye olarak atanmış olup, çoğunluk oy hakkı Derya Bülent Kuş’ta olmaya devam etmiştir. Bu sebeple 31 Aralık 2024 tarihi
+itibarıyla Tatilbudur müşterek yönetime tabi ortaklık olarak değerlendirilmiştir. Grup, söz konusu yatırımın kontrolünü 2025
+yılında devralmıştır.
+** Paylarının tamamı İş Girişim’in mülkiyetinde olan Sportive Spor’un sermayesinin %50 oranında ve 18.775.000 TL (tam TL
+tutardır) nominal değerdeki kısmının, Fiba Grubu Şirketlerinden Marka Mağazacılık A.Ş.'ye (“Marka Mağazacılık”)
+480.000.000 TL (tam TL tutardır) bedel ile vadeli olarak ve ödemenin tamamının 2024 yılı içerisinde yapılması suretiyle
+satışına karar verilmiş olup, ilgili satışa 11 Temmuz 2024 tarihinde Rekabet Kurumu izni verilmiş ve işlem 19 Ağustos 2024
+tarihinde toplam 493.392.000 TL (tam TL tutardır) bedel ile gerçekleşmiştir. İlk ödeme olan 103.392.000 TL (tam TL tutardır)
+19 Ağustos 2024, kalan 390.000.000 TL (tam TL tutardır) ise 16 Aralık 2024 tarihinde tahsil edilmiştir. Söz konusu işlem
+sonucunda Sportive Spor’un yönetsel kontrolü 19 Ağustos 2024 tarihinde kaybedilmiş olup, bu çerçevede Sportive Spor
+2024’ün ilk sekiz ayında tam konsolidasyon, son dört ayında ise özkaynak yöntemiyle değerlenen yatırımlar olarak
+sınıflanmıştır.
+Grup’un iştirakleri ile ilgili özet finansal bilgileri aşağıda açıklanmıştır:
+31 Mart 2025 31 Aralık 2024
+Özkaynak yöntemiyle değerlenen yatırımlar 395.137 2.077.526 (*)
+(*) 1.719.115 TL’si 31.12.2024 tarihli finansal tablolarda özkaynak yöntemi ile değerlenen, ancak cari yıl içinde kontrolünün ele
+alınması nedeniyle tam konsolidasyona tabi tutulmaya başlanan Tatilbudur’a ilişkindir.
+1 Ocak-31 Mart 1 Ocak-31 Mart
+2025 2024
+İştiraklerin ve iş ortaklıklarının kar/(zararında) Grup’un payı 34.301 5.247
+
+--- Sayfa 28 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+26
+9. ÖZKAYNAK YÖNTEMİYLE DEĞERLENEN YATIRIMLAR (devamı)
+1 Ocak-31 Mart 1 Ocak-31 Mart
+2025 2024
+Yatırım faaliyetlerinden gelirler 1.777.835 -
+Tatilbudur cari yılın Ocak ayında Grup’un kontrolüne geçmiş olup, detayları 2.4. numaralı dipnotta yer verilen
+aşamalı olarak gerçekleşen satın alma işleminin TFRS 3 uyarınca finansal tablolara yansıtılması işlemlerinin ilk
+aşaması olarak, 31.12.2024 tarihli mali tablolarda taşınan Tatilbudur’un değeri, İş Girişim’in 31.12.2024 tarihli
+finansal raporunda Tatilbudur için verilen gerçeğe uygun değeri baz alınarak gerçeğe uygun değerine getirilmiş,
+bu çerçevede ortaya çıkan 1.777.835 TL olumlu fark gelir tablosunda sınıflanmıştır (Ana ortaklığa düşen tutar:
+515.750 TL).
+10. ŞEREFİYE
+Her bir Nakit Yaratan Birim (“NYB”)’e dağıtılan toplam şerefiye tutarının kayıtlı değerleri aşağıdaki
+gibidir:
+31 Mart 2025 31 Aralık 2024
+Ortopro 131.276 131.276
+Tatilbudur 4.489.955 -
+4.621.231 131.276
+Tatilbudur cari yılın Ocak ayında Grup’un kontrolüne geçmiş olup, detayları 2.4. numaralı dipnotta yer
+verilen aşamalı olarak gerçekleşen satın alma işleminin TFRS 3 uyarınca finansal tablolara yansıtılması
+işlemleri kapsamında şerefiye hesaplanmıştır. Diğer yandan TFRS 3 uyarınca Tatilbudur için Satın Alma
+Fiyat Tahsisi raporu (Purchase Price Allocation) düzenlenecek olup, söz konusu raporun temin edilmesi
+akabinde hesaplanan şerefiye rakamında değişiklik yapılması söz konusu olabilecektir.
+İki ayrı NYB olarak Ortopro’nun özkaynaklarının gerçeğe uygun değerlerinin değerlemesi, 31 Aralık 2024
+tarihinde bağımsız bir değerleme şirketi tarafından yapılmıştır. Ortopro’nun özkaynaklarının gerçeğe uygun
+değerinin tespiti için iskontolanmış nakit akışları yöntemi kullanılmıştır. Şirketin değerlemesinde yönetim
+tarafından hazırlanan 5 yıllık iş planları kullanılmıştır. Geri kazanılabilir tutarların hesaplanmasında
+kullanılan önemli varsayımlar iskonto oranları ve nihai büyüme oranlarıdır. Bu varsayımlar aşağıdaki
+gibidir:
+İskonto oranı Büyüme oranı
+Ortopro % 15,5 % 2,2
+31 Mart 2025 itibarıyla, değer düşüklüğüne sebep olacak bir gösterge olmadığından, değer düşüklüğü testi
+yapılmamıştır.
+11. MADDİ DURAN VARLIKLAR
+31 Mart 2025 tarihinde sona eren üç aylık ara hesap döneminde 89.930 TL tutarında maddi duran varlık
+alımı gerçekleşmiş olup, 24.928 TL tutarında da maddi duran varlık çıkışı bulunmaktadır. Maddi duran
+varlıklar üzerinde rehin bulunmamaktadır (31 Mart 2024 tarihinde sona eren üç aylık ara hesap döneminde
+103.341 TL tutarında maddi duran varlık alımı gerçekleşmiş olup 196 TL tutarında maddi duran varlık
+çıkışı bulunmaktadır. Maddi duran varlıklar üzerinde rehin bulunmamaktadır).
+12. MADDİ OLMAYAN DURAN VARLIKLAR
+31 Mart 2025 tarihinde sona eren üç aylık ara hesap döneminde 268.929 TL tutarında maddi olmayan duran
+varlık alımı gerçekleşmiş olup, 945 TL maddi olmayan duran varlık çıkışı bulunmaktadır. (31 Mart 2024
+tarihinde sona eren üç aylık ara hesap döneminde 14.051 TL tutarında maddi olmayan duran varlık alımı
+gerçekleşmiş olup 128 TL maddi olmayan duran varlık çıkışı bulunmaktadır).
+
+--- Sayfa 29 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+27
+13. KARŞILIKLAR, KOŞULLU VARLIK VE YÜKÜMLÜLÜKLER
+Kısa vadeli karşılıklar 31 Mart 2025 31 Aralık 2024
+Dava karşılığı 8.291 8.100
+Diğer karşılıklar 7.256 12.777
+15.547 20.877
+1 Ocak-31 Mart 2025
+Dava karşılığı Diğer Toplam
+Dönem başı 8.100 12.777 20.877
+İlave karşılık 932 - 932
+İptal edilen karşılıklar - (5) (5)
+Ödemeler - (4.348) (4.348)
+Net Parasal Kayıp / (Kazanç) (741) (1.168) (1.909)
+Dönem sonu 8.291 7.256 15.547
+Müşteriler adına saklanması amacıyla emanette tutulan hazine bonosu ve devlet tahvili, hisse senetleri,
+varantlar, eurobond ve yatırım fonlarının nominal tutarlarına ilişkin detaylar aşağıdaki gibidir:
+31 Mart 2025 31 Aralık 2024
+Müşteri portföyü-Borçlanma araçları 17.014.054 7.733.974
+Eurobond 1.734.074 2.009.058
+Hisse senetleri 56.498.496 46.107.528
+Yatırım fonları – adet 48.757.417 32.048.789
+31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla Grup’un vermiş olduğu teminat mektubu ve teminat
+senetlerinin dökümü aşağıdaki gibidir:
+31 Mart 2025 31 Aralık 2024
+İstanbul Takas ve Saklama Bankası A.Ş. 3.624.960 1.788.480
+Borsa İstanbul A.Ş. 810 892
+Sermaye Piyasası Kurulu 2 2
+Diğer 949.616 880.339
+4.575.388 2.669.713
+31 Mart 2025 tarihi itibarıyla Grup’un vermiş olduğu 4.575.388 TL değerindeki teminat mektubu ve
+teminat senetlerinin 490.953 TL’lik kısmı 13.000.000 ABD Doları, 243.982 TL’lik kısmı 5.000.000
+GBP’dir (31 Aralık 2024: 2.669.713 TL değerindeki teminat mektubu ve teminat senetlerinin 504.797
+TL’lik kısmı 13.000.000 ABD Doları, 243.280 TL’lik kısmı 5.000.000 GBP’dir).
+31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla Grup’un teminat/rehin/ipotek (“TRİ”) pozisyonuna
+ilişkin tabloları aşağıdaki gibidir:
+1 Ocak-31 Aralık 2024
+Dava karşılığı Diğer Toplam
+Dönem başı 69.418 268.810 338.228
+İlave karşılık - 4.801 4.801
+İptal edilen karşılıklar (40.941) (178.206) (219.147)
+Ödemeler - - -
+Net Parasal Kayıp / (Kazanç) (20.377) (82.628) (103.005)
+Dönem sonu 8.100 12.777 20.877
+
+--- Sayfa 30 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+28
+13. KARŞILIKLAR, KOŞULLU VARLIK VE YÜKÜMLÜLÜKLER (devamı)
+31 Mart 2025 31 Aralık 2024
+Şirket’in
+A. Kendi tüzel kişiliği adına vermiş olduğu TRİ’lerin toplam tutarı 3.630.035 1.794.067
+TRİ 3.630.035 1.794.067
+Finansal yatırımlar - -
+B. Tam konsolidasyon kapsamına dahil edilen ortaklıklar lehine vermiş
+olduğu TRİ’lerin toplam tutarı 945.353 875.646
+TRİ 945.353 875.646
+Finansal yatırımlar - -
+C. Olağan ticari faaliyetlerinin yürütülmesi amacıyla diğer üçüncü kişilerin
+borcunu temin amacıyla vermiş olduğu TRİ’lerin toplam tutarı - -
+D. Diğer verilen TRİ’lerin toplam tutarı - -
+i. Ana ortaklık lehine vermiş olduğu TRİ’lerin toplam tutarı - -
+ii. B ve C maddeleri kapsamına girmeyen diğer grup şirketleri lehine vermiş
+olduğu TRİ’lerin toplam tutarı - -
+iii. C maddesi kapsamına girmeyen 3. kişiler lehine vermiş olduğu - -
+TOPLAM 4.575.388 2.669.713
+31 Mart 2025 tarihi itibarıyla Şirket’in 945.353 TL değerindeki tam konsolidasyon kapsamına dahil edilen
+ortaklıklar lehine vermiş olduğu TRİ’lerin 490.953 TL’lik kısmı 13.000.000 ABD Doları, 243.982 TL’lik
+kısmı 5.000.000 GBP’dir (31 Aralık 2024 tarihi itibarıyla Şirket’in 875.646 TL değerindeki tam
+konsolidasyon kapsamına dahil edilen ortaklıklar lehine vermiş olduğu TRİ’lerin 504.797 TL’lik kısmı
+13.000.000 ABD Doları, 243.280 TL’lik kısmı 5.000.000 GBP’dir). TRİ’lerin Grup’un özkaynaklarına
+oranı 31 Mart 2025 tarihi itibarıyla %17,97’dir (31 Aralık 2024 tarihi itibarıyla %8,44).
+14. TAAHHÜTLER
+Grup’un 31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla yapmış olduğu vadeli işlem ve opsiyon
+sözleşmeleri gereği oluşan taahhütleri aşağıdaki gibidir:
+31 Mart 2025
+KISA POZİSYON UZUN POZİSYON
+Türev araç tanımı Nominal Adet Nominal Tutarı Nominal Adet Nominal Tutarı
+Dövize dayalı türev sözleşmeler
+Opsiyon sözleşmeleri 4.524.000 179.041 9.644.000 385.072
+Forward ve Swap sözleşmeleri 12.125.666 2.416.153 10.760.789 3.852.451
+Futures sözleşmeleri 58.804.810 1.751.174 109.291.519 1.887.312
+Endekse dayalı türev sözleşmeler
+Opsiyon sözleşmeleri 1.536.100 83.971 25.931.500 758.997
+Futures sözleşmeleri 175.327 1.012.652 164.458 838.134
+Diğer 2.050 166.455 2.450 381.458
+31 Aralık 2024
+KISA POZİSYON UZUN POZİSYON
+Türev araç tanımı Nominal Adet Nominal Tutarı Nominal Adet Nominal Tutarı
+Dövize dayalı türev sözleşmeler
+Opsiyon sözleşmeleri - - 3.000.000 123.481
+Forward ve Swap sözleşmeleri 11.488.387 2.361.407 6.137.962 2.659.166
+Futures sözleşmeleri 2.488.962 599.488 16.275.847 561.261
+Endekse dayalı türev sözleşmeler
+Opsiyon sözleşmeleri 141.100 10.335 15.644.200 1.246.895
+Futures sözleşmeleri 235.946 1.236.586 17.893 1.354.250
+Diğer 13.000 37.529 9.295 121.284
+
+--- Sayfa 31 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+29
+15. ÖZKAYNAKLAR
+a. Sermaye
+Şirket’in 31 Mart 2025 ve 31 Aralık 2024 tarihlerindeki ödenmiş sermaye yapısı aşağıdaki gibidir:
+31 Mart 2025 31 Aralık 2024
+Adı Pay Oranı (%) Tutar Pay Oranı (%) Tutar
+Türkiye İş Bankası A.Ş. (A Grubu) 0,01 150 0,01 150
+Türkiye İş Bankası A.Ş. (B Grubu) 65,73 986.019 65,73 986.019
+Diğer (B Grubu) 34,26 513.831 34,26 513.831
+Ödenmiş sermaye toplamı 100,00 1.500.000 100,00 1.500.000
+Sermaye düzeltme farkları* 7.297.373 7.297.373
+Toplam sermaye 100,00 8.797.373 100,00 8.797.373
+* Sermaye düzeltme farkları, sermayeye yapılan nakit ve nakit benzeri ilavelerin enflasyon muhasebesine göre düzeltilmiş
+toplam tutarları ile düzeltme öncesindeki tutarları arasındaki farkı ifade eder. Sermaye düzeltmesi farklarının sermayeye
+eklenmek dışında bir kullanımı yoktur.
+Sermaye, her biri 1 TL (tam TL tutardır) itibari değerde 1.500.000.000 adet paya bölünmüştür (31 Aralık
+2024: 1.500.000.000). Payların 150 TL’si (A) Grubu (31 Aralık 2024: 150 TL), 1.499.850 TL’si (B)
+Grubu’dur (31 Aralık 2024: 1.499.850 TL). Esas sözleşmeye göre sermaye artırımlarında yeni (A) Grubu
+pay ihdas edilemez. Şirket’in 9 üyeden oluşan Yönetim Kurulu’nun 6 üyesi (A) Grubu, 3 üyesi (B) Grubu
+pay sahiplerinin göstereceği adaylar arasından seçilir.
+b. Yeniden Değerleme ve Sınıflandırma Kazanç/Kayıpları
+1 Ocak- 31 Mart
+2025
+1 Ocak- 31 Aralık
+2024
+Dönem başı bakiyesi 245.639 268.685
+Kontrol gücü olmayan paylardaki değişim - (79.542)
+Gerçeğe uygun değer farkı diğer kapsamlı gelire yansıtılan finansal varlıklardaki
+değer artışı/(azalışı), net (75.758) 56.496
+Dönem sonu bakiyesi 169.881 245.639
+Finansal Varlıklar Değer Artış Fonu:
+Finansal varlıklar değer artış fonu, gerçeğe uygun değer farkı diğer kapsamlı gelire yansıtılan finansal
+varlıkların gerçeğe uygun değerlerinden değerlenmesi sonucu ortaya çıkar. Gerçeğe uygun değeriyle
+değerlenen bir finansal aracın elden çıkarılması durumunda, elden çıkarılan finansal araç özkaynağa dayalı
+ise değer artış fonundaki değerleme farkları diğer kapsamlı gelirde izlenmeye devam edilir. Elden çıkarılan
+finansal araç özkaynağa dayalı değilse, değer artış fonunda izlenen değerleme farkları kar veya zararda
+muhasebeleştirilir.
+c. Tanımlanmış Fayda Planları Yeniden Ölçüm Kazanç ve Kayıpları
+1 Ocak- 31 Mart
+2025
+1 Ocak- 31 Aralık
+2024
+Dönem başı bakiyesi (30.462) (25.094)
+Toplam kapsamlı gelir 2.826 (5.362)
+Kontrol gücü olmayan pay sahipleriyle yapılan işlemler (11) (6)
+Dönem sonu bakiyesi (27.647) (30.462)
+d. Yabancı Para Çevrim Farkları
+Yabancı para çevrim farkları, fonksiyonel para birimi Türk lirası olmayan bağlı ortaklıkların finansal
+tablolarının Türk lirası’na çevriminden kaynaklanan yabancı para kur farklarından oluşmaktadır.
+
+--- Sayfa 32 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+30
+15. ÖZKAYNAKLAR (devamı)
+e. Kardan Ayrılan Kısıtlanmış Yedekler
+31 Mart 2025 31 Aralık 2024
+Yasal yedekler 3.691.471 2.724.450
+Statü yedekleri 621 621
+Toplam 3.692.092 2.725.071
+Yasal yedekler Türk Ticaret Kanunu’na göre ayrılan birinci ve ikinci tertip yasal yedeklerden oluşmaktadır.
+f. Geçmiş Yıllar Karları
+Grup’un 31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla özet konsolide finansal durum tablosunda
+geçmiş yıllar karları içerisinde gösterilen geçmiş yıllar karları ve olağanüstü yedekleri aşağıdaki gibidir.
+31 Mart 2025 31 Aralık 2024
+Olağanüstü yedekler 3.530.521 9.058.045
+Geçmiş yıllar karları 296.541 (593.809)
+Toplam 3.827.062 8.464.236
+g. Diğer Yedekler
+Diğer yedekler, girişim sermayesi fonu yatırımı için ayrılan yedekler ile dönem başındaki kontrol kaybı
+yaratmayan bağlı ortaklık hisse satışından kaynaklanan kar/zarar ve yıl içinde satın alınan/kontrol gücü
+değişikliği olan bağlı ortaklıklara işlem tarihi sonrasında yapılan sermaye artışının (ana ortaklık ve kontrol
+gücü olmayan paylar tarafından karşılıklı olarak yapılmayan) ana ortaklığa ait kısmından oluşmaktadır.
+Söz konusu işlemin kontrol gücü olmayan paylar üzerindeki etkileri, ilişikteki özet konsolide finansal
+tablolarda bağlı ortaklıkların net varlıklarındaki payları oranında “Kontrol Gücü Olmayan Paylar” olarak
+sınıflanmıştır.
+Kar Dağıtımı:
+Sermaye Piyasası Kurulu’nca yayımlanan II-19.1 sayılı Kâr Payı Tebliği’ne göre ortaklıklar, kârlarını
+genel kurulları tarafından belirlenecek kâr dağıtım politikaları çerçevesinde ve ilgili mevzuat hükümlerine
+uygun olarak genel kurul kararıyla dağıtır.
+Şirket’in 26 Mart 2025 tarihli Olağan Genel Kurul toplantısında, 8.500.000 TL’nin 28 Mart 2025
+tarihinden itibaren pay sahiplerine nakit olarak dağıtılmasına, 1.300.000 TL’nin ise girişim sermayesi fonu
+yatırımlarında kullanılmak üzere özel fon olarak ayrılmasına karar verilmiştir. Bu kapsamda, 8.500.000
+TL’lik nakit temettü dağıtımına 28 Mart 2025 tarihinde başlanmış ve dağıtım 3 Mayıs 2025 tarihinde
+tamamlanmıştır.
+1 Ocak-31 Mart
+2025
+1 Ocak- 31 Aralık
+2024
+Dönem başı bakiyesi 3.026.423 1.821.798
+Girişim sermayesi fonu yatırımı için ayrılan yedek 1.300.000 1.204.625
+Dönem sonu bakiyesi 4.326.423 3.026.423
+
+--- Sayfa 33 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+31
+15. ÖZKAYNAKLAR (devamı)
+h. Kontrol Gücü Olmayan Paylardaki Değişim
+Bağlı ortaklıkların net varlıklarından ana ortaklığın doğrudan ve/veya dolaylı kontrolü dışında kalan paylara
+isabet eden kısımları özet konsolide finansal durum tablosunda “Kontrol Gücü Olmayan Paylar” kalemi
+içinde sınıflandırılmıştır.
+16. NET PARASAL POZİSYON KAZANÇLARI / KAYIPLARI
+31 Mart 2025
+Finansal Durum Tablosu Kalemleri
+Finansal Yatırımlar 12.945
+Duran Varlıklar, Kullanım Hakkı Varlıkları, Stoklar ve Diğer Bilanço Kalemleri 127.324
+Sermaye ve Hisse Senedi İhraç Primleri (808.419)
+Kardan Ayrılan Kısıtlanmış Yedekler (249.152)
+Kar Yedekleri ve Birikmiş Kar veya Zararlar (1.553.543)
+Kar veya Zarar Tablosu Kalemleri
+Satış Gelirleri (6.110.368)
+Satışların Maliyeti 6.089.539
+Finans Sektörü Faaliyetlerinden Gelirler (Net) (133.821)
+Genel Yönetim Giderleri 69.856
+Esas Faaliyetlerden Diğer Gelirler / Giderler (Net) (1.045)
+Finansman Gelirleri / Giderleri (Net) 10.675
+Sürdürülen Faaliyetler Vergi (Gideri) Geliri 67.556
+Toplam Net Parasal Pozisyon Kazançları (Kayıpları) (2.478.453)
+17. PAY BAŞINA KAZANÇ
+Ana ortaklık hisselerinin birim pay başına kazanç hesaplamaları aşağıdaki gibidir:
+Pay başına kar
+1 Ocak – 31 Mart
+2025
+1 Ocak – 31 Mart
+2024
+Dönem boyunca mevcut olan hisselerin ortalama sayısı (bin adet) 1.500.000 1.500.000
+Ana ortaklık hissedarlarına ait sürdürülen faaliyetlerden dönem karı 1.139.059 366.503
+Sürdürülen faaliyetlerden elde edilen adi ve sulandırılmış pay başına kar
+(Tam TL) 0,7594 0,2443
+Ana ortaklık hissedarlarına ait durdurulan faaliyetlerden dönem karı - -
+Durdurulan faaliyetlerden elde edilen adi ve seyreltilmiş pay başına kar - -
+Hisse başına kazanç hesabında hisse senedi sayısının ağırlıklı ortalaması dikkate alınmaktadır. Hisse senedi
+sayısının, iç kaynaklardan yapılan sermaye artırımları sonucunda gerçekleşen bedelsiz ihraçlar yoluyla
+artması durumunda, hisse başına kazanç hesaplamaları, karşılaştırma dönemleri itibarıyla daha önce
+hesaplanan ağırlıklı ortalama hisse senedi sayısı düzeltilerek yapılmaktadır. Düzeltme, hesaplamada
+kullanılan hisse senedi sayısının, bedelsiz ihraç işleminin karşılaştırma dönemi başında gerçekleştirilmiş
+gibi dikkate alınmasını ifade etmektedir. Hisse senedi sayısındaki bu gibi değişikliklerin bilanço tarihinden
+sonra, ancak finansal tabloların yayımlanmak üzere onaylanmasından önce ortaya çıkması durumunda da
+hisse başına kazanç hesaplamaları yeni hisse senedi sayısına dayandırılmaktadır.
+1 Ocak- 31 Mart
+2025
+1 Ocak- 31 Aralık
+2024
+Dönem başı bakiyesi 2.467.256 2.030.740
+Dönem (zararının) / karının kontrol gücü olmayan paylara atfolunan kısmı 968.383 166.672
+Tanımlanmış fayda planları yeniden ölçüm kazançları (vergi etkisi dahil) 6.263 (27.909)
+Yeniden değerleme ve sınıflandırma kazanç/kayıpları (4.573) (1.410)
+Yabancı para çevrim farkları (27.767) 35.906
+Kontrol gücü olmayan paylardaki değişim 112.936 263.257
+Ödenen temettüler (30.000) -
+Dönem sonu bakiyesi 3.492.498 2.467.256
+
+--- Sayfa 34 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+32
+17. FİNANSAL ARAÇLARDAN KAYNAKLANAN RİSKLERİN NİTELİĞİ VE DÜZEYİ
+Sermaye Risk Yönetimi:
+Grup, sermaye yönetiminde, bir yandan faaliyetlerinin sürekliliğini sağlamaya çalışırken, diğer yandan da
+borç ve özkaynak dengesini en verimli şekilde kullanarak karını artırmayı hedeflemektedir.
+Grup’un kaynak yapısı Not 7’de açıklanan kredileri de içeren borçlar, çıkarılmış sermaye, yedekler ile
+geçmiş yıl kazançlarını içeren özkaynak kalemlerinden oluşmaktadır.
+Grup’un Yönetim Kurulu sermaye yapısını ayda bir kez olmak üzere inceler. Bu incelemeler sırasında
+Kurul, sermaye maliyeti ile birlikte her bir sermaye sınıfıyla ilişkilendirilen riskleri değerlendirir. Grup,
+Yönetim Kurulu’nun yaptığı önerilere dayanarak, sermaye yapısını yeni borç edinilmesi veya mevcut olan
+borcun geri ödenmesiyle olduğu kadar, temettü ödemeleri, yeni hisse ihracı veya bağlı ortaklık ve
+iştiraklerin hisselerinin alımı ve satımı yollarıyla dengede tutmayı amaçlamaktadır.
+Finansal Risk Faktörleri:
+Grup faaliyetleri nedeniyle piyasa riski (kur riski, gerçeğe uygun değer faiz oranı riski, nakit akımı faiz
+oranı riski ve fiyat riski), kredi riski ve likidite riskine maruz kalmaktadır. Grup’un risk yönetimi programı
+genel olarak finansal piyasalardaki belirsizliğin, Grup finansal performansı üzerindeki potansiyel olumsuz
+etkilerinin minimize edilmesi üzerine odaklanmaktadır. Grup, çeşitli finansal risklerden korunmak amacı
+ile türev ürünleri kullanmaktadır.
+Risk yönetimi, Yönetim Kurulu tarafından onaylanan politikalar doğrultusunda icradan bağımsız Risk
+Yönetimi Müdürlüğü tarafından yürütülmektedir. Risk politikalarına ilişkin olarak ise, Risk Yönetimi
+Müdürlüğü tarafından finansal risk tanımlanır, değerlendirilir ve Grup’un operasyon üniteleri ile birlikte
+çalışmak suretiyle riskin azaltılmasına yönelik araçlar kullanılır. Yönetim Kurulu tarafından risk yönetimine
+ilişkin olarak gerek yazılı genel bir mevzuat gerekse de döviz kuru riski, faiz riski, kredi riski, türev
+ürünlerinin ve diğer türevsel olmayan finansal araçların kullanımı ve likidite fazlalığının nasıl
+değerlendirileceği gibi çeşitli risk türlerini kapsayan yazılı prosedürler oluşturulur.
+Kredi Riski:
+Kullandırılan krediler için, karşı tarafın anlaşma yükümlülüklerini yerine getirememesinden kaynaklanan
+bir risk mevcuttur. Bu risk, derecelendirmeler veya belli bir kişiye kullandırılan kredinin sınırlandırılmasıyla
+yönetilmektedir. Kredi riski, ayrıca SPK mevzuatı uyarınca kredi verilen müşterilerden alınan ve borsada
+işlem gören hisse senetlerinin teminat olarak elde tutulması suretiyle de yönetilmektedir. Grup’un kredi
+riski, ağırlıklı olarak faaliyetlerini yürüttüğü Türkiye’dedir.
+
+--- Sayfa 35 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+33
+18. FİNANSAL ARAÇLARDAN KAYNAKLANAN RİSKLERİN NİTELİĞİ VE DÜZEYİ (devamı)
+Kur Riski:
+Grup’un 31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla yabancı para cinsinden varlık ve yükümlülüklerinin dağılımı aşağıdaki gibidir:
+31 Mart 2025
+TL Karşılığı
+(Geçerli para birimi) USD EUR GBP JPY DİĞER
+1. Ticari Alacak 7.915.304 205.701 3.350 133 (1) 145
+2a. Parasal Finansal Varlıklar 689.520 16.012 1.296 336 3.979 1.298
+2b. Parasal Olmayan Finansal Varlıklar 38.189 1.011 - - - -
+3. Diğer 18.313 470 9 - - -
+4. Dönen Varlıklar 8.661.326 223.194 4.655 469 3.978 1.443
+5. Ticari Alacaklar - - - - - -
+6a. Parasal Finansal Varlıklar - - - - - -
+6b. Parasal Olmayan Finansal Varlıklar - - - - - -
+7. Diğer - - -
+8. Duran Varlıklar - - - - - -
+9. Toplam Varlıklar 8.661.326 223.194 4.655 469 3.978 1.443
+10. Ticari Borçlar 7.179.302 186.190 3.422 119 - 146
+11. Finansal Yükümlülükler 64.895 1.718 - - - -
+12a. Parasal Olan Diğer Yükümlülükler 671.048 17.720 - - - -
+12b. Parasal Olmayan Diğer Yükümlülükler - - - - - -
+13. Kısa Vadeli Yükümlülükler 7.915.245 205.628 3.422 119 - 146
+14. Ticari Borçlar - - - - - -
+15. Finansal Yükümlülükler - - - - - -
+16a. Parasal Olan Diğer Yükümlülükler - - - - - -
+16b. Parasal Olmayan Diğer Yükümlülükler - - - -
+17. Uzun Vadeli Yükümlülükler - - - - - -
+18. Toplam Yükümlülükler 7.915.245 205.628 3.422 119 - 146
+19. Bilanço dışı türev araçların net varlık /yükümlülük pozisyonu (19a-19b) 122.322 (825) (3.293) 305 1.559 33
+19.a Aktif karakterli bilanço dışı döviz cinsinden türev ürünlerin tutarı 8.527.243 112.434 14.278 365 18.221 935
+19b. Pasif karakterli bilanço dışı döviz cinsinden türev ürünlerin tutarı 8.404.921 113.259 17.571 60 16.662 902
+20. Net yabancı para varlık yükümlülük pozisyonu 868.403 16.741 (2.060) 655 5.537 1.330
+21. Parasal kalemler net yabancı para varlık/yükümlülük pozisyonu
+(1+2a+5+6a-10-11-12a-14-15-16a) 689.579 16.085 1.224 350 3.978 1.297
+
+--- Sayfa 36 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+34
+18. FİNANSAL ARAÇLARDAN KAYNAKLANAN RİSKLERİN NİTELİĞİ VE DÜZEYİ (devamı)
+Kur Riski: (devamı)
+31 Aralık 2024
+TL Karşılığı
+(Geçerli para birimi) USD EUR GBP JPY DİĞER
+1. Ticari Alacak 11.287.288 284.679 4.577 59 (1) 35.377
+2a. Parasal Finansal Varlıklar 1.078.484 23.494 2.961 642 3.643 1.194
+2b. Parasal Olmayan Finansal Varlıklar - - - - - -
+3. Diğer 7.860 193 7 - - -
+4. Dönen Varlıklar 12.373.632 308.366 7.545 701 3.642 36.571
+5. Ticari Alacaklar - - - - - -
+6a. Parasal Finansal Varlıklar - - - - - -
+6b. Parasal Olmayan Finansal Varlıklar - - - - - -
+7. Diğer - - - - - -
+8. Duran Varlıklar - - - - - -
+9. Toplam Varlıklar 12.373.632 308.366 7.545 701 3.642 36.571
+10. Ticari Borçlar 10.109.153 254.133 4.810 61 - 46
+11. Finansal Yükümlülükler 108.069 2.782 - - - -
+12a. Parasal Olan Diğer Yükümlülükler 1.146.878 29.487 - - - -
+12b. Parasal Olmayan Diğer Yükümlülükler 17.479 373 55 16 - -
+13. Kısa Vadeli Yükümlülükler 11.381.579 286.775 4.865 77 - 46
+14. Ticari Borçlar - - - - - -
+15. Finansal Yükümlülükler - - - - - -
+16a. Parasal Olan Diğer Yükümlülükler - - - - - -
+16b. Parasal Olmayan Diğer Yükümlülükler - - - - - -
+17. Uzun Vadeli Yükümlülükler - - - - - -
+18. Toplam Yükümlülükler 11.381.579 286.775 4.865 77 - 46
+19. Bilanço dışı türev araçların net varlık /yükümlülük pozisyonu (19a-19b) 3.915 3.658 (1.600) 128 (11.410) (1.112)
+19.a Aktif karakterli bilanço dışı döviz cinsinden türev ürünlerin tutarı 5.678.982 74.613 8.686 162 7.395 216
+19b. Pasif karakterli bilanço dışı döviz cinsinden türev ürünlerin tutarı 5.675.067 70.955 10.286 34 18.805 1.328
+20. Net yabancı para varlık yükümlülük pozisyonu 995.968 25.249 1.080 752 (7.768) 35.413
+21. Parasal kalemler net yabancı para varlık/yükümlülük pozisyonu
+(1+2a+5+6a-10-11-12a-14-15-16a) 1.001.672 21.771 2.728 640 3.642 36.525
+
+--- Sayfa 37 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+35
+18. FİNANSAL ARAÇLARDAN KAYNAKLANAN RİSKLERİN NİTELİĞİ VE DÜZEYİ (devamı)
+Kur riski (devamı):
+31 Mart 2025 ve 31 Aralık 2024 tarihleri itibarıyla olan finansal durum tablosu pozisyonuna göre, döviz
+kurlarının Türk lirası karşısında %10 oranında değer kazanması ya da kaybetmesi ve diğer tüm değişkenlerin
+sabit kalması durumda Grup’un, yabancı para birimlerinden olan varlık ve yükümlülüklerden oluşan kur farkı
+karı ya da zararı sonucu dönem net kar ya da zararı aşağıdaki gibi değişecektir.
+Sermaye yeterliliği yükümlülüğü
+31 Mart 2025 tarihi itibarıyla, Şirket’in, Seri V No 34 sayılı Tebliğ kapsamında portföy yöneticiliği, yatırım
+danışmanlığı, menkul kıymetlerin geri alma (repo) veya satma (ters repo) taahhüdü ile alım satımı, kredili
+menkul kıymet, açığa satış ve menkul kıymetlerin ödünç alma ve verme işlemleri, halka arza aracılık, alım
+satım aracılığı, kaldıraçlı alım satım aracılığı ve Vadeli İşlem ve Opsiyon Piyasasında türev araçların alım
+satımına aracılık için sahip olması gereken asgari özsermaye yükümlülüğü, “Geniş Yetkili” aracı kurum olan
+Şirket için 300.000 TL’dir (31 Aralık 2024 tarihi itibarıyla, 200.000 TL). 31 Mart 2025 ve 31 Aralık 2024
+tarihleri itibarıyla, Şirket’in ödenmiş sermayesi asgari özsermaye yükümlülüğün üzerindedir.
+31 Mart 2025
+Risk Türü Risk Oranı Döviz Kuru Yönü Dönem Karına Etkisi Özkaynağa Etkisi
+Kur riski %10 Artış 52.900 52.900
+Azalış (52.900) (52.900)
+31 Aralık 2024
+Risk Türü Risk Oranı Döviz Kuru Yönü Dönem Karına Etkisi Özkaynağa Etkisi
+Kur riski %10 Artış 121.176 121.176
+Azalış (121.176) (121.176)
+
+--- Sayfa 38 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak gösterilmiştir)
+36
+19. FİNANSAL ARAÇLAR
+Finansal Araçlar Kategorileri:
+31 Mart 2025
+Etkin faiz yöntemi
+ile değerlenen diğer
+finansal varlıklar Krediler ve alacaklar
+Gerçeğe uygun
+değer farkı diğer
+kapsamlı gelire
+yansıtılan finansal
+varlıklar
+Gerçeğe uygun değer
+farkları kar ve zarara
+yansıtılan finansal
+varlıklar ve
+yükümlülükler
+Etkin faiz yöntemi ile
+değerlenen diğer
+finansal
+yükümlülükler Kayıtlı Değeri
+Gerçeğe Uygun
+Değeri
+Finansal varlıklar
+Nakit ve nakit benzerleri 10.775.246 - - 1.172.152 - 11.947.398 11.947.398
+Ticari alacaklar - 49.057.915 - - - 49.057.915 49.057.915
+Finansal yatırımlar 4.197.132 - 451.130 9.605.612 - 14.253.874 14.253.874
+Türev araçlar - - - 72.483 - 72.483 72.483
+Finansal yükümlülükler
+Borçlanmalar - - - - 13.209.123 13.209.123 13.209.123
+Ticari borçlar - - - - 44.493.282 44.493.282 44.493.282
+Diğer Finansal Yükümlülükler - - - 622.460 - 622.460 622.460
+Türev araçlar - - - 203.691 - 203.691 203.691
+31 Aralık 2024
+Finansal varlıklar
+Nakit ve nakit benzerleri 8.501.188 - - 924.866 - 9.426.054 9.426.054
+Ticari alacaklar - 54.579.612 - - - 54.579.612 54.579.612
+Finansal yatırımlar 340.890 - 515.086 8.010.067 - 8.866.043 8.866.043
+Türev araçlar - - - - 61.030 - 61.030 61.030
+Finansal yükümlülükler
+Borçlanmalar - - - - 1.628.102 1.628.102 1.628.102
+Ticari borçlar - - - - 41.357.131 41.357.131 41.357.131
+Türev araçlar - - - 147.275 - 147.275 147.275
+
+--- Sayfa 39 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+37
+19. FİNANSAL ARAÇLAR (devamı)
+Finansal Araçların Gerçeğe Uygun Değeri:
+Gerçeğe uygun değer, bilgili ve istekli taraflar arasında, piyasa koşullarına uygun olarak gerçekleşen
+işlemlerde, bir varlığın karşılığında el değiştirebileceği veya bir yükümlülüğün karşılanabileceği değerdir.
+Grup, finansal araçların tahmini gerçeğe uygun değerlerini halihazırda mevcut piyasa bilgileri ve uygun
+değerleme yöntemlerini kullanarak belirlemiştir. Bununla birlikte, piyasa bilgilerini değerlendirip gerçeğe
+uygun değerleri tahmin edebilmek, yorum ve muhakeme gerektirmektedir. Sonuç olarak burada sunulan
+tahminler, Grup’un cari bir piyasa işleminde elde edebileceği miktarların göstergesi olamaz.
+Halihazırda krediler için karşılaştırmalı fiyat edinilmekte faaliyet gösterecek bir piyasa bulunmamakta ve bu
+araçlar satıldığında veya vadesinden önce kullanıldığında işlem masrafı ve iskontoya tabi tutulmaktadır.
+Yeterli güvenilirlikte veri elde edilememesinden dolayı bu araçlar için gerçeğe uygun değer tespit
+edilememektedir. Dolayısıyla, bu kalemlerin net defter değerleri gerçeğe uygun değerin tutarlı bir göstergesi
+olarak kullanılmaktadır.
+Gerçeğe uygun değerlerinin tahmin edilmesi pratikte mümkün olan finansal araçların gerçeğe uygun
+değerlerinin tahmini için aşağıdaki yöntem ve varsayımlar kullanılmıştır:
+Finansal Varlıklar:
+Nakit ve nakit benzeri değerler ve diğer finansal varlıklar dahil olmak üzere maliyet bedeli ile gösterilen
+finansal varlıkların gerçeğe uygun değerlerinin kısa vadeli olmaları ve muhtemel zararların önemsiz miktarda
+olabileceği düşünülerek kayıtlı değerlerine yaklaştığı öngörülmektedir.
+Devlet iç borçlanma senetlerinin ve hisse senetlerinin gerçeğe uygun değerlerinin belirlenmesinde piyasa
+fiyatları esas alınır.
+Finansal Yükümlülükler:
+Kısa vadeli olmaları sebebiyle parasal yükümlülüklerin gerçeğe uygun değerlerinin kayıtlı değerlerine
+yaklaştığı varsayılmaktadır. Değişken faizli uzun vadeli banka kredilerinin yakın tarihte yeniden fiyatlanmış
+olmasından ötürü gerçeğe uygun değerlerinin kayıtlı değerlerine yaklaştığı varsayılmaktadır.
+Gerçeğe uygun değer ile gösterilen finansal varlıkların değerleme yöntemleri:
+31 Mart 2025 Seviye 1 Seviye 2 Seviye 3 Toplam
+Finansal varlıklar
+Gerçeğe uygun değer farkı kar veya zarara yansıtılan finansal varlıklar
+Hisse senetleri 1.698.168 - - 1.698.168
+Devlet tahvili ve Hazine bonoları 750.600 - - 750.600
+Özel kesim tahvilleri 523.520 - - 523.520
+Yatırım fonları 5.950.097 - - 5.950.097
+Yabancı menkul kıymetler - 683.227 - 683.227
+Türev araçlardan kaynaklanan varlıklar 42.486 29.997 - 72.483
+Gerçeğe uygun değer farkı diğer kapsamlı gelire yansıtılan finansal varlıklar 451.130 - - 451.130
+Finansal yükümlülükler
+Diğer finansal yükümlülükler
+Türev araçlardan kaynaklanan yükümlülükler 22.173 181.518 - 203.691
+
+--- Sayfa 40 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+38
+19. FİNANSAL ARAÇLAR (devamı)
+Finansal Araçların Gerçeğe Uygun Değeri (devamı):
+31 Aralık 2024 Seviye 1 Seviye 2 Seviye 3 Toplam
+Finansal varlıklar
+Gerçeğe uygun değer farkı kar veya zarara yansıtılan finansal varlıklar
+Hisse senetleri 1.016.183 - - 1.016.183
+Devlet tahvili ve Hazine bonoları 190.779 - - 190.779
+Özel kesim tahvilleri 449.721 - - 449.721
+Yatırım fonları 5.379.426 - - 5.379.426
+Yabancı menkul kıymetler 973.958 - - 973.958
+Türev araçlardan kaynaklanan varlıklar - 61.030 - 61.030
+Gerçeğe uygun değer farkı diğer kapsamlı gelire yansıtılan finansal varlıklar 515.086 - - 515.086
+Finansal yükümlülükler
+Diğer finansal yükümlülükler
+Türev araçlardan kaynaklanan yükümlülükler 4.471 142.804 - 147.275
+Finansal varlıkların ve yükümlülüklerin gerçeğe uygun değeri aşağıdaki gibi belirlenir:
+Seviye 1: Finansal varlık ve yükümlülükler, birbirinin aynı varlık ve yükümlülükler için aktif piyasada işlem
+gören borsa fiyatlarından değerlenmiştir.
+Seviye 2: Finansal varlık ve yükümlülükler, ilgili varlık ya da yükümlülüğün birinci kategoride belirtilen borsa
+fiyatından başka direkt ya da endirekt olarak piyasada gözlenebilen fiyatının bulunmasında kullanılan
+girdilerden değerlenmiştir.
+Seviye 3: Finansal varlık ve yükümlülükler, varlık ya da yükümlülüğün gerçeğe uygun değerinin bulunmasında
+kullanılan piyasada gözlenebilir bir veriye dayanmayan girdilerden değerlenmiştir.
+20. RAPORLAMA DÖNEMİNDEN SONRAKİ OLAYLAR
+- Bilanço döneminden sonra ihraç edilmiş olan borçlanma araçlarına ilişkin bilgilere aşağıda yer verilmiştir.
+ISIN Kodu Nominal Tutar İhraç Tarihi Vade Tarihi Faiz Oranı (%)
+TRFISMD72512 306.560 11.04.2025 11.07.2025 46,00
+TR0ISMD01KR5 25.500 16.04.2025 03.06.2025 61,57
+TRFISMD52522 362.890 25.04.2025 27.05.2025 48,00
+TR0ISMD01KU9 25.000 29.04.2025 03.06.2025 60,92
+TRFISMD62521 1.156.650 05.05.2025 19.06.2025 48,50
+TRFISMD62539 634.180 06.05.2025 20.06.2025 48,50
+- İş Girişim Sermayesi Yatırım Ortaklığı A.Ş. (Şirket) Yönetim Kurulu’nca 2 Mayıs 2025 tarihinde, 500.000
+TL tutarındaki kayıtlı sermaye tavanı içerisinde olmak üzere 74.652 TL olan Şirket’in çıkarılmış
+sermayesinin, mevcut pay sahiplerinin yeni pay alma hakları tamamen kısıtlanarak, toplam satış değeri
+800.000 TL olacak şekilde, Borsa İstanbul A.Ş.'nin Toptan Alış Satış İşlemlerine İlişkin Prosedürü
+doğrultusunda belirlenecek baz fiyat ve nominal değerinden aşağı olmamak kaydıyla satış fiyatına göre
+hesaplanacak toplam nominal sermaye tutarı kadar artırılmasına, artırılan sermaye karşılığı ihraç olunacak
+nama yazılı ve borsada işlem gören nitelikteki payların 425.000 TL'si İş Yatırım Menkul Değerler A.Ş.,
+200.000 TL'si Türkiye Sınai Kalkınma Bankası A.Ş., 125.000 TL'si Anadolu Anonim Türk Sigorta Şirketi
+ve 50.000 TL'si Milli Reasürans T.A.Ş. tarafından olmak üzere Şirket'e tamamen ve nakden ödenmesi
+taahhüt edilen 800.000 TL karşılığı olacak şekilde İş Yatırım Menkul Değerler A.Ş., Türkiye Sınai
+Kalkınma Bankası A.Ş., Anadolu Anonim Türk Sigorta Şirketi ve Milli Reasürans T.A.Ş.'ye tahsisli satış
+yoluyla ihraç edilmesine karar verilmiştir. Şirket, tahsisli sermaye artırımı kapsamında düzenlenecek ihraç
+belgesinin onaylanması için Sermaye Piyasası Kurulu'na 09.05.2025 tarihinde başvurmuştur.
+
+--- Sayfa 41 ---
+İŞ YATIRIM MENKUL DEĞERLER A.Ş. VE BAĞLI ORTAKLIKLARI
+31 MART 2025 TARİHİNDE SONA EREN ARA HESAP DÖNEMİNE AİT
+ÖZET KONSOLİDE FİNANSAL TABLOLARA İLİŞKİN DİPNOTLAR
+(Tutarlar aksi belirtilmedikçe Türk lirası’nın (“TL”) 31 Mart 2025 tarihi itibarıyla satın alma gücü esasına göre Bin TL olarak
+gösterilmiştir)
+39
+21. FİNANSAL TABLOLARI ÖNEMLİ ÖLÇÜDE ETKİLEYEN YA DA FİNANSAL
+TABLOLARIN AÇIK, YORUMLANABİLİR VE ANLAŞILABİLİR OLMASI AÇISINDAN
+AÇIKLANMASI GEREKEN DİĞER HUSUSLAR
+Bulunmamaktadır.
+……………

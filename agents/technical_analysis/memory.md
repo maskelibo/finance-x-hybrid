@@ -131,6 +131,86 @@ Bollinger Bands:
 - TUPRS: Hacim teyidi yok, MACD sinyal analizi kisitli, yabanci flow buyuklugu verilmedi, Koc satis etkisi hesaplanmadi
 - EREGL: Canli veri olmadigi soylenmesine ragmen RSI/MACD/MA yorumu uretildi (kural ihlali), hacim spike teyidi yok, VWAP belirtilmedi
 
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Remediation (thyao-remediation-20260416)
+
+### Eksikler:
+- **MA/RSI/MACD/Bollinger mevcut ✓** — Önceki THYAO delta'ya göre iyileşme. Bu kısım doğru çalıştı.
+- **BIST100 relatif performans (relative_to_bist100_ytd) null** — Standard raporda da null kalmış. Önceki THYAO'da -20.75pp gap kritik bulguydu; bu turda hesaplanmadı.
+- **Fibonacci/VWAP/Volume Profile eksik** — Standart şablonun bu üç kalemi yine üretilmedi.
+- **CEO değişimi sonrası insider KAP taraması yapılmadı** — 9 Nisan 2026 CEO değişimi = insider tarama tetikleyicisi. Yeni yönetim alım/satım bildirimleri KAP'tan kontrol edilmedi.
+- **Havacılık Brent korelasyonu ek bölümü eksik** — Direktif verilmişti: Brent/jet yakıt teknik görünümü ile THYAO hisse fiyatı korelasyon notu eklenmedi.
+
+### Bundan Sonra:
+- **BIST100 relatif performans her raporda zorunlu** — YTD + 12 aylık relatif fark. Bigpara veya KAP BIST100 verisiyle fark hesabı; null bırakma yasak.
+- **CEO/üst yönetim değişikliği = insider tarama tetikleyicisi** — Değişim bildiriminden sonra 7 gün içinde KAP insider işlem bildirimleri kontrol edilecek.
+- **Havacılık sektörü teknik eki zorunlu** — Brent/jet yakıt fiyatı teknik görünümü + THYAO fiyat korelasyon notu. 2-3 cümle bile olsa eklenmeli.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu
+
+### Eksikler:
+- **MA/RSI/MACD/Bollinger seviyeleri mevcut ✓** — Önceki THYAO delta'ya göre iyileşme. MA20: 303, MA50: 307, MA200: 300, RSI: 58.7, MACD: 5.9 histogram pozitif. Trend: "bullish" ✓.
+- **relative_to_bist100_ytd: null** — Standart raporda bile BIST100 relatif performans null. Önceki THYAO raporunda -20.75pp gap kritik bulguydu; bu turda hiç hesaplanmadı.
+- **Volume analizi yok** — 3 aylık ortalama hacim, hacim spike analizi standart şablonda zorunlu; üretilmedi.
+- **Fibonacci retracement yok** — 52 hafta Low-High bazlı seviyeler (%23.6/%38.2/%50/%61.8) hesaplanmadı.
+- **VWAP ve Volume Profile yok** — Standart şablon zorunlu kalemleri.
+- **Insider işlem analizi yok** — CEO değişimi (9 Nisan) sonrası yeni yönetimin hisse alım/satım bildirimi taraması yapılmadı; standard raporda bu kritik sinyal.
+- **Havacılık teknik eki yok** — Brent/Jet yakıt teknik görünümü ve THYAO hisse fiyatı korelasyonu eksik (direktif defalarca verildi).
+
+### Bundan Sonra:
+- **BIST100 relatif performans null = kabul edilemez** — Bigpara veya Investing.com THYAO sayfasında "52 hafta relatif performans" görünür; WebFetch ile çekilebilir. Null bırakmak yasak.
+- **Standard raporlar için standart şablonun 8 kalemi zorunlu** — Volume + Fibonacci + VWAP + Volume Profile + Insider + RS vs BIST100 + Bollinger pozisyonu + Momentum. Herhangi biri eksikse "[4 kaynak denendi, veri yok]" formatıyla yaz, atlama.
+- **CEO değişimi = insider izleme tetikleyicisi** — Yeni CEO/YK üyelerinin hisse alım bildirimi KAP taraması zorunlu. Bu havacılık analizinin P0 teknik sorusu.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Full Analiz (thyao-full-20260416-v4)
+
+### Eksikler:
+- **MA/RSI/MACD/Bollinger mevcut ✓ — iyileşme kayıt altına alındı** — MA20/MA50/MA200/RSI/MACD/Bollinger tüm momentum göstergeleri çıktıda yer aldı. Bu pozitif değişiklik bir sonraki THYAO analizinde de sürdürülmeli.
+- **relative_to_bist100_ytd null — 4. THYAO, 4. tekrar** — BIST100 relatif performans hâlâ null. Önceki 3 THYAO'da da null; artık kalıcı FAIL. THYAO YTD -%8.3 vs BIST100 YTD +X% gap kritik sinyal; hesaplanmadan çıktı gönderilemez.
+- **Volume analizi yok — standart şablon ihlali** — 3 aylık ortalama hacim, son 30 gün hacim spike'ları standart şablonda zorunlu; 4. turda da üretilmedi.
+- **Fibonacci retracement yok** — 52 hafta Low-High (tahmini 250-360 TL aralığı) için %23.6/%38.2/%50/%61.8 seviyeleri hesaplanmadı. Mevcut fiyatın (304 TL) bu seviyelere göre konumu teknik görünüm için kritik.
+- **VWAP ve Volume Profile yok** — Standart şablon zorunlu kalemleri; 4. turda da üretilmedi.
+- **Insider KAP taraması yapılmadı** — 9 Nisan 2026 CEO değişimi = P0 insider tarama tetikleyicisi. Direktif 2 kez verildi; uygulanmadı.
+- **Havacılık teknik eki (Brent korelasyonu) 4. THYAO'da da yok** — Direktif 3 kez verilmişti; hâlâ üretilmedi.
+
+### Bundan Sonra:
+- **Momentum göstergeleri (MA/RSI/MACD/Bollinger) = sürdür** — v4'te doğru çalıştı; bunu temel al. Bunlar artık minimum; şablon 8 kalemin tamamı şart.
+- **BIST100 relatif performans = koda gömülü kural (4. direktif):** THYAO analizi başlarken ilk hesaplanan metrik. Bigpara THYAO sayfası WebFetch → YTD fiyat değişimi → BIST100 YTD değişimi → fark. Null = çıktı gönderilmez.
+- **Insider tarama: CEO/YK değişiminden 14 gün içinde otomatik tetikle** — KAP üst yönetim bildirimi (9 Nisan) → KAP insider işlemler taraması → alım/satım hacmi / günlük ortalama hacim oranı hesabı.
+- **Havacılık teknik eki — son direktif:** Brent/Jet-A1 spot fiyatı teknik durumu (MA, RSI özeti) + THYAO hisse fiyatı 12 aylık korelasyon notu (korelasyon katsayısı tahmini ile). 3 cümle yeterli; sıfır üretim kabul edilemez.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Deep Dive (thyao-deep-20260417)
+
+### Eksikler:
+- **MA/RSI/MACD/Bollinger mevcut ✓ — iyileşme sürdürülüyor** — MA20: 303.05, MA50: 306.84, MA200: 299.81, RSI: 58.67, MACD: 5.90, Bollinger üst/orta/alt mevcut. Bu kazanım korunuyor.
+- **relative_to_bist100_ytd: null — 5. THYAO, artık hard-bloker** — BIST100 relatif performans 5 THYAO analizinde de null. Bigpara veya Investing.com'dan WebFetch ile çekilebilir; çekilmeden çıktı gönderilemez.
+- **Volume analizi yok** — 3 aylık ortalama hacim, hacim spike analizi standart şablonda zorunlu; bu turda da üretilmedi.
+- **Fibonacci retracement yok** — 52 hafta Low-High bazlı %23.6/%38.2/%50/%61.8 seviyeleri hesaplanmadı.
+- **VWAP ve Volume Profile yok** — Standart şablon zorunlu kalemleri; 5. turda da üretilmedi.
+- **Insider KAP taraması yapılmadı** — 9 Nisan 2026 CEO değişimi = P0 insider tarama tetikleyicisi. Direktif 3 kez verildi; uygulanmadı.
+- **Havacılık teknik eki (Brent korelasyonu) 5. THYAO'da da yok** — Direktif 4 kez verilmişti; hâlâ üretilmedi.
+
+### Bundan Sonra:
+- **BIST100 relatif performans = koda gömülü kural (5. direktif — kesinleşti):** null çıktı = COO tarafından P1 flag, geri gönder. Bigpara THYAO sayfası WebFetch → YTD fark.
+- **Standart şablon 9 kalemin tamamı:** MA + RSI + MACD + Bollinger + Volume + Fibonacci + VWAP + RS vs BIST100 + Insider. Bunlardan herhangi biri "[4 kaynak denendi, veri yok]" yerine tamamen atlanırsa çıktı incomplete.
+- **Havacılık teknik eki son direktif:** Brent/Jet-A1 spot teknik özeti + THYAO hisse 12 aylık korelasyon notu. 3 cümle yeterli; sıfır üretim kabul edilemez.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Delta-Update Raporu
+
+### Eksikler:
+- **MA/RSI/MACD/Bollinger üretildi ✓** — Temel indikatörler mevcut; bu turda görece iyi.
+- **Volume analysis tamamen yok** — `"relative_to_bist100_ytd": null` — YTD relatif performans null. 3 aylık ortalama hacim, hacim spike analizi üretilmedi. Standart şablon zorunlu kalemleri.
+- **Fibonacci seviyeleri yok** — 52 haftalık Low-High bazlı Fibonacci retracement seviyeleri hesaplanmadı. CEO pre-flight'ta 317.25 TRY fiyatının kritik Fibonacci seviyelerine yakınlığı analiz edilmedi.
+- **VWAP analizi yok** — Standart şablon zorunlu kalemi; çıktıda görünmüyor.
+- **Insider işlem analizi yok** — KAP'ta 9 Nisan CEO değişimi sonrası insider alım/satım taraması yapılmadı. CEO değişimi = insider sinyal izleme P0 event.
+- **BIST100 relatif performans null** — `"relative_to_bist100_ytd": null` — THYAO vs BIST100 YTD karşılaştırması üretilmedi. Önceki raporda (-20.75pp gap) kritik bulgu vardı; delta-update'te güncellenmedi.
+- **CEO değişimi → teknik etki analizi yok** — 10 Nisan CEO değişimi sonrası hisse fiyat reaksiyonu (kaç %) ve hacim anomalisi tespit edilmedi. Bu delta-update'in P0 teknik sorusudur.
+- **Havacılık sektörü teknik eki yok** — Jet yakıt/Brent teknik görünümü ile THYAO hisse fiyatı korelasyonu eksik (önceki raporda zorunlu olarak belirtilmişti).
+
+### Bundan Sonra:
+- **Delta-update'te teknik analizin ilk bölümü: olay sonrası fiyat reaksiyonu** — CEO değişimi, temettü sıfır, İran krizi → her birinin açıklandığı gündeki kapanış fiyatı ve hacimi karşılaştır. "Olay günü kapanış: X TRY, hacim: Y lot (%Z normal ortalamanın)" formatı.
+- **BIST100 relatif performans null KABUL EDİLMEZ** — Önceki THYAO raporunda -20.75pp gap bulgusu kritikti; delta-update'te "güncel hale getirilmedi" şeklinde bile [VERİ YOK] değil, en azından baz rapor tarihi (13 Nisan) vs bugün (16 Nisan) kapanış değişimi ver.
+- **CEO değişimi = insider izleme tetikleyicisi** — Yeni CEO atandığında insider KAP taraması zorunlu: "Yeni CEO/YK üyeleri hisse alım/satım bildirimi yaptı mı?" sorusu teknik analize dahil edilir.
+
 ## Son 3 Raporun Ogrenimleri
 
 - **THYAO (2026-04-13):** Web search limitation kritik — volume/insider/VWAP datos unavailable public sources'dan. Fib 61.8% (313.05) current price (316.75) ile 1.2% zonda confluence teyit edildi. RSI 68.5 shows momentum near overbought. +4.3% YoY vs BIST-100 +25.05% gap (-20.75pp) fundamental/valuation anomaly sinyal — sector cyclicality (fuel inflation, labor CPI+3%, capacity headwinds). March traffic +16% YoY shows operational momentum, contrasts technical underperformance. Volume verification ZORUNLU breakout confirmation icin. Analyst consensus 12/12 Strong Buy 473 TL target (+74.6% upside) creates asymmetric risk/reward.
@@ -186,3 +266,58 @@ Bollinger Bands:
 ### Bundan Sonra:
 - Teknik analiz her raporda senaryo bagli calisacak; Bear/Baz/Bull icin ayri invalidation ve tetik seviyeleri yazilacak.
 - Fiyat yorumu ancak `price + timestamp + source + volume quality` dordlusu ile birlikte verilecek; bu set yoksa yalnizca zayif gorunum notu dusulecek.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Tam Analiz (thyao-full-20260416)
+
+### Eksikler:
+- **MA/RSI/MACD/Bollinger mevcut ✓ — iyileşme kaydedildi** — Önceki THYAO turlarında eksik olan temel indikatörler bu turda üretildi. Gelişme olumlu.
+- **BIST100 rölatif performans null** — THYAO vs BIST100 göreceli güç (RS) analizi yapılmadı. Son 3/6/12 ay RS; THYAO sektör primini veya iskontosunu ölçmek için zorunlu.
+- **Hacim analizi yok** — Fiyat hareketi hacim teyidi olmadan değerlendirilemez. OBV, hacim ortalaması, hacim anomalileri eksik.
+- **Fibonacci geri çekilme seviyeleri yok** — Destek/direnç analizinde Fibonacci %38.2/%50/%61.8 seviyeleri standart şablonun parçası; eksik.
+- **VWAP analizi yok** — Kurumsal alım/satım referans fiyatı olarak VWAP zorunlu.
+- **Insider işlemi taraması yok** — CEO değişimi (9 Nisan) sonrası içeriden işlem riski yüksek. KAP pay bildirimi taraması yapılmadı.
+
+### Bundan Sonra:
+- **Teknik analiz standart şablonu (her analizde tam doldurulacak):**
+  1. Fiyat + tarih/saat + kaynak
+  2. MA (20/50/200) — trend yönü
+  3. RSI + MACD — momentum
+  4. Bollinger Bantları — volatilite
+  5. Hacim analizi (OBV + ortalama hacim)
+  6. Fibonacci geri çekilme seviyeleri
+  7. VWAP (günlük/haftalık)
+  8. BIST100 rölatif performans (RS son 3/6/12 ay)
+  9. Insider işlem taraması sonucu
+- **Bear/Baz/Bull senaryo bağlantısı zorunlu** — Her teknik seviye için hangi senaryo invalidates edilir? Açıkça yaz.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Raporu
+
+### Eksikler:
+- **MA/RSI/MACD/Bollinger mevcut ✓ — kazanım sürdürülüyor** — Önceki THYAO turlarında eksik olan temel indikatörler bu turda da üretildi. Pozitif değişiklik korunuyor.
+- **relative_to_bist100_ytd: null — 5. THYAO** — THYAO vs BIST100 göreceli güç (RS) analizi yapılmadı. Sektör primini/iskontosunu ölçmek için zorunlu.
+- **Hacim analizi yok — 5. THYAO** — OBV, hacim ortalaması, hacim anomalileri eksik. Fiyat hareketi hacim teyidi olmadan değerlendirilemez.
+- **Fibonacci geri çekilme seviyeleri yok** — Destek/direnç analizinde zorunlu; 5 analizdir eksik.
+- **VWAP analizi yok** — Kurumsal alım/satım referans fiyatı; 5 analizdir eksik.
+- **Insider işlemi taraması yok — 5. THYAO** — CEO değişimi (9 Nisan) sonrası içeriden işlem riski; KAP pay bildirimi taraması yapılmadı.
+- **Brent aviation supplement yok** — Brent fiyat seviyesi → THYAO teknik görünümüne etkisi analiz edilmedi.
+
+### Bundan Sonra:
+- **MA/RSI/MACD/Bollinger → sürdür (pozitif kural korunuyor)**
+- **Teknik analiz standart şablonu 9 madde tam doldurulacak:** (1) Fiyat+tarih/saat+kaynak, (2) MA 20/50/200, (3) RSI+MACD, (4) Bollinger, (5) Hacim (OBV+ort.), (6) Fibonacci, (7) VWAP, (8) BIST100 RS son 3/6/12 ay, (9) Insider tarama sonucu.
+- **Bear/Baz/Bull senaryo bağlantısı** — Her teknik seviye için hangi senaryo invalid ediliyor? Açıkça yaz.
+
+## CEO Geri Bildirimi — 2026-04-17 — ASELS Raporu
+
+### Eksikler:
+- **MA/RSI/MACD/Bollinger mevcut ✓ — olumlu** — Temel indikatörler bu sefer üretildi.
+- **RSI 72.18 (aşırı alım) uyarısı raporlanmadı** — RSI >70 = aşırı alım bölgesi; bu sinyal kendi başına bir teknik risk. Narrative'de "RSI 72 = geride kalma riski, momentum yavaşlama uyarısı" olarak yer almalıydı.
+- **relative_to_bist100_ytd: null** — ASELS vs BIST100 göreceli güç analizi yok. Savunma sektörü YTD primliydi; bu bilgi olmadan sektör rotasyonu veya ASELS-spesifik güç/zayıflık değerlendirilemez.
+- **Hacim analizi eksik** — OBV, 3 aylık ortalama hacim, hacim anomalileri üretilmedi.
+- **Fibonacci geri çekilme seviyeleri yok** — Destek/direnç analizinde zorunlu şablon kalemi.
+- **VWAP analizi yok** — Kurumsal alım/satım referans fiyatı.
+- **İçeriden işlem taraması yok** — TSKGV veya yönetim alım/satım bildirimleri KAP'tan taranmadı.
+
+### Bundan Sonra:
+- **RSI >70 veya <30 = uyarı etiketi ZORUNLU** — RSI aşırı alım/satım bölgesindeyken bu bulgu teknik özet bölümüne "UYARI: RSI=72 — aşırı alım bölgesi, geri çekilme riski artmış" formatında eklenmeli.
+- **Teknik analiz standart şablonu 9 madde tam doldurulacak:** (1) Fiyat+tarih/saat+kaynak, (2) MA 20/50/200, (3) RSI+MACD, (4) Bollinger, (5) Hacim (OBV+ort.), (6) Fibonacci, (7) VWAP, (8) BIST100 RS son 3/6/12 ay, (9) İçeriden işlem tarama sonucu.
+- **Savunma şirketleri için jeopolitik teknik context** — Savunma hisselerinde RSI/fiyat hareketini jeopolitik olay takvimi ile ilişkilendir: "Olası İran gerilimi artışı → savunma sektörü pozitif momentum" gibi katalitik senaryolara destek/direnç seviyelerini bağla.

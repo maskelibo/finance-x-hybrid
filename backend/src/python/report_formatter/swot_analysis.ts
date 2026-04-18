@@ -208,16 +208,30 @@ const SECTOR_SWOT: Record<string, SwotRows> = {
 const TICKER_SWOT_OVERRIDES: Record<string, Partial<SwotRows>> = {
   THYAO: {
     strengths: [
-      'Türkiye\'nin bayrak taşıyıcısı olarak İstanbul Havalimanı hub statüsü',
-      '~516-530 uçaklık modern filo, 129 ülkede 340+ destinasyon',
-      'Turkish Cargo\'nun dünya kargo pazarında ilk 10\'da yer alması',
+      'Türkiye\'nin bayrak taşıyıcısı olarak İstanbul Havalimanı hub statüsü — ACI Europe 2025 küresel #1',
+      '~516-530 uçaklık modern filo, 129 ülkede 340+ destinasyon ağı',
+      'Turkish Cargo\'nun dünya kargo pazarında ilk 10\'da yer alması — e-ticaret büyümesi sürücü',
       '2024\'te 85M yolcu, 2034\'te 150M hedefi ile uzun vadeli büyüme görünürlüğü',
+      'Rusya üstgeçiş ayrıcalığı — Batılı rakiplerin kaybettiği yapısal avantaj',
+    ],
+    weaknesses: [
+      'TVF %49 devlet sahipliği — kurumsal yatırımcı katılımını sınırlıyor ve yönetişim kaygısı yaratıyor',
+      'Gelirin ~%90 USD/EUR bazlı ancak TRY maliyet tabanı — döviz uyumsuzluğu marj volatilitesi',
+      'ESG profili zayıf — net-sıfır taahhüdü yok, CORSIA yol haritası açıklanmamış',
+      'Yakıt maliyeti toplam giderlerin %25-30\'u — Brent fiyatına yüksek maruziyet',
+    ],
+    opportunities: [
+      'Air Europa satın alımı — Avrupa iç hat ağına doğrudan erişim ve transit trafik artışı',
+      'İstanbul Havalimanı 3. pist genişlemesi — 2028-2030 kapasite artışı',
+      'Kargo segmentinde e-ticaret büyümesi — Turkish Cargo global ölçekleme potansiyeli',
+      'Yeni nesil uçak teslimatları (B787/A350) — yakıt verimliliği ve uzun menzil kabiliyeti',
     ],
     threats: [
       'Rusya hava sahası kısıtlamaları uzak doğu rotalarını zorluyor',
       'Ortadoğu rotalarında İran gerilimi uçuş yollarında belirsizlik yaratıyor',
       'Brent petrol fiyatı (tipik yakıt %25-30 OPEX) kâr yapısına doğrudan etkili',
       'Pegasus (PGSUS) LCC modeli iç hat marjını baskılıyor',
+      'Boeing/Airbus teslimat gecikmeleri — filo yenileme planını aksatabilir',
     ],
   },
   KCHOL: {

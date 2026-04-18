@@ -44,13 +44,17 @@ from financex.schemas.quality import QualityFlag, Severity
 # ---------------------------------------------------------------------
 
 STATEMENT_KEYWORDS = {
-    "balance_sheet": ("finansal durum tablosu", "bilanco"),
-    "income_statement": ("kar veya zarar tablosu", "kar zarar tablosu", "gelir tablosu"),
-    "cash_flow": ("nakit akis tablosu", "nakit akım tablosu"),
-    "equity_change": ("ozkaynak degisim tablosu", "ozkaynaklardaki degisim"),
-    "comprehensive_income": ("diger kapsamli gelir",),
-    # Off-balance-sheet items (banking) — must NOT be absorbed as balance_sheet.
     "off_balance_sheet": ("nazim hesaplar", "bilanco disi"),
+    "balance_sheet": ("finansal durum tablosu", "bilanco"),
+    # "kar veya zarar" is the strongest income-statement signal — it also
+    # appears in the combined title "Kar veya Zarar ve Diğer Kapsamlı Gelir
+    # Tablosu", which IS the income statement (not a standalone OCI table).
+    # "gelir tablosu" is deliberately omitted here because it is a substring
+    # of "Diğer Kapsamlı Gelir Tablosu" and would mis-classify OCI tables.
+    "income_statement": ("kar veya zarar", "kar zarar tablosu"),
+    "comprehensive_income": ("diger kapsamli gelir", "toplam kapsamli gelir"),
+    "cash_flow": ("nakit akis tablosu", "nakit akim tablosu"),
+    "equity_change": ("ozkaynak degisim tablosu", "ozkaynaklardaki degisim"),
 }
 
 
@@ -159,9 +163,20 @@ _UNIT_PATTERNS = (
 )
 
 
+_SUNUM_RE = re.compile(r"sunum\s*para\s*birimi", re.IGNORECASE)
+
+
 def _detect_multiplier(rows: list[list[str]]) -> Decimal:
-    """Look at the first few rows for a 'Sunum Para Birimi: 1.000.000 TL' cue."""
+    """Look at the first few rows for a 'Sunum Para Birimi: 1.000.000 TL' cue.
+
+    Only matches unit patterns when they appear in a 'Sunum Para Birimi'
+    context — otherwise auditor-report text like '1.045 milyon TL' would
+    cause a false 1-million multiplier.
+    """
     text = " ".join(" ".join(row) for row in rows[:6])
+    # Only search for units if we see the 'Sunum Para Birimi' label
+    if not _SUNUM_RE.search(text):
+        return Decimal("1")
     for pattern, mul in _UNIT_PATTERNS:
         if pattern.search(text):
             return mul
@@ -211,6 +226,16 @@ class _Bag:
     cashflow: dict[str, Decimal] = field(default_factory=dict)
     equity: dict[str, Decimal] = field(default_factory=dict)
     flags: list[QualityFlag] = field(default_factory=list)
+
+
+# Fields where multiple PDF rows should sum into a single schema field
+# (e.g. Genel Yönetim + Pazarlama + Ar-Ge → opex).
+_ACCUMULATE_FIELDS: set[tuple[str, str]] = {
+    ("income_statement", "opex"),
+    ("income_statement", "bank_operating_expenses"),
+    ("balance_sheet", "short_term_debt"),
+    ("cash_flow", "capex"),
+}
 
 
 def _absorb_table(
@@ -271,7 +296,11 @@ def _absorb_table(
         value = _parse_tr_number(row[current_col])
         if value is None:
             continue
-        target[field_name] = (value * multiplier).quantize(Decimal("1"))
+        scaled = (value * multiplier).quantize(Decimal("1"))
+        if (kind, field_name) in _ACCUMULATE_FIELDS and field_name in target:
+            target[field_name] += scaled
+        else:
+            target[field_name] = scaled
 
 
 def _has_wide_banking_layout(rows: list[list[str]]) -> bool:
@@ -362,6 +391,26 @@ def parse_kap_pdf(
         m = _detect_multiplier(tbl.rows)
         if m > pdf_multiplier:
             pdf_multiplier = m
+    # Fallback: if no multiplier found in tables, scan raw page text.
+    # Some KAP PDFs embed "Sunum Para Birimi 1.000 TL" in body text
+    # rather than in a structured table row.
+    if pdf_multiplier == Decimal("1"):
+        # Some KAP PDFs have long auditor reports before the financial
+        # tables; scan up to 20 pages to find the multiplier cue.
+        for page_num in range(1, 21):
+            try:
+                page_text = extract_page_text(pdf_path, page_num)
+                # Only look for units near "Sunum Para Birimi"
+                if not _SUNUM_RE.search(page_text):
+                    continue
+                for pattern, mul in _UNIT_PATTERNS:
+                    if pattern.search(page_text):
+                        pdf_multiplier = mul
+                        break
+                if pdf_multiplier > Decimal("1"):
+                    break
+            except Exception:
+                break
 
     last_kind: str | None = None
     for tbl in tables:

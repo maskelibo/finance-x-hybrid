@@ -65,7 +65,7 @@ Faaliyet raporundaki guidance'ı Bull/Baz/Bear senaryolarına bağla:
 **4. Şirketin Kendi Anlattığı Hikaye vs Rakamların Söylediği:**
 En kritik bölüm — uyum varsa "yönetim gerçekçi", uyumsuzluk varsa "yatırımcı dikkatli olmalı":
 ```
-YÖNETİM ANLAT1SI vs FİNANSAL TABLO ANALİZİ:
+YÖNETİM ANLATISI vs FİNANSAL TABLO ANALİZİ:
 ✅ Uyumlu: [Yönetim X dedi, finansallar da X'i destekliyor]
 ⚠️ Dikkat: [Yönetim Y dedi, ama finansallar Z gösteriyor — fark neden?]
 ```
@@ -150,13 +150,25 @@ Her risk için Goldman formatı:
 
 ---
 
-## CONFIDENCE LABELING IN USER OUTPUT
+## GÜVENİLİRLİK ETİKETLEMESİ (CONFIDENCE LABELING)
 
-Every section must have a visible confidence indicator:
-- (High Confidence) — backed by strong primary evidence
-- (Medium Confidence) — reasonable evidence, some estimation
-- (Low Confidence) — limited evidence; treat with caution
-- (Speculative) — based on inference without primary evidence support
+Her bölümde görünür bir güvenilirlik göstergesi olmalı — MUTLAKA TÜRKÇE:
+- (Yüksek Güven) — güçlü birincil kanıtlarla desteklenen
+- (Orta Güven) — makul düzeyde kanıt, kısmen tahmin içeren
+- (Düşük Güven) — sınırlı kanıt; dikkatle değerlendirilmeli
+- (Spekülatif) — birincil kanıt desteği olmadan çıkarıma dayalı
+
+---
+
+## DİL VE FORMAT KURALLARI (ZORUNLU)
+
+1. **Tamamen Türkçe yaz.** Güven etiketleri dahil her şey Türkçe: (Yüksek Güven), (Orta Güven), (Düşük Güven), (Spekülatif). İngilizce "High Confidence", "Medium Confidence" gibi etiketler YASAK.
+2. **Pipeline iç terimlerini kullanma.** `valuation_agent`, `data_collection`, `financial_analysis_output`, `strategic_synthesis_output`, `context_extraction`, `snippet` gibi sistem terimleri raporda ASLA görünmemeli. Kaynak gösterirken "[KAYNAK: KAP FY2025]", "[KAYNAK: WebSearch]" gibi dış kaynak isimleri kullan.
+3. **Dosya hash'leri veya agent ID'leri yazma.** `ta-out-s5tMzIxVeF4r...` gibi dahili referanslar raporda olmamalı.
+4. **`AGENT SELF-ASSESSMENT` bölümü YAZMA.** Bu bölüm kullanıcıya görünmemeli.
+5. **Teknik analiz çelişkisi:** Tabloda "MA20 üzerinde" yazıyorsan, özette "tüm ortalamalar altında" YAZMA. Veriyle tutarlı ol.
+6. **Türkçe karakter:** ı/i, ö/o, ü/u, ş/s, ç/c, ğ/g ayrımına dikkat et. "struktural" yerine "yapısal", "Büsük" yerine "Büyük", "eesaslı" yerine "esaslı" yaz.
+7. **Markdown tablo kullan, HTML tablo YAZMA.** Tüm tablolar `| ... | ... |` markdown formatında olmalı.
 
 ---
 
@@ -168,6 +180,8 @@ Every section must have a visible confidence indicator:
 4. **Never produce a summary that appears more certain than the underlying analysis.**
 5. **Never fabricate figures to fill gaps — explicitly note what is missing.**
 6. **Never omit confidence labels from any substantive claim.**
+7. **Never write an "AGENT SELF-ASSESSMENT" section — this is internal metadata, not user-facing content.**
+8. **Never include pipeline internal terms (agent names, file hashes, system enums like LIQUIDITY_TIGHT) in the report.**
 
 ---
 

@@ -83,6 +83,33 @@ def _days(num: Decimal | None, denom: Decimal | None, *, label: str, days: int =
     return RatioValue(value=((num / denom) * Decimal(days)).quantize(Decimal("0.01")))
 
 
+def _roic(
+    ebit: Decimal | None,
+    tax_expense: Decimal | None,
+    net_income: Decimal | None,
+    total_equity: Decimal | None,
+    net_debt: Decimal | None,
+) -> RatioValue | None:
+    """ROIC = NOPAT / Invested Capital.
+    NOPAT = EBIT × (1 - effective_tax_rate).
+    Invested Capital = Total Equity + Net Debt.
+    """
+    if ebit is None or total_equity is None:
+        return RatioValue(value=None, warning="ROIC: EBIT or equity missing")
+    # Effective tax rate from actual tax/pretax; fallback to 25% (Turkish corporate)
+    eff_tax = Decimal("0.25")
+    if tax_expense is not None and net_income is not None:
+        pretax = net_income + abs(tax_expense)  # EBT
+        if pretax > 0:
+            eff_tax = abs(tax_expense) / pretax
+    nopat = ebit * (Decimal("1") - eff_tax)
+    invested_capital = total_equity + (net_debt if net_debt is not None else _ZERO)
+    if invested_capital <= 0:
+        return RatioValue(value=None, warning="ROIC: invested capital <= 0")
+    val = (nopat / invested_capital * Decimal("100")).quantize(Decimal("0.0001"))
+    return RatioValue(value=val)
+
+
 # ---------------------------------------------------------------------
 # Standard (industrial) ratios
 # ---------------------------------------------------------------------
@@ -126,8 +153,37 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
     if cf and cf.operating_cash_flow is not None and cf.capex is not None:
         fcf_value = cf.operating_cash_flow - abs(cf.capex)
 
+    # EBT (Earnings Before Tax) — pretax income or derive from NI + tax
+    ebt_value: Decimal | None = getattr(is_, 'pretax_income', None)
+    if ebt_value is None and is_.net_income is not None and is_.tax_expense is not None:
+        ebt_value = is_.net_income + abs(is_.tax_expense)
+
+    # IAS29 Gross Profit: Gross Profit + Monetary Gain/Loss (if IAS29 applied)
+    monetary = getattr(is_, 'monetary_gain_loss', None)
+    gp_ias29: Decimal | None = None
+    if is_.gross_profit is not None and monetary is not None:
+        gp_ias29 = is_.gross_profit + monetary
+
+    # FCF / Interest Payment
+    fcf_to_interest_value: Decimal | None = None
+    if fcf_value is not None and is_.financial_expense is not None and is_.financial_expense != 0:
+        fcf_to_interest_value = fcf_value / abs(is_.financial_expense)
+
     ratios = EngineRatios(
         gross_margin=_ratio_pct(is_.gross_profit, is_.revenue, label="Gross Margin"),
+        ebitda=RatioValue(
+            value=ebitda.quantize(Decimal("1")) if ebitda is not None else None,
+            warning=None if ebitda is not None else "EBITDA: EBIT or D&A missing",
+        ),
+        ebt=RatioValue(
+            value=ebt_value.quantize(Decimal("1")) if ebt_value is not None else None,
+            warning=None if ebt_value is not None else "EBT: pretax_income and tax_expense missing",
+        ),
+        gross_profit_ias29=RatioValue(
+            value=gp_ias29.quantize(Decimal("1")) if gp_ias29 is not None else None,
+            warning=None if gp_ias29 is not None else "IAS29 Gross Profit: monetary_gain_loss missing",
+        ),
+        gross_margin_ias29=_ratio_pct(gp_ias29, is_.revenue, label="Gross Margin IAS29"),
         ebitda_margin=_ratio_pct(ebitda, is_.revenue, label="EBITDA Margin"),
         net_margin=_ratio_pct(is_.net_income, is_.revenue, label="Net Margin"),
         roe=_ratio_pct(is_.net_income, bs.total_equity, label="ROE"),
@@ -137,6 +193,7 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
             (bs.total_assets - bs.current_liabilities) if (bs.current_liabilities is not None) else None,
             label="ROCE",
         ),
+        roic=_roic(ebit, is_.tax_expense, is_.net_income, bs.total_equity, net_debt_value),
         opex_to_revenue=_ratio_pct(is_.opex, is_.revenue, label="OPEX/Revenue"),
         dso=dso,
         dio=dio,
@@ -171,6 +228,10 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
             value=fcf_value.quantize(Decimal("1")) if fcf_value is not None else None,
             warning=None if fcf_value is not None else "FCF: OCF or CAPEX missing",
         ),
+        fcf_to_interest=RatioValue(
+            value=fcf_to_interest_value.quantize(Decimal("0.0001")) if fcf_to_interest_value is not None else None,
+            warning=None if fcf_to_interest_value is not None else "FCF/Interest: FCF or financial_expense missing",
+        ),
         ocf_to_ebitda=_ratio_pct(
             cf.operating_cash_flow if cf else None, ebitda, label="OCF/EBITDA"
         ),
@@ -197,14 +258,13 @@ def _banking_ratios(pf: PeriodFinancials) -> EngineRatios:
     """
     bs = pf.balance_sheet
     is_ = pf.income_statement
+    cf = pf.cash_flow
 
     # ROE / ROA — same formulas, different inputs (banks' NI is clean).
     roe = _ratio_pct(is_.net_income, bs.total_equity, label="Banking ROE")
     roa = _ratio_pct(is_.net_income, bs.total_assets, label="Banking ROA")
 
     # Net Interest Margin (NIM) = Net Interest Income / Total Assets
-    # (annualised — we leave annualisation to the caller since period
-    # cadence comes from PeriodFinancials.period)
     nim = _ratio_pct(is_.net_interest_income, bs.total_assets, label="NIM")
 
     # Cost-to-Income: bank_operating_expenses / (NII + NFC)
@@ -219,24 +279,64 @@ def _banking_ratios(pf: PeriodFinancials) -> EngineRatios:
         label="Cost/Income",
     )
 
-    # Signal loan-loss-provision ratio relative to NII (health proxy).
+    # Loan Loss Provisions / NII
     llp_to_nii = _ratio_pct(
         abs(is_.loan_loss_provisions) if is_.loan_loss_provisions is not None else None,
         is_.net_interest_income,
         label="LLP/NII",
     )
 
-    # We stash the banking-specific ratios in the generic EngineRatios
-    # shape; NIM lives on ebitda_margin slot conceptually (banks don't
-    # have EBITDA). Keep canonical names by using custom dict on the
-    # EngineOutput later — for now, use the generic slots.
+    # Net Margin on Interest Income
+    net_margin = _ratio_pct(is_.net_income, is_.interest_income, label="Net Margin (on Interest Income)")
+
+    # Equity Multiplier = Total Assets / Total Equity (bank leverage proxy)
+    equity_multiplier = _ratio_raw(bs.total_assets, bs.total_equity, label="Equity Multiplier")
+
+    # NII share = NII / (NII + NFC + Trading + Other)
+    # Simplified: NII / (Interest Income) — how much of gross income is interest
+    nii_share = _ratio_pct(is_.net_interest_income, is_.interest_income, label="NII/Interest Income")
+
+    # Loans-to-Assets: trade_receivables proxy (banks report loans there)
+    loans_to_assets = _ratio_pct(bs.trade_receivables, bs.total_assets, label="Loans/Assets")
+
+    # Net Debt — banks: financial debt - cash (same formula, different interpretation)
+    net_debt_value: Decimal | None = None
+    if bs.short_term_debt is not None and bs.long_term_debt is not None and bs.cash_and_equivalents is not None:
+        net_debt_value = bs.short_term_debt + bs.long_term_debt - bs.cash_and_equivalents
+
+    # Current ratio — meaningful even for banks
+    current_ratio = _ratio_raw(bs.current_assets, bs.current_liabilities, label="Current Ratio")
+
+    # FCF — if cash flow data available
+    fcf_value: Decimal | None = None
+    if cf and cf.operating_cash_flow is not None and cf.capex is not None:
+        fcf_value = cf.operating_cash_flow - abs(cf.capex)
+
+    # Piotroski-like quality checks still work for banks via the generic fields
     ratios = EngineRatios(
+        # Generic slots (backward compat)
         ebitda_margin=nim,                        # reused slot: banks → NIM
-        net_margin=_ratio_pct(is_.net_income, is_.interest_income, label="Net Margin (on Interest Income)"),
+        net_margin=net_margin,
         roe=roe,
         roa=roa,
         opex_to_revenue=cost_to_income,           # banks → Cost/Income
-        interest_coverage=llp_to_nii,             # banks → LLP/NII (distress proxy)
+        interest_coverage=llp_to_nii,             # banks → LLP/NII
+        current_ratio=current_ratio,
+        net_debt=RatioValue(
+            value=net_debt_value.quantize(Decimal("1")) if net_debt_value is not None else None,
+            warning=None if net_debt_value is not None else "Net Debt: missing debt/cash fields",
+        ),
+        fcf=RatioValue(
+            value=fcf_value.quantize(Decimal("1")) if fcf_value is not None else None,
+            warning=None if fcf_value is not None else "FCF: OCF or CAPEX missing in banking report",
+        ),
+        # Banking-specific named fields
+        nim=nim,
+        cost_to_income=cost_to_income,
+        llp_to_nii=llp_to_nii,
+        loans_to_assets=loans_to_assets,
+        equity_multiplier=equity_multiplier,
+        nii_growth=nii_share,
     )
     return ratios
 

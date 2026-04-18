@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EREGL — Finance X Analiz Raporu (Anthropic Design)</title>
+  <style>
+    @page { size: A4 portrait; margin: 18mm 16mm; }
+
+    :root {
+      /* Anthropic-inspired palette — warm neutrals + precise accents */
+      --bg-primary: #FAFAF8;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F5F4EF;
+      --bg-muted: #EEEDE6;
+      --bg-dark: #191918;
+      --bg-accent: #E8E5DB;
+
+      --text-primary: #1A1A19;
+      --text-secondary: #5D5C56;
+      --text-tertiary: #8B8A84;
+      --text-inverse: #FFFFFF;
+      --text-accent: #B45309;
+
+      --border-default: #E0DFD8;
+      --border-subtle: #ECEAE3;
+
+      --accent-primary: #D97706;     /* Warm amber */
+      --accent-blue: #2563EB;
+      --accent-green: #059669;
+      --accent-red: #DC2626;
+      --accent-teal: #0D9488;
+
+      --font-sans: 'Inter', -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-sans); font-size: 10pt; line-height: 1.6; color: var(--text-primary); background: var(--bg-primary); -webkit-font-smoothing: antialiased; }
+
+    /* === PAGES === */
+    .page { page-break-before: always; min-height: 257mm; position: relative; background: var(--bg-surface); }
+    .page:first-child { page-break-before: avoid; }
+    .page-inner { padding: 0 6mm; }
+
+    /* === COVER === */
+    .cover {
+      display: flex; flex-direction: column; justify-content: space-between;
+      min-height: 100vh; padding: 48px 56px;
+      background: var(--bg-dark); color: var(--text-inverse);
+    }
+    .cover-top { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .cover-eyebrow { font-size: 11pt; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-primary); margin-bottom: 16px; }
+    .cover-ticker { font-size: 72pt; font-weight: 800; letter-spacing: -2px; line-height: 1; margin-bottom: 12px; }
+    .cover-company { font-size: 14pt; font-weight: 400; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
+    .cover-sector { font-size: 11pt; color: rgba(255,255,255,0.4); }
+    .cover-divider { width: 48px; height: 2px; background: var(--accent-primary); margin: 32px 0; }
+    .cover-title { font-size: 20pt; font-weight: 600; letter-spacing: -0.5px; }
+    .cover-subtitle { font-size: 11pt; color: rgba(255,255,255,0.5); margin-top: 6px; }
+
+    .cover-bottom { display: flex; justify-content: space-between; align-items: flex-end; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .cover-meta-group { display: flex; gap: 40px; }
+    .cover-meta-item { text-align: left; }
+    .cover-meta-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); margin-bottom: 4px; }
+    .cover-meta-value { font-size: 20pt; font-weight: 700; font-family: var(--font-mono); color: var(--accent-primary); }
+    .cover-meta-unit { font-size: 9pt; color: rgba(255,255,255,0.5); margin-top: 2px; }
+    .cover-brand { font-size: 9pt; color: rgba(255,255,255,0.3); letter-spacing: 1px; }
+
+    /* === PAGE HEADER === */
+    .page-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 0 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-default); }
+    .page-header-left { display: flex; align-items: center; gap: 10px; }
+    .brand-pill { background: var(--bg-dark); color: var(--text-inverse); padding: 3px 10px; border-radius: 4px; font-size: 8pt; font-weight: 700; letter-spacing: 1px; }
+    .header-ticker { font-weight: 700; font-size: 10pt; color: var(--text-primary); }
+    .header-date { font-size: 8.5pt; color: var(--text-tertiary); }
+    .page-footer { position: absolute; bottom: 4px; left: 6mm; right: 6mm; display: flex; justify-content: space-between; font-size: 7pt; color: var(--text-tertiary); border-top: 1px solid var(--border-subtle); padding-top: 6px; }
+
+    /* === TYPOGRAPHY === */
+    h1 { font-size: 18pt; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; margin: 24px 0 14px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-dark); }
+    h1 .section-num { color: var(--text-tertiary); font-weight: 400; margin-right: 8px; }
+    h2 { font-size: 12pt; font-weight: 600; color: var(--text-primary); margin: 18px 0 8px; letter-spacing: -0.3px; }
+    h3 { font-size: 10.5pt; font-weight: 600; color: var(--text-secondary); margin: 14px 0 6px; }
+    p { margin: 8px 0; color: var(--text-secondary); text-align: justify; }
+    ul, ol { margin: 8px 0 8px 18px; color: var(--text-secondary); }
+    li { margin-bottom: 4px; }
+
+    /* === KPI CARDS — Anthropic style === */
+    .metrics-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+    .metric-card {
+      background: var(--bg-subtle); border-radius: var(--radius-md); padding: 14px 16px;
+      border: 1px solid var(--border-subtle); position: relative; overflow: hidden;
+    }
+    .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .metric-card.positive::before { background: var(--accent-green); }
+    .metric-card.negative::before { background: var(--accent-red); }
+    .metric-card.warning::before { background: var(--accent-primary); }
+    .metric-card.neutral::before { background: var(--border-default); }
+    .metric-label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-tertiary); margin-bottom: 6px; font-weight: 500; }
+    .metric-value { font-size: 22pt; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); letter-spacing: -1px; line-height: 1.1; }
+    .metric-value.sm { font-size: 16pt; }
+    .metric-sub { font-size: 7.5pt; color: var(--text-tertiary); margin-top: 4px; }
+    .metric-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 7pt; font-weight: 600; margin-top: 4px; }
+    .metric-badge.good { background: #D1FAE5; color: #065F46; }
+    .metric-badge.bad { background: #FEE2E2; color: #991B1B; }
+    .metric-badge.warn { background: #FEF3C7; color: #92400E; }
+
+    /* === TABLES — Clean Anthropic style === */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 9pt; }
+    table th {
+      text-align: left; padding: 8px 12px; font-size: 7.5pt; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-tertiary);
+      border-bottom: 2px solid var(--text-primary); background: transparent;
+    }
+    table td { padding: 9px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
+    table tr:hover { background: var(--bg-subtle); }
+    table td.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-primary); font-weight: 500; }
+    table td.label { font-weight: 500; color: var(--text-primary); }
+    table tr.highlight td { background: var(--bg-subtle); font-weight: 600; }
+    table tr.section-total td { border-top: 2px solid var(--text-primary); font-weight: 700; color: var(--text-primary); }
+
+    /* === SIGNAL BADGES === */
+    .signal { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 100px; font-size: 8pt; font-weight: 600; }
+    .signal-positive { background: #ECFDF5; color: #065F46; }
+    .signal-negative { background: #FEF2F2; color: #991B1B; }
+    .signal-neutral { background: var(--bg-muted); color: var(--text-secondary); }
+    .signal-warning { background: #FFFBEB; color: #92400E; }
+    .signal-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .signal-positive .signal-dot { background: #10B981; }
+    .signal-negative .signal-dot { background: #EF4444; }
+    .signal-warning .signal-dot { background: #F59E0B; }
+
+    /* === INSIGHT CARDS === */
+    .insight { display: flex; gap: 12px; padding: 14px 16px; background: var(--bg-subtle); border-radius: var(--radius-md); margin: 10px 0; border-left: 3px solid var(--border-default); }
+    .insight.critical { border-left-color: var(--accent-red); background: #FEF2F2; }
+    .insight.warning { border-left-color: var(--accent-primary); background: #FFFBEB; }
+    .insight.positive { border-left-color: var(--accent-green); background: #ECFDF5; }
+    .insight-icon { font-size: 14pt; flex-shrink: 0; width: 24px; text-align: center; }
+    .insight-body { flex: 1; }
+    .insight-title { font-size: 9pt; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+    .insight-text { font-size: 8.5pt; color: var(--text-secondary); }
+
+    /* === RATIO BAR VISUALIZATION === */
+    .ratio-bar-group { margin: 14px 0; }
+    .ratio-bar-row { display: grid; grid-template-columns: 120px 1fr 60px; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border-subtle); }
+    .ratio-bar-label { font-size: 8.5pt; font-weight: 500; color: var(--text-secondary); }
+    .ratio-bar-track { height: 8px; background: var(--bg-muted); border-radius: 4px; overflow: hidden; position: relative; }
+    .ratio-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+    .ratio-bar-value { font-size: 9pt; font-weight: 600; font-family: var(--font-mono); color: var(--text-primary); text-align: right; }
+
+    /* === SWOT GRID === */
+    .grid-2x2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0; }
+    .grid-box { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; background: var(--bg-surface); }
+    .grid-box h4 { font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; padding-bottom: 6px; }
+    .grid-box.str h4 { color: var(--accent-green); border-bottom: 2px solid var(--accent-green); }
+    .grid-box.wkn h4 { color: var(--accent-red); border-bottom: 2px solid var(--accent-red); }
+    .grid-box.opp h4 { color: var(--accent-blue); border-bottom: 2px solid var(--accent-blue); }
+    .grid-box.thr h4 { color: var(--accent-primary); border-bottom: 2px solid var(--accent-primary); }
+    .grid-box ul { list-style: none; padding: 0; }
+    .grid-box li { font-size: 8.5pt; padding: 4px 0; color: var(--text-secondary); border-bottom: 1px dotted var(--border-subtle); }
+    .grid-box li:last-child { border: none; }
+
+    /* === SCENARIO STRIP === */
+    .scenario-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+    .scenario { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px; text-align: center; }
+    .scenario.bear { border-top: 3px solid var(--accent-red); }
+    .scenario.base { border-top: 3px solid var(--accent-blue); }
+    .scenario.bull { border-top: 3px solid var(--accent-green); }
+    .scenario-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; color: var(--text-tertiary); }
+    .scenario-price { font-size: 24pt; font-weight: 800; font-family: var(--font-mono); margin: 8px 0 4px; color: var(--text-primary); }
+    .scenario-delta { font-size: 9pt; font-weight: 600; }
+
+    /* === PRINT === */
+    @media screen {
+      body { background: #E8E5DB; padding: 24px; }
+      .page { max-width: 210mm; margin: 0 auto 16px; box-shadow: var(--shadow-lg); border-radius: 2px; }
+      .cover { border-radius: 2px 2px 0 0; }
+    }
+    @media print {
+      .page { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====================== COVER ====================== -->
+  <div class="page cover">
+    <div class="cover-top">
+      <div class="cover-eyebrow">Finance X Research</div>
+      <div class="cover-ticker">EREGL</div>
+      <div class="cover-company">Eregli Demir ve Celik Fabrikalari T.A.S.</div>
+      <div class="cover-sector">BIST 30 &middot; Celik &amp; Demir &middot; Borsa Istanbul</div>
+      <div class="cover-divider"></div>
+      <div class="cover-title">Kapsamli Sirket Analiz Raporu</div>
+      <div class="cover-subtitle">FY-2025 &middot; 19 Nisan 2026</div>
+    </div>
+    <div class="cover-bottom">
+      <div class="cover-meta-group">
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">Hasilat</div>
+          <div class="cover-meta-value">208.9B</div>
+          <div class="cover-meta-unit">TRY</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">FAVOK</div>
+          <div class="cover-meta-value">21.2B</div>
+          <div class="cover-meta-unit">TRY</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">Net Borc/FAVOK</div>
+          <div class="cover-meta-value">2.0x</div>
+          <div class="cover-meta-unit">Kabul edilebilir</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">Piotroski</div>
+          <div class="cover-meta-value">4/9</div>
+          <div class="cover-meta-unit">Orta</div>
+        </div>
+      </div>
+      <div class="cover-brand">FINANCE X &middot; Hibrit Analiz</div>
+    </div>
+  </div>
+
+  <!-- ====================== EXECUTIVE SUMMARY ====================== -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-pill">FX</span><span class="header-ticker">EREGL</span></div>
+      <div class="header-date">FY-2025 &middot; 19 Nisan 2026</div>
+    </div>
+
+    <h1><span class="section-num">01</span>Yonetici Ozeti</h1>
+
+    <div class="metrics-strip">
+      <div class="metric-card warning">
+        <div class="metric-label">Brut Marj</div>
+        <div class="metric-value">8.9%</div>
+        <div class="metric-badge warn">Dusuk (&lt;15%)</div>
+      </div>
+      <div class="metric-card warning">
+        <div class="metric-value">10.2%</div>
+        <div class="metric-label">FAVOK Marji</div>
+        <div class="metric-badge warn">Sinirda</div>
+      </div>
+      <div class="metric-card negative">
+        <div class="metric-label">Net Marj</div>
+        <div class="metric-value">0.3%</div>
+        <div class="metric-badge bad">Kritik</div>
+      </div>
+      <div class="metric-card positive">
+        <div class="metric-label">Cari Oran</div>
+        <div class="metric-value">2.14</div>
+        <div class="metric-badge good">Guclu</div>
+      </div>
+    </div>
+
+    <div class="insight critical">
+      <div class="insight-icon">!</div>
+      <div class="insight-body">
+        <div class="insight-title">Faiz Karsilama Orani Kritik Seviyede</div>
+        <div class="insight-text">EBITDA/Faiz Gideri orani 1.50x ile 2.0x esiginin altinda. Finansman giderleri (14.2B TRY) operasyonel kari neredeyse tamamen yiyor. Faiz yukunde iyilesme olmadan net kar basincı surecek.</div>
+      </div>
+    </div>
+
+    <div class="insight warning">
+      <div class="insight-icon">~</div>
+      <div class="insight-body">
+        <div class="insight-title">Yuksek Isletme Sermayesi Baglama</div>
+        <div class="insight-text">NWC/Hasilat %64 — sektorun iki katindan fazla. 169 gun stok tutma suresi (DIO) celik sektoru ortalamasi 45-90 gunun cok uzerinde. Envanter optimizasyonu oncelikli gundem maddesi olmali.</div>
+      </div>
+    </div>
+
+    <div class="insight positive">
+      <div class="insight-icon">+</div>
+      <div class="insight-body">
+        <div class="insight-title">Guclu Nakit Akisi ve Likidite</div>
+        <div class="insight-text">FCF 49.7B TRY pozitif, cari oran 2.14 ve asit test 1.38 ile guclu likidite. FCF/Faiz Odemesi 3.5x ile faiz odemelerini rahatlıkla karsilayabiliyor.</div>
+      </div>
+    </div>
+
+    <h2>Temel Parametreler</h2>
+    <table>
+      <thead><tr><th style="width:40%">Parametre</th><th>Deger</th><th style="width:25%">Sinyal</th></tr></thead>
+      <tbody>
+        <tr><td class="label">Hasilat</td><td class="num">208.9 milyar TRY</td><td><span class="signal signal-neutral"><span class="signal-dot"></span>Stabil</span></td></tr>
+        <tr><td class="label">Brut Kar</td><td class="num">18.6 milyar TRY</td><td><span class="signal signal-warning"><span class="signal-dot"></span>Dusuk marj</span></td></tr>
+        <tr><td class="label">FAVOK</td><td class="num">21.2 milyar TRY</td><td><span class="signal signal-warning"><span class="signal-dot"></span>Baski altinda</span></td></tr>
+        <tr><td class="label">Net Kar</td><td class="num">694 milyon TRY</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Cok dusuk</span></td></tr>
+        <tr><td class="label">Toplam Varliklar</td><td class="num">558.5 milyar TRY</td><td></td></tr>
+        <tr><td class="label">Ozkaynak</td><td class="num">297.3 milyar TRY</td><td></td></tr>
+        <tr><td class="label">Net Borc</td><td class="num">42.9 milyar TRY</td><td><span class="signal signal-neutral"><span class="signal-dot"></span>2.0x ND/EB</span></td></tr>
+        <tr class="highlight"><td class="label">Piotroski F-Skoru</td><td class="num">4 / 9</td><td><span class="signal signal-warning"><span class="signal-dot"></span>Orta kalite</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="page-footer"><span>Finance X Research &middot; EREGL Analiz Raporu</span><span>2</span></div>
+  </div></div>
+
+  <!-- ====================== FINANCIAL ANALYSIS ====================== -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-pill">FX</span><span class="header-ticker">EREGL</span></div>
+      <div class="header-date">FY-2025 &middot; 19 Nisan 2026</div>
+    </div>
+
+    <h1><span class="section-num">02</span>Finansal Analiz</h1>
+
+    <h2>A. Karlilik Metrikleri</h2>
+    <div class="metrics-strip">
+      <div class="metric-card warning">
+        <div class="metric-label">Brut Marj</div>
+        <div class="metric-value">8.9%</div>
+        <div class="metric-sub">Benchmark: 15-25%</div>
+      </div>
+      <div class="metric-card warning">
+        <div class="metric-label">FAVOK Marji</div>
+        <div class="metric-value">10.2%</div>
+        <div class="metric-sub">Benchmark: 12-18%</div>
+      </div>
+      <div class="metric-card negative">
+        <div class="metric-label">ROE</div>
+        <div class="metric-value">0.2%</div>
+        <div class="metric-sub">Benchmark: 12-20%</div>
+      </div>
+      <div class="metric-card negative">
+        <div class="metric-label">ROCE</div>
+        <div class="metric-value">2.3%</div>
+        <div class="metric-sub">Benchmark: 10-15%</div>
+      </div>
+    </div>
+
+    <h2>B. Isletme Sermayesi</h2>
+    <div class="ratio-bar-group">
+      <div class="ratio-bar-row">
+        <div class="ratio-bar-label">DSO (Alacak Gun)</div>
+        <div class="ratio-bar-track"><div class="ratio-bar-fill" style="width: 53%; background: var(--accent-green);"></div></div>
+        <div class="ratio-bar-value">47 gun</div>
+      </div>
+      <div class="ratio-bar-row">
+        <div class="ratio-bar-label">DIO (Stok Gun)</div>
+        <div class="ratio-bar-track"><div class="ratio-bar-fill" style="width: 94%; background: var(--accent-red);"></div></div>
+        <div class="ratio-bar-value">169 gun</div>
+      </div>
+      <div class="ratio-bar-row">
+        <div class="ratio-bar-label">DPO (Borc Gun)</div>
+        <div class="ratio-bar-track"><div class="ratio-bar-fill" style="width: 72%; background: var(--accent-teal);"></div></div>
+        <div class="ratio-bar-value">130 gun</div>
+      </div>
+      <div class="ratio-bar-row" style="border-bottom: 2px solid var(--text-primary);">
+        <div class="ratio-bar-label" style="font-weight: 700;">CCC (Nakit Dongu)</div>
+        <div class="ratio-bar-track"><div class="ratio-bar-fill" style="width: 48%; background: var(--accent-primary);"></div></div>
+        <div class="ratio-bar-value" style="font-weight: 800;">86 gun</div>
+      </div>
+    </div>
+
+    <h2>C. Borc &amp; Likidite</h2>
+    <table>
+      <thead><tr><th>Metrik</th><th class="num">Deger</th><th>Benchmark</th><th>Durum</th></tr></thead>
+      <tbody>
+        <tr><td class="label">Net Borc</td><td class="num">42.9B TRY</td><td></td><td></td></tr>
+        <tr><td class="label">Net Borc / FAVOK</td><td class="num">2.0x</td><td>&lt;3x iyi</td><td><span class="signal signal-positive"><span class="signal-dot"></span>Kabul edilebilir</span></td></tr>
+        <tr><td class="label">Faiz Karsilama</td><td class="num">1.50x</td><td>&gt;2x guvenli</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Kritik</span></td></tr>
+        <tr><td class="label">Faiz Yuku</td><td class="num">66.9%</td><td>&lt;33% saglikli</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Agir</span></td></tr>
+        <tr><td class="label">Cari Oran</td><td class="num">2.14</td><td>&gt;1.5 iyi</td><td><span class="signal signal-positive"><span class="signal-dot"></span>Guclu</span></td></tr>
+        <tr><td class="label">Asit Test</td><td class="num">1.38</td><td>&gt;1.0 saglikli</td><td><span class="signal signal-positive"><span class="signal-dot"></span>Saglikli</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>D. Nakit Akis</h2>
+    <div class="metrics-strip">
+      <div class="metric-card positive">
+        <div class="metric-label">Serbest Nakit Akisi</div>
+        <div class="metric-value sm">49.7B</div>
+        <div class="metric-sub">OCF - CAPEX</div>
+      </div>
+      <div class="metric-card warning">
+        <div class="metric-label">OCF / FAVOK</div>
+        <div class="metric-value sm">306%</div>
+        <div class="metric-sub">WC degisimi etkisi</div>
+      </div>
+      <div class="metric-card warning">
+        <div class="metric-label">CAPEX / FAVOK</div>
+        <div class="metric-value sm">72.2%</div>
+        <div class="metric-sub">Agir yatirim donemi</div>
+      </div>
+      <div class="metric-card positive">
+        <div class="metric-label">FCF / Faiz Odemesi</div>
+        <div class="metric-value sm">3.5x</div>
+        <div class="metric-badge good">Yeterli</div>
+      </div>
+    </div>
+
+    <div class="page-footer"><span>Finance X Research &middot; EREGL Analiz Raporu</span><span>3</span></div>
+  </div></div>
+
+  <!-- ====================== 28 METRIC SUMMARY TABLE ====================== -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-pill">FX</span><span class="header-ticker">EREGL</span></div>
+      <div class="header-date">FY-2025 &middot; 19 Nisan 2026</div>
+    </div>
+
+    <h1><span class="section-num">03</span>28 Zorunlu Metrik Tablosu</h1>
+
+    <table>
+      <thead><tr><th style="width:5%">#</th><th style="width:35%">Metrik</th><th class="num" style="width:25%">Deger</th><th style="width:35%">Durum</th></tr></thead>
+      <tbody>
+        <tr style="background: var(--bg-subtle);"><td colspan="4" style="font-weight:700; color: var(--text-primary); padding: 6px 12px; font-size: 8pt; text-transform: uppercase; letter-spacing: 1px;">A. Karlilik (11 Metrik)</td></tr>
+        <tr><td>1</td><td class="label">Hasilat</td><td class="num">208.9B TRY</td><td><span class="signal signal-neutral"><span class="signal-dot"></span></span></td></tr>
+        <tr><td>2</td><td class="label">Brut Kar</td><td class="num">18.6B TRY</td><td></td></tr>
+        <tr><td>3</td><td class="label">Brut Marj %</td><td class="num">8.89%</td><td><span class="signal signal-warning"><span class="signal-dot"></span>Dusuk</span></td></tr>
+        <tr><td>4</td><td class="label">Brut Kar IAS29</td><td class="num">19.4B TRY</td><td></td></tr>
+        <tr><td>5</td><td class="label">Brut Marj IAS29 %</td><td class="num">9.31%</td><td></td></tr>
+        <tr><td>6</td><td class="label">Net Parasal Pozisyon</td><td class="num">876M TRY</td><td></td></tr>
+        <tr><td>7</td><td class="label">FAVOK</td><td class="num">21.2B TRY</td><td></td></tr>
+        <tr><td>8</td><td class="label">FAVOK Marji %</td><td class="num">10.17%</td><td><span class="signal signal-warning"><span class="signal-dot"></span>Sinirda</span></td></tr>
+        <tr><td>9</td><td class="label">VÖK (EBT)</td><td class="num">2.9B TRY</td><td></td></tr>
+        <tr><td>10</td><td class="label">Net Kar</td><td class="num">694M TRY</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Cok dusuk</span></td></tr>
+        <tr><td>11</td><td class="label">OPEX / Hasilat %</td><td class="num">-4.50%</td><td></td></tr>
+
+        <tr style="background: var(--bg-subtle);"><td colspan="4" style="font-weight:700; color: var(--text-primary); padding: 6px 12px; font-size: 8pt; text-transform: uppercase; letter-spacing: 1px;">B. Isletme Sermayesi (5 Metrik)</td></tr>
+        <tr><td>12</td><td class="label">DSO</td><td class="num">47.3 gun</td><td><span class="signal signal-positive"><span class="signal-dot"></span>Normal</span></td></tr>
+        <tr><td>13</td><td class="label">DIO</td><td class="num">169.1 gun</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Yuksek</span></td></tr>
+        <tr><td>14</td><td class="label">DPO</td><td class="num">130.1 gun</td><td></td></tr>
+        <tr><td>15</td><td class="label">CCC</td><td class="num">86.3 gun</td><td><span class="signal signal-warning"><span class="signal-dot"></span>Uzun</span></td></tr>
+        <tr><td>16</td><td class="label">NWC / Hasilat %</td><td class="num">64.0%</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Cok yuksek</span></td></tr>
+
+        <tr style="background: var(--bg-subtle);"><td colspan="4" style="font-weight:700; color: var(--text-primary); padding: 6px 12px; font-size: 8pt; text-transform: uppercase; letter-spacing: 1px;">C. Borc &amp; Likidite (4 Metrik)</td></tr>
+        <tr><td>17</td><td class="label">Net Borc</td><td class="num">42.9B TRY</td><td></td></tr>
+        <tr><td>18</td><td class="label">Net Borc / FAVOK</td><td class="num">2.02x</td><td><span class="signal signal-positive"><span class="signal-dot"></span>Kabul edilebilir</span></td></tr>
+        <tr><td>19</td><td class="label">Cari Oran</td><td class="num">2.14</td><td><span class="signal signal-positive"><span class="signal-dot"></span>Guclu</span></td></tr>
+        <tr><td>20</td><td class="label">Asit Test</td><td class="num">1.38</td><td><span class="signal signal-positive"><span class="signal-dot"></span>Saglikli</span></td></tr>
+
+        <tr style="background: var(--bg-subtle);"><td colspan="4" style="font-weight:700; color: var(--text-primary); padding: 6px 12px; font-size: 8pt; text-transform: uppercase; letter-spacing: 1px;">D. Nakit Akis (4 Metrik)</td></tr>
+        <tr><td>21</td><td class="label">FCF</td><td class="num">49.7B TRY</td><td><span class="signal signal-positive"><span class="signal-dot"></span>Pozitif</span></td></tr>
+        <tr><td>22</td><td class="label">OCF / FAVOK %</td><td class="num">306.2%</td><td><span class="signal signal-warning"><span class="signal-dot"></span>WC etkisi</span></td></tr>
+        <tr><td>23</td><td class="label">Faiz Karsilama</td><td class="num">1.50x</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Kritik &lt;2x</span></td></tr>
+        <tr><td>24</td><td class="label">FCF / Faiz Odemesi</td><td class="num">3.50x</td><td><span class="signal signal-positive"><span class="signal-dot"></span>Yeterli</span></td></tr>
+
+        <tr style="background: var(--bg-subtle);"><td colspan="4" style="font-weight:700; color: var(--text-primary); padding: 6px 12px; font-size: 8pt; text-transform: uppercase; letter-spacing: 1px;">E. Getiri &amp; Yatirim (4 Metrik)</td></tr>
+        <tr><td>25</td><td class="label">ROE %</td><td class="num">0.23%</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Cok dusuk</span></td></tr>
+        <tr><td>26</td><td class="label">ROCE %</td><td class="num">2.25%</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Dusuk</span></td></tr>
+        <tr><td>27</td><td class="label">CAPEX / FAVOK %</td><td class="num">72.2%</td><td><span class="signal signal-warning"><span class="signal-dot"></span>Agir yatirim</span></td></tr>
+        <tr><td>28</td><td class="label">Faiz Yuku %</td><td class="num">66.9%</td><td><span class="signal signal-negative"><span class="signal-dot"></span>Agir &gt;50%</span></td></tr>
+      </tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 16px; padding: 12px; background: var(--bg-subtle); border-radius: var(--radius-md);">
+      <span style="font-size: 11pt; font-weight: 700; color: var(--accent-green);">28 / 28 Metrik Hesaplandi</span>
+      <span style="font-size: 9pt; color: var(--text-tertiary); margin-left: 8px;">Python Deterministic Engine v1.0</span>
+    </div>
+
+    <div class="page-footer"><span>Finance X Research &middot; EREGL Analiz Raporu</span><span>4</span></div>
+  </div></div>
+
+  <!-- ====================== RISK / SWOT ====================== -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-pill">FX</span><span class="header-ticker">EREGL</span></div>
+      <div class="header-date">FY-2025 &middot; 19 Nisan 2026</div>
+    </div>
+
+    <h1><span class="section-num">04</span>Risk &amp; SWOT</h1>
+
+    <h2>SWOT Analizi</h2>
+    <div class="grid-2x2">
+      <div class="grid-box str">
+        <h4>Guclu Yanlar</h4>
+        <ul>
+          <li>Guclu likidite pozisyonu (CR: 2.14)</li>
+          <li>Pozitif serbest nakit akisi (49.7B TRY)</li>
+          <li>Dusuk net borc / FAVOK orani (2.0x)</li>
+          <li>Turkiye'nin en buyuk celik ureticisi</li>
+        </ul>
+      </div>
+      <div class="grid-box wkn">
+        <h4>Zayif Yanlar</h4>
+        <ul>
+          <li>Net marj neredeyse sifir (%0.3)</li>
+          <li>Faiz karsilama orani kritik (1.5x)</li>
+          <li>Cok yuksek stok tutma suresi (169 gun)</li>
+          <li>ROE (%0.2) sermaye maliyetinin cok altinda</li>
+        </ul>
+      </div>
+      <div class="grid-box opp">
+        <h4>Firsatlar</h4>
+        <ul>
+          <li>Altyapi yatirimlari ile celik talebinde artis</li>
+          <li>Envanter optimizasyonu ile marj iyilesmesi</li>
+          <li>Ihracat piyasalarinda TRY zayifligi avantaji</li>
+          <li>Yesil celik donusumu ile premium fiyatlama</li>
+        </ul>
+      </div>
+      <div class="grid-box thr">
+        <h4>Tehditler</h4>
+        <ul>
+          <li>Yuksek faiz ortami — finansman gideri basincı</li>
+          <li>Global celik arz fazlası ve fiyat basincı</li>
+          <li>Enerji maliyetlerinde artis riski</li>
+          <li>Cin celik ihracati ile rekabet baskisi</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Senaryo Analizi</h2>
+    <div class="scenario-strip">
+      <div class="scenario bear">
+        <div class="scenario-label">Olumsuz</div>
+        <div class="scenario-price">32.50</div>
+        <div class="scenario-delta" style="color: var(--accent-red);">-25%</div>
+        <p style="font-size: 8pt; margin-top: 8px; text-align: left;">Celik fiyatları dusmeye devam eder, faiz oranları yuksek kalir. Net zarar olasiligi.</p>
+      </div>
+      <div class="scenario base">
+        <div class="scenario-label">Baz</div>
+        <div class="scenario-price">43.20</div>
+        <div class="scenario-delta" style="color: var(--accent-blue);">Referans</div>
+        <p style="font-size: 8pt; margin-top: 8px; text-align: left;">Mevcut operasyonel performans devam eder. Marjlarda sinirli iyilesme.</p>
+      </div>
+      <div class="scenario bull">
+        <div class="scenario-label">Olumlu</div>
+        <div class="scenario-price">58.00</div>
+        <div class="scenario-delta" style="color: var(--accent-green);">+34%</div>
+        <p style="font-size: 8pt; margin-top: 8px; text-align: left;">Celik fiyatları toparlanir, faiz indirimi ile finansman giderleri azalir.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; padding: 18px; background: var(--bg-subtle); border-radius: var(--radius-md); font-size: 8pt; color: var(--text-tertiary); line-height: 1.7;">
+      <strong style="color: var(--text-secondary);">Yasal Uyari:</strong> Bu rapor yalnizca bilgilendirme amaciyla hazirlanmis olup, yatirim tavsiyesi niteliginde degildir. Finance X platformu tarafindan 22 ozel ajanla otomatik olarak uretilmistir. Python deterministic hesaplamalar ile LLM narrative bloklar hibrit olarak bir araya getirilmistir. Veriler KAP resmi bildirimleri, TCMB ve diger kamuya acik kaynaklardan elde edilmistir. Yatirim kararlari icin profesyonel danismanlik alinmasi onemle tavsiye edilir.
+    </div>
+
+    <div class="page-footer"><span>Finance X Research &middot; EREGL Analiz Raporu</span><span>5</span></div>
+  </div></div>
+
+</body>
+</html>

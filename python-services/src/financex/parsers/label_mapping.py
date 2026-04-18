@@ -62,6 +62,7 @@ BALANCE_SHEET_MAP: dict[str, str | None] = {
     "kisa vadeli yukumlulukler": "current_liabilities",
     "toplam kisa vadeli yukumlulukler": "current_liabilities",
     "kisa vadeli borclanmalar": "short_term_debt",
+    "uzun vadeli borclanmalarin kisa vadeli kisimlari": "short_term_debt",
     "ticari borclar": "trade_payables",
 
     # Non-current liabilities
@@ -89,12 +90,16 @@ INCOME_STATEMENT_MAP: dict[str, str] = {
     "esas faaliyet kari zarari": "operating_income",
     "vergi oncesi kar": "pretax_income",
     "surdurulen faaliyetler vergi oncesi kar zarari": "pretax_income",
+    "surdurulen faaliyetler vergi oncesi kari zarari": "pretax_income",
     "donem kari zarari": "net_income",
     "donem kari": "net_income",
     "net donem kari": "net_income",
     "ana ortakliga ait donem kari zarari": "parent_net_income",
+    "ana ortaklik paylari": "parent_net_income",
     "kontrol gucu olmayan paylar kari": "minority_net_income",
     "net parasal pozisyon kazanc kaybi": "monetary_gain_loss",
+    "net parasal pozisyon kazanclari kayiplari": "monetary_gain_loss",
+    "net parasal pozisyon kazanclari": "monetary_gain_loss",
     "parasal kazanc kayip": "monetary_gain_loss",
     # Finansman gelir/giderleri — EBITDA ve interest coverage hesabı için kritik
     "finansman gelirleri": "financial_income",
@@ -116,6 +121,7 @@ INCOME_STATEMENT_MAP: dict[str, str] = {
     "genel yonetim giderleri": "opex",
     "pazarlama giderleri": "opex",
     "arastirma gelistirme giderleri": "opex",
+    "arastirma ve gelistirme giderleri": "opex",
 }
 
 
@@ -223,10 +229,13 @@ def get_balance_sheet_map(sector: str = "industrial") -> dict[str, str | None]:
 CASH_FLOW_MAP: dict[str, str] = {
     "isletme faaliyetlerinden nakit akislari": "operating_cash_flow",
     "yatirim faaliyetlerinden nakit akislari": "investing_cash_flow",
+    "yatirim faaliyetlerinden kaynaklanan nakit akislari": "investing_cash_flow",
     "finansman faaliyetlerinden nakit akislari": "financing_cash_flow",
+    "finansman faaliyetlerinden kaynaklanan nakit akislari": "financing_cash_flow",
     "yatirim faaliyetlerinde kullanilan nakit akislari": "investing_cash_flow",
     "finansman faaliyetlerinde kullanilan nakit akislari": "financing_cash_flow",
     "nakit ve nakit benzerlerindeki net degisim": "net_change_in_cash",
+    "nakit ve nakit benzerlerindeki net artis azalis": "net_change_in_cash",
     "maddi ve maddi olmayan duran varlik alimlari": "capex",
     "maddi duran varlik alimlari": "capex",
     "maddi olmayan duran varlik alimlari": "capex",
@@ -249,6 +258,7 @@ CASH_FLOW_MAP: dict[str, str] = {
     "amortisman ve itfa giderleri ile ilgili duzeltmeler": "depreciation_amortization",
     "amortisman ve itfa ile ilgili duzeltmeler": "depreciation_amortization",
     "amortismana iliskin duzeltmeler": "depreciation_amortization",
+    "yabanci para cevrim farklarinin nakit ve nakit benzerleri uzerindeki etkisi": "fx_impact",
     "yabanci para cevrim farklarinin etkisi": "fx_impact",
     "kur farki etkisi": "fx_impact",
 }
@@ -285,8 +295,15 @@ def lookup(table_kind: str, label: str, sector: str = "industrial") -> str | Non
     key = normalize_label(label)
     if key in table:
         return table[key]
-    # Fuzzy: try prefix match (KAP sometimes adds trailing detail)
+    # Fuzzy: try prefix match (KAP sometimes adds trailing detail).
+    # Prefer the longest matching key to avoid false prefix hits
+    # (e.g. "...etkisi" matching "...etkisinden once...").
+    best_match: str | None = None
+    best_len = 0
     for known in table:
         if key.startswith(known) or known.startswith(key):
-            return table[known]
-    return None
+            match_len = min(len(known), len(key))
+            if match_len > best_len:
+                best_len = match_len
+                best_match = known
+    return table[best_match] if best_match is not None else None

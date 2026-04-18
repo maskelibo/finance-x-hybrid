@@ -70,6 +70,45 @@
 - **YKBNK konsolidasyonu imbalance açıklamasına dahil et** — Banka konsolidasyonu bilanço şişirmesi bilinen bir yapı; bu yapıyı CHECK 1'in yanında açıklayıcı not olarak sun, "varsayım" değil "yapısal açıklama" olarak.
 - **Segment reconciliation holding için zorunlu** — GCM veya herhangi bir analist SOTP'undaki segment katkı rakamları toplanıp konsolide EBITDA ile karşılaştırılmalı. Fark >%10 → FLAG.
 
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Remediation (thyao-remediation-20260416)
+
+### Eksikler:
+- **pass_rate 1.0 yanıltıcı — gerçek kapsam %57** — CF_TOTAL_RECONCILE, BS_EQUITY_SPLIT, IS_NET_SPLIT "skipped: not reported" olarak geçildi. 7 check'ten 4'ü geçti, 3'ü atlandı. "1.0 pass rate" ibaresi downstream'i yüksek kalite sanmasına yol açar.
+- **IFRS 16 lease borcu Net Borç formülüne dahil edilmedi — 3. THYAO** — Havacılık direktifi: Net Borç = Finansal Borç + Finansal Kiralama Borcu − (Nakit + KV Yatırım). THYAO için $25B+ ROU yükümlülüğü kritik; sadece finansal borç − nakit = eksik formül.
+- **5-yıllık bilanço dengesi kontrolü yapılmadı** — Sadece FY2025 kontrol edildi. Önceki EREGL dersi uygulanmadı: her raporlama yılı için A=L+E zorunlu.
+- **CF "skipped" → parse_standardization'a eskalasyon yapılmadı** — investing_cash_flow/capex/free_cash_flow null iken "not reported" ile geçildi; doğru aksiyon: "CF_TOTAL_RECONCILE SKIPPED — parse_standardization'a ICF/FCF talebi" eskalasyonu tetiklemekti.
+
+### Bundan Sonra:
+- **pass_rate gerçek kapsama göre raporla** — "skipped" check'leri paydaya dahil et: 4 geçti / 7 toplam = %57 gerçek kapsam. 1.0 sunmak kural ihlali.
+- **THYAO Net Borç formülü zorunlu (3. direktif, artık hard rule)** — Finansal Borç + Kira Borcu (IFRS 16) − Nakit − KV Yatırım. Havacılık analizinin temel Net Borç tanımı.
+- **CF "skipped" = parse eskalasyon tetikleyicisi** — CF_TOTAL_RECONCILE atlanırsa otomatik "parse_standardization: ICF/FCF talebi" iletisi gönderilecek.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu
+
+### Eksikler:
+- **3 kontrol "skipped" — CF ve SE eksikliği** — CF_TOTAL_RECONCILE, BS_EQUITY_SPLIT, IS_NET_SPLIT hepsi "skipped: not reported". pass_rate = 1.0 görünüyor ama aslında 4 check geçti, 3 atlandı. Bu "1.0" yanıltıcı; gerçek kapsam %57.
+- **IFRS 16 lease borcu Net Borç formülüne dahil edilmedi** — Havacılık direktifi: Net Borç = Finansal Borç + Finansal Kiralama Borcu - (Nakit + KV Yatırım). THYAO için kira borcu çok kritik ($25B+ ROU yükümlülüğü); sadece "585,851 mn TRY = ST+LT - Cash" hesabı eksik bırakıyor.
+- **5-yıllık bilanço dengesi kontrolü yapılmadı** — Sadece FY-2025 kontrol edildi. Kural: her raporlama yılı için A=L+E check.
+- **CF mutabakatı "skipped" ama investing/financing CF parse'da null** — Bu null'ları escalation konusu yapılmadı; "not reported" ile geçildi. Doğru aksiyon: "CF_TOTAL_RECONCILE SKIPPED — parse_standardization'a ICF/FCF talebi" eskalasyonu.
+
+### Bundan Sonra:
+- **Havacılık Net Borç = IFRS 16 dahil** — Net Borç formülüne finansal kiralama borcu (ROU lease liability) her havacılık analizinde zorunlu dahil. "ST+LT − Cash" hesabı havacılık için yeterli değil.
+- **pass_rate = "skipped_rate" gerçeği yansıtmıyor** — 3 check skipped + 4 passed → gerçek pass_rate = 4/7 = %57. "1.0" raporlama yanıltıcı; downstream bunu "tüm checkler geçti" sanıyor. Skipped checkler ayrı "skipped_due_to_missing_data" notla belirtilmeli.
+- **CF skipped → parse'a P1 eskalasyon** — CF_TOTAL_RECONCILE atlandığında reconciliation: "ICF/FCF parse'da null — parse_standardization'a P1 eskalasyon: yatırım ve finansman CF zorunlu" yazmalı.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu (Post-Report Loop)
+
+### Eksikler:
+- **3 kontrol "skipped" — pass_rate 1.0 yanıltıcı** — CF_TOTAL_RECONCILE, BS_EQUITY_SPLIT, IS_NET_SPLIT hepsi "skipped: not reported". Gerçek pass_rate = 4/7 = %57 ama çıktı 1.0 gösteriyor. Bu downstream'i "tüm checkler geçti" sanmasına yol açıyor.
+- **IFRS 16 lease borcu Net Borç formülüne dahil edilmedi** — THYAO için $25B+ ROU yükümlülüğü; Net Borç = 585,851 mn TRY (ST+LT−Cash) eksik formül. "Havacılık Net Borç = IFRS 16 dahil" direktifi 3. kez uygulanmadı.
+- **5-yıllık bilanço dengesi kontrolü yapılmadı** — Sadece FY2025 kontrol edildi; kural: her raporlama yılı için A=L+E check.
+- **CF skipped → parse'a eskalasyon yok** — CF_TOTAL_RECONCILE atlandığında "parse_standardization'a ICF/FCF P1 eskalasyonu" direktifi uygulanmadı; "not reported" ile geçildi.
+
+### Bundan Sonra:
+- **pass_rate yanıltıcı raporlama giderilecek** — Skipped checkler ayrı "skipped_due_to_missing_data" notla belirtilmeli. "Gerçek pass_rate = 4/7 (%57); 3 check veri eksikliği nedeniyle atlandı" formatı zorunlu.
+- **Havacılık Net Borç = IFRS 16 dahil — 3. direktif, kesin kural** — Net Borç = Finansal Borç + Finansal Kiralama Borcu - (Nakit + KV Yatırım). Bir dahaki THYAO'da eski formül tolere edilmez.
+- **CF skipped → parse P1 eskalasyonu otomatik tetiklemeli** — "ICF/FCF parse'da null — parse_standardization'a P1 eskalasyon: yatırım ve finansman CF zorunlu" yazmalı.
+
 ## Zorunlu Kontrol Listesi — 7 Otomatik Cross-Statement Kontrol
 
 | # | Kontrol | Severity | Fail Durumunda |
@@ -165,3 +204,59 @@
 - **Holding reconciliation'a zorunlu 8. check ekle: Segment EBITDA Reconciliation** — GCM/analist SOTP'undaki segment katkıları toplanıp konsolide EBITDA ile karşılaştırılacak. Fark >%15 → FLAG + upstream escalation.
 - **Açık eskalasyon = final approved figure yayımlama** — ESK formatlı açık maddeler varken "OUTPUT BLOKLANMADI" yazma. Açık maddeleri not olarak ilet ve downstream'i uyar: "aşağıdaki kalemlerde belirsizlik devam ediyor."
 - **Solo bilanço KCHOL analizlerinde birinci öncelik** — Faaliyet Raporu 1561073 inmeden solo borç yapısı analiz edilemez; bu data_collection'a P0 olarak verilmeliydi.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Tam Analiz (thyao-full-20260416)
+
+### Eksikler:
+- **pass_rate 1.0 bildirildi — gerçekte 3/7 check atlandı** — Atlanmış kontroller "N/A" olarak sayıldığı için pass_rate yanıltıcı biçimde 1.0 göründü. Gerçek tamamlama oranı %57. Bu skor COO ve CEO'ya yanlış güven sinyali veriyor.
+- **IFRS 16 kiralama borcu Net Borç hesabından dışarıda — 3. THYAO** — Havacılıkta Net Borç = Finansal Borç + IFRS 16 yükümlülükleri − (Nakit + KV Finansal Yatırım). IFRS 16 olmadan net borç eksik gösteriyor; leverage analizi yanıltıcı.
+- **CF tablosu atlandı — parse_standardization'a eskalasyon yapılmadı** — CF null geldi; reconciliation kontrol gerçekleştirmeden geçti. Kural: CF check atlandığında parse_standardization'a eskalasyon + BLOCKED sinyal verilmeli.
+- **5 yıllık trend tutarlılık kontrolü eksik** — FY2020-2024 zaman serisi kontrolü (revenue büyüme trendi, yıl-yıl tutarlılık) yapılmadı. Bu kontrol bir kez bile gerçekleşmedi.
+
+### Bundan Sonra:
+- **pass_rate formülü güncellendi: Tamamlanan check / Toplam tanımlı check (N/A dahil)** — "N/A" = atlandı = başarısız. Gerçek pass_rate = tamamlanan / (tamamlanan + başarısız + atlanmış). 1.0 görmek için tüm checkler tamamlanmış olmalı.
+- **IFRS 16 Net Borç zorunlu katmanı (havacılık P0)** — Net Borç = (Uzun Vadeli Finansal Borç + Kısa Vadeli Finansal Borç + IFRS 16 UVK + IFRS 16 KVK) − (Nakit + KV Fin. Yatırım). IFRS 16 null gelirse → data_collection eskalasyonu + check BLOCKED.
+- **CF check atlanırsa = parse_standardization'a zorunlu eskalasyon** — "CF verisi null" tespit edildiğinde reconciliation: (1) parse_standardization'a mesaj: "CF tablosu eksik, eskalasyon aç", (2) ilgili checkler FAIL olarak işaret, (3) downstream'e "CF checks: FAILED — eskalasyon açık" bildirimi.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Full Analiz (thyao-full-20260416-v4)
+
+### Eksikler:
+- **pass_rate 1.0 bildirildi — 4. THYAO'da aynı yanıltıcı raporlama** — 7 check'ten 3'ü "skipped: not reported" olarak geçildi (CF_TOTAL_RECONCILE, BS_EQUITY_SPLIT, IS_NET_SPLIT). Gerçek tamamlama oranı = 4/7 = %57. "1.0 pass rate" downstream'e yanlış güven sinyali veriyor.
+- **IFRS 16 kiralama borcu Net Borç formülüne dahil edilmedi — 4. THYAO** — "Net Debt = 585,851,000,000 TL (ST+LT − Cash)" hesabı havacılıkta eksik formül; THYAO'nun $25B+ IFRS 16 yükümlülüğü dahil edilmedi.
+- **CF "skipped" → parse_standardization'a eskalasyon yapılmadı — 4. THYAO** — CF_TOTAL_RECONCILE atlandığında "parse_standardization: ICF/FCF talebi" mesajı gönderilmedi. Direktif 3 kez yazıldı, uygulanmadı.
+- **5 yıllık bilanço dengesi kontrolü yapılmadı** — Sadece FY2025 için BS_IDENTITY check yapıldı. FY2020-2024 yıllarının A=L+E kontrolü hiç yapılmadı.
+- **overall_decision "pass" ama 3 check atlanmış** — "pass" kararı verilen bir output'ta 3 check atlanmış olması çelişkili; skipped checkler gerçek kapsama göre değerlendirilmedi.
+
+### Bundan Sonra:
+- **pass_rate 1.0 = YASAK (4. direktif, artık hard kural)** — Skipped checkler paydaya dahil edilecek. Gerçek kapsam formatı: "passed: 4 / total: 7 (skipped: 3) → gerçek pass_rate: %57". 1.0 sunmak kural ihlali ve downstream manipülasyon riski.
+- **IFRS 16 Net Borç = THYAO için sabit formül** — (KV Finansal Borç + UV Finansal Borç + IFRS 16 KVK + IFRS 16 UVK) − (Nakit + KV Finansal Yatırım). data_collection IFRS 16 satırını getirmezse → check FAIL + eskalasyon.
+- **CF skip = otomatik eskalasyon (kod seviyesi)** — CF_TOTAL_RECONCILE atlandığında reconciliation otomatik olarak parse_standardization'a "P1 eskalasyon: ICF/FCF null — yatırım faaliyetleri CF zorunlu" iletisi gönderecek.
+- **5 yıllık BS kontrol döngüsü zorunlu** — Her raporlama yılı (FY2020-FY2025) için A=L+E check. Eksik yıl → "MISSING_PERIOD_CHECK" flaglenir ve upstream uyarısı verilir.
+
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Raporu
+
+### Eksikler:
+- **pass_rate 1.0 bildirildi — 5. THYAO'da aynı yanıltıcı raporlama** — Skipped checkler "N/A" olarak sayıldığı için pass_rate 1.0 göründü. Gerçek tamamlama oranı %57. Downstream'e yanlış güven sinyali vermeye devam ediyor.
+- **IFRS 16 kiralama borcu Net Borç formülüne dahil edilmedi — 5. THYAO** — "Net Debt = 585.8T TL (ST+LT − Cash)" formülü havacılıkta eksik; THYAO'nun $25B+ IFRS 16 yükümlülüğü dahil edilmedi.
+- **CF "skipped" → parse_standardization'a eskalasyon yapılmadı — 5. THYAO** — CF_TOTAL_RECONCILE atlandığında parse_standardization'a mesaj gönderilmedi. Direktif 4 kez yazıldı, uygulanmadı.
+- **5 yıllık bilanço dengesi kontrolü yapılmadı** — Sadece FY2025 için BS_IDENTITY check. FY2020-2024 yılları hiç kontrol edilmedi.
+- **overall_decision "pass" ama 3 check atlanmış — 5. THYAO** — Skipped checkler gerçek kapsama göre değerlendirilmedi.
+
+### Bundan Sonra:
+- **pass_rate 1.0 = YASAK (5. direktif — hard kural, son uyarı)** — Skipped checkler paydaya dahil: gerçek pass_rate = tamamlanan / (tamamlanan + başarısız + atlanmış). 1.0 sunmak kural ihlali.
+- **IFRS 16 Net Borç = THYAO sabit formülü** — (KV Fin. Borç + UV Fin. Borç + IFRS16 KVK + IFRS16 UVK) − (Nakit + KV Fin. Yatırım). data_collection IFRS16 satırını getirmezse → check FAIL + eskalasyon.
+- **CF skip = otomatik parse eskalasyonu** — CF_TOTAL_RECONCILE atlandığında reconciliation parse_standardization'a "P1 eskalasyon: ICF/FCF null" iletisi otomatik gönderecek.
+
+## CEO Geri Bildirimi — 2026-04-17 — ASELS Raporu
+
+### Eksikler:
+- **pass_rate 1.0 yanıltıcı — gerçekte 5/7 (2 atlandı)** — CF_TOTAL_RECONCILE ve BS_EQUITY_SPLIT "skipped: not reported" olarak geçildi. Gerçek kapsam = 5/7 = %71. "1.0 pass rate" downstream'i yüksek kalite sanmasına yol açtı.
+- **FY2021-2024 bilanço dengesi kontrolü hiç yapılmadı** — Yalnızca FY2025 kontrol edildi. ASELS 5 yıllık büyüme (ciro 3x, R&D harcaması) dönemidir; her yıl için A=L+E zorunlu.
+- **Nakit akışı "skipped" → parse_standardization'a eskalasyon yapılmadı** — Investing CF/FCF null iken "not reported" geçildi; doğru aksiyon eskalasyon tetikleyiciydi.
+- **IAS 29 parasal kazanç/kayıp analizi yapılmadı** — ASELS savunma şirketi, TRY bazlı gelir ama döviz maliyetleri var; IAS 29 etkisi göz ardı edildi. Normalize NI downstream'e iletilmedi.
+- **Trade_payables DISC-004 benzeri sapma (24.4M TL) reconciliation aşamasında işaretlenmedi** — DPO/CCC için kritik yanlış değer downstream'e geçti; reconciliation bunu tespit etmeli ve kilitlemeliydi.
+
+### Bundan Sonra:
+- **pass_rate gerçek kapsama göre raporla — 5. direktif, hard kural** — Skipped checkler paydaya dahil. "passed: 5 / total: 7 (skipped: 2) → gerçek pass_rate: %71". 1.0 sunmak kural ihlali.
+- **Savunma şirketlerinde IAS 29 zorunlu** — Parasal kazanç/kayıp tespit edildiğinde: (a) IS'ten ayrıştır, (b) duzeltilmiş EBITDA ve net kar raporla, (c) "IAS 29 etkisi: X TRY" tablosu downstream'e gönder.
+- **CF skipped = parse eskalasyonu otomatik tetiklemeli** — CF_TOTAL_RECONCILE atlandığında parse_standardization'a "P1 eskalasyon: ICF/FCF null" iletisi gönderilecek. ASELS'te uygulanmadı; bir sonraki analizde hard kural.
