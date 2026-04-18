@@ -183,7 +183,9 @@ class HttpKapClient(KapClient):
         for category in payload:
             if category.get("category") == "companyOrFunds":
                 for item in category.get("results", []):
-                    if str(item.get("cmpOrFundCode", "")).upper() == upper:
+                    # cmpOrFundCode can be comma-separated (e.g. "ısatr,ısbtr,ısctr")
+                    codes = str(item.get("cmpOrFundCode", "")).upper().split(",")
+                    if upper in [c.strip() for c in codes]:
                         oid = item.get("memberOrFundOid")
                         if oid:
                             self._member_oid_cache[upper] = oid
