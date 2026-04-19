@@ -155,7 +155,8 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const esgOut = parseJson<Record<string, unknown>>(ctx['esg_agent_output']);
   const news = parseJson<Record<string, unknown>>(ctx['sentiment_news_agent_output']);
   const ac = parseJson<Record<string, unknown>>(ctx['analyst_consensus_agent_output']);
-  const parsed = parseJson<Record<string, unknown>>(ctx['parse_standardization_output']);
+  const parsedRaw = parseJson<Record<string, unknown>>(ctx['parse_standardization_output']);
+  const parsed = normalizeParseStandardization(parsedRaw);
 
   // ----- Auto-extract narrative blocks via llm_narrative.ts -----
 
@@ -1328,8 +1329,16 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     ),
     narrative_investments: narrativeBlocks.investments ?? '',
     narrative_dividend: narrativeBlocks.dividend ?? '',
+    // "Detaylı Analiz" full-narrative block was a safety net for when
+    // slot extractors failed. In practice it duplicates the entire
+    // 12-section structured view — the user caught this as "iki tane SWOT
+    // analizi" (one in section V, one in the dump). Now disabled by default:
+    // every section already renders its own KPIs, tables, SVG charts, and
+    // narrative paragraphs from the extracted slots. If a future use case
+    // genuinely needs the raw dump, set FORMATTER_INCLUDE_FULL_NARRATIVE=1.
     full_narrative_html: fullNarrativeHtml,
-    full_narrative_has: fullNarrativeHtml.length > 500,
+    full_narrative_has: process.env.FORMATTER_INCLUDE_FULL_NARRATIVE === '1'
+      && fullNarrativeHtml.length > 500,
 
     // SVG charts
     chart_financial_trend: financialTrendSvg,
@@ -2537,4 +2546,127 @@ function translateMetricHint(code: string, originalHint: string): string {
   // If the original hint is English and we have no translation, suppress it.
   if (/^[A-Za-z\s.\-()<>%0-9,/]+$/.test(originalHint.trim())) return '';
   return originalHint;
+}
+
+
+// ─── Parse-standardization normalizer ──────────────────────────────────
+//
+// Compose expects `parse_standardization_output.standardized_statements[]`:
+//   [{ period_label: "FY-2024", year: 2024,
+//      income_statement: { revenue, ebitda, ... },
+//      balance_sheet:    { total_assets, total_equity, ... },
+//      cash_flow:        { cfo, capex, fcf } }, ...]
+//
+// Older/LLM-produced parse outputs use a pivoted shape instead:
+//   { parsed_statements: {
+//       income_statement: { data: [{ line_item, 2021, 2022, ... }, ...] },
+//       balance_sheet:    { data: [...] },
+//       cash_flow_statement: { data: [...] } } }
+//
+// This function detects the pivoted shape and unpivots it into the canonical
+// `standardized_statements[]` that the rest of compose.ts / svg_charts.ts
+// depends on. When the input already matches the canonical shape, it is
+// returned as-is (no mutation).
+//
+// Consequence: the top 12-section view (KPI cards, 5-year trend tables,
+// revenue/EBITDA bar charts) gets populated from the real audited numbers
+// that are present in the pivoted JSON. Without this, those blocks stayed
+// empty and the user saw "tahmini" values only in the tail narrative.
+const LINE_ITEM_MAP: Record<'income_statement' | 'balance_sheet' | 'cash_flow', Record<string, string>> = {
+  income_statement: {
+    // revenue
+    'net sales (revenue)': 'revenue', 'net sales': 'revenue', 'revenue': 'revenue', 'hasılat': 'revenue', 'satış gelirleri': 'revenue',
+    // gross profit
+    'gross profit': 'gross_profit', 'brüt kar': 'gross_profit', 'brüt kâr': 'gross_profit',
+    // operating income
+    'operating income': 'operating_income', 'ebit': 'operating_income', 'faaliyet karı': 'operating_income', 'faaliyet kârı': 'operating_income',
+    // ebitda
+    'ebitda (favök)': 'ebitda', 'ebitda': 'ebitda', 'favök': 'ebitda',
+    // net income
+    'net income': 'net_income', 'net profit': 'net_income', 'net kar': 'net_income', 'net kâr': 'net_income', 'dönem karı': 'net_income',
+    // opex (not in template trend but useful)
+    'operating expenses (opex)': 'operating_expenses', 'opex': 'operating_expenses',
+    'cost of goods sold (cogs)': 'cogs', 'cogs': 'cogs',
+  },
+  balance_sheet: {
+    'total assets': 'total_assets', 'toplam varlık': 'total_assets', 'toplam varlıklar': 'total_assets',
+    'total liabilities': 'total_liabilities', 'toplam yükümlülük': 'total_liabilities', 'toplam borç': 'total_liabilities',
+    'total equity': 'total_equity', 'shareholders equity': 'total_equity', 'özkaynak': 'total_equity', 'özkaynaklar': 'total_equity',
+    'cash and equivalents': 'cash', 'cash': 'cash', 'nakit': 'cash', 'nakit ve benzerleri': 'cash',
+    'short-term debt': 'st_debt', 'kısa vadeli borç': 'st_debt',
+    'long-term debt': 'lt_debt', 'uzun vadeli borç': 'lt_debt',
+    'total financial debt': 'total_debt', 'toplam finansal borç': 'total_debt',
+    'working capital': 'working_capital', 'çalışma sermayesi': 'working_capital',
+    'inventory': 'inventory', 'stoklar': 'inventory',
+    'trade receivables': 'trade_receivables', 'ticari alacaklar': 'trade_receivables',
+  },
+  cash_flow: {
+    'operating cash flow': 'cfo', 'cash from operations': 'cfo', 'işletme faaliyetlerinden nakit akışı': 'cfo',
+    'capital expenditures': 'capex', 'capex': 'capex', 'yatırım harcamaları': 'capex',
+    'free cash flow': 'fcf', 'serbest nakit akışı': 'fcf',
+    'dividends paid': 'dividends', 'temettü ödemeleri': 'dividends',
+  },
+};
+
+
+function normalizeParseStandardization(raw: Record<string, unknown> | null): Record<string, unknown> | null {
+  if (!raw) return raw;
+  // Already in canonical shape — nothing to do.
+  if (Array.isArray(raw.standardized_statements)) return raw;
+
+  // Look for pivoted shape at `parsed_statements`.
+  const ps = raw.parsed_statements as Record<string, unknown> | undefined;
+  if (!ps) return raw;
+
+  // Cash flow is sometimes nested as `cash_flow_statement`.
+  const pivoted: Record<'income_statement' | 'balance_sheet' | 'cash_flow', unknown> = {
+    income_statement: ps.income_statement,
+    balance_sheet:    ps.balance_sheet,
+    cash_flow:        ps.cash_flow ?? ps.cash_flow_statement,
+  };
+
+  // Discover which years the pivoted rows cover.
+  const years = new Set<number>();
+  for (const section of Object.values(pivoted)) {
+    const data = (section as Record<string, unknown> | undefined)?.data;
+    if (!Array.isArray(data)) continue;
+    for (const row of data) {
+      for (const k of Object.keys(row as Record<string, unknown>)) {
+        const yr = Number(k);
+        if (Number.isFinite(yr) && yr >= 1990 && yr <= 2100) years.add(yr);
+      }
+    }
+  }
+  if (years.size === 0) return raw;
+
+  const sortedYears = [...years].sort((a, b) => a - b);
+  const standardized_statements = sortedYears.map(year => {
+    const stmt: Record<string, unknown> = {
+      period_label: `FY-${year}`,
+      year,
+      income_statement: {},
+      balance_sheet: {},
+      cash_flow: {},
+    };
+    for (const [sectionKey, sectionData] of Object.entries(pivoted) as Array<[keyof typeof LINE_ITEM_MAP, Record<string, unknown> | undefined]>) {
+      const rows = Array.isArray(sectionData?.data) ? sectionData!.data as Array<Record<string, unknown>> : [];
+      const block = stmt[sectionKey] as Record<string, unknown>;
+      const map = LINE_ITEM_MAP[sectionKey];
+      for (const row of rows) {
+        const label = String(row.line_item ?? '').toLowerCase().trim();
+        const canonical = map[label];
+        if (!canonical) continue;
+        const raw = row[String(year)];
+        if (raw == null || raw === '') continue;
+        const n = Number(raw);
+        if (!Number.isFinite(n)) continue;
+        block[canonical] = n;
+      }
+    }
+    return stmt;
+  });
+
+  // Return a merged object so anything else on `raw` (agent_id, company, parser_notes)
+  // survives for downstream consumers.
+  return { ...raw, standardized_statements };
 }

@@ -453,10 +453,27 @@ ASELS analizi 18 agent üzerinden geçti. COO BLOCKED kararı verdi (HTML_ENVELO
 - **GELİŞMESİ GEREKEN:** data_collection (5 yıl yok, YK Raporu yok), parse_standardization (D&A null), reconciliation (pass_rate yanıltıcı)
 - **İYİ:** COO (BLOCKED kararı doğru ✓), technical_analysis (MA/RSI/MACD ✓), kap_watch (99 disclosure tamamlandı ✓), final_summary (yapısal kalite ✓)
 
-## Son Heartbeat — 2026-04-18 TSİ (Otonom Döngü #127)
+## Son Heartbeat — 2026-04-19 TSİ (Otonom Döngü #129)
 - Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar, takvim].
-- **KAP Erişim:** JS-render engeli devam. Pazar günü — bildirim beklenmez.
-- **WTI:** $83.85 (-11.45%) | **Brent:** $90.38 (-9.07%) — Bloomberg HT teyid. Konsolidasyon bandı $83-86 devam. Hormuz açık.
+- **KAP Erişim:** JS-render engeli devam. Pazar — BIST kapalı, yeni bildirim gelmedi.
+- **WTI:** $82.59 (-11.45%) — Hormuz konsolidasyon bandı $82-85 devam.
+- **BIST30:** 17 Nisan kapanış fiyatları (pazar, değişim yok). AKBNK 83.55 +6.98%, GARAN 146.40 +6.86%, TUPRS 253.00 -5.60%, THYAO 329.00 +3.70%, EREGL 32.04 +3.69%, KCHOL 211.80 +3.57%.
+- **Yeni Haberler:** Trump "İran anlaşması 1-2 gün" dedi → İran ikinci tur müzakereyi **reddetti** → Hormuz volatilitesi sürecek. TUPRS/THYAO izle. | S&P Türkiye notunu korudu ✓ | Karahan Meclis sunumu | A101 → CarrefourSA satın alımı.
+- **Takvim (kritik):** PPK **22 Nisan (3 gün)** | EREGL Q1 earnings **23 Nisan (4 gün)**.
+- **Olağandışı:** İran reddi çelişkisi → Pazartesi WTI açılışını izle. Bankacılık +7% PPK faiz indirimi fiyatlaması olabilir.
+- P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+## Son Heartbeat — 2026-04-19 TSİ (Otonom Döngü #128)
+- Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar, takvim].
+- **KAP Erişim:** JS-render engeli devam. Pazar günü — BIST kapalı, önemli bildirim beklenmez.
+- **WTI:** ~$82.59-83.85 (-10.25/-11.45%) | **Brent:** $90.38 (-9.07%) — Hormuz tam açık, Cuma kapanışı. Konsolidasyon bandı $82-85 devam.
+- **BIST30 (17 Nisan kapanış):** Bankacılık güçlü rally — AKBNK +6.98%, GARAN +6.86%, EKGYO +6.58%. TUPRS -5.60% (Hormuz/enerji). THYAO +3.70%, EREGL +3.69%, KCHOL +3.57%.
+- **Takvim (kritik):** PPK **22 Nisan (3 gün)** | EREGL Q1 earnings **23 Nisan (4 gün)**.
+- **Olağandışı:** Bankacılık sektörü tek günde +5-7% hareketi dikkat çekici — PPK beklentisiyle mi bağlantılı izlenecek.
+- P0/P1 yok. **Chairman ALERT: HAYIR.**
+
+## Son Heartbeat — 2026-04-18 TSİ (Otonom Döngü #127) [→ Archive]
+- Bkz. heartbeat_archive.md (WTI $83.85 -11.45%, Brent $90.38 -9.07%, BIST 17 Nisan kapanış, PPK 22 Nisan, HAYIR alert)
 - **BIST (kapalı — son kapanış 17 Nisan):** THYAO **329.00** (+3.70%) | TUPRS **253.00** (-5.60%) | ASELS **414.00** (+0.73%) | EREGL **32.04** (+3.69%) | KCHOL **211.80** (+3.57%).
 - **Yeni:** KCHOL fiyatı bu döngüde ilk kez alındı (önceki turda Bigpara 404 idi). Tüm fiyatlar 17 Nisan kapanışı.
 - **Takvim (kritik):** PPK **22 Nisan (4 gün)** | EREGL Q1 earnings **23 Nisan (5 gün)**.

@@ -15,14 +15,26 @@ export const PROJECT_ROOT = process.env.FINANCE_X_ROOT || path.resolve(__dirname
 
 export const AGENTS_ROOT = path.join(PROJECT_ROOT, 'agents');
 
-export const CLAUDE_PATH = process.env.CLAUDE_PATH || '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin';
+// On Windows the claude CLI lives under %AppData%\npm; on macOS/Linux it's
+// typically Homebrew. Hardcoding a POSIX default breaks `spawn('claude')` on
+// Windows ("ENOENT") so we fall through to the inherited PATH instead.
+const defaultClaudePath = process.platform === 'win32'
+  ? (process.env.PATH || '')
+  : '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin';
+export const CLAUDE_PATH = process.env.CLAUDE_PATH || defaultClaudePath;
 
 // Server
 export const PORT = parseInt(process.env.PORT || '4000', 10);
 
 // Model configuration — agent bazli model secimi
 // Basit isler (veri toplama, parse, reconciliation) ucuz modelle yapilir
-// Analiz, sentez, CEO ise pahalı modelle yapilir
+// Analiz, sentez, CEO ise pahalı modelle yapilir.
+//
+// Prompt caching: Claude Code CLI (spawn'ladığımız binary) son sürümlerde
+// otomatik prompt caching uyguluyor — sabit prefix (shared_directives +
+// system_prompt + knowledge.md) her çağrıda aynı olduğu için cache hit oranı
+// yüksek. agent-runner.ts prompt'u bu sabit-önce-değişken sırada kuruyor,
+// müdahaleye gerek yok.
 export const CLAUDE_MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 export const CLAUDE_MODEL_LIGHT = process.env.CLAUDE_MODEL_LIGHT || 'claude-haiku-4-5';
 export const LLM_PRIMARY_PROVIDER = 'claude' as const;
@@ -244,16 +256,23 @@ for (const w of validatePythonFlagDependencies()) {
 // Stall detection: if provider produces no output for this many seconds, kill
 export const PROVIDER_STALL_TIMEOUT_S = parseInt(process.env.PROVIDER_STALL_TIMEOUT_S || '900', 10);
 
-// Feature flag — ADIM 5: Schema validation mode ('off' | 'warn')
-// 'warn' = validate + log warnings, pipeline devam eder
-// 'off' = validation atlanır
-// Schema validation modes:
+// Feature flag — ADIM 5: Schema validation mode ('off' | 'warn' | 'soft_block')
 // 'off'        = no validation
 // 'warn'       = validate + log, pipeline continues normally
-// 'soft_block' = validate + log + mark degraded for critical agents, pipeline continues but downstream sees flag
-export const SCHEMA_VALIDATION_MODE = (process.env.SCHEMA_VALIDATION_MODE || 'warn') as 'off' | 'warn' | 'soft_block';
-// Agents where soft_block applies (degraded flag set). Only used when mode='soft_block'.
-export const SCHEMA_SOFT_BLOCK_AGENTS = new Set((process.env.SCHEMA_SOFT_BLOCK_AGENTS || 'financial_analysis,reconciliation').split(',').map(s => s.trim()));
+// 'soft_block' = validate + log + mark degraded for critical agents so downstream
+//                consumers (formatter) can surface a "[DEGRADED]" warning box.
+//                Pipeline still continues — we never hard-fail a session on schema.
+// Default is now 'soft_block' so bad upstream JSON surfaces in the final report
+// instead of silently corrupting the composed template context.
+export const SCHEMA_VALIDATION_MODE = (process.env.SCHEMA_VALIDATION_MODE || 'soft_block') as 'off' | 'warn' | 'soft_block';
+// Agents where soft_block applies (degraded flag set). Expanded to cover the
+// three agents whose outputs directly drive the composed report: missing or
+// malformed JSON here is what produces "broken-looking" PDFs.
+export const SCHEMA_SOFT_BLOCK_AGENTS = new Set(
+  (process.env.SCHEMA_SOFT_BLOCK_AGENTS || 'financial_analysis,reconciliation,valuation_agent,sector_competition,strategic_synthesis')
+    .split(',')
+    .map(s => s.trim()),
+);
 
 export const HEARTBEAT_INTERVAL_MIN = parseInt(process.env.HEARTBEAT_INTERVAL_MIN || '30', 10);
 export const WATCHDOG_INTERVAL_MIN = parseInt(process.env.WATCHDOG_INTERVAL_MIN || '2', 10);

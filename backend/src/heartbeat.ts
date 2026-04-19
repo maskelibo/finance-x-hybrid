@@ -13,12 +13,44 @@ const providerRouter = createDefaultProviderRouter();
 export function startHeartbeat(intervalMinutes: number = 30) {
   intervalMs = intervalMinutes * 60 * 1000;
   if (heartbeatTimer) clearInterval(heartbeatTimer);
+
+  // Recovery on startup: if the last heartbeat was more than `intervalMs` ago,
+  // fire one immediately instead of waiting a full interval. Prevents missed
+  // KAP checks when the process restarts.
+  void recoverMissedHeartbeat().catch(err => console.error('Heartbeat recovery error:', err));
+
   heartbeatTimer = setInterval(() => {
     if (!isRunning) {
       void runHeartbeatCycle().catch(err => console.error('Heartbeat error:', err));
     }
   }, intervalMs);
   console.log(`💓 Heartbeat started — every ${intervalMinutes} minutes`);
+}
+
+
+/** If the last heartbeat was more than one interval ago, run one immediately.
+ *  Handles process restarts so we don't silently skip a cycle. */
+async function recoverMissedHeartbeat(): Promise<void> {
+  const lastRow = db.prepare(`
+    SELECT created_at FROM ceo_activities
+    WHERE activity_type = 'heartbeat' AND status = 'completed'
+    ORDER BY created_at DESC LIMIT 1
+  `).get() as { created_at?: string } | undefined;
+
+  if (!lastRow?.created_at) {
+    // Never run before — fire one now so the first interval doesn't feel dead.
+    console.log('💓 No prior heartbeat — firing initial cycle');
+    await runHeartbeatCycle();
+    return;
+  }
+
+  const lastMs = new Date(lastRow.created_at).getTime();
+  const gap = Date.now() - lastMs;
+  if (gap > intervalMs) {
+    const gapMin = Math.round(gap / 60000);
+    console.log(`💓 Missed heartbeat detected (${gapMin} min since last) — running recovery cycle`);
+    await runHeartbeatCycle();
+  }
 }
 
 export function stopHeartbeat() {

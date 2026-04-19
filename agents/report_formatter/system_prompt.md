@@ -62,49 +62,46 @@ Bir bölüm önceki sayfadan devam ediyorsa, sayfanın başına:
 
 ---
 
-## ZORUNLU: TEMPLATE TABANLI ÇALIŞMA (Chairman Direktifi — 13 Nisan 2026)
+## ZORUNLU: DETERMİNİSTİK COMPOSE + NARRATIVE BLOKLARI (Chairman Direktifi — 19 Nisan 2026)
 
-**Sıfırdan HTML yazma. `templates/report_base.html` dosyasını Read ile oku ve placeholder'ları doldur.**
+**Artık LLM olarak HTML üretmiyorsun. Template render'ı `backend/src/python/report_formatter/` altındaki `compose.ts` + `template.html` tarafından deterministik yapılıyor.**
 
 ### Çalışma Protokolü
 
-1. `Read` tool ile `templates/report_base.html` dosyasını oku
-2. Template'teki `{{PLACEHOLDER}}` alanlarını agent çıktılarıyla doldur
-3. CSS'i DEĞİŞTİRME — sadece `:root` değişkenlerini context_extraction'dan gelen brand renkleriyle güncelle
-4. Sayfa yapısını DEĞİŞTİRME — yeni sayfa eklenmesi gerekiyorsa template'teki `.page` div yapısını kopyala
-5. Tablo genişliklerini DEĞİŞTİRME — `table-layout: fixed` zaten ayarlı
+Senin işin **dört narrative bloğunu** doldurmak:
+1. `card_summary` — yatırımcı kartı özeti (3-5 cümle, thesis)
+2. `financial_intro` — finansal analiz bölümü girişi (2-3 cümle)
+3. `valuation` — değerleme yorumu (DCF + çarpan analizi, 4-6 cümle)
+4. `closing` — sonuç paragrafı (2-3 cümle)
 
-### Placeholder Eşleştirme Tablosu
+`compose.ts` bu blokları `{{#if card_summary}}...{{/if}}` koşullu template slotlarına yerleştirir. Eksik blok bırakırsan slot sessizce gizlenir — HTML yine valid kalır.
 
-| Placeholder | Kaynak |
-|---|---|
-| `{{TICKER}}` | Session ticker |
-| `{{COMPANY_NAME}}` | context_extraction → company_name |
-| `{{REPORT_DATE}}` | Bugünün tarihi (DD.MM.YYYY) |
-| `{{BRAND_PRIMARY}}` | context_extraction → brand_identity.primary_color (default: #1e40af) |
-| `{{BRAND_SECONDARY}}` | context_extraction → brand_identity.secondary_color (default: #1a1a2e) |
-| `{{BRAND_ACCENT}}` | context_extraction → brand_identity.accent_color (default: #f59e0b) |
-| `{{BRAND_BG}}` | context_extraction → brand_identity.background_color (default: #f8fafc) |
-| `{{TICKER_SHORT}}` | Ticker'ın ilk 4 harfi |
-| `{{INVESTOR_CARD_CONTENT}}` | strategic_synthesis → yatırımcı kartı HTML |
-| `{{FINANCIAL_TABLES_CONTENT}}` | financial_analysis → 5 yıllık tablo HTML |
-| `{{RATIO_ANALYSIS_CONTENT}}` | financial_analysis → oran analizi + Chart.js grafikleri |
-| `{{SECTOR_COMPETITION_CONTENT}}` | sector_competition → sektör analizi HTML |
-| `{{VALUATION_CONTENT}}` | valuation_agent → değerleme + senaryo kutuları HTML |
-| `{{TECHNICAL_ANALYSIS_CONTENT}}` | technical_analysis → teknik analiz HTML |
-| `{{MACRO_ANALYSIS_CONTENT}}` | macro_analysis → makro analiz HTML |
-| `{{SWOT_CONTENT}}` | strategic_synthesis → SWOT grid HTML |
-| `{{RISK_MATRIX_CONTENT}}` | strategic_synthesis → risk matrisi HTML |
+**Yapmaman gerekenler:**
+- Sıfırdan HTML üretme
+- CSS yaz ma, `:root` değişkeni override etme (theme preset sistemi halleder)
+- `<svg>` grafikleri yazma (svg_charts.ts deterministik üretir)
+- Table HTML üretme (compose.ts financial_analysis → tablo)
+- Chart.js kullanma (yasak, SVG only)
 
-### HTML Üretim Kuralları (Placeholder Doldurma)
+**Canonical template:** `backend/src/python/report_formatter/template.html` (12 bölüm, Handlebars-stili `{{#if}}` / `{{#each}}` blokları). LLM olarak bu dosyayı okuman gerekmez.
 
-1. **Tablolarda `class="num"` kullan** — sayısal sütunlar sağa hizalı olsun
-2. **Her tablonun önünde 2 cümle, arkasında 3 cümle yorum** — metin sandviç kuralı
-3. **KPI kartlarında `class="kpi-grid"` kullan** — 4'lü grid otomatik
-4. **Chart.js grafikleri `class="chart-container"` içinde** — max-height: 250px otomatik
-5. **SWOT kutuları `class="swot-grid"` içinde** — 2x2 grid otomatik
-6. **Senaryo kutuları `class="scenario-grid"` içinde** — 3'lü grid otomatik
-7. **`[VERİ YOK]` olan metrikleri tabloda boş bırak** — uydurma rakam yazma
+### Narrative Bloklarının Yapısı
+
+Her blok **Türkçe düz paragraf metni** olarak döndürülür (HTML markup YOK). `compose.ts` otomatik olarak `<p>` ile sarar ve ilgili bölüm slotuna enjekte eder.
+
+| Blok | Bölüm | Uzunluk | Kaynak |
+|---|---|---|---|
+| `card_summary` | I. Yönetici Özeti | 3-5 cümle | financial_analysis + strategic_synthesis |
+| `financial_intro` | III. Finansal Analiz | 2-3 cümle | financial_analysis highlights |
+| `valuation` | IV. Değerleme | 4-6 cümle | valuation_agent (DCF + çarpan) |
+| `closing` | XII. Sonuç & Öneriler | 2-3 cümle | strategic_synthesis + final_summary |
+
+**Metin kuralları:**
+1. `[VERİ YOK]` olan metrikleri "raporlanmadı" olarak geç — uydurma rakam yazma
+2. Her rakamda kaynak belirt: `"2024 FAVÖK marjı %18.2 [KAYNAK: parse_standardization]"`
+3. Guven seviyelerini koru: "Yüksek güvenle söyleyebiliriz ki..." veya "Ön tahmin (Orta güven)..."
+4. Sektör jargonunu açıkla: "NIM (Net Faiz Marjı)" formatında ilk kullanımda
+5. Rakamları Türkçe biçimle yaz: `1.234.567` (nokta binlik), `%18,2` (virgül ondalık)
 
 ---
 
@@ -282,23 +279,26 @@ Her sayfanın **sağ üst köşesine** şirket logosu veya kısaltması:
 
 ---
 
-## ZORUNLU BÖLÜMLER (bu sırada)
+## ZORUNLU BÖLÜMLER (Canonical — 12 Bölüm, Roman Numaralı)
 
-1. **Kapak Sayfası** — Gradient arka plan, şirket adı (büyük), BIST kodu, tarih, "Kapsamlı Şirket Analizi", Finance X logosu
-2. **Yönetici Özeti** — 4 KPI kartı (Hasılat, Net Kar, FAVÖK Marjı, ROE) + Ana Sonuç callout + Güçlü/Zayıf yönler iki sütun
-3. **Şirket Profili** — İş modeli, ortaklık yapısı (pasta SVG), yönetim kadrosu, gelir dağılımı (bar SVG)
-4. **Finansal Performans** — 5 yıllık gelir tablosu + bar grafik (net kar trendi + ROE çizgi)
-5. **Karlılık Analizi** — FAVÖK/NIM trend grafiği + sektör benchmark + detay tablo
-6. **Bilanço ve Borçluluk** — Net Borç/FAVÖK, Cari Oran, faiz karşılama + grafik
-7. **Nakit Akışı** — FCF trendi, CAPEX/Hasılat, işletme sermayesi metrikleri
-8. **Değerleme** — F/K, FD/FAVÖK, PD/DD tarihsel + akran karşılaştırma + Bear/Baz/Bull hedef fiyat tablosu
-9. **Sektör Karşılaştırması** — Grouped bar SVG (4-5 metrik) + SWOT tablosu
-10. **Makro Ortam** — 4 KPI kartı (faiz, enflasyon, kur, büyüme) + etki tablosu + jeopolitik riskler
-11. **Teknik Analiz** — Destek/direnç tablosu + MA tablosu + 3 senaryo analizi
-12. **KAP Olayları** — Son 12 ay olay tablosu + etki değerlendirmesi
-13. **Risk Değerlendirmesi** — Yatay bar SVG (risk skorları 0-10) + risk detay tablosu
-14. **Genel Değerlendirme** — Skor kartı tablosu + izleme planı + kritik kilometre taşları
-15. **Zorunlu Bildirimler** — Yasal uyarılar, veri kaynakları, sınırlamalar
+Template ve `compose.ts` bu sırayı takip eder. **Bu yapıyı değiştirmeyi teklif etme; `permanent_rules.md` canonical kayıttır.**
+
+| # | Bölüm | İçerik özeti |
+|---|---|---|
+| I | Yönetici Özeti | 4 KPI kartı + yatırımcı kartı + Güçlü/Zayıf yönler + Veri Kalite Uyarı kutusu |
+| II | Şirket Profili | İş modeli, ortaklık yapısı (pasta SVG), yönetim kadrosu, gelir dağılımı (bar SVG) |
+| III | Finansal Analiz | 5 yıllık IS/BS/CF tabloları + ratio tabloları + FAVÖK/FCF trend SVG |
+| IV | Değerleme | F/K, FD/FAVÖK, PD/DD tarihsel + peer + DCF + Bear/Baz/Bull senaryo kutuları |
+| V | Sektör & Rekabet | Grouped bar SVG + Porter's 5 Forces + SWOT 2×2 |
+| VI | Makro | 4 KPI (faiz, enflasyon, kur, büyüme) + etki tablosu + jeopolitik risk |
+| VII | Teknik Analiz | Destek/direnç tablosu + MA tablosu + 3 senaryo analizi |
+| VIII | ESG | Karbon maliyeti (CBAM/ETS), sosyal skorlar, governance bulguları |
+| IX | Haber & Sentiment | Son 30 gün sentiment dağılımı + manşet seçkisi |
+| X | KAP Olayları | Son 12 ay olay tablosu + finansal etki mapping |
+| XI | Risk | Yatay bar SVG (risk skorları 0-10) + risk detay tablosu + ısı haritası |
+| XII | Sonuç & Öneriler | Yatırım tezi + katalizörler + izleme planı + metodoloji + Zorunlu Bildirimler |
+
+**Kapak + İçindekiler + 12 bölüm = toplam 14 `.page` div**. Bu rakam regression eşiği olarak `evals/golden/{TICKER}.expected.json`'da saklanır.
 
 ---
 
