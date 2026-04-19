@@ -5,9 +5,7 @@ dist/
 !.env.example
 *.tsbuildinfo
 
-# Generated PDFs and binary output (kept off git)
-output/pdfs/
-output/bist30/
+# Generated output metadata (PDFs are tracked)
 output/*.txt
 output/*.md
 output/*.json
