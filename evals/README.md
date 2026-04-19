@@ -1,64 +1,47 @@
-# Paperclip Evals
+# Finance X Evals
 
-Eval framework for testing Paperclip agent behaviors across models and prompt versions.
+Rapor kalite ve agent çıktı doğrulama için eval framework.
 
-See [the evals framework plan](../doc/plans/2026-03-13-agent-evals-framework.md) for full design rationale.
+## İçerik
 
-## Quick Start
+- `golden/` — Ticker başına beklenen çıktı snapshot'ları (bölüm sayısı, char count, SVG sayısı, kritik metrikler)
+- `baseline.json` — Baseline latency/cost/quality metrikleri
+- `run-eval.py` / `run-eval.ts` — Eval runner (Python + TypeScript muadili)
+- `test-engine*.py` — Financial engine test suite
+- `test-validator.py` — Schema validation test
 
-### Prerequisites
+## Gereksinimler
 
-```bash
-pnpm add -g promptfoo
-```
+- Python 3.11+, uv
+- Node.js 20+
+- `.env` içinde `ANTHROPIC_API_KEY`
 
-You need an API key for at least one provider. Set one of:
-
-```bash
-export OPENROUTER_API_KEY=sk-or-...    # OpenRouter (recommended - test multiple models)
-export ANTHROPIC_API_KEY=sk-ant-...     # Anthropic direct
-export OPENAI_API_KEY=sk-...            # OpenAI direct
-```
-
-### Run evals
+## Çalıştırma
 
 ```bash
-# Smoke test (default models)
-pnpm evals:smoke
+# Tam regression
+python evals/run-eval.py
 
-# Or run promptfoo directly
-cd evals/promptfoo
-promptfoo eval
+# Tek ticker golden compare
+python evals/run-eval.py --ticker TUPRS
 
-# View results in browser
-promptfoo view
+# Financial engine unit
+python evals/test-engine-unit.py
 ```
 
-### What's tested
+## Yeni Golden Ekleme
 
-Phase 0 covers narrow behavior evals for the Paperclip heartbeat skill:
+1. Tam pipeline çalıştır: `pnpm dev` → `POST /api/analysis/start { ticker, runtime_mode }`
+2. Üretilen rapor onaylandıktan sonra:
+   ```bash
+   python evals/run-eval.py --ticker XXX --save-golden
+   ```
+3. `evals/golden/XXX.expected.json` oluşur — PR'a ekle.
 
-| Case | Category | What it checks |
-|------|----------|---------------|
-| Assignment pickup | `core` | Agent picks up todo/in_progress tasks correctly |
-| Progress update | `core` | Agent writes useful status comments |
-| Blocked reporting | `core` | Agent recognizes and reports blocked state |
-| Approval required | `governance` | Agent requests approval instead of acting |
-| Company boundary | `governance` | Agent refuses cross-company actions |
-| No work exit | `core` | Agent exits cleanly with no assignments |
-| Checkout before work | `core` | Agent always checks out before modifying |
-| 409 conflict handling | `core` | Agent stops on 409, picks different task |
+## Regression Eşikleri
 
-### Adding new cases
-
-1. Add a YAML file to `evals/promptfoo/cases/`
-2. Follow the existing case format (see `core-assignment-pickup.yaml` for reference)
-3. Run `promptfoo eval` to test
-
-### Phases
-
-- **Phase 0 (current):** Promptfoo bootstrap - narrow behavior evals with deterministic assertions
-- **Phase 1:** TypeScript eval harness with seeded scenarios and hard checks
-- **Phase 2:** Pairwise and rubric scoring layer
-- **Phase 3:** Efficiency metrics integration
-- **Phase 4:** Production-case ingestion
+- Rapor HTML min 30.000 karakter
+- Bölüm sayısı = 12 (I–XII)
+- Minimum 4 SVG grafik
+- Kapak + 11 içerik sayfa = toplam 12 `.page` div
+- Chart.js canvas yasak (svgCount ≥ 1 ve canvasCount = 0)

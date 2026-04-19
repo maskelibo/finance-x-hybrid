@@ -22,11 +22,45 @@ import { nanoid } from 'nanoid';
 import { db } from '../../db.js';
 import { renderTemplate } from './template_engine.js';
 import { composeReportContext } from './compose.js';
+import { applyTheme, getTheme, mergeBrandOverride, type BrandOverride, type ThemeName } from './themes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE_PATH = path.join(__dirname, 'template.html');
-// Load the template once at module-load time. It's ~9KB, negligible.
+// Load the template once at module-load time. It's ~57KB, negligible.
 const TEMPLATE = readFileSync(TEMPLATE_PATH, 'utf-8');
+
+
+/** Read theme name from session metadata or accumulatedContext.
+ *  Falls back to DEFAULT_THEME. Recognized sources:
+ *    - accumulatedContext.theme         (set by API handler from session.theme)
+ *    - session row has a theme column   (optional future extension)
+ */
+function resolveTheme(accumulatedContext: Record<string, unknown>): ThemeName {
+  const raw = accumulatedContext['theme'];
+  if (typeof raw === 'string' && raw.length > 0) return raw as ThemeName;
+  return 'institutional';
+}
+
+
+/** Pull brand color override from context_extraction output, if present. */
+function resolveBrandOverride(accumulatedContext: Record<string, unknown>): BrandOverride | undefined {
+  const raw = accumulatedContext['context_extraction_output'];
+  if (!raw) return undefined;
+  let parsed: Record<string, unknown> | null = null;
+  try {
+    parsed = typeof raw === 'string' ? JSON.parse(raw) : raw as Record<string, unknown>;
+  } catch {
+    return undefined;
+  }
+  if (!parsed) return undefined;
+  const brand = parsed['brand_identity'] as Record<string, unknown> | undefined;
+  if (!brand) return undefined;
+  const override: BrandOverride = {};
+  if (typeof brand.primary_color === 'string') override.primary = brand.primary_color;
+  if (typeof brand.secondary_color === 'string') override.primaryDark = brand.secondary_color;
+  if (typeof brand.accent_color === 'string') override.accent = brand.accent_color;
+  return Object.keys(override).length > 0 ? override : undefined;
+}
 
 
 export type RunOutcome = 'ok' | 'failed';
@@ -54,7 +88,13 @@ export async function runPythonReportFormatter(
       // (passing undefined lets composeReportContext use buildNarrativeBlocks)
     });
 
-    const html = renderTemplate(TEMPLATE, ctx);
+    // Resolve theme: API/session-level override → company brand override → render.
+    const themeName = resolveTheme(accumulatedContext);
+    const brandOverride = resolveBrandOverride(accumulatedContext);
+    const theme = mergeBrandOverride(getTheme(themeName), brandOverride);
+    const themedTemplate = applyTheme(TEMPLATE, theme);
+
+    const html = renderTemplate(themedTemplate, ctx);
 
     // Formatter output is historically a JSON envelope {formatted_html: "..."}.
     // Preserve that contract so downstream (PDF gen, COO delivery check) still works.

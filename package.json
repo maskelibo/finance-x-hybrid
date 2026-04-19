@@ -1,46 +1,20 @@
 {
-  "name": "paperclip",
+  "name": "finance-x-hybrid",
   "private": true,
   "type": "module",
+  "description": "Finance X — BIST şirketleri için 22 ajanlı kurumsal araştırma orkestrasyonu",
   "scripts": {
-    "dev": "cd backend && node dist/server.cjs",
-    "dev:server": "cd backend && node dist/server.cjs",
-    "dev:server:tsx": "cd backend && npx tsx src/server.ts",
-    "build:server": "cd backend && ../node_modules/.bin/esbuild src/server.ts --bundle --platform=node --format=cjs --outfile=dist/server.cjs --external:better-sqlite3 --external:puppeteer --external:pdf-parse --external:dotenv --define:import.meta.url=__import_meta_url --banner:js=\"const __import_meta_url = require('url').pathToFileURL(__filename).href;\"",
+    "dev": "cd backend && npx tsx src/server.ts",
+    "dev:server": "cd backend && npx tsx src/server.ts",
     "dev:dashboard": "cd dashboard && npm run dev",
     "dev:all": "cd backend && npx tsx src/server.ts & cd dashboard && npm run dev",
-    "dev:ui": "cd dashboard && npm run dev",
     "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "db:generate": "pnpm --filter @paperclipai/db generate",
-    "db:migrate": "pnpm --filter @paperclipai/db migrate",
-    "secrets:migrate-inline-env": "tsx scripts/migrate-inline-env-secrets.ts",
-    "db:backup": "./scripts/backup-db.sh",
-    "paperclipai": "node cli/node_modules/tsx/dist/cli.mjs cli/src/index.ts",
-    "build:npm": "./scripts/build-npm.sh",
-    "release": "./scripts/release.sh",
-    "release:canary": "./scripts/release.sh canary",
-    "release:stable": "./scripts/release.sh stable",
-    "release:github": "./scripts/create-github-release.sh",
-    "release:rollback": "./scripts/rollback-latest.sh",
-    "check:tokens": "node scripts/check-forbidden-tokens.mjs",
-    "docs:dev": "cd docs && npx mintlify dev",
-    "smoke:openclaw-join": "./scripts/smoke/openclaw-join.sh",
-    "smoke:openclaw-docker-ui": "./scripts/smoke/openclaw-docker-ui.sh",
-    "smoke:openclaw-sse-standalone": "./scripts/smoke/openclaw-sse-standalone.sh",
-    "test:e2e": "npx playwright test --config tests/e2e/playwright.config.ts",
-    "test:e2e:headed": "npx playwright test --config tests/e2e/playwright.config.ts --headed",
-    "evals:smoke": "cd evals/promptfoo && npx promptfoo@0.103.3 eval",
-    "test:release-smoke": "npx playwright test --config tests/release-smoke/playwright.config.ts",
-    "test:release-smoke:headed": "npx playwright test --config tests/release-smoke/playwright.config.ts --headed",
-    "metrics:paperclip-commits": "tsx scripts/paperclip-commit-metrics.ts"
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "cd backend && npm test",
+    "test:run": "cd backend && npm test",
+    "schemas:regen": "cd backend && npm run schemas:regen"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
-    "cross-env": "^10.1.0",
-    "esbuild": "^0.27.3",
     "typescript": "^5.7.3",
     "vitest": "^3.0.5"
   },
@@ -48,14 +22,6 @@
     "node": ">=20"
   },
   "packageManager": "pnpm@9.15.4",
-  "pnpm": {
-    "patchedDependencies": {
-      "embedded-postgres@18.1.0-beta.16": "patches/embedded-postgres@18.1.0-beta.16.patch"
-    },
-    "overrides": {
-      "rollup": ">=4.59.0"
-    }
-  },
   "dependencies": {
     "pdf-parse": "^2.4.5"
   }

@@ -65,8 +65,13 @@ async function generatePdfFromFormatterOutput(ticker: string, formatterOutput: s
   if (htmlDocMatch) {
     html = htmlDocMatch[0];
   } else if (html.includes('<!DOCTYPE html>') || html.includes('<html')) {
-    // HTML başlamış ama </html> ile bitmemiş — truncation olmuş, kapanışı ekle
-    console.warn(`[orchestrator] HTML truncated — </html> kapanışı eksik, otomatik ekleniyor`);
+    // HTML başlamış ama </html> ile bitmemiş — truncation. The Python-side
+    // formatter (runner.ts + compose.ts) is deterministic and always emits a
+    // complete document, so a truncated envelope here almost certainly means
+    // an LLM-driven formatter fallback. We still close the tags to produce
+    // *something* printable, but we log an error instead of a warning so it
+    // surfaces in monitoring.
+    console.error(`[orchestrator] HTML truncated — </html> missing. Expected deterministic formatter output; an LLM fallback likely ran. Closing tags automatically.`);
     if (!html.includes('</body>')) html += '\n</body>';
     if (!html.includes('</html>')) html += '\n</html>';
   } else {
@@ -92,19 +97,25 @@ async function generatePdfFromFormatterOutput(ticker: string, formatterOutput: s
     return '';
   }
 
-  const pageCount = (html.match(/class="page"/g) || []).length;
-  if (pageCount < 3) {
-    console.warn(`[orchestrator] HTML has only ${pageCount} pages (expected 12-16). report_formatter may have truncated.`);
+  // Template has 14 page divs: cover + table of contents + 12 sections (I–XII).
+  // If fewer than 10, formatter likely truncated before the sections completed.
+  // Match the `.page` div specifically (not `.page-header` / `.page-inner`).
+  const pageCount = (html.match(/class="page(?:\s|")/g) || []).length;
+  if (pageCount < 10) {
+    console.warn(`[orchestrator] HTML has only ${pageCount} pages (expected 14: cover + TOC + 12 sections). report_formatter may have truncated.`);
     // Don't block — generate PDF but log warning for investigation
   }
 
-  const chartCount = (html.match(/<canvas/g) || []).length;
   const svgCount = (html.match(/<svg/gi) || []).length;
-  if (svgCount === 0 && chartCount === 0) {
-    console.warn(`[orchestrator] HTML has no charts (no SVG or Chart.js canvas). Charts may be missing from report.`);
+  const canvasCount = (html.match(/<canvas/g) || []).length;
+  if (svgCount === 0) {
+    console.warn(`[orchestrator] HTML has no SVG charts — report will look flat. Expected min 4 SVG (revenue, peers, scenarios, risk).`);
+  }
+  if (canvasCount > 0) {
+    console.warn(`[orchestrator] HTML contains ${canvasCount} <canvas> element(s) — Chart.js is forbidden in this pipeline; expected inline SVG only.`);
   }
 
-  console.log(`[orchestrator] HTML validation passed: ${html.length} chars, ${pageCount} pages, ${svgCount} SVGs, ${chartCount} canvas charts`);
+  console.log(`[orchestrator] HTML validation passed: ${html.length} chars, ${pageCount} pages, ${svgCount} SVGs`);
   // --- END HTML QUALITY VALIDATION ---
 
   // Dynamic import puppeteer (it's a CommonJS module)
@@ -124,26 +135,10 @@ async function generatePdfFromFormatterOutput(ticker: string, formatterOutput: s
   // Viewport A4 boyutunda — CSS media print ile uyumlu
   await page.setViewport({ width: 794, height: 1123 }); // A4 @ 96dpi
 
-  // Chart.js CDN'den yüklenebilmesi için networkidle0 kullan
-  await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
-
-  // Chart.js renderını bekle — canvas'lar render olana kadar
-  try {
-    await page.waitForFunction(() => {
-      const canvases = document.querySelectorAll('canvas');
-      if (canvases.length === 0) return true; // Chart yoksa beklemesine gerek yok
-      // Chart.js 4.x chart instance kontrolü
-      return Array.from(canvases).every(c => {
-        const ctx = c.getContext('2d');
-        return ctx && c.width > 0 && c.height > 0;
-      });
-    }, { timeout: 15000 });
-  } catch {
-    console.warn(`[orchestrator] Chart.js render bekleme timeout — devam ediliyor`);
-  }
-
-  // Ek güvenlik için kısa bekleme (animasyonlar)
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  // All charts are inline SVG (Chart.js forbidden) — no CDN wait needed.
+  // `domcontentloaded` is enough for static HTML, ~20s faster than `networkidle0`
+  // and avoids hanging when offline/proxied.
+  await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
   const date = new Date().toISOString().slice(0, 10);
   const pdfFilename = `${ticker}_Yonetim_Kurulu_Raporu_${date.replace(/-/g, '')}.pdf`;
@@ -255,15 +250,21 @@ function buildPipelineForLayers(runtimeMode: RuntimeMode, layers?: AnalysisLayer
   return basePipeline.filter(agentId => required.has(agentId));
 }
 
-export function startAnalysisSession(ticker: string, runtimeMode: RuntimeMode, layers?: AnalysisLayer[]): string {
+export function startAnalysisSession(
+  ticker: string,
+  runtimeMode: RuntimeMode,
+  layers?: AnalysisLayer[],
+  theme?: string,
+): string {
   const sessionId = nanoid();
   const now = new Date().toISOString();
   const selectedLayers = layers && layers.length > 0 ? layers : MODE_DEFAULT_LAYERS[runtimeMode];
+  const resolvedTheme = theme && ['institutional', 'anthropic', 'minimal'].includes(theme) ? theme : 'institutional';
 
   db.prepare(`
-    INSERT INTO analysis_sessions (id, ticker, runtime_mode, selected_layers, status, started_at)
-    VALUES (?, ?, ?, ?, 'pending', ?)
-  `).run(sessionId, ticker.toUpperCase(), runtimeMode, JSON.stringify(selectedLayers), now);
+    INSERT INTO analysis_sessions (id, ticker, runtime_mode, selected_layers, theme, status, started_at)
+    VALUES (?, ?, ?, ?, ?, 'pending', ?)
+  `).run(sessionId, ticker.toUpperCase(), runtimeMode, JSON.stringify(selectedLayers), resolvedTheme, now);
 
   const agentIds = buildPipelineForLayers(runtimeMode, selectedLayers);
   const insertRun = db.prepare(`
@@ -1111,7 +1112,14 @@ async function executeSession(
   // Rebuild context from completed runs (resume support)
   const completedRuns = db.prepare(`SELECT agent_id, output_text FROM agent_runs WHERE session_id = ? AND status = 'completed'`)
     .all(sessionId) as any[];
-  const accumulatedContext: Record<string, unknown> = { ticker, runtimeMode };
+
+  // Read session-level theme so the report_formatter can apply the right preset.
+  const sessionThemeRow = db.prepare(`SELECT theme FROM analysis_sessions WHERE id = ?`).get(sessionId) as { theme?: string } | undefined;
+  const accumulatedContext: Record<string, unknown> = {
+    ticker,
+    runtimeMode,
+    theme: sessionThemeRow?.theme || 'institutional',
+  };
   for (const r of completedRuns) {
     if (r.output_text) accumulatedContext[`${r.agent_id}_output`] = String(r.output_text).slice(0, 1000000);
   }

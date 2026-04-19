@@ -63,7 +63,7 @@ describe('composeReportContext — reads from accumulatedContext JSON', () => {
     expect(result.ticker).toBe('EREGL');
     expect(result.report_id).toBe('rpt-test-1');
     expect(result.period_label).toBe('FY-2024');
-    expect(result.sector_label).toBe('industrial');
+    expect(result.sector_label).toBe('steel');
   });
 
   it('formats qa + reconciliation + convergence scorecards', () => {

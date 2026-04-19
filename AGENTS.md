@@ -1,201 +1,90 @@
-# AGENTS.md
+# AGENTS.md — Finance X Contributor Guide
 
-Guidance for human and AI contributors working in this repository.
+Human ve AI contributor'lar için bu repo'da çalışma rehberi.
 
-## 1. Purpose
+## 1. Amaç
 
-Paperclip is a control plane for AI-agent companies.
-The current implementation target is V1 and is defined in `doc/SPEC-implementation.md`.
+Finance X, BIST şirketleri için **22 ajanlı kurumsal araştırma orkestrasyon platformu**. Veri toplamadan (KAP, bilançolar) 12 bölümlü Yönetim Kurulu PDF raporuna kadar tüm zinciri bir arada koşturur.
 
-## 2. Read This First
+## 2. Önce Bunları Oku
 
-Before making changes, read in this order:
+1. `README.md` — üst düzey proje özeti
+2. `workflows/full_integrated_analysis.md` — 10 katmanlı pipeline spec
+3. `agents/ceo/system_prompt.md` — CEO governance ve review kuralları
+4. `agents/orchestrator/system_prompt.md` — dependency chain, task dispatch
+5. `agents/report_formatter/system_prompt.md` — rapor format kuralları, metin-görsel dengesi
+6. `schemas/shared/agent_output_contract.schema.json` — universal output zarfı
 
-1. `doc/GOAL.md`
-2. `doc/PRODUCT.md`
-3. `doc/SPEC-implementation.md`
-4. `doc/DEVELOPING.md`
-5. `doc/DATABASE.md`
+## 3. Repo Haritası
 
-`doc/SPEC.md` is long-horizon product context.
-`doc/SPEC-implementation.md` is the concrete V1 build contract.
+- `backend/` — Node.js orchestrator + Express API + Puppeteer PDF
+  - `src/orchestrator.ts` — 22-agent DAG dispatcher
+  - `src/agent-runner.ts` — LLM call + prompt injection
+  - `src/heartbeat.ts` — otonom CEO döngüsü
+  - `src/python/report_formatter/` — deterministik HTML + theme render
+  - `src/python/agent_runners/` — 22 Python adapter
+  - `src/llm/` — Claude provider + prompt caching
+- `dashboard/` — React + Vite UI
+- `agents/` — 22 ajan: system_prompt, knowledge, memory, output_schema, agent_spec
+- `python-services/` — deterministik hesaplayıcılar (ratio, DCF, macro, technical)
+- `prompts/` — shared_directives.md
+- `schemas/` — JSON Schema contracts
+- `templates/` — legacy root template (canonical: `backend/src/python/report_formatter/template.html`)
+- `workflows/` — pipeline workflow specs
+- `evals/` — regression evals, golden tests
+- `skills/` — Claude Code skills (örn. `para-memory-files`)
+- `output/` — generated reports (HTML + PDF)
+- `scripts/` — Finance-X özel araçlar (BIST30 indirme, HTML→PDF)
 
-## 3. Repo Map
+## 4. Geliştirme Kurulumu
 
-- `server/`: Express REST API and orchestration services
-- `ui/`: React + Vite board UI
-- `packages/db/`: Drizzle schema, migrations, DB clients
-- `packages/shared/`: shared types, constants, validators, API path constants
-- `packages/adapters/`: agent adapter implementations (Claude, Codex, Cursor, etc.)
-- `packages/adapter-utils/`: shared adapter utilities
-- `packages/plugins/`: plugin system packages
-- `doc/`: operational and product docs
-
-## 4. Dev Setup (Auto DB)
-
-Use embedded PGlite in dev by leaving `DATABASE_URL` unset.
-
-```sh
+```bash
 pnpm install
-pnpm dev
+cp .env.example .env   # ANTHROPIC_API_KEY'i doldur
+pnpm dev               # backend @ localhost:4000
+pnpm dev:dashboard     # dashboard @ localhost:5173
 ```
 
-This starts:
+## 5. Hızlı Kontroller
 
-- API: `http://localhost:3100`
-- UI: `http://localhost:3100` (served by API server in dev middleware mode)
-
-Quick checks:
-
-```sh
-curl http://localhost:3100/api/health
-curl http://localhost:3100/api/companies
+```bash
+pnpm typecheck         # TS tip kontrolü
+pnpm test:run          # Vitest (backend)
 ```
 
-Reset local dev DB:
+## 6. Pipeline Modları
 
-```sh
-rm -rf data/pglite
-pnpm dev
-```
+| Mod | Süre | Agent sayısı |
+|---|---|---|
+| `fast_screening` | 10-20 min | ~6 |
+| `standard_institutional` | 30-60 min | ~15 |
+| `deep_dive` | 90-180 min | 22 |
 
-## 5. Core Engineering Rules
+## 7. Rapor Üretim Akışı
 
-1. Keep changes company-scoped.
-Every domain entity should be scoped to a company and company boundaries must be enforced in routes/services.
+1. CEO task_contract oluşturur
+2. Orchestrator DAG'ı çözer, ajanları sırayla/paralel çalıştırır
+3. Her ajan `agent_output_contract` zarfında çıktı döner (AJV ile schema validate)
+4. QA Review rubric skorlaması yapar; revision_requested ise max 2 retry
+5. Strategic_synthesis + final_summary sentezi
+6. CEO onayı
+7. report_formatter → HTML (deterministik `compose.ts` + opsiyonel LLM narrative)
+8. Puppeteer PDF render → `output/pdfs/{ticker}_Yonetim_Kurulu_Raporu_{YYYYMMDD}.pdf`
 
-2. Keep contracts synchronized.
-If you change schema/API behavior, update all impacted layers:
-- `packages/db` schema and exports
-- `packages/shared` types/constants/validators
-- `server` routes/services
-- `ui` API clients and pages
+## 8. Kritik Kurallar
 
-3. Preserve control-plane invariants.
-- Single-assignee task model
-- Atomic issue checkout semantics
-- Approval gates for governed actions
-- Budget hard-stop auto-pause behavior
-- Activity logging for mutating actions
+- **Her sayıda** `[KAYNAK: document_id]` veya `[VERİ YOK]` etiketi olmalı (Chairman direktifi)
+- Rapor formatter **12 bölümlü** şemaya uyar (canonical: `backend/src/python/report_formatter/template.html`)
+- Chart.js **yasaktır**; grafikler `svg_charts.ts` ile deterministik SVG üretilir
+- Metin sandviç: her tablo/grafiğin önünde 2 cümle, arkasında 3-5 cümle yorum
+- Brand identity: `context_extraction.brand_identity` → CSS `:root` variables → theme preset
 
-4. Do not replace strategic docs wholesale unless asked.
-Prefer additive updates. Keep `doc/SPEC.md` and `doc/SPEC-implementation.md` aligned.
+## 9. Test Etiket Formatı
 
-5. Keep plan docs dated and centralized.
-New plan documents belong in `doc/plans/` and should use `YYYY-MM-DD-slug.md` filenames.
+Evals ve regression golden'ları ticker başlığıyla dizilir:
+- `evals/golden/{TICKER}.expected.json` — beklenen bölüm sayısı, char count, SVG sayısı
+- `evals/run-eval.ts` CI'da tüm ticker'ları döngüler
 
-## 6. Database Change Workflow
+## 10. Lisans
 
-When changing data model:
-
-1. Edit `packages/db/src/schema/*.ts`
-2. Ensure new tables are exported from `packages/db/src/schema/index.ts`
-3. Generate migration:
-
-```sh
-pnpm db:generate
-```
-
-4. Validate compile:
-
-```sh
-pnpm -r typecheck
-```
-
-Notes:
-- `packages/db/drizzle.config.ts` reads compiled schema from `dist/schema/*.js`
-- `pnpm db:generate` compiles `packages/db` first
-
-## 7. Verification Before Hand-off
-
-Run this full check before claiming done:
-
-```sh
-pnpm -r typecheck
-pnpm test:run
-pnpm build
-```
-
-If anything cannot be run, explicitly report what was not run and why.
-
-## 8. API and Auth Expectations
-
-- Base path: `/api`
-- Board access is treated as full-control operator context
-- Agent access uses bearer API keys (`agent_api_keys`), hashed at rest
-- Agent keys must not access other companies
-
-When adding endpoints:
-
-- apply company access checks
-- enforce actor permissions (board vs agent)
-- write activity log entries for mutations
-- return consistent HTTP errors (`400/401/403/404/409/422/500`)
-
-## 9. UI Expectations
-
-- Keep routes and nav aligned with available API surface
-- Use company selection context for company-scoped pages
-- Surface failures clearly; do not silently ignore API errors
-
-## 10. Pull Request Requirements
-
-When creating a pull request (via `gh pr create` or any other method), you **must** read and fill in every section of [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md). Do not craft ad-hoc PR bodies — use the template as the structure for your PR description. Required sections:
-
-- **Thinking Path** — trace reasoning from project context to this change (see `CONTRIBUTING.md` for examples)
-- **What Changed** — bullet list of concrete changes
-- **Verification** — how a reviewer can confirm it works
-- **Risks** — what could go wrong
-- **Model Used** — the AI model that produced or assisted with the change (provider, exact model ID, context window, capabilities). Write "None — human-authored" if no AI was used.
-- **Checklist** — all items checked
-
-## 11. Definition of Done
-
-A change is done when all are true:
-
-1. Behavior matches `doc/SPEC-implementation.md`
-2. Typecheck, tests, and build pass
-3. Contracts are synced across db/shared/server/ui
-4. Docs updated when behavior or commands change
-5. PR description follows the [PR template](.github/PULL_REQUEST_TEMPLATE.md) with all sections filled in (including Model Used)
-
-## 11. Fork-Specific: HenkDz/paperclip
-
-This is a fork of `paperclipai/paperclip` with QoL patches and an **external-only** Hermes adapter story on branch `feat/externalize-hermes-adapter` ([tree](https://github.com/HenkDz/paperclip/tree/feat/externalize-hermes-adapter)).
-
-### Branch Strategy
-
-- `feat/externalize-hermes-adapter` → core has **no** `hermes-paperclip-adapter` dependency and **no** built-in `hermes_local` registration. Install Hermes via the Adapter Plugin manager (`@henkey/hermes-paperclip-adapter` or a `file:` path).
-- Older fork branches may still document built-in Hermes; treat this file as authoritative for the externalize branch.
-
-### Hermes (plugin only)
-
-- Register through **Board → Adapter manager** (same as Droid). Type remains `hermes_local` once the package is loaded.
-- UI uses generic **config-schema** + **ui-parser.js** from the package — no Hermes imports in `server/` or `ui/` source.
-- Optional: `file:` entry in `~/.paperclip/adapter-plugins.json` for local dev of the adapter repo.
-
-### Local Dev
-
-- Fork runs on port 3101+ (auto-detects if 3100 is taken by upstream instance)
-- `npx vite build` hangs on NTFS — use `node node_modules/vite/bin/vite.js build` instead
-- Server startup from NTFS takes 30-60s — don't assume failure immediately
-- Kill ALL paperclip processes before starting: `pkill -f "paperclip"; pkill -f "tsx.*index.ts"`
-- Vite cache survives `rm -rf dist` — delete both: `rm -rf ui/dist ui/node_modules/.vite`
-
-### Fork QoL Patches (not in upstream)
-
-These are local modifications in the fork's UI. If re-copying source, these must be re-applied:
-
-1. **stderr_group** — amber accordion for MCP init noise in `RunTranscriptView.tsx`
-2. **tool_group** — accordion for consecutive non-terminal tools (write, read, search, browser)
-3. **Dashboard excerpt** — `LatestRunCard` strips markdown, shows first 3 lines/280 chars
-
-### Plugin System
-
-PR #2218 (`feat/external-adapter-phase1`) adds external adapter support. See root `AGENTS.md` for full details.
-
-- Adapters can be loaded as external plugins via `~/.paperclip/adapter-plugins.json`
-- The plugin-loader should have ZERO hardcoded adapter imports — pure dynamic loading
-- `createServerAdapter()` must include ALL optional fields (especially `detectModel`)
-- Built-in UI adapters can shadow external plugin parsers — remove built-in when fully externalizing
-- Reference external adapters: Hermes (`@henkey/hermes-paperclip-adapter` or `file:`) and Droid (npm)
+MIT © 2026 Finance X. Katkılar welcome.

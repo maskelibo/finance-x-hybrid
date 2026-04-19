@@ -36,23 +36,41 @@ export class ClaudeProvider implements LLMProvider {
     const startedAt = Date.now();
 
     return new Promise((resolve) => {
+      // Pass the prompt on stdin (not argv) so large prompts don't hit
+      // cmd.exe's ~8KB command-line ceiling on Windows (ENAMETOOLONG) and
+      // so that on POSIX we avoid `E2BIG` for >128KB prompts too.
       const args = [
         '-p',
-        input.prompt,
         '--model',
         input.model,
         '--output-format',
         'json',
+        '--input-format',
+        'text',
       ];
 
       if (CLAUDE_PERMISSION_MODE) {
         args.push('--permission-mode', CLAUDE_PERMISSION_MODE);
       }
 
-      const child = spawn('claude', args, {
+      // Windows: spawn the `.cmd` wrapper. Node 20+ blocks direct .cmd
+      // execution as EINVAL, so we go through `cmd.exe /d /s /c` which
+      // doesn't have that restriction and doesn't inflate the command
+      // line (prompt is on stdin, argv stays small).
+      const isWin = process.platform === 'win32';
+      const binary = isWin ? 'cmd.exe' : 'claude';
+      const spawnArgs = isWin ? ['/d', '/s', '/c', 'claude.cmd', ...args] : args;
+
+      const child = spawn(binary, spawnArgs, {
         ...CLAUDE_SPAWN_OPTIONS,
-        stdio: ['ignore', 'pipe', 'pipe'],
+        stdio: ['pipe', 'pipe', 'pipe'],
       });
+
+      // Write the prompt and close stdin so Claude starts generating.
+      if (child.stdin) {
+        child.stdin.write(input.prompt);
+        child.stdin.end();
+      }
 
       let stdoutBuf = '';
       let stderrBuf = '';

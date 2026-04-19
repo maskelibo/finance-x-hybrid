@@ -49,6 +49,78 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'finance-x-backend' });
 });
 
+// Operational metrics — JSON snapshot of session & agent health.
+// Prometheus-compatible text exposition available at GET /metrics (below).
+app.get('/api/metrics', (_req, res) => {
+  const sessionStats = db.prepare(`
+    SELECT status, COUNT(*) as count FROM analysis_sessions GROUP BY status
+  `).all() as Array<{ status: string; count: number }>;
+
+  const agentStats = db.prepare(`
+    SELECT agent_id, status, COUNT(*) as count FROM agent_runs GROUP BY agent_id, status
+  `).all() as Array<{ agent_id: string; status: string; count: number }>;
+
+  const avgDuration = db.prepare(`
+    SELECT agent_id, AVG(duration_ms) as avg_ms, COUNT(*) as n
+    FROM agent_runs
+    WHERE status = 'completed' AND duration_ms IS NOT NULL
+    GROUP BY agent_id
+  `).all() as Array<{ agent_id: string; avg_ms: number; n: number }>;
+
+  const heartbeat = db.prepare(`
+    SELECT COUNT(*) as total,
+           SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+           SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed,
+           MAX(created_at) as last_run
+    FROM ceo_activities WHERE activity_type = 'heartbeat'
+  `).get() as { total: number; completed: number; failed: number; last_run: string };
+
+  res.json({
+    sessions: Object.fromEntries(sessionStats.map(s => [s.status, s.count])),
+    agents: agentStats,
+    avgDurationMs: Object.fromEntries(avgDuration.map(a => [a.agent_id, { avgMs: Math.round(a.avg_ms), n: a.n }])),
+    heartbeat,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Prometheus text exposition — scrape with standard Prometheus at this path.
+app.get('/metrics', (_req, res) => {
+  const lines: string[] = [];
+
+  const sessionStats = db.prepare(`
+    SELECT status, COUNT(*) as count FROM analysis_sessions GROUP BY status
+  `).all() as Array<{ status: string; count: number }>;
+  lines.push('# HELP finance_x_sessions_total Analysis sessions by status');
+  lines.push('# TYPE finance_x_sessions_total gauge');
+  for (const row of sessionStats) {
+    lines.push(`finance_x_sessions_total{status="${row.status}"} ${row.count}`);
+  }
+
+  const agentRuns = db.prepare(`
+    SELECT agent_id, status, COUNT(*) as count FROM agent_runs GROUP BY agent_id, status
+  `).all() as Array<{ agent_id: string; status: string; count: number }>;
+  lines.push('# HELP finance_x_agent_runs_total Agent runs by agent and status');
+  lines.push('# TYPE finance_x_agent_runs_total counter');
+  for (const row of agentRuns) {
+    lines.push(`finance_x_agent_runs_total{agent="${row.agent_id}",status="${row.status}"} ${row.count}`);
+  }
+
+  const avgDuration = db.prepare(`
+    SELECT agent_id, AVG(duration_ms) as avg_ms
+    FROM agent_runs WHERE status = 'completed' AND duration_ms IS NOT NULL
+    GROUP BY agent_id
+  `).all() as Array<{ agent_id: string; avg_ms: number }>;
+  lines.push('# HELP finance_x_agent_duration_ms Average agent run duration (completed runs)');
+  lines.push('# TYPE finance_x_agent_duration_ms gauge');
+  for (const row of avgDuration) {
+    lines.push(`finance_x_agent_duration_ms{agent="${row.agent_id}"} ${Math.round(row.avg_ms)}`);
+  }
+
+  res.set('Content-Type', 'text/plain; version=0.0.4');
+  res.send(lines.join('\n') + '\n');
+});
+
 app.get('/api/analysis/config', (_req, res) => {
   res.json({
     modes: ANALYSIS_MODES,
@@ -109,11 +181,14 @@ app.get('/api/agents/:id', (req, res) => {
 });
 
 // Start a new analysis
+const VALID_THEMES = new Set(['institutional', 'anthropic', 'minimal']);
+
 app.post('/api/analysis/start', (req, res) => {
-  const { ticker, runtimeMode, layers } = req.body as {
+  const { ticker, runtimeMode, layers, theme } = req.body as {
     ticker?: string;
     runtimeMode?: RuntimeMode;
     layers?: AnalysisLayer[];
+    theme?: string;
   };
 
   // Ticker validation
@@ -139,12 +214,27 @@ app.post('/api/analysis/start', (req, res) => {
     return res.status(400).json({ error: 'En az bir analiz katmanı seçmelisiniz' });
   }
 
+  // Theme validation — silently fall back to default if missing/invalid
+  const resolvedTheme = theme && VALID_THEMES.has(theme) ? theme : 'institutional';
+
   try {
-    const sessionId = startAnalysisSession(cleanTicker, mode, filteredLayers);
-    res.json({ sessionId, ticker: cleanTicker, runtimeMode: mode, layers: filteredLayers, status: 'started' });
+    const sessionId = startAnalysisSession(cleanTicker, mode, filteredLayers, resolvedTheme);
+    res.json({ sessionId, ticker: cleanTicker, runtimeMode: mode, layers: filteredLayers, theme: resolvedTheme, status: 'started' });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Expose the available themes so the dashboard can render a selector.
+app.get('/api/themes', (_req, res) => {
+  res.json({
+    themes: [
+      { name: 'institutional', label: 'Kurumsal (Navy/Gold)', description: 'Varsayılan Finance X teması — Goldman/BofA tarzı koyu lacivert.' },
+      { name: 'anthropic',     label: 'Anthropic (Warm Neutrals)', description: 'Sıcak tonlar + amber vurgu. Modern, minimal, okuma odaklı.' },
+      { name: 'minimal',       label: 'Minimal (Siyah/Gri)', description: 'Vurgusuz, temiz siyah-gri palet. İkincil markalaşma gerektiren senaryolar için.' },
+    ],
+    default: 'institutional',
+  });
 });
 
 // List all sessions

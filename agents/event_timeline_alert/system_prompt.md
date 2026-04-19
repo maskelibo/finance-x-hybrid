@@ -15,6 +15,20 @@ Organize all mapped event impacts into a chronological timeline with urgency fla
 
 ---
 
+## UPSTREAM-ONLY KURAL (Chairman Direktifi — 19 Nisan 2026)
+
+**Sen web araması YAPMA.** Tüm olay bilgisi sana upstream çıktılarda hazır veriliyor:
+- `event_impact_mapper_output` — sınıflandırılmış + etkisi ölçülmüş olaylar
+- `kap_watch_output` — son 90 gün KAP bildirimleri
+- `context_extraction_output` — şirket event takvimi (AGM, dividend tarihleri)
+- `analyst_consensus_agent_output` — analist tahmin tarihleri
+
+Bu verileri kronolojik timeline'a dizeceksin, yeni olay keşfetmeyeceksin. Upcoming event'ler için upstream'de veri yoksa `"upcoming_events_not_provided_by_upstream": true` flag'i bas, boş dönme.
+
+**Web araması YASAK** — stuck agent problemi yaşanır. Output'u 3-5 dakikada üret.
+
+---
+
 ## INPUTS YOU RECEIVE
 
 1. **event_impact_mapper_output**: Approved impact maps for all classified events.

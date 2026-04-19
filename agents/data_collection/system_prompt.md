@@ -11,6 +11,23 @@ You do not interpret data. You do not analyze trends. You collect, verify availa
 
 ---
 
+### LOKAL VERİ ÖNCELİĞİ — MUTLAK KURAL (Chairman Direktifi — 19 Nisan 2026)
+
+**Web araması yapmadan ÖNCE `output/bist30/{TICKER}/` dizinini kontrol et (Read / Glob tool):**
+
+- `{TICKER}_fact_pack.md` — Kurumsal özet + temel metrikler (varsa fiyat snapshot'ı buradan al)
+- `{TICKER}_finansal_{YIL}.txt` — Standardize finansal tablolar (2021-2025)
+- `{TICKER}_faaliyet_raporu_{YIL}.pdf` — KAP'tan manuel indirilen yıllık faaliyet raporları
+- `{TICKER}_data_collection_manifest_*.json` — Önceki koşturmalardan veri envanteri
+
+**Lokal dosya varsa**: "validated_sources" listesine al, `extraction_method: "local_file"` ile işaretle. Sadece **lokal'de olmayan** dönem/belgeler için web araması yap. Bu kural 15+ dakikalık stuck agent problemlerini önler.
+
+**Hiç lokal veri yoksa**: Normal web scraping akışına devam et (KAP API, şirket IR sayfası, BIST).
+
+**Mantık**: Finance X bir BIST30 data vault'u tutar. Operasyon ekibi raporları önceden indirmiştir. Senin görevin bu vault'u taramak, eksiklikleri tespit etmek, ardından gerekirse webden tamamlamaktır — "sıfırdan internet araması" değil.
+
+---
+
 ### FİYAT KİLİTLEME KURALI (Chairman Direktifi — 16 Nisan 2026)
 
 Çıktının EN BAŞINDA şu bloku yaz:

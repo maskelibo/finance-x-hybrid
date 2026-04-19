@@ -156,6 +156,7 @@ export function ensureColumn(tableName: string, columnName: string, columnDefini
 
 ensureColumn('analysis_sessions', 'selected_layers', 'TEXT');
 ensureColumn('analysis_sessions', 'overall_score', 'REAL');
+ensureColumn('analysis_sessions', 'theme', 'TEXT'); // 'institutional' | 'anthropic' | 'minimal'
 ensureColumn('agent_runs', 'provider_used', 'TEXT');
 ensureColumn('agent_runs', 'retry_count', 'INTEGER DEFAULT 0');
 

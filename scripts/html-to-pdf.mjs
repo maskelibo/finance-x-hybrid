@@ -32,32 +32,22 @@ const outputPath = process.argv[3] || defaultOutput;
 console.log(`[html-to-pdf] ${inputPath} (${(html.length / 1024).toFixed(0)} KB) → ${outputPath}`);
 console.log(`[html-to-pdf] Ticker: ${ticker}`);
 
+// Use system Chrome if Puppeteer's bundled Chromium isn't available.
+// Honors PUPPETEER_EXECUTABLE_PATH for explicit overrides.
+const systemChrome = process.env.PUPPETEER_EXECUTABLE_PATH
+  || (process.platform === 'win32' ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' : undefined);
+
 const browser = await puppeteer.launch({
   headless: true,
+  executablePath: systemChrome,
   args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security', '--allow-file-access-from-files'],
 });
 
 const page = await browser.newPage();
 await page.setViewport({ width: 794, height: 1123 }); // A4 @ 96dpi
 
-await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
-
-// Wait for Chart.js canvases if any
-try {
-  await page.waitForFunction(() => {
-    const canvases = document.querySelectorAll('canvas');
-    if (canvases.length === 0) return true;
-    return Array.from(canvases).every(c => {
-      const ctx = c.getContext('2d');
-      return ctx && c.width > 0 && c.height > 0;
-    });
-  }, { timeout: 15000 });
-} catch {
-  console.warn('[html-to-pdf] Chart.js render timeout — continuing');
-}
-
-// Brief wait for animations
-await new Promise(resolve => setTimeout(resolve, 2000));
+// All charts are inline SVG (Chart.js forbidden) — no CDN wait needed.
+await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
 const headerTemplate = `
   <div style="width:100%;font-size:8px;color:#666;padding:0 15mm;display:flex;justify-content:space-between;">
