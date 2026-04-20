@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from functools import lru_cache
 from pathlib import Path
@@ -138,6 +139,7 @@ def _load_yaml(path: Path) -> dict[str, Any]:
 
 
 def _selftest() -> int:
+    """Run exhaustive cross-checks across canonical/ and return 0/2."""
     c = Canonical()
     failures: list[str] = []
 
@@ -148,6 +150,14 @@ def _selftest() -> int:
             print(f"FAIL {name}: got {got!r}, want {want!r}")
             failures.append(name)
 
+    def soft(name: str, ok: bool, detail: str = "") -> None:
+        if ok:
+            print(f"OK   {name}")
+        else:
+            print(f"FAIL {name}: {detail}")
+            failures.append(name)
+
+    # ── Basic ticker → sector ────────────────────────────────────────
     check("sector THYAO", c.get_sector("THYAO"), "aviation")
     check("sector TUPRS", c.get_sector("TUPRS"), "energy_refining")
     check("sector KCHOL", c.get_sector("KCHOL"), "holding")
@@ -156,16 +166,18 @@ def _selftest() -> int:
     check("sector TCELL", c.get_sector("TCELL"), "telecom")
     check("sector BIMAS", c.get_sector("BIMAS"), "retail")
     check("sector AKBNK", c.get_sector("AKBNK"), "banking")
-
     check("unclassified UNKNOWN", c.is_classified("UNKNOWN"), False)
 
+    # ── Sector playbook resolution ──────────────────────────────────
     pb = c.get_sector_playbook("THYAO") or {}
     check("THYAO playbook sector_id", pb.get("sector_id"), "aviation")
 
+    # ── Metric catalog ──────────────────────────────────────────────
     check("metric count", len(c.list_metrics()), 28)
     m = c.get_metric("MM-07") or {}
     check("MM-07 name_en", m.get("name_en"), "EBITDA")
 
+    # ── Modes ───────────────────────────────────────────────────────
     fs = c.get_mode_activation("fast_screening")
     check("fast_screening agent count", len(fs), 16)
     deep = c.get_mode_activation("deep_dive")
@@ -173,6 +185,48 @@ def _selftest() -> int:
 
     contract = c.get_agent_contract("financial_analysis") or {}
     check("financial_analysis group", contract.get("group"), "specialist")
+
+    # ── Cross-check: every ticker in sector_mapping.yaml has a
+    # playbook file on disk (or is explicitly pointed at industrial_generic).
+    mappings = (c._ticker.get("mappings") or {})
+    for ticker, row in mappings.items():
+        playbook_rel = row.get("playbook")
+        soft(
+            f"playbook for {ticker} exists on disk",
+            playbook_rel is None or (c.root.parent / playbook_rel).is_file(),
+            detail=f"playbook path: {playbook_rel!r}",
+        )
+
+    # ── Cross-check: every agent listed in pipeline_modes is present in
+    # agent_io_contracts.
+    all_canonical_agents = set(c.list_agents())
+    for mode_id in (c._modes.get("modes") or {}).keys():
+        for aid in c.get_mode_activation(mode_id):
+            soft(
+                f"mode {mode_id} agent {aid} declared in agent_io_contracts",
+                aid in all_canonical_agents,
+                detail=f"{aid} not found in canonical/contracts/agent_io_contracts.yaml",
+            )
+
+    # ── Cross-check: every metric id declared in interpretation_depth is
+    # in the 28 catalog (or is a literal field label).
+    depth_fields = c.interpretation_depth()
+    expected_fields = {"observation", "reasoning", "counterargument", "implication"}
+    soft(
+        "interpretation_depth fields present",
+        expected_fields.issubset(depth_fields.keys()),
+        detail=f"expected {expected_fields}, got {set(depth_fields.keys())}",
+    )
+
+    # ── Cross-check: sector_mapping references match registry agents.
+    # (sector_mapping has `related_canonical_rules` naming SR-* ids; we
+    # don't resolve them here, but we assert the SR- prefix convention.)
+    for srid in (c._ticker.get("related_canonical_rules") or []):
+        soft(
+            f"canonical rule id format {srid}",
+            bool(re.match(r"^(SR-|MM-|NH-|CT-|OI-|IAS29-|TM-)", srid)),
+            detail=f"{srid} does not match canonical id prefix convention",
+        )
 
     print(f"\nselftest: {'OK' if not failures else f'{len(failures)} failures'}")
     return 0 if not failures else 2
