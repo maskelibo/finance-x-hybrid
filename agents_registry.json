@@ -382,6 +382,91 @@
       "reports_to": "orchestrator",
       "supervises": [],
       "last_updated": "2026-04-09"
+    },
+    {
+      "agent_id": "coo",
+      "display_name": "COO Meta-Agent",
+      "group": "management",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "pre_flight_check",
+        "conditional_pass_enforcement",
+        "delivery_gate",
+        "coo_runtime_inspection"
+      ],
+      "reports_to": "ceo",
+      "supervises": [],
+      "last_updated": "2026-04-21",
+      "notes": "Reconciled 2026-04-21 Phase 3A — was filesystem_only, runtime has always executed it as a backbone agent."
+    },
+    {
+      "agent_id": "valuation_agent",
+      "display_name": "Valuation Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "dcf_modelling",
+        "multiples_valuation",
+        "sotp_for_holding",
+        "fair_value_range",
+        "wacc_estimation"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-21",
+      "notes": "Reconciled 2026-04-21 Phase 3A — was filesystem_only, runtime activates in deep_dive."
+    },
+    {
+      "agent_id": "sentiment_news_agent",
+      "display_name": "Sentiment & News Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "news_ingestion",
+        "sentiment_scoring",
+        "event_correlation_with_fundamentals"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-21",
+      "notes": "Reconciled 2026-04-21 Phase 3A — was filesystem_only, runtime activates in deep_dive."
+    },
+    {
+      "agent_id": "analyst_consensus_agent",
+      "display_name": "Analyst Consensus Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "analyst_eps_consensus",
+        "price_target_consensus",
+        "rating_distribution_summary",
+        "dispersion_analysis"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-21",
+      "notes": "Reconciled 2026-04-21 Phase 3A — was filesystem_only, runtime activates in deep_dive."
+    },
+    {
+      "agent_id": "esg_agent",
+      "display_name": "ESG Analysis Agent",
+      "group": "specialist",
+      "version": "1.0.0",
+      "status": "active",
+      "capabilities": [
+        "esg_score_read",
+        "material_disclosure_gap_detection",
+        "carbon_footprint_commentary",
+        "governance_red_flag_scan"
+      ],
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "last_updated": "2026-04-21",
+      "notes": "Reconciled 2026-04-21 Phase 3A — was filesystem_only, runtime activates in deep_dive."
     }
   ]
 }
