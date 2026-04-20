@@ -1,0 +1,145 @@
+# canonical/contracts/pipeline_modes.yaml
+#
+# Single source of truth for runtime mode → pipeline activation.
+# This file replaces the PIPELINE_BY_MODE alias in backend/src/orchestrator.ts
+# (which today is a no-op) once Phase 3 wires it up. For now it documents
+# what the orchestrator ACTUALLY does versus what docs claim.
+#
+# Ground truth verified 2026-04-21 via runtime drift audit
+# (refactor/inventory/runtime_drift_audit.md). Docs said fast=5-6,
+# standard≈15, deep=20-22; runtime produces fast=16, standard=18, deep=22
+# via backbone + layer filter. This file documents the runtime behaviour,
+# not the aspirational docs.
+
+schema_version: 1
+
+# Backbone agents run in every mode regardless of layers.
+backbone_agents:
+  - ceo
+  - coo
+  - qa_review
+  - strategic_synthesis
+  - final_summary
+  - report_formatter
+
+# Layer → agents mapping (mirrored from orchestrator.ts LAYER_AGENTS).
+layers:
+  fundamental:  [data_collection, parse_standardization, reconciliation, context_extraction, financial_analysis]
+  technical:    [technical_analysis]
+  events:       [kap_watch, event_classification, event_impact_mapper, event_timeline_alert]
+  sector:       [sector_competition]
+  macro:        [macro_analysis]
+  valuation:    [valuation_agent]
+  sentiment:    [sentiment_news_agent]
+  consensus:    [analyst_consensus_agent]
+  esg:          [esg_agent]
+
+# Modes as CURRENTLY resolved by buildPipelineForLayers().
+# agent count column matches runtime drift audit.
+modes:
+
+  fast_screening:
+    duration_target_min: 15       # aspirational — actual wall-clock is ~50 min
+    duration_actual_min_est: 50
+    default_layers: [fundamental, technical, events]
+    activated_agents:
+      - ceo                       # backbone
+      - coo                       # backbone
+      - data_collection
+      - parse_standardization
+      - reconciliation
+      - context_extraction
+      - financial_analysis
+      - technical_analysis
+      - kap_watch
+      - event_classification
+      - event_impact_mapper
+      - event_timeline_alert
+      - qa_review                 # backbone
+      - strategic_synthesis       # backbone
+      - final_summary             # backbone
+      - report_formatter          # backbone
+    agent_count: 16
+    parallelizable_groups:
+      - [financial_analysis, technical_analysis]
+      - [kap_watch, event_classification]
+    extended_thinking: [financial_analysis]
+    output_depth: summary
+
+  standard_institutional:
+    duration_target_min: 45
+    duration_actual_min_est: 53
+    default_layers: [fundamental, technical, events, sector, macro]
+    activated_agents:
+      - ceo
+      - coo
+      - data_collection
+      - parse_standardization
+      - reconciliation
+      - context_extraction
+      - financial_analysis
+      - sector_competition
+      - macro_analysis
+      - technical_analysis
+      - kap_watch
+      - event_classification
+      - event_impact_mapper
+      - event_timeline_alert
+      - qa_review
+      - strategic_synthesis
+      - final_summary
+      - report_formatter
+    agent_count: 18
+    parallelizable_groups:
+      - [financial_analysis, sector_competition, macro_analysis, technical_analysis]
+      - [kap_watch, event_classification]
+    extended_thinking: [financial_analysis, strategic_synthesis, qa_review]
+    output_depth: standard
+
+  deep_dive:
+    duration_target_min: 150
+    duration_actual_min_est: 59
+    default_layers: [fundamental, technical, events, sector, macro, valuation, sentiment, consensus, esg]
+    activated_agents:
+      - ceo
+      - coo
+      - data_collection
+      - parse_standardization
+      - reconciliation
+      - context_extraction
+      - financial_analysis
+      - sector_competition
+      - macro_analysis
+      - technical_analysis
+      - kap_watch
+      - event_classification
+      - event_impact_mapper
+      - event_timeline_alert
+      - qa_review
+      - strategic_synthesis
+      - final_summary
+      - valuation_agent
+      - sentiment_news_agent
+      - analyst_consensus_agent
+      - esg_agent
+      - report_formatter
+    agent_count: 22
+    parallelizable_groups:
+      - [financial_analysis, sector_competition, macro_analysis, technical_analysis, valuation_agent, sentiment_news_agent, analyst_consensus_agent, esg_agent]
+      - [kap_watch, event_classification]
+    extended_thinking: [financial_analysis, strategic_synthesis, qa_review, valuation_agent, ceo, coo]
+    output_depth: institutional
+
+# Documentation drift (delta between docs and runtime) — must be resolved
+# in Phase 3 by either updating docs or adjusting runtime.
+documentation_drift:
+  fast_screening:
+    docs_claim_count: "5-6 agents"
+    runtime_actual_count: 16
+    root_cause: "backbone agents (ceo, coo, qa_review, strategic_synthesis, final_summary, report_formatter) run regardless of layers; layer filter adds 10 more on top. Docs never reflected this."
+  standard_institutional:
+    docs_claim_count: "~15 agents"
+    runtime_actual_count: 18
+  deep_dive:
+    docs_claim_count: "20-22 agents"
+    runtime_actual_count: 22

@@ -1,0 +1,77 @@
+# canonical/sectors/holding.yaml
+# Sector playbook — holding (KCHOL, SAHOL, DOHOL).
+
+sector_id: holding
+display_name: Holding
+tickers: [KCHOL, SAHOL, DOHOL]
+
+# Three-layer analysis is the defining feature of this sector playbook.
+primary_metrics:
+  - parent_level_net_income
+  - consolidated_ebitda
+  - segment_ebitda_contributions
+  - nav_per_share
+  - holding_discount
+  - distributable_cash
+  - sotp_fair_value
+
+mandatory_kpi_section:
+  id: SR-holding-kpi-001
+  title: "Holding Analizi — 3 Katmanlı"
+  required: true
+  required_sections:
+    - parent_level        # solo parent financials
+    - consolidated        # full consolidation
+    - segment_level       # each operating subsidiary broken out
+  required_metrics:
+    - segment_ebitda_margin_per_subsidiary
+    - segment_roic_per_subsidiary
+    - segment_net_debt_to_ebitda_per_subsidiary
+    - nav_per_share
+    - holding_discount
+    - sotp_per_share
+    - dividend_upstream_capacity
+
+benchmark:
+  holding_discount_peer_range: [0.25, 0.40]   # 25-40% typical for BIST conglomerates
+  nav_premium_threshold: 1.00
+
+cost_of_equity:
+  try: [0.28, 0.32]
+  usd: [0.10, 0.12]
+
+overlay_rules:
+  SR-holding-001: |
+    Three-layer analysis is mandatory. A holding report without the
+    parent / consolidated / segment-level split is structurally incomplete
+    and triggers a MISSING_SECTOR_KPI finding.
+
+  SR-holding-002: |
+    SOTP (sum-of-the-parts) and NAV calculations with transparent peer
+    multiples by segment. Holding discount = (NAV − Market Cap) / NAV
+    must be reported.
+
+  SR-holding-003: |
+    Iştirak (associate) EBITDA contribution table:
+      Segment → SAHOL pay (%) → katkı TRY
+    Missing segment contribution table is a RECONCILIATION_GAP finding.
+
+  SR-holding-004: |
+    CEO/Başkan mektubu analizi zorunlu — management narrative, prior-year
+    commitments vs realization, 5-year historic reading required for the
+    holding level.
+
+  SR-holding-005: |
+    Parent-only net debt and dividend upstream capacity must be disclosed
+    — this is the structural difference from segment-level health.
+
+  SR-holding-006: |
+    FX exposure discussion at the parent level separately from operating
+    subsidiaries. Holdings often carry USD/EUR parent debt backed by TRY
+    segment cash flow — a material risk.
+
+rules_id_references:
+  - MM-25
+  - OI-002
+  - OI-003
+  - IAS29-006

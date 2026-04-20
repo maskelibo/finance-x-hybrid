@@ -1,0 +1,70 @@
+# canonical/sectors/banking.yaml
+# Sector playbook — banking (AKBNK, GARAN, ISCTR, YKBNK).
+
+sector_id: banking
+display_name: Bankacılık
+tickers: [AKBNK, GARAN, ISCTR, YKBNK]
+
+primary_metrics:
+  - nim                 # net interest margin
+  - cor                 # cost of risk
+  - car                 # capital adequacy ratio
+  - nii                 # net interest income
+  - fee_income
+  - opex_to_nii         # efficiency
+  - roe
+  - npl_ratio
+  - coverage_ratio
+
+mandatory_kpi_section:
+  id: SR-banking-kpi-001
+  title: "Bankacılık KPI'ları"
+  required: true
+  required_metrics:
+    - nim_decomposition
+    - cost_of_risk_trend
+    - fee_income_breakdown
+    - capital_ratio_waterfall
+    - distributable_cash
+    - bddk_car_minimum_compliance
+
+benchmark:
+  nim:
+    turkey_peer_average_2024: 0.048
+  cost_of_risk_bps:
+    turkey_peer_average_2024: 150
+  car_minimum_required: 0.12          # BDDK
+  roe_peer_average_2024: 0.36
+
+cost_of_equity:
+  try: [0.28, 0.34]    # Banking CoE usually higher due to leverage + cycle
+  usd: [0.11, 0.13]
+
+overlay_rules:
+  SR-banking-001: |
+    NIM, Cost of Risk, and BDDK CAR are mandatory in every banking report.
+    Missing any of these three is a MISSING_SECTOR_KPI finding.
+
+  SR-banking-002: |
+    CAR waterfall must show starting CAR, contribution/withdrawal by line
+    (retained earnings, RWA growth, Tier-II instruments, dividend
+    distribution), ending CAR. A single CAR value is insufficient.
+
+  SR-banking-003: |
+    Fee income breakdown: payment systems, asset management, transaction
+    banking, insurance commissions. Aggregate "non-interest income" is
+    insufficient.
+
+  SR-banking-004: |
+    BDDK CAR minimum (%12) must be explicitly referenced as a floor. Any
+    bank within 100 bps of the floor gets a CAPITAL_HEADROOM_RISK finding.
+
+  SR-banking-005: |
+    Interpretation must distinguish local-currency loans, FX-indexed loans,
+    and pure FX loans. Asset-liability FX match is a structural safety
+    parameter.
+
+rules_id_references:
+  - MM-03    # Banking variant: report NIM not gross margin
+  - MM-25    # ROE vs CoE comparison mandatory
+  - OI-005   # Evidence citation

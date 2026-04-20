@@ -1,0 +1,68 @@
+# canonical/sectors/energy_refining.yaml
+# Sector playbook — refining (TUPRS).
+# PETKM is chemicals-dominant and uses industrial_generic for now.
+
+sector_id: energy_refining
+display_name: Rafinaj
+tickers: [TUPRS]
+
+primary_metrics:
+  - refining_margin_usd_per_bbl
+  - crack_spread_mediterranean
+  - crude_differential
+  - inventory_gain_loss
+  - ebitda
+  - net_debt_ebitda
+  - capex_maintenance_vs_growth
+  - capacity_utilization
+
+mandatory_kpi_section:
+  id: SR-refining-kpi-001
+  title: "Rafinaj Operasyonel Parametreleri"
+  required: true
+  required_metrics:
+    - refining_margin
+    - crack_spread_breakdown
+    - crude_differential
+    - inventory_gain_loss_per_period
+    - capex_split_maintenance_growth
+    - utilization_rate
+
+benchmark:
+  refining_margin_usd_per_bbl_med_2025: 8.0
+  crack_spread_diesel_usd_per_bbl_2025: 20
+  capacity_utilization_peer: 0.90
+
+cost_of_equity:
+  try: [0.26, 0.30]
+  usd: [0.09, 0.11]
+
+overlay_rules:
+  SR-refining-001: |
+    Refining margin (net + gross) in USD/bbl is mandatory for every period.
+    Operating profit without refining margin is incomplete.
+
+  SR-refining-002: |
+    Crack spread decomposition by product (diesel, gasoline, jet, LPG,
+    fuel oil) with Mediterranean benchmark comparison.
+
+  SR-refining-003: |
+    Inventory gain/loss must be disclosed per period. This is a structural
+    driver of EBITDA volatility — pretending it's noise is a REPORTING_GAP
+    finding.
+
+  SR-refining-004: |
+    Crude differential (Brent − local crude slate) as explicit table row.
+    Tüpraş sources a mix including Iraqi, Russian (when legal), and Med
+    crudes; the differential impacts margin materially.
+
+  SR-refining-005: |
+    Working capital — crude inventory financing cost should be reflected
+    in the interest-coverage interpretation. High-inflation TRY financing
+    on USD inventory is a structural FX exposure.
+
+rules_id_references:
+  - MM-07
+  - MM-18
+  - MM-27
+  - OI-003

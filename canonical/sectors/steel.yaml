@@ -1,0 +1,80 @@
+# canonical/sectors/steel.yaml
+# Sector playbook — steel (EREGL, KRDMD, ISDMR).
+
+sector_id: steel
+display_name: Çelik
+tickers: [EREGL, KRDMD, ISDMR]
+
+primary_metrics:
+  - ebitda
+  - ebitda_margin
+  - dio                  # Çelik sektörü için vurgu zorunlu — see MM-13
+  - net_debt_ebitda
+  - capex_growth         # ayrı
+  - capex_maintenance    # ayrı — see SR-steel-001
+  - hrc_transmission     # sayısal parametre — see SR-steel-002
+
+mandatory_kpi_section:
+  id: SR-steel-kpi-001
+  title: "Çelik Operasyonel Parametreleri"
+  required: true
+  required_metrics:
+    - capex_growth_vs_maintenance_split
+    - hrc_price_transmission
+    - iron_ore_cost_transmission
+    - dio_emphasis
+    - capacity_utilization
+  data_sources:
+    - financial_statements
+    - kap_yatirim_harcamalari_dipnot
+    - context_extraction
+
+benchmark:
+  ebitda_margin:
+    global_average: 0.12        # 2024-2025 peer mean
+    eregl_reference_2024: 0.15
+  hrc_usd_per_ton:
+    reference_2025: 600
+  iron_ore_usd_per_ton:
+    reference_2025: 110
+  capex_maintenance_usd_per_ton_capacity:
+    reference_2025: 25
+
+cost_of_equity:
+  try: [0.28, 0.32]
+  usd: [0.10, 0.12]
+
+overlay_rules:
+  SR-steel-001: |
+    CAPEX must be split into growth and maintenance components. A single
+    aggregated CAPEX figure without this split is a MISSING_SECTOR_KPI
+    finding. Extract project-level breakdown from KAP yatırım harcamaları
+    footnote.
+
+  SR-steel-002: |
+    Transmission parameters required (sayısal, not prose):
+      - "$1/ton HRC price change → EBITDA ΔTRY mn"
+      - "$1/ton iron-ore change → COGS ΔTRY mn"
+    Both must appear as table rows, not as parenthetical prose.
+
+  SR-steel-003: |
+    DIO emphasis — working-capital interpretation MUST highlight raw-material
+    vs finished-goods inventory days. Aggregate DIO alone hides the
+    hammadde cycle.
+
+  SR-steel-004: |
+    Capacity utilization (%) per mill must be reported. Sector benchmark
+    around 70-85% — below 70% is a distress signal.
+
+  SR-steel-005: |
+    Scrap vs BF (blast furnace) cost differential commentary required when
+    margins compress — this is the primary lever for an integrated mill.
+
+rules_id_references:
+  - MM-07
+  - MM-13
+  - MM-18
+  - MM-27
+  - NH-001
+  - OI-003
+  - OI-007

@@ -1,0 +1,67 @@
+# canonical/sectors/retail.yaml
+# Sector playbook — retail / grocery (BIMAS, MGROS, SOKM).
+
+sector_id: retail
+display_name: Perakende
+tickers: [BIMAS, MGROS, SOKM]
+
+primary_metrics:
+  - sssg                  # same-store sales growth
+  - revenue_per_store
+  - store_count_growth
+  - gross_margin
+  - ebitda_margin
+  - inventory_turnover
+  - payables_float
+  - capex_per_new_store
+
+mandatory_kpi_section:
+  id: SR-retail-kpi-001
+  title: "Perakende KPI'ları"
+  required: true
+  required_metrics:
+    - sssg_trend
+    - revenue_per_store
+    - store_count_openings_closings
+    - ifrs_16_normalized_metrics
+    - seasonal_pattern_note
+
+benchmark:
+  sssg_peer_2024: 0.85      # Turkish grocery 2024 mean, nominal (high-inflation)
+  ebitda_margin_peer_2024: 0.07
+  payables_days_peer_2024: 70
+
+cost_of_equity:
+  try: [0.27, 0.31]
+  usd: [0.09, 0.11]
+
+overlay_rules:
+  SR-retail-001: |
+    SSSG (same-store sales growth), Revenue/Store, and IFRS 16 normalized
+    metrics are mandatory. Missing any triggers MISSING_SECTOR_KPI.
+
+  SR-retail-002: |
+    SSSG must be decomposed into volume (traffic + basket) and price
+    components. A single SSSG number in a high-inflation economy is
+    uninterpretable without price vs volume split.
+
+  SR-retail-003: |
+    IFRS 16 normalization: report EBITDA and EBITDA margin both pre-IFRS 16
+    (lease expense as OPEX) and post-IFRS 16 (lease as D&A + interest).
+    Lease-heavy retailers look very different between the two.
+
+  SR-retail-004: |
+    Payables float as working-capital lever. Grocery is structurally
+    negative-NWC — discuss the float explicitly.
+
+  SR-retail-005: |
+    Ramadan + summer seasonality impact on volume and margin, plus
+    promotional-period cadence. Single-quarter run-rate extrapolation is a
+    SEASONALITY_MISREAD finding.
+
+rules_id_references:
+  - MM-03
+  - MM-13
+  - MM-14
+  - MM-15
+  - IAS29-006

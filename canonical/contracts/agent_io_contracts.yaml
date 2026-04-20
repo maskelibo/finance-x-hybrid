@@ -1,0 +1,225 @@
+# canonical/contracts/agent_io_contracts.yaml
+#
+# Per-agent I/O summary — canonical distillation of each agent's
+# agent_spec.json + output_schema.json. This file is a reading aid
+# and Phase 3 rewire target: prompts should reference THIS file
+# rather than re-state their own contract.
+#
+# Generated from filesystem on 2026-04-21. If an agent is renamed
+# or retired, update here first.
+
+schema_version: 1
+registry_source_of_truth: canonical/contracts/agent_io_contracts.yaml
+legacy_registries:
+  - agents_registry.json    # DO NOT edit by hand during Phase 2; mirrored in G audit.
+  - backend/src/orchestrator.ts  # AGENT_PIPELINE — runtime truth.
+
+# ── Management agents ────────────────────────────────────────────────
+agents:
+
+  ceo:
+    group: management
+    status: active
+    purpose: "Mandate interpretation, final authority, audit log, hiring request, fact-pack arbitration."
+    inputs:
+      - mandate
+      - upstream_outputs_digest
+    outputs:
+      - audit_log
+      - review_decision
+      - approval_or_revision_request
+    handoff_upstream: [orchestrator]
+    handoff_downstream: [qa_review, strategic_synthesis, final_summary]
+    supervises: [qa_review, agent_factory, cost_performance_optimizer]
+    extended_thinking: deep_only
+
+  coo:
+    group: management
+    status: active
+    purpose: "Pre-flight check, CEO gate pre-validation, conditional_pass enforcement."
+    inputs:
+      - pipeline_plan
+      - upstream_readiness_signals
+    outputs:
+      - go_or_block_decision
+    handoff_upstream: [ceo]
+    handoff_downstream: [orchestrator]
+    registry_status: filesystem_only      # NOT in agents_registry.json (see G audit)
+
+  qa_review:
+    group: management
+    status: active
+    purpose: "Rubric scoring of each agent output; revision request; finding emission."
+    inputs:
+      - agent_outputs_by_id
+      - review_rubric
+    outputs:
+      - findings[]
+      - overall_score
+      - revision_or_approve
+    handoff_upstream: [ceo, orchestrator]
+    handoff_downstream: [originating_agent, strategic_synthesis, final_summary, report_formatter]
+    contract_notes:
+      - "overall_score MUST be required (Phase 4 schema hardening target)."
+      - "findings[] with ids is the upstream half of the checklist-enforcement contract (Phase 6)."
+
+  orchestrator:
+    group: management
+    status: active
+    purpose: "Agent sequencing, handoff, session state."
+    inputs: [session, ticker, runtime_mode, layers]
+    outputs: [pipeline_state_events]
+    handoff_upstream: [ceo]
+    handoff_downstream: [all specialist and event agents]
+
+  agent_factory:
+    group: management
+    status: active
+    purpose: "Agent design & prompt engineering; invoked only when a capability gap is detected."
+    inputs: [capability_gap_description]
+    outputs: [agent_spec_proposal, prompt_proposal, schema_proposal]
+
+  agent_performance_review:
+    group: management
+    status: active
+    purpose: "Post-run review, gap analysis, feedback generation, memory update recommendations."
+    inputs: [session_outputs, historical_trend]
+    outputs: [agent_performance_report, recommended_memory_edits]
+
+  cost_performance_optimizer:
+    group: management
+    status: active
+    purpose: "Cost + latency tracking, budget enforcement, optimization recommendations."
+    inputs: [agent_runs_cost, agent_runs_latency, run_budget]
+    outputs: [cost_report]
+
+# ── Specialist agents ────────────────────────────────────────────────
+
+  data_collection:
+    group: specialist
+    status: active
+    purpose: "KAP scrape, annual/quarterly statement retrieval, raw document archiving."
+    outputs: [raw_document_set, coverage_report]
+    handoff_downstream: [parse_standardization]
+
+  parse_standardization:
+    group: specialist
+    status: active
+    purpose: "PDF/XBRL parse, financial statement normalization, line-item mapping."
+    outputs: [standardized_statements, mapping_confidence]
+    handoff_downstream: [reconciliation]
+
+  reconciliation:
+    group: specialist
+    status: active
+    purpose: "Cross-statement validation, accounting integrity check, duplicate detection."
+    outputs: [reconciled_financial_data, reconciliation_quality_score]
+    handoff_downstream: [financial_analysis, context_extraction]
+
+  context_extraction:
+    group: specialist
+    status: active
+    purpose: "Business model, segments, FX sensitivity, risk factor extraction."
+    outputs: [context_extraction_output]
+
+  financial_analysis:
+    group: specialist
+    status: active
+    purpose: "28 mandatory metrics computation with interpretation paragraphs."
+    outputs: [metrics_array, engine_snapshot, interpretations, mandatory_metrics_complete]
+    contract_notes:
+      - "metrics_array minItems: 28 (Phase 4 target)."
+      - "Every interpretation object requires observation/reasoning/counterargument/implication with minLength floors (Phase 4 target)."
+
+  sector_competition:
+    group: specialist
+    status: active
+    purpose: "Peer identification, peer comparison, market positioning, SWOT."
+    outputs: [peer_set, peer_comparison_table, swot]
+    sector_resolution_source_of_truth: canonical/tickers/sector_mapping.yaml
+
+  macro_analysis:
+    group: specialist
+    status: active
+    purpose: "Turkey macro, inflation/rate/FX transmission to company."
+    outputs: [macro_transmission_table, sensitivity_analysis]
+
+  technical_analysis:
+    group: specialist
+    status: active
+    purpose: "Trend, MA, support/resistance, volume, scenarios."
+    outputs: [trend_read, scenario_table, technical_indicators]
+
+  strategic_synthesis:
+    group: specialist
+    status: active
+    purpose: "Cross-layer integration, contradiction synthesis, confidence aggregation."
+    inputs_expected: [financial, sector, macro, technical, events, valuation]
+    outputs: [cross_layer_synthesis]
+
+  final_summary:
+    group: specialist
+    status: active
+    purpose: "Executive summary, report packaging."
+    supervises: [report_formatter]
+
+  report_formatter:
+    group: specialist
+    status: active
+    purpose: "Markdown cleanup, executive formatting, final HTML/PDF packaging."
+    chart_policy: SVG_ONLY     # see OI-007
+    contract_notes:
+      - "Chart.js is forbidden — system_prompt MUST match agent_spec MUST match compose.ts MUST match AGENTS.md. Currently inconsistent; Phase 3 resolves to this setting."
+
+  valuation_agent:
+    group: specialist
+    status: active
+    registry_status: filesystem_only      # see G audit
+    purpose: "DCF, multiples, SOTP, fair-value range."
+
+  sentiment_news_agent:
+    group: specialist
+    status: active
+    registry_status: filesystem_only
+    purpose: "News flow + sentiment scoring."
+
+  analyst_consensus_agent:
+    group: specialist
+    status: active
+    registry_status: filesystem_only
+    purpose: "Analyst consensus EPS, PT, rating aggregation."
+
+  esg_agent:
+    group: specialist
+    status: active
+    registry_status: filesystem_only
+    purpose: "ESG score read, material disclosure gaps."
+
+# ── Event agents ─────────────────────────────────────────────────────
+
+  kap_watch:
+    group: event
+    status: active
+    purpose: "KAP monitoring, materiality screening, event feed generation."
+
+  event_classification:
+    group: event
+    status: active
+    purpose: "Event type, materiality scoring, entity extraction."
+
+  event_impact_mapper:
+    group: event
+    status: active
+    purpose: "Financial impact mapping per event (affected line items, timing, quantification)."
+
+  event_timeline_alert:
+    group: event
+    status: active
+    purpose: "Timeline construction, forward-looking alert generation."
+
+# ── Phase 3 prompt rewrite target ───────────────────────────────────
+prompt_rewrite_contract: |
+  An agent system_prompt.md may reference this file by:
+    "IO contract: see canonical/contracts/agent_io_contracts.yaml → <agent_name>"
+  It MUST NOT restate inputs, outputs, handoff rules, or purpose. The
+  system_prompt becomes behaviour + reasoning directives only.

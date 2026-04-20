@@ -1,0 +1,90 @@
+# canonical/sectors/aviation.yaml
+# Sector playbook — aviation (THYAO, PEGYS, ONUIR).
+
+sector_id: aviation
+display_name: Havacılık
+tickers: [THYAO, PEGYS, ONUIR]
+
+# Metrics that come before EBITDA in the narrative. EBITDAR is primary.
+primary_metrics:
+  - ebitdar           # SR-aviation-001
+  - ebitdar_margin
+  - cask
+  - rask
+  - load_factor
+  - rpk
+  - ask
+  - yield
+
+# Operational KPI section every aviation report must carry.
+mandatory_kpi_section:
+  id: SR-aviation-kpi-001
+  title: "Operasyonel KPI'lar"
+  required: true
+  required_metrics:
+    - cask
+    - rask
+    - load_factor
+    - rpk
+    - ask
+    - cargo_ton_km
+    - yield
+  data_sources:
+    - financial_statements
+    - kap_trafik_bildirim
+    - context_extraction
+
+benchmark:
+  ebitdar_margin:
+    global_average: 0.161     # IATA 2025
+    thyao_reference_2025: 0.232
+  load_factor:
+    global_average: 0.836     # IATA 2025
+    thyao_reference_2025: 0.835
+  cask_usd_cents:
+    thyao_reference_2025: 8.55
+  rask_usd_cents:
+    thyao_reference_2025: 7.21
+
+cost_of_equity:
+  try: [0.28, 0.32]
+  usd: [0.09, 0.11]
+  interpretation_guidance: |
+    ROE must be compared against CoE-TRY. A 13% ROE against a 30% TRY CoE
+    band is value-destroying on paper; qualitative context (USD-denominated
+    assets, FX-heavy revenue) can explain the apparent gap, but the
+    comparison itself is mandatory — see MM-25 interpretation_requirements.
+
+ifrs_16_handling:
+  compute_pre_post: true
+  report_both: true
+  narrative_requirement: "IFRS 16 öncesi/sonrası net borç, operasyonel kira, finansal kira ayrıştırması zorunlu."
+
+# Rules this playbook overlays onto global rules (global still wins if in conflict).
+overlay_rules:
+  SR-aviation-001: |
+    EBITDAR is primary; EBITDA is secondary. Any aviation report missing
+    EBITDAR triggers a MISSING_SECTOR_KPI finding regardless of whether
+    EBITDA is present.
+
+  SR-aviation-002: |
+    Fuel cost as % of total OPEX must be shown as a separate row with a
+    sensitivity "every $1/bbl change in jet fuel → X TRY mn EBITDA impact"
+    line. Jet fuel is the single largest transmission parameter for this
+    sector.
+
+  SR-aviation-003: |
+    Fleet CAPEX schedule must be displayed (commitments to Boeing / Airbus
+    by year). Maintenance CAPEX and growth CAPEX are separate lines.
+
+  SR-aviation-004: |
+    Seasonality (Q1 off-peak, Q3 peak) must be mentioned in the narrative
+    at least once; a single-quarter run-rate extrapolation is a
+    SEASONALITY_MISREAD finding.
+
+rules_id_references:
+  - MM-07        # EBITDA base
+  - MM-25        # ROE must compare against CoE
+  - NH-003       # EBITDAR proxy ladder
+  - IAS29-006    # Aviation IAS 29 sensitivities
+  - OI-007       # SVG only
