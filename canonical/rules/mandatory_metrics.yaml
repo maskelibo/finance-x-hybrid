@@ -1,0 +1,304 @@
+# canonical/rules/mandatory_metrics.yaml
+#
+# 28 mandatory metrics every institutional report must carry.
+# Each entry defines: id, Turkish + English names, formula, required inputs,
+# sector variants, null-handling proxy (if any), benchmark requirement,
+# and interpretation requirement.
+#
+# The financial_analysis agent MUST emit one object per id in its metrics_array.
+# Phase 4 schema hardening will set `minItems: 28` on that array.
+#
+# `null_proxy.confidence` uses the values in canonical/rules/confidence_taxonomy.md.
+
+schema_version: 1
+catalog_size: 28
+generated: "2026-04-21"
+
+metrics:
+
+  # ── Group A: Gelir / Revenue ──────────────────────────────────────────
+  MM-01:
+    name_tr: "Net Satışlar"
+    name_en: "Net Sales"
+    unit: TRY
+    formula: "Revenue from contracts with customers (IFRS 15)"
+    required_inputs: [income_statement_revenue]
+    benchmark_required: true
+    interpretation_required: true
+    sector_variants:
+      banking: "Net Interest Income + Net Fee Income toplamı olarak raporla"
+
+  MM-02:
+    name_tr: "Brüt Kâr"
+    name_en: "Gross Profit"
+    unit: TRY
+    formula: "Revenue - COGS"
+    required_inputs: [revenue, cogs]
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-03:
+    name_tr: "Brüt Kârlılık"
+    name_en: "Gross Margin"
+    unit: pct
+    formula: "Gross Profit / Revenue × 100"
+    required_inputs: [revenue, gross_profit]
+    benchmark_required: true
+    interpretation_required: true
+    sector_variants:
+      banking: "NIM (Net Interest Margin) olarak ayrıştır"
+      telecom: "Service Revenue Gross Margin olarak raporla"
+
+  MM-04:
+    name_tr: "Brüt Kâr (IAS 29)"
+    name_en: "Gross Profit (IAS 29 adjusted)"
+    unit: TRY
+    formula: "Gross Profit adjusted per IAS 29 (see canonical/rules/ias29_protocol.md)"
+    required_inputs: [revenue, cogs, cpi_deflator]
+    applies_when: "cumulative_3y_inflation >= 100%"
+    benchmark_required: false
+    interpretation_required: true
+
+  MM-05:
+    name_tr: "Brüt Kâr Marjı (IAS 29)"
+    name_en: "Gross Margin (IAS 29 adjusted)"
+    unit: pct
+    formula: "Gross Profit (IAS 29) / Revenue (IAS 29) × 100"
+    applies_when: "cumulative_3y_inflation >= 100%"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-06:
+    name_tr: "Net Parasal Pozisyon Kazanç/Kaybı"
+    name_en: "Monetary Gain / Loss"
+    unit: TRY
+    formula: "Net monetary position × CPI change (IAS 29)"
+    required_inputs: [monetary_assets, monetary_liabilities, cpi_change]
+    benchmark_required: false
+    interpretation_required: true
+
+  MM-07:
+    name_tr: "FAVÖK (EBITDA)"
+    name_en: "EBITDA"
+    unit: TRY
+    formula: "Operating Profit + D&A"
+    required_inputs: [operating_profit, depreciation, amortization]
+    benchmark_required: true
+    interpretation_required: true
+    sector_variants:
+      aviation: "EBITDA yanında EBITDAR da zorunlu — see SR-aviation-001"
+    null_proxy:
+      formula: "Net Income + Tax + Interest + D&A"
+      confidence: MEDIUM
+      label: "[EBITDA proxy — from NI + T + I + D&A]"
+
+  MM-08:
+    name_tr: "FAVÖK Marjı"
+    name_en: "EBITDA Margin"
+    unit: pct
+    formula: "EBITDA / Revenue × 100"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-09:
+    name_tr: "Vergi Öncesi Kâr (VÖK)"
+    name_en: "Pre-tax Profit"
+    unit: TRY
+    formula: "Net Income + Tax Expense"
+    benchmark_required: false
+    interpretation_required: true
+
+  MM-10:
+    name_tr: "Net Dönem Kârı"
+    name_en: "Net Income"
+    unit: TRY
+    formula: "Reported from income statement"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-11:
+    name_tr: "OPEX / Ciro"
+    name_en: "OPEX to Revenue"
+    unit: pct
+    formula: "(SG&A + R&D + other operating) / Revenue × 100"
+    benchmark_required: true
+    interpretation_required: true
+
+  # ── Group B: İşletme Sermayesi / Working Capital ─────────────────────
+  MM-12:
+    name_tr: "Alacak Tahsil Süresi (DSO)"
+    name_en: "Days Sales Outstanding"
+    unit: days
+    formula: "Trade Receivables / Revenue × 365"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-13:
+    name_tr: "Stok Tutma Süresi (DIO)"
+    name_en: "Days Inventory Outstanding"
+    unit: days
+    formula: "Inventory / COGS × 365"
+    benchmark_required: true
+    interpretation_required: true
+    sector_variants:
+      steel: "DIO vurgu zorunlu — hammadde vs nihai ürün ayrımı"
+
+  MM-14:
+    name_tr: "Borç Ödeme Süresi (DPO)"
+    name_en: "Days Payables Outstanding"
+    unit: days
+    formula: "Trade Payables / COGS × 365"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-15:
+    name_tr: "Nakit Dönüşüm Döngüsü (CCC)"
+    name_en: "Cash Conversion Cycle"
+    unit: days
+    formula: "DSO + DIO - DPO"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-16:
+    name_tr: "NWC / Hasılat"
+    name_en: "Net Working Capital to Revenue"
+    unit: pct
+    formula: "(Current Assets - Current Liabilities) / Revenue × 100"
+    benchmark_required: true
+    interpretation_required: true
+
+  # ── Group C: Borç / Likidite ─────────────────────────────────────────
+  MM-17:
+    name_tr: "Net Borç"
+    name_en: "Net Debt"
+    unit: TRY
+    formula: "Total Debt - Cash and Equivalents"
+    benchmark_required: false
+    interpretation_required: true
+
+  MM-18:
+    name_tr: "Net Borç / FAVÖK"
+    name_en: "Net Debt / EBITDA"
+    unit: ratio
+    formula: "Net Debt / EBITDA"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-19:
+    name_tr: "Cari Oran"
+    name_en: "Current Ratio"
+    unit: ratio
+    formula: "Current Assets / Current Liabilities"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-20:
+    name_tr: "Asit-Test Oranı"
+    name_en: "Quick Ratio"
+    unit: ratio
+    formula: "(Current Assets - Inventory) / Current Liabilities"
+    benchmark_required: true
+    interpretation_required: true
+
+  # ── Group D: Nakit Akışı ─────────────────────────────────────────────
+  MM-21:
+    name_tr: "Serbest Nakit Akışı (FCF)"
+    name_en: "Free Cash Flow"
+    unit: TRY
+    formula: "Operating Cash Flow - CAPEX"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-22:
+    name_tr: "OCF / FAVÖK"
+    name_en: "OCF to EBITDA"
+    unit: ratio
+    formula: "Operating Cash Flow / EBITDA"
+    benchmark_required: true
+    interpretation_required: true
+    purpose: "Cash conversion quality — values <0.7 merit explicit bridge table"
+
+  MM-23:
+    name_tr: "FAVÖK / Faiz Gideri"
+    name_en: "EBITDA / Interest Expense (Interest Coverage)"
+    unit: ratio
+    formula: "EBITDA / Interest Expense"
+    benchmark_required: true
+    interpretation_required: true
+
+  MM-24:
+    name_tr: "FCF / Faiz Ödemesi"
+    name_en: "FCF / Interest Paid"
+    unit: ratio
+    formula: "Free Cash Flow / Interest Paid (cash basis)"
+    benchmark_required: true
+    interpretation_required: true
+
+  # ── Group E: Kârlılık / Profitability ────────────────────────────────
+  MM-25:
+    name_tr: "Özsermaye Kârlılığı (ROE)"
+    name_en: "Return on Equity"
+    unit: pct
+    formula: "Net Income / Average Equity × 100"
+    benchmark_required: true
+    interpretation_required: true
+    interpretation_requirements:
+      must_compare_against:
+        - "Cost of Equity TRY band (28% – 32%) — see canonical/sectors/<sector>.yaml"
+        - "Sector average ROE"
+      forbidden_pattern:
+        - "Naked ROE number without CoE benchmark comparison"
+
+  MM-26:
+    name_tr: "İşletme Sermayesi Kârlılığı (ROCE)"
+    name_en: "Return on Capital Employed"
+    unit: pct
+    formula: "EBIT / (Total Assets - Current Liabilities) × 100"
+    benchmark_required: true
+    interpretation_required: true
+
+  # ── Group F: Yatırım / CAPEX ────────────────────────────────────────
+  MM-27:
+    name_tr: "CAPEX / FAVÖK"
+    name_en: "CAPEX / EBITDA"
+    unit: ratio
+    formula: "CAPEX / EBITDA"
+    benchmark_required: true
+    interpretation_required: true
+    sector_variants:
+      steel: "Büyüme CAPEX ve idame CAPEX ayrı ayrı raporla — see SR-steel-001"
+      telecom: "CAPEX intensity olarak sektör karşılaştırması — see SR-telecom-001"
+
+  MM-28:
+    name_tr: "Faiz Gideri / FAVÖK"
+    name_en: "Interest Expense / EBITDA"
+    unit: pct
+    formula: "Interest Expense / EBITDA × 100"
+    benchmark_required: true
+    interpretation_required: true
+
+# ── Interpretation depth requirements (Phase 4 schema hardening target) ─
+interpretation_depth:
+  observation:      { min_chars: 80,  description: "Ne gördüm — sayı + değişim." }
+  reasoning:        { min_chars: 120, description: "Neden bu seviye — sektör, döngü, tek seferlik kalemler." }
+  counterargument:  { min_chars: 60,  description: "Alternatif yorum — bu tez yanılır mı, nasıl yanılır." }
+  implication:      { min_chars: 80,  description: "Ne anlama geliyor — yönetim kararı, değerleme etkisi, risk." }
+
+# ── Benchmark requirement semantics ────────────────────────────────────
+benchmark_policy:
+  source_hierarchy:
+    1: "Ticker peer set (canonical/sectors/<sector>.yaml → benchmarks)"
+    2: "Global sector average (IATA, IEA, OECD, BDDK, etc.)"
+    3: "Historical 3-year own average"
+  missing_benchmark_behaviour: "Must mark metric as MEDIUM confidence + emit MISSING_BENCHMARK finding"
+
+# ── Forbidden patterns (enforced in Phase 4) ───────────────────────────
+forbidden_patterns:
+  - "Naked number without formula reference"
+  - "Naked ROE without CoE comparison"
+  - "Table without interpretation paragraph (3-5 sentences required)"
+  - "Interpretation without counter-argument"
+  - "IAS 29 period without monetary gain/loss line"
+  - "EBITDA without EBITDAR for aviation tickers"
+  - "Holding report without 3-layer analysis"
+  - "Steel report without growth vs maintenance CAPEX split"

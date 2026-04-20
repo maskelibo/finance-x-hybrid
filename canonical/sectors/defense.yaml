@@ -1,0 +1,64 @@
+# canonical/sectors/defense.yaml
+# Sector playbook — defense (ASELS, ROKET, FNSS).
+
+sector_id: defense
+display_name: Savunma
+tickers: [ASELS, ROKET, FNSS]
+
+primary_metrics:
+  - backlog
+  - backlog_to_revenue
+  - rd_to_revenue
+  - export_ratio
+  - ebitda_margin
+  - project_completion_percentage
+  - cash_conversion
+
+mandatory_kpi_section:
+  id: SR-defense-kpi-001
+  title: "Savunma KPI'ları"
+  required: true
+  required_metrics:
+    - backlog_to_revenue
+    - rd_to_revenue
+    - export_share
+    - project_portfolio_breakdown
+    - major_contract_progress
+
+benchmark:
+  backlog_to_revenue_target: 3.0
+  rd_to_revenue_peer_2024: 0.10
+  ebitda_margin_peer_2024: 0.17
+
+cost_of_equity:
+  try: [0.26, 0.30]
+  usd: [0.09, 0.11]
+
+overlay_rules:
+  SR-defense-001: |
+    Backlog/Revenue and R&D/Revenue ratios are mandatory. Missing either
+    triggers MISSING_SECTOR_KPI.
+
+  SR-defense-002: |
+    Export ratio explicitly reported as % of revenue by geography
+    (MENA, NATO, Asia, etc.) — pure domestic defense is concentration risk.
+
+  SR-defense-003: |
+    Major contract progress — named programs (e.g. ALTAY, HÜRKUŞ, GÖKDOĞAN,
+    ATMACA) with milestone status and % completion.
+
+  SR-defense-004: |
+    Working-capital dynamics — defense contracts carry long DIO (raw
+    material) and long DSO (government payment). CCC will be materially
+    above peer-general manufacturing.
+
+  SR-defense-005: |
+    FX exposure: revenue is often TRY-denominated from local buyer (MSB)
+    but cost of imported components is USD/EUR. Explicit FX sensitivity
+    table required.
+
+rules_id_references:
+  - MM-15
+  - MM-21
+  - MM-25
+  - OI-003

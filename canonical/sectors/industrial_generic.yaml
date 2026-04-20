@@ -1,0 +1,58 @@
+# canonical/sectors/industrial_generic.yaml
+# Fallback playbook — used for tickers that are in sector_mapping.yaml but
+# do not have a dedicated playbook yet (e.g. PETKM, FROTO, TOASO, ARCLK, SISE).
+# Also the silent-default-forbidden safety net for unclassified tickers.
+
+sector_id: industrial_generic
+display_name: Genel Sanayi (fallback)
+tickers: []       # intentionally empty — this is only a target, not a mapping source
+applies_when: "ticker has entry in sector_mapping.yaml pointing here, OR ticker is unclassified and UNCLASSIFIED_TICKER finding has been raised"
+
+primary_metrics:
+  - revenue
+  - gross_margin
+  - ebitda
+  - ebitda_margin
+  - net_debt_ebitda
+  - capex_to_ebitda
+  - roe
+  - fx_exposure
+
+mandatory_kpi_section:
+  id: SR-industrial-kpi-001
+  title: "Genel Sanayi KPI'ları"
+  required: true
+  required_metrics:
+    - capacity_utilization_if_disclosed
+    - export_ratio
+    - input_cost_sensitivity
+    - fx_exposure_table
+
+benchmark: {}
+
+cost_of_equity:
+  try: [0.28, 0.32]
+  usd: [0.10, 0.12]
+
+overlay_rules:
+  SR-industrial-001: |
+    When industrial_generic is applied because a ticker is UNCLASSIFIED,
+    the formatter stamps "SECTOR: UNCLASSIFIED — industrial_generic
+    defaults applied" at the top of the report and emits an
+    UNCLASSIFIED_TICKER finding for human review.
+
+  SR-industrial-002: |
+    Export ratio and input-cost sensitivity are required for every
+    tradables-facing industrial. FX exposure table with asset-liability
+    balance and cash-flow balance is required.
+
+  SR-industrial-003: |
+    When the entity spans multiple business lines (e.g. SISE's glass +
+    chemicals + soda ash), segment breakdown is required. Do not aggregate
+    up silently.
+
+rules_id_references:
+  - MM-07
+  - MM-18
+  - MM-27
+  - OI-003

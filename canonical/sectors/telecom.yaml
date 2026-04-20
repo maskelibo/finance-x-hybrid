@@ -1,0 +1,67 @@
+# canonical/sectors/telecom.yaml
+# Sector playbook — telecom (TCELL, TTKOM).
+
+sector_id: telecom
+display_name: Telekom
+tickers: [TCELL, TTKOM]
+
+primary_metrics:
+  - arpu
+  - churn
+  - sac
+  - ltv
+  - ltv_sac_ratio
+  - capex_intensity
+  - ebitda_margin
+  - spectrum_amortization
+  - 5g_arpu_premium
+
+mandatory_kpi_section:
+  id: SR-telecom-kpi-001
+  title: "Telekom KPI'ları"
+  required: true
+  required_metrics:
+    - arpu_trend_5y
+    - churn_rate
+    - sac_vs_ltv
+    - capex_intensity_ratio
+    - 5g_arpu_premium
+    - spectrum_amortization_schedule
+
+benchmark:
+  arpu_try_monthly:
+    turkey_peer_2024: 200
+  churn_monthly_peer_2024: 0.020
+  ltv_sac_target: 3.0
+  capex_intensity_peer_2024: 0.22     # CAPEX / Revenue
+  ebitda_margin_peer_2024: 0.42
+
+cost_of_equity:
+  try: [0.27, 0.31]
+  usd: [0.09, 0.11]
+
+overlay_rules:
+  SR-telecom-001: |
+    ARPU, churn, SAC/LTV are mandatory. Missing any triggers
+    MISSING_SECTOR_KPI. Prepaid and postpaid ARPU should be reported
+    separately when the mix is material (≥ 25% prepaid).
+
+  SR-telecom-002: |
+    5G ARPU premium quantified — pre/post-5G cohort comparison.
+
+  SR-telecom-003: |
+    Spectrum amortization schedule and license renewal timing must be
+    disclosed; impacts D&A trajectory for 3-5 years.
+
+  SR-telecom-004: |
+    CAPEX intensity (CAPEX/Revenue) over 5y window with peer comparison.
+    Telecom is a CAPEX-heavy cycle — a single-year figure is insufficient.
+
+  SR-telecom-005: |
+    Regulation sensitivity: BTK inspection findings, tariff caps, USO
+    contribution must be discussed when relevant disclosures exist.
+
+rules_id_references:
+  - MM-25
+  - MM-27
+  - OI-003

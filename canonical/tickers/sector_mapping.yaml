@@ -1,0 +1,177 @@
+# canonical/tickers/sector_mapping.yaml
+#
+# Ticker → sector resolution. Single source of truth.
+# Everything else (agent prompts, schema enforcement, sector playbook selection,
+# peer-set heuristics) MUST consult this file via the canonical loader.
+#
+# "industrial" fallback is only legal for tickers NOT listed here and only
+# after an explicit escalation to the sector_competition agent. It is never
+# a silent default.
+#
+# Rule precedence: this file > any agent system_prompt mention > any memory.md
+# mention > runtime heuristic.
+
+schema_version: 1
+generated: "2026-04-21"
+source_of_truth: canonical/tickers/sector_mapping.yaml
+related_canonical_rules:
+  - SR-aviation-001   # EBITDAR primary for aviation
+  - SR-steel-001      # Growth vs maintenance CAPEX split mandatory for steel
+  - SR-holding-001    # Three-layer analysis mandatory for holding
+  - SR-telecom-001    # ARPU + churn + SAC/LTV required for telecom
+  - SR-banking-001    # NIM + CAR + Cost of Risk mandatory for banking
+  - SR-defense-001    # Backlog/Revenue + R&D/Revenue mandatory for defense
+  - SR-retail-001     # SSSG + Revenue/Store + IFRS 16 normalize required
+
+mappings:
+  # --- Aviation ---
+  THYAO:
+    sector: aviation
+    display_name: Türk Hava Yolları
+    playbook: canonical/sectors/aviation.yaml
+    notes: "EBITDAR primary; EBITDA secondary. IFRS 16 pre/post disclosure required."
+  PEGYS:
+    sector: aviation
+    display_name: Pegasus
+    playbook: canonical/sectors/aviation.yaml
+  ONUIR:
+    sector: aviation
+    display_name: Onur Air (legacy)
+    playbook: canonical/sectors/aviation.yaml
+
+  # --- Defense ---
+  ASELS:
+    sector: defense
+    display_name: Aselsan
+    playbook: canonical/sectors/defense.yaml
+  ROKET:
+    sector: defense
+    display_name: Roketsan
+    playbook: canonical/sectors/defense.yaml
+  FNSS:
+    sector: defense
+    display_name: FNSS
+    playbook: canonical/sectors/defense.yaml
+
+  # --- Steel ---
+  EREGL:
+    sector: steel
+    display_name: Ereğli Demir Çelik
+    playbook: canonical/sectors/steel.yaml
+    notes: "Growth vs maintenance CAPEX split mandatory; HRC/iron-ore transmission parameter required."
+  KRDMD:
+    sector: steel
+    display_name: Kardemir
+    playbook: canonical/sectors/steel.yaml
+  ISDMR:
+    sector: steel
+    display_name: İskenderun Demir Çelik
+    playbook: canonical/sectors/steel.yaml
+
+  # --- Banking ---
+  AKBNK:
+    sector: banking
+    display_name: Akbank
+    playbook: canonical/sectors/banking.yaml
+  GARAN:
+    sector: banking
+    display_name: Garanti BBVA
+    playbook: canonical/sectors/banking.yaml
+  ISCTR:
+    sector: banking
+    display_name: İş Bankası
+    playbook: canonical/sectors/banking.yaml
+  YKBNK:
+    sector: banking
+    display_name: Yapı Kredi
+    playbook: canonical/sectors/banking.yaml
+
+  # --- Telecom ---
+  TCELL:
+    sector: telecom
+    display_name: Turkcell
+    playbook: canonical/sectors/telecom.yaml
+  TTKOM:
+    sector: telecom
+    display_name: Türk Telekom
+    playbook: canonical/sectors/telecom.yaml
+
+  # --- Retail ---
+  BIMAS:
+    sector: retail
+    display_name: BİM
+    playbook: canonical/sectors/retail.yaml
+  MGROS:
+    sector: retail
+    display_name: Migros
+    playbook: canonical/sectors/retail.yaml
+  SOKM:
+    sector: retail
+    display_name: ŞOK Marketler
+    playbook: canonical/sectors/retail.yaml
+
+  # --- Holding ---
+  KCHOL:
+    sector: holding
+    display_name: Koç Holding
+    playbook: canonical/sectors/holding.yaml
+    notes: "Three-layer analysis: parent / consolidated / segment. SOTP + NAV + holding discount mandatory."
+  SAHOL:
+    sector: holding
+    display_name: Sabancı Holding
+    playbook: canonical/sectors/holding.yaml
+  DOHOL:
+    sector: holding
+    display_name: Doğan Holding
+    playbook: canonical/sectors/holding.yaml
+
+  # --- Energy (refining / chemicals) ---
+  TUPRS:
+    sector: energy_refining
+    display_name: Tüpraş
+    playbook: canonical/sectors/energy_refining.yaml
+    notes: "Refining margin, crack spread, inventory gain/loss breakdown required."
+  PETKM:
+    sector: energy_chemicals
+    display_name: Petkim
+    playbook: canonical/sectors/industrial_generic.yaml
+    notes: "Temporary: no dedicated chemicals playbook yet; uses industrial_generic."
+
+  # --- Automotive ---
+  FROTO:
+    sector: automotive
+    display_name: Ford Otosan
+    playbook: canonical/sectors/industrial_generic.yaml
+    notes: "Export ratio + R&D amortization + capacity utilization highlight required."
+  TOASO:
+    sector: automotive
+    display_name: Tofaş
+    playbook: canonical/sectors/industrial_generic.yaml
+
+  # --- Durable goods ---
+  ARCLK:
+    sector: durable_goods
+    display_name: Arçelik
+    playbook: canonical/sectors/industrial_generic.yaml
+
+  # --- Industrial / glass (explicit override so SISE never defaults industrial silently) ---
+  SISE:
+    sector: industrial_glass
+    display_name: Şişecam
+    playbook: canonical/sectors/industrial_generic.yaml
+    notes: "Container / flat glass / chemicals mixed portfolio — segment breakdown mandatory."
+
+# When a ticker is NOT in this file, the resolver must:
+#   1. Not silently fall back to "industrial".
+#   2. Record UNCLASSIFIED_TICKER in the run's findings[].
+#   3. Escalate to sector_competition with the raw ticker and business
+#      description so a mapping can be proposed; the human gate adds it here.
+fallback_policy:
+  silent_default: forbidden
+  escalate_to: sector_competition
+  escalation_payload: [ticker, business_description, kap_sector_code]
+  runtime_behaviour: |
+    Unknown tickers produce a 'UNCLASSIFIED_TICKER' finding on the CEO
+    contract. The run still completes with industrial_generic defaults,
+    but the formatter must stamp 'SECTOR: UNCLASSIFIED — industrial_generic
+    defaults applied' at the top of the report.
