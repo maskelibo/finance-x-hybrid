@@ -1,0 +1,229 @@
+findings: 177
+  by severity: {'info': 130, 'hard': 20, 'soft': 27}
+  by category: {'canonical_candidate': 130, 'size_hard': 20, 'size_soft': 4, 'duplicate_rule': 23}
+
+
+-- agent_performance_review --
+  [info] memory.md         canonical_candidate    prose rule @ line 39 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 220 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 53 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+
+-- analyst_consensus_agent --
+  [info] memory.md         canonical_candidate    prose rule @ line 95 has canonical equivalent — reference TM-TUPRS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 69 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 96 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 82 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [hard] memory.md         size_hard              13.23 KB exceeds hard cap 10 KB
+
+-- ceo --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 16 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] knowledge.md      canonical_candidate    prose rule @ line 18 has canonical equivalent — reference MM-01..28 (canonical/rules/mandatory_metrics.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 158 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 119 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 432 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 32 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 171 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [hard] memory.md         size_hard              44.34 KB exceeds hard cap 10 KB
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 109 has canonical equivalent — reference CT-001..006 (canonical/rules/confidence_taxonomy.md) instead
+  [soft] system_prompt.md  size_soft              25.37 KB exceeds soft cap 20 KB
+
+-- context_extraction --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 9 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] knowledge.md      canonical_candidate    prose rule @ line 83 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 207 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 114 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 112 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 14 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 113 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 141 has canonical equivalent — reference OI-001 (canonical/rules/output_integrity.md) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [198, 214] — fingerprint: 'havacılık zorunlu round şablonu taahhüt takip tablosu seasonality filo capex'
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [256, 272] — fingerprint: 'thyao havacılık bağlamı zorunlu madde round 1den ceo profili net'
+  [hard] memory.md         size_hard              31.56 KB exceeds hard cap 10 KB
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 99 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 125 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+
+-- coo --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 17 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] knowledge.md      canonical_candidate    prose rule @ line 20 has canonical equivalent — reference MM-01..28 (canonical/rules/mandatory_metrics.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 85 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 10 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 90 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 14 has canonical equivalent — reference OI-007 (canonical/rules/output_integrity.md) instead
+  [hard] memory.md         size_hard              31.24 KB exceeds hard cap 10 KB
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 31 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 33 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+
+-- data_collection --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 122 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 260 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 20 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 172 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 17 has canonical equivalent — reference OI-001 (canonical/rules/output_integrity.md) instead
+  [hard] memory.md         size_hard              28.76 KB exceeds hard cap 10 KB
+  [soft] system_prompt.md  duplicate_rule         duplicated rule-line x2 @ lines [43, 106] — fingerprint: 'tüm downstream agentlar fiyatı referans alacak farklı kaynaklardan farklı fiyat'
+
+-- esg_agent --
+  [info] memory.md         canonical_candidate    prose rule @ line 74 has canonical equivalent — reference TM-TUPRS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 69 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 73 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [soft] memory.md         size_soft              6.5 KB exceeds soft cap 6 KB
+
+-- event_classification --
+  [info] memory.md         canonical_candidate    prose rule @ line 130 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 132 has canonical equivalent — reference TM-TCELL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 7 has canonical equivalent — reference OI-001 (canonical/rules/output_integrity.md) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [294, 313] — fingerprint: 'materyel event cross event interaction tablosu zorunlu olay bireysel ebitda'
+  [hard] memory.md         size_hard              28.47 KB exceeds hard cap 10 KB
+
+-- event_impact_mapper --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 75 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 57 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 56 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 201 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 11 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 72 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [73, 97] — fingerprint: 'ceo değişimi için qualitative impact framework yok kural board governance'
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [90, 108] — fingerprint: 'quantification yoksa proxy conf low zorunlu quantificationpossible false kararı '
+  [hard] memory.md         size_hard              20.66 KB exceeds hard cap 10 KB
+
+-- event_timeline_alert --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 19 has canonical equivalent — reference OI-001 (canonical/rules/output_integrity.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 55 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 63 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 234 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 113 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 12 has canonical equivalent — reference OI-001 (canonical/rules/output_integrity.md) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [70, 88] — fingerprint: 'phase execution yapılmadı sadece mediumterm immediate gün near term gün'
+  [hard] memory.md         size_hard              20.16 KB exceeds hard cap 10 KB
+
+-- final_summary --
+  [info] memory.md         canonical_candidate    prose rule @ line 58 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 57 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 218 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 64 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 89 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [187, 207] — fingerprint: 'veri kalite matrisi formatı zorunlu'
+  [hard] memory.md         size_hard              22.1 KB exceeds hard cap 10 KB
+
+-- financial_analysis --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 107 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] knowledge.md      canonical_candidate    prose rule @ line 153 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] knowledge.md      canonical_candidate    prose rule @ line 102 has canonical equivalent — reference SR-holding-001 (canonical/sectors/holding.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 112 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 150 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 22 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 61 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 7 has canonical equivalent — reference MM-01..28 (canonical/rules/mandatory_metrics.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 34 has canonical equivalent — reference SR-steel-001 (canonical/sectors/steel.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 16 has canonical equivalent — reference SR-holding-001 (canonical/sectors/holding.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 15 has canonical equivalent — reference OI-001 (canonical/rules/output_integrity.md) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [262, 279] — fingerprint: 'ebitdar proxy zorunlu direktif tolerans sıfır ebitda null ise operating'
+  [hard] memory.md         size_hard              30.59 KB exceeds hard cap 10 KB
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 413 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 46 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 551 has canonical equivalent — reference MM-01..28 (canonical/rules/mandatory_metrics.yaml) instead
+  [hard] system_prompt.md  size_hard              38.4 KB exceeds hard cap 30 KB
+
+-- kap_watch --
+  [info] memory.md         canonical_candidate    prose rule @ line 236 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 122 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 124 has canonical equivalent — reference TM-TCELL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 51 has canonical equivalent — reference TM-BIMAS (canonical/tickers/sector_mapping.yaml) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [268, 289] — fingerprint: 'ismaterial null tüm 119 bildirimde thyao kalıcı bloker ceo değişimi'
+  [hard] memory.md         size_hard              29.56 KB exceeds hard cap 10 KB
+
+-- macro_analysis --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 19 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 197 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 158 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 204 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 68 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [hard] memory.md         size_hard              20.39 KB exceeds hard cap 10 KB
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 205 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 236 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+
+-- parse_standardization --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 9 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] knowledge.md      canonical_candidate    prose rule @ line 150 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 200 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 320 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 20 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 47 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 10 has canonical equivalent — reference OI-001 (canonical/rules/output_integrity.md) instead
+  [hard] memory.md         size_hard              31.02 KB exceeds hard cap 10 KB
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 36 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+
+-- qa_review --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 29 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] knowledge.md      canonical_candidate    prose rule @ line 26 has canonical equivalent — reference MM-01..28 (canonical/rules/mandatory_metrics.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 67 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 233 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 40 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 98 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 235 has canonical equivalent — reference MM-01..28 (canonical/rules/mandatory_metrics.yaml) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [105, 122] — fingerprint: 'chairman metrik checklist satır satır zorunlu required netmargin roe present'
+  [soft] memory.md         duplicate_rule         duplicated rule-line x3 @ lines [159, 201, 222] — fingerprint: 'sektör etiketi aviation değilse flag block'
+  [soft] memory.md         duplicate_rule         duplicated rule-line x3 @ lines [160, 202, 223] — fingerprint: 'ebitdar hesaplandı null flag block'
+  [soft] memory.md         duplicate_rule         duplicated rule-line x3 @ lines [161, 203, 224] — fingerprint: 'eventimpactmapper python template only var varsa block'
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [200, 221] — fingerprint: 'thyao zorunlu özel kontrol her analizde'
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [206, 227] — fingerprint: 'null cascade alarm null ebitda null ebitdar null sectorcompetition boş'
+  [hard] memory.md         size_hard              22.22 KB exceeds hard cap 10 KB
+
+-- reconciliation --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 79 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] knowledge.md      canonical_candidate    prose rule @ line 175 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 77 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 198 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 256 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 19 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [227, 242] — fingerprint: 'yıllık bilanço dengesi kontrolü yapılmadı sadece fy2025 için bsidentity check'
+  [hard] memory.md         size_hard              28.13 KB exceeds hard cap 10 KB
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 156 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [soft] system_prompt.md  duplicate_rule         duplicated rule-line x2 @ lines [19, 40] — fingerprint: 'toplam yükümlülükler kullanma sadece finansal borçlar banka kredileri tahviller'
+
+-- report_formatter --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 67 has canonical equivalent — reference OI-007 (canonical/rules/output_integrity.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 108 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 122 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 51 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 75 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 10 has canonical equivalent — reference OI-007 (canonical/rules/output_integrity.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 9 has canonical equivalent — reference OI-001 (canonical/rules/output_integrity.md) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [332, 355] — fingerprint: 'thyao self check zorunlu adım teslimden önce otomatik'
+  [hard] memory.md         size_hard              31.1 KB exceeds hard cap 10 KB
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 84 has canonical equivalent — reference OI-007 (canonical/rules/output_integrity.md) instead
+
+-- sector_competition --
+  [info] knowledge.md      canonical_candidate    prose rule @ line 93 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 39 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 154 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 163 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 41 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [120, 137] — fingerprint: 'financialanalysis olmasa bile zorunlu minimum çıktı'
+  [hard] memory.md         size_hard              18.78 KB exceeds hard cap 10 KB
+  [info] system_prompt.md  canonical_candidate    prose rule @ line 91 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+
+-- sentiment_news_agent --
+  [info] memory.md         canonical_candidate    prose rule @ line 48 has canonical equivalent — reference TM-EREGL (canonical/tickers/sector_mapping.yaml) instead
+  [soft] memory.md         size_soft              6.1 KB exceeds soft cap 6 KB
+
+-- strategic_synthesis --
+  [info] memory.md         canonical_candidate    prose rule @ line 53 has canonical equivalent — reference TM-THYAO (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 73 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [203, 229] — fingerprint: 'veri eksikliğinde minimum sentez zorunlu direktif kesinleşti ebitda null olsa'
+  [hard] memory.md         size_hard              23.87 KB exceeds hard cap 10 KB
+
+-- technical_analysis --
+  [info] memory.md         canonical_candidate    prose rule @ line 314 has canonical equivalent — reference TM-ASELS (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 88 has canonical equivalent — reference IAS29-001..006 (canonical/rules/ias29_protocol.md) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 241 has canonical equivalent — reference OI-001 (canonical/rules/output_integrity.md) instead
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [153, 186] — fingerprint: 'volume analizi yok aylık ortalama hacim hacim spike analizi standart'
+  [soft] memory.md         duplicate_rule         duplicated rule-line x2 @ lines [171, 188] — fingerprint: 'vwap volume profile yok standart şablon zorunlu kalemleri turda üretilmedi'
+  [hard] memory.md         size_hard              30.6 KB exceeds hard cap 10 KB
+
+-- valuation_agent --
+  [info] memory.md         canonical_candidate    prose rule @ line 61 has canonical equivalent — reference TM-KCHOL (canonical/tickers/sector_mapping.yaml) instead
+  [info] memory.md         canonical_candidate    prose rule @ line 25 has canonical equivalent — reference SR-aviation-001 (canonical/sectors/aviation.yaml) instead
+  [soft] memory.md         size_soft              7.61 KB exceeds soft cap 6 KB
+
+top 10 flagged agents: [('financial_analysis', 17), ('qa_review', 14), ('context_extraction', 13), ('ceo', 10), ('reconciliation', 10), ('report_formatter', 10), ('coo', 9), ('event_impact_mapper', 9), ('parse_standardization', 9), ('event_timeline_alert', 8)]
