@@ -1,0 +1,2782 @@
+{
+  "generated_at": "2026-04-20T21:03:31.359652+00:00",
+  "totals": {
+    "files": 28,
+    "valid_files": 28,
+    "total_props": 1271,
+    "total_required": 561,
+    "total_enum": 158,
+    "total_minLength": 5,
+    "total_minItems": 7,
+    "total_pattern": 143,
+    "total_loose_strings": 328,
+    "total_missing_enum": 4,
+    "total_arrays_no_minItems": 164
+  },
+  "ref_graph": {
+    "agents/agent_factory/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/agent_performance_review/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/ceo/output_schema.json": {
+      "internal": [
+        "#/definitions/ContradictionEscalationOutput",
+        "#/definitions/ContradictionReference",
+        "#/definitions/FinalApprovalOutput",
+        "#/definitions/HiringRequestOutput",
+        "#/definitions/ReviewDecisionOutput",
+        "#/definitions/TaskContractOutput"
+      ],
+      "external": []
+    },
+    "agents/context_extraction/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/data_collection/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/event_classification/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/event_impact_mapper/output_schema.json": {
+      "internal": [],
+      "external": [
+        "https://financex.io/schemas/shared/evidence"
+      ]
+    },
+    "agents/event_timeline_alert/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/final_summary/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/financial_analysis/output_schema.json": {
+      "internal": [
+        "#/definitions/RatioMetric",
+        "#/definitions/TrendAssessment"
+      ],
+      "external": [
+        "https://financex.io/schemas/shared/evidence"
+      ]
+    },
+    "agents/kap_watch/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/macro_analysis/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/orchestrator/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/parse_standardization/output_schema.json": {
+      "internal": [
+        "#/definitions/ParsedNotes",
+        "#/definitions/ParsedStatement"
+      ],
+      "external": []
+    },
+    "agents/qa_review/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/reconciliation/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/sector_competition/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/strategic_synthesis/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "agents/technical_analysis/output_schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "backend/generated/schemas/engine_output.schema.json": {
+      "internal": [
+        "#/$defs/DcfResult",
+        "#/$defs/DcfSensitivityCell",
+        "#/$defs/EngineRatios",
+        "#/$defs/EngineScores",
+        "#/$defs/RatioValue"
+      ],
+      "external": []
+    },
+    "backend/generated/schemas/kap_event.schema.json": {
+      "internal": [
+        "#/$defs/Confidence"
+      ],
+      "external": []
+    },
+    "backend/generated/schemas/ticker_package.schema.json": {
+      "internal": [
+        "#/$defs/AnalystConsensus",
+        "#/$defs/AnalystReport",
+        "#/$defs/BalanceSheet",
+        "#/$defs/BrandIdentity",
+        "#/$defs/CashFlowStatement",
+        "#/$defs/CbamExposure",
+        "#/$defs/CompanyInfo",
+        "#/$defs/Confidence",
+        "#/$defs/Currency",
+        "#/$defs/DcfResult",
+        "#/$defs/DcfSensitivityCell",
+        "#/$defs/EngineOutput",
+        "#/$defs/EngineRatios",
+        "#/$defs/EngineScores",
+        "#/$defs/EquityChange",
+        "#/$defs/EsgData",
+        "#/$defs/ExternalEsgRating",
+        "#/$defs/Financials",
+        "#/$defs/IncomeStatement",
+        "#/$defs/KapEvent",
+        "#/$defs/KapEvents",
+        "#/$defs/MacroSnapshot",
+        "#/$defs/MarketData",
+        "#/$defs/MarketSnapshot",
+        "#/$defs/MetaInfo",
+        "#/$defs/OhlcvBar",
+        "#/$defs/PeriodFinancials",
+        "#/$defs/QualityControl",
+        "#/$defs/QualityFlag",
+        "#/$defs/RatingAgency",
+        "#/$defs/RatioValue",
+        "#/$defs/Recommendation",
+        "#/$defs/ReportingPeriod",
+        "#/$defs/Severity",
+        "#/$defs/SourceRef",
+        "#/$defs/Subsidiary",
+        "#/$defs/TechnicalIndicators",
+        "#/$defs/TransmissionImpact"
+      ],
+      "external": []
+    },
+    "schemas/shared/agent_output_contract.schema.json": {
+      "internal": [],
+      "external": [
+        "https://financex.internal/schemas/shared/confidence.schema.json",
+        "https://financex.internal/schemas/shared/contradiction_report.schema.json",
+        "https://financex.internal/schemas/shared/evidence.schema.json"
+      ]
+    },
+    "schemas/shared/confidence.schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "schemas/shared/contradiction_report.schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "schemas/shared/evidence.schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "schemas/shared/review_decision.schema.json": {
+      "internal": [],
+      "external": []
+    },
+    "schemas/shared/task_contract.schema.json": {
+      "internal": [],
+      "external": []
+    }
+  },
+  "reports": [
+    {
+      "file": "agents/agent_factory/output_schema.json",
+      "size_kb": 1.11,
+      "title": "Agent Factory Output Schema",
+      "id": "https://financex.io/schemas/agents/agent_factory/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "hiring_request_id",
+        "designed_agent_id",
+        "design_package",
+        "review_status"
+      ],
+      "total_required": 10,
+      "total_properties": 12,
+      "max_depth": 2,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 2,
+      "minLength_count": 1,
+      "minItems_count": 1,
+      "pattern_count": 0,
+      "format_count": 0,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "hiring_request_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "designed_agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "design_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "estimated_integration_effort",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [],
+      "arrays_without_minItems": []
+    },
+    {
+      "file": "agents/agent_performance_review/output_schema.json",
+      "size_kb": 5.86,
+      "title": "Agent Performance Review Output Schema",
+      "id": null,
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "timestamp",
+        "report_evaluated",
+        "agent_evaluations",
+        "overall_report_quality",
+        "review_status"
+      ],
+      "total_required": 29,
+      "total_properties": 53,
+      "max_depth": 5,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 10,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 1,
+      "format_count": 5,
+      "loose_string_fields": [
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "report_evaluated.company",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "report_evaluated.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "agent_evaluations[].agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "agent_evaluations[].feedback_file_written",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "agent_evaluations[].persistent_issues[].issue",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "overall_report_quality.summary",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "escalations[].agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "escalations[].issue",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "next_steps[].action",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "next_steps[].responsible",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [
+        "next_steps[].action"
+      ],
+      "critical_fields_not_required": [],
+      "arrays_without_minItems": [
+        "agent_evaluations",
+        "agent_evaluations[].critical_gaps",
+        "agent_evaluations[].strengths",
+        "agent_evaluations[].persistent_issues",
+        "overall_report_quality.blocking_issues",
+        "escalations",
+        "performance_trends.top_performing_agents",
+        "performance_trends.agents_needing_attention",
+        "next_steps"
+      ]
+    },
+    {
+      "file": "agents/ceo/output_schema.json",
+      "size_kb": 11.64,
+      "title": "CEO Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/ceo/output",
+      "valid_json": true,
+      "required_top": [],
+      "total_required": 69,
+      "total_properties": 92,
+      "max_depth": 5,
+      "refs": [
+        "#/definitions/ContradictionEscalationOutput",
+        "#/definitions/ContradictionReference",
+        "#/definitions/FinalApprovalOutput",
+        "#/definitions/HiringRequestOutput",
+        "#/definitions/ReviewDecisionOutput",
+        "#/definitions/TaskContractOutput"
+      ],
+      "internal_defs": [
+        "definitions.ReviewDecisionOutput",
+        "definitions.TaskContractOutput",
+        "definitions.FinalApprovalOutput",
+        "definitions.HiringRequestOutput",
+        "definitions.ContradictionEscalationOutput",
+        "definitions.ContradictionReference"
+      ],
+      "enum_count": 15,
+      "minLength_count": 0,
+      "minItems_count": 1,
+      "pattern_count": 2,
+      "format_count": 6,
+      "loose_string_fields": [
+        {
+          "path": ".definitions.ReviewDecisionOutput.session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ReviewDecisionOutput.reviewed_output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ReviewDecisionOutput.agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ReviewDecisionOutput.rejection_reasons[].description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ReviewDecisionOutput.revision_instructions[].revision_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ReviewDecisionOutput.revision_instructions[].failure_type",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ReviewDecisionOutput.revision_instructions[].specific_issue",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ReviewDecisionOutput.revision_instructions[].instruction",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ReviewDecisionOutput.audit_entry_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.TaskContractOutput.task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.TaskContractOutput.session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.TaskContractOutput.assigned_agents[].agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.TaskContractOutput.context.target_company",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.TaskContractOutput.context.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.TaskContractOutput.context.analysis_scope",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.TaskContractOutput.context.special_instructions",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.target_company",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.agents_with_issues[].agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.agents_with_issues[].issue_type",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.agents_with_issues[].resolution",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.output_artifacts[].artifact_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.output_artifacts[].artifact_type",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.output_artifacts[].agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.FinalApprovalOutput.output_artifacts[].confidence",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.HiringRequestOutput.request_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.HiringRequestOutput.gap_description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.HiringRequestOutput.proposed_agent_name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.HiringRequestOutput.triggered_by",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ContradictionEscalationOutput.escalation_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ContradictionEscalationOutput.session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ContradictionEscalationOutput.user_facing_message",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ContradictionEscalationOutput.affected_section",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ContradictionReference.contradiction_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ContradictionReference.agent_a",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ContradictionReference.agent_b",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ContradictionReference.description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [
+        ".definitions.FinalApprovalOutput.output_artifacts[].confidence"
+      ],
+      "critical_fields_not_required": [
+        ".definitions.FinalApprovalOutput.output_artifacts[].confidence"
+      ],
+      "arrays_without_minItems": [
+        ".definitions.ReviewDecisionOutput.rejection_reasons",
+        ".definitions.ReviewDecisionOutput.rejection_reasons[].affected_claims",
+        ".definitions.ReviewDecisionOutput.revision_instructions",
+        ".definitions.ReviewDecisionOutput.contradictions_flagged",
+        ".definitions.TaskContractOutput.assigned_agents",
+        ".definitions.TaskContractOutput.assigned_agents[].dependencies",
+        ".definitions.TaskContractOutput.context.available_data_sources",
+        ".definitions.FinalApprovalOutput.agents_activated",
+        ".definitions.FinalApprovalOutput.agents_with_issues",
+        ".definitions.FinalApprovalOutput.unresolved_contradictions",
+        ".definitions.FinalApprovalOutput.output_artifacts",
+        ".definitions.HiringRequestOutput.evidence_of_gap",
+        ".definitions.HiringRequestOutput.required_capabilities",
+        ".definitions.ContradictionEscalationOutput.resolution_options"
+      ]
+    },
+    {
+      "file": "agents/context_extraction/output_schema.json",
+      "size_kb": 3.2,
+      "title": "Context Extraction Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/context_extraction/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "company_profile",
+        "confidence_overall",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 14,
+      "total_properties": 42,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 4,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_profile.legal_name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_profile.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_profile.bist_sector",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_profile.controlling_shareholder",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_profile.business_description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_profile.geographic_exposure",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "operational_context.capacity",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "operational_context.seasonality",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "accounting_policy_context.revenue_recognition_method",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "strategic_initiatives[].name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "strategic_initiatives[].description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "strategic_initiatives[].disclosed_amount",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "strategic_initiatives[].timeline",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "strategic_initiatives[].source_document_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "management_guidance[].metric",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "management_guidance[].guidance_text",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "management_guidance[].source_document_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "evidence_refs",
+        "missing_inputs"
+      ],
+      "arrays_without_minItems": [
+        "company_profile.operating_segments",
+        "operational_context.key_cost_drivers",
+        "accounting_policy_context.key_estimates",
+        "accounting_policy_context.consolidation_changes",
+        "accounting_policy_context.auditor_qualifications",
+        "strategic_initiatives",
+        "management_guidance",
+        "evidence_refs",
+        "warnings",
+        "missing_inputs"
+      ]
+    },
+    {
+      "file": "agents/data_collection/output_schema.json",
+      "size_kb": 3.88,
+      "title": "Data Collection Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/data_collection/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "data_manifest",
+        "coverage_assessment",
+        "data_gaps",
+        "warnings",
+        "confidence_overall",
+        "review_status"
+      ],
+      "total_required": 19,
+      "total_properties": 46,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 8,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 3,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.kap_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.bist_code",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "data_manifest[].document_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "data_manifest[].document_name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "data_manifest[].period_covered",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "data_manifest[].auditor",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "coverage_assessment.latest_quarterly_available",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "coverage_assessment.latest_annual_available",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "source_quality_summary.primary_source",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "missing_inputs"
+      ],
+      "arrays_without_minItems": [
+        "data_manifest",
+        "coverage_assessment.periods_available",
+        "source_quality_summary.concerns",
+        "data_gaps",
+        "warnings",
+        "missing_inputs",
+        "contradictions_detected"
+      ]
+    },
+    {
+      "file": "agents/event_classification/output_schema.json",
+      "size_kb": 2.43,
+      "title": "Event Classification Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/event_classification/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "classified_events",
+        "confidence_overall",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 17,
+      "total_properties": 23,
+      "max_depth": 4,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 5,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 3,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "classified_events[].disclosure_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "classified_events[].classification_rationale",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "classified_events[].company_ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "unclassified_disclosures[].disclosure_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "unclassified_disclosures[].reason",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "evidence_refs"
+      ],
+      "arrays_without_minItems": [
+        "classified_events",
+        "classified_events[].secondary_types",
+        "classified_events[].key_terms_extracted",
+        "unclassified_disclosures",
+        "evidence_refs",
+        "warnings"
+      ]
+    },
+    {
+      "file": "agents/event_impact_mapper/output_schema.json",
+      "size_kb": 4.67,
+      "title": "Event Impact Mapper Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/event_impact_mapper/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "event_impacts",
+        "confidence_overall",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 22,
+      "total_properties": 43,
+      "max_depth": 4,
+      "refs": [
+        "https://financex.io/schemas/shared/evidence"
+      ],
+      "internal_defs": [],
+      "enum_count": 9,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 2,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "event_impacts[].event_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "event_impacts[].event_summary",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "event_impacts[].disclosure_reference",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "event_impacts[].quantification_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "event_impacts[].quantification_estimate.metric",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "event_impacts[].quantification_estimate.unit",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "event_impacts[].quantification_estimate.confidence",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "event_impacts[].quantification_estimate.formula_used",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "event_impacts[].quantification_estimate.materiality_base",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "portfolio_impact_summary",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [
+        "event_impacts[].quantification_estimate.confidence"
+      ],
+      "critical_fields_not_required": [
+        "event_impacts[].quantification_estimate.confidence",
+        "event_impacts[].warnings",
+        "missing_inputs"
+      ],
+      "arrays_without_minItems": [
+        "event_impacts",
+        "event_impacts[].affected_statements",
+        "event_impacts[].affected_line_items",
+        "event_impacts[].secondary_effects",
+        "event_impacts[].risks",
+        "event_impacts[].evidence_refs",
+        "event_impacts[].ifrs_standards_applied",
+        "event_impacts[].warnings",
+        "high_urgency_events",
+        "warnings",
+        "missing_inputs",
+        "contradictions_detected"
+      ]
+    },
+    {
+      "file": "agents/event_timeline_alert/output_schema.json",
+      "size_kb": 2.69,
+      "title": "Event Timeline Alert Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/event_timeline_alert/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "impact_timeline",
+        "priority_alerts",
+        "confidence_overall",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 20,
+      "total_properties": 29,
+      "max_depth": 4,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 8,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "impact_timeline[].event_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "impact_timeline[].event_type",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "impact_timeline[].event_summary",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "impact_timeline[].expected_impact_period",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "impact_timeline[].monitoring_trigger",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "impact_timeline[].source_event_impact_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "priority_alerts[].alert_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "priority_alerts[].event_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "priority_alerts[].alert_text",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "upcoming_calendar[].date_description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "upcoming_calendar[].expected_date",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "upcoming_calendar[].relevance",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [],
+      "arrays_without_minItems": [
+        "impact_timeline",
+        "priority_alerts",
+        "priority_alerts[].required_monitoring_actions",
+        "upcoming_calendar",
+        "warnings"
+      ]
+    },
+    {
+      "file": "agents/final_summary/output_schema.json",
+      "size_kb": 2.88,
+      "title": "Final Summary Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/final_summary/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company_overview",
+        "financial_highlights",
+        "key_findings",
+        "analytical_limitations",
+        "mandatory_disclosures",
+        "confidence_overall",
+        "review_status"
+      ],
+      "total_required": 19,
+      "total_properties": 33,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 5,
+      "minLength_count": 0,
+      "minItems_count": 2,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_overview.name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_overview.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_overview.sector",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_overview.analysis_period",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_overview.runtime_mode",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "financial_highlights.source_output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "key_findings[].finding",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "key_findings[].source_output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "evidence_refs",
+        "warnings"
+      ],
+      "arrays_without_minItems": [
+        "key_findings",
+        "risk_factors",
+        "recent_events_impact",
+        "unresolved_contradictions",
+        "evidence_refs",
+        "warnings"
+      ]
+    },
+    {
+      "file": "agents/financial_analysis/output_schema.json",
+      "size_kb": 10.15,
+      "title": "Financial Analysis Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/financial_analysis/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "analysis_period",
+        "confidence_overall",
+        "evidence_refs",
+        "warnings",
+        "missing_inputs",
+        "review_status"
+      ],
+      "total_required": 66,
+      "total_properties": 123,
+      "max_depth": 4,
+      "refs": [
+        "#/definitions/RatioMetric",
+        "#/definitions/TrendAssessment",
+        "https://financex.io/schemas/shared/evidence"
+      ],
+      "internal_defs": [
+        "definitions.RatioMetric",
+        "definitions.TrendAssessment"
+      ],
+      "enum_count": 10,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.bist_sector",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "analysis_period.primary",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "cash_flow_quality.working_capital_changes.interpretation",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "cash_flow_quality.working_capital_changes_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "non_recurring_items[].item_description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "non_recurring_items[].period",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "non_recurring_items[].affected_metric",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "non_recurring_items[].evidence_ref",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "restatement_flags[].period",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "restatement_flags[].description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "restatement_flags[].impact",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.RatioMetric.unit",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.RatioMetric.period",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.RatioMetric.evidence_ref",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.RatioMetric.formula",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.RatioMetric.notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.TrendAssessment.summary",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [],
+      "arrays_without_minItems": [
+        "analysis_period.comparative",
+        "cash_flow_quality.cash_flow_summary_table.periods",
+        "cash_flow_quality.cash_flow_summary_table.ocf",
+        "cash_flow_quality.cash_flow_summary_table.icf",
+        "cash_flow_quality.cash_flow_summary_table.financing_cf",
+        "cash_flow_quality.cash_flow_summary_table.net_change",
+        "cash_flow_quality.cash_flow_summary_table.ending_cash",
+        "non_recurring_items",
+        "restatement_flags",
+        "evidence_refs",
+        "warnings",
+        "missing_inputs",
+        "contradictions_detected",
+        ".definitions.TrendAssessment.periods_covered"
+      ]
+    },
+    {
+      "file": "agents/kap_watch/output_schema.json",
+      "size_kb": 2.47,
+      "title": "KAP Watch Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/kap_watch/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "monitoring_window",
+        "disclosure_inventory",
+        "monitoring_summary",
+        "confidence_overall",
+        "review_status"
+      ],
+      "total_required": 20,
+      "total_properties": 29,
+      "max_depth": 4,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 4,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 6,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "disclosure_inventory[].kap_disclosure_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "disclosure_inventory[].company_ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "disclosure_inventory[].company_kap_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "disclosure_inventory[].disclosure_type",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "disclosure_inventory[].disclosure_title",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "warnings"
+      ],
+      "arrays_without_minItems": [
+        "disclosure_inventory",
+        "disclosure_inventory[].document_ids",
+        "warnings"
+      ]
+    },
+    {
+      "file": "agents/macro_analysis/output_schema.json",
+      "size_kb": 3.53,
+      "title": "Macro Analysis Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/macro_analysis/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "macro_environment",
+        "confidence_overall",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 15,
+      "total_properties": 47,
+      "max_depth": 4,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 6,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.monetary_policy.source",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.monetary_policy.data_date",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.inflation.trend",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.inflation.source",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.inflation.data_date",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.currency.source",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.currency.data_date",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.growth.latest_quarter",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.growth.source",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "macro_environment.credit.source",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_macro_linkages[].macro_variable",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_macro_linkages[].company_channel",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_macro_linkages[].explanation",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_macro_linkages[].evidence_basis",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [
+        "macro_environment.inflation.trend"
+      ],
+      "critical_fields_not_required": [
+        "evidence_refs",
+        "missing_inputs"
+      ],
+      "arrays_without_minItems": [
+        "macro_environment.monetary_policy.last_4_decisions",
+        "company_macro_linkages",
+        "evidence_refs",
+        "warnings",
+        "missing_inputs",
+        "contradictions_detected"
+      ]
+    },
+    {
+      "file": "agents/orchestrator/output_schema.json",
+      "size_kb": 1.73,
+      "title": "Orchestrator Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/orchestrator/output",
+      "valid_json": true,
+      "required_top": [
+        "orchestrator_action",
+        "session_id",
+        "timestamp"
+      ],
+      "total_required": 3,
+      "total_properties": 21,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 2,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "target_agent",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_payload.task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_payload.agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "routing_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "task_payload.agent_id",
+        "task_payload.task_id"
+      ],
+      "arrays_without_minItems": [
+        "task_payload.inputs",
+        "dependency_satisfied_by",
+        "session_state_summary.active_agents"
+      ]
+    },
+    {
+      "file": "agents/parse_standardization/output_schema.json",
+      "size_kb": 3.7,
+      "title": "Parse & Standardization Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/parse_standardization/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "parsed_statements",
+        "parsing_metadata",
+        "confidence_overall",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 19,
+      "total_properties": 44,
+      "max_depth": 4,
+      "refs": [
+        "#/definitions/ParsedNotes",
+        "#/definitions/ParsedStatement"
+      ],
+      "internal_defs": [
+        "definitions.ParsedStatement",
+        "definitions.ParsedNotes"
+      ],
+      "enum_count": 4,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "parsing_metadata[].source_document_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "parsing_metadata[].source_line_item_original",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "parsing_metadata[].ifrs_mapping",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "parsing_metadata[].page_reference",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "parsing_metadata[].ambiguity_note",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ParsedStatement.period",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ParsedStatement.currency",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ParsedStatement.scale",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ParsedStatement.line_items[].ifrs_label",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ParsedStatement.line_items[].original_label",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ParsedStatement.line_items[].source_document_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ParsedStatement.line_items[].page_ref",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".definitions.ParsedNotes.accounting_policies",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "missing_inputs"
+      ],
+      "arrays_without_minItems": [
+        "parsing_metadata",
+        "normalization_notes",
+        "restatement_flags",
+        "data_quality_issues",
+        "warnings",
+        "missing_inputs",
+        ".definitions.ParsedStatement.line_items",
+        ".definitions.ParsedNotes.contingent_liabilities",
+        ".definitions.ParsedNotes.related_party_transactions"
+      ]
+    },
+    {
+      "file": "agents/qa_review/output_schema.json",
+      "size_kb": 2.43,
+      "title": "QA Review Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/qa_review/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "reviewed_output_id",
+        "producing_agent_id",
+        "qa_decision",
+        "dimension_scores",
+        "quality_flags",
+        "escalation_recommendation",
+        "review_timestamp"
+      ],
+      "total_required": 20,
+      "total_properties": 25,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 4,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "reviewed_output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "producing_agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "quality_flags[].flag_type",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "quality_flags[].description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "quality_flags[].affected_claim",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "cross_reference_findings[].finding_type",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "cross_reference_findings[].description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "cross_reference_findings[].conflicting_output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "review_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [],
+      "arrays_without_minItems": [
+        "quality_flags",
+        "cross_reference_findings"
+      ]
+    },
+    {
+      "file": "agents/reconciliation/output_schema.json",
+      "size_kb": 2.7,
+      "title": "Reconciliation Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/reconciliation/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "reconciled_data",
+        "discrepancy_report",
+        "confidence_overall",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 18,
+      "total_properties": 31,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 5,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "authoritative_source",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "discrepancy_report[].discrepancy_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "discrepancy_report[].metric",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "discrepancy_report[].source_a_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "discrepancy_report[].source_b_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "discrepancy_report[].resolution_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "evidence_refs",
+        "missing_inputs"
+      ],
+      "arrays_without_minItems": [
+        "discrepancy_report",
+        "unresolved_discrepancies",
+        "evidence_refs",
+        "warnings",
+        "missing_inputs",
+        "contradictions_detected"
+      ]
+    },
+    {
+      "file": "agents/sector_competition/output_schema.json",
+      "size_kb": 2.32,
+      "title": "Sector Competition Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/sector_competition/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "peer_group",
+        "benchmarking_scorecard",
+        "confidence_overall",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 16,
+      "total_properties": 30,
+      "max_depth": 4,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 4,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "peer_group.sector_code",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "peer_group.peers[].ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "peer_group.peers[].name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "peer_group.peers[].rationale",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "peer_group.comparability_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "benchmarking_scorecard[].metric",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "evidence_refs",
+        "missing_inputs"
+      ],
+      "arrays_without_minItems": [
+        "peer_group.peers",
+        "benchmarking_scorecard",
+        "evidence_refs",
+        "warnings",
+        "missing_inputs",
+        "contradictions_detected"
+      ]
+    },
+    {
+      "file": "agents/strategic_synthesis/output_schema.json",
+      "size_kb": 3.55,
+      "title": "Strategic Synthesis Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/strategic_synthesis/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "signal_convergence_map",
+        "signal_divergence_map",
+        "key_risk_factors",
+        "analytical_open_questions",
+        "overall_confidence",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 29,
+      "total_properties": 36,
+      "max_depth": 4,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 7,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "signal_convergence_map[].theme",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "signal_divergence_map[].theme",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "signal_divergence_map[].resolution_note",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "key_risk_factors[].risk_name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "key_risk_factors[].description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "key_risk_factors[].source_agent",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "key_risk_factors[].source_output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "contradiction_resolutions[].contradiction_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "contradiction_resolutions[].resolution_approach",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "contradiction_resolutions[].resolution_text",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "evidence_refs",
+        "missing_inputs"
+      ],
+      "arrays_without_minItems": [
+        "signal_convergence_map",
+        "signal_convergence_map[].converging_signals",
+        "signal_convergence_map[].source_output_ids",
+        "signal_divergence_map",
+        "signal_divergence_map[].diverging_signals",
+        "signal_divergence_map[].source_output_ids",
+        "key_risk_factors",
+        "key_opportunity_factors",
+        "analytical_open_questions",
+        "contradiction_resolutions",
+        "specialist_inputs_used",
+        "evidence_refs",
+        "warnings",
+        "missing_inputs"
+      ]
+    },
+    {
+      "file": "agents/technical_analysis/output_schema.json",
+      "size_kb": 3.47,
+      "title": "Technical Analysis Agent Output Schema",
+      "id": "https://financex.io/schemas/agents/technical_analysis/output",
+      "valid_json": true,
+      "required_top": [
+        "agent_id",
+        "output_id",
+        "session_id",
+        "task_id",
+        "timestamp",
+        "company",
+        "price_trend",
+        "momentum_indicators",
+        "technical_summary",
+        "confidence_overall",
+        "warnings",
+        "review_status"
+      ],
+      "total_required": 17,
+      "total_properties": 44,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 15,
+      "minLength_count": 0,
+      "minItems_count": 1,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "key_levels[].basis",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "technical_summary.summary_text",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "evidence_refs",
+        "missing_inputs",
+        "momentum_indicators.confidence",
+        "price_trend.confidence",
+        "volume_analysis.confidence"
+      ],
+      "arrays_without_minItems": [
+        "key_levels",
+        "evidence_refs",
+        "missing_inputs",
+        "contradictions_detected"
+      ]
+    },
+    {
+      "file": "backend/generated/schemas/engine_output.schema.json",
+      "size_kb": 10.75,
+      "title": "EngineOutput",
+      "id": "https://finance-x.local/schemas/EngineOutput.json",
+      "valid_json": true,
+      "required_top": [],
+      "total_required": 3,
+      "total_properties": 41,
+      "max_depth": 4,
+      "refs": [
+        "#/$defs/DcfResult",
+        "#/$defs/DcfSensitivityCell",
+        "#/$defs/EngineRatios",
+        "#/$defs/EngineScores",
+        "#/$defs/RatioValue"
+      ],
+      "internal_defs": [
+        "$defs.DcfResult",
+        "$defs.DcfSensitivityCell",
+        "$defs.EngineRatios",
+        "$defs.EngineScores",
+        "$defs.RatioValue"
+      ],
+      "enum_count": 0,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 10,
+      "format_count": 0,
+      "loose_string_fields": [],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "warnings"
+      ],
+      "arrays_without_minItems": [
+        "warnings",
+        ".$defs.DcfResult.pv_fcf",
+        ".$defs.DcfResult.sensitivity"
+      ]
+    },
+    {
+      "file": "backend/generated/schemas/kap_event.schema.json",
+      "size_kb": 3.41,
+      "title": "KapEvent",
+      "id": "https://finance-x.local/schemas/KapEvent.json",
+      "valid_json": true,
+      "required_top": [
+        "disclosure_id",
+        "ticker",
+        "announced_at",
+        "title",
+        "url"
+      ],
+      "total_required": 5,
+      "total_properties": 15,
+      "max_depth": 2,
+      "refs": [
+        "#/$defs/Confidence"
+      ],
+      "internal_defs": [
+        "$defs.Confidence"
+      ],
+      "enum_count": 1,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 3,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "disclosure_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "title",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "url",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [],
+      "arrays_without_minItems": []
+    },
+    {
+      "file": "backend/generated/schemas/ticker_package.schema.json",
+      "size_kb": 89.38,
+      "title": "TickerPackage",
+      "id": "https://finance-x.local/schemas/TickerPackage.json",
+      "valid_json": true,
+      "required_top": [
+        "meta",
+        "company",
+        "financials",
+        "market"
+      ],
+      "total_required": 50,
+      "total_properties": 264,
+      "max_depth": 4,
+      "refs": [
+        "#/$defs/AnalystConsensus",
+        "#/$defs/AnalystReport",
+        "#/$defs/BalanceSheet",
+        "#/$defs/BrandIdentity",
+        "#/$defs/CashFlowStatement",
+        "#/$defs/CbamExposure",
+        "#/$defs/CompanyInfo",
+        "#/$defs/Confidence",
+        "#/$defs/Currency",
+        "#/$defs/DcfResult",
+        "#/$defs/DcfSensitivityCell",
+        "#/$defs/EngineOutput",
+        "#/$defs/EngineRatios",
+        "#/$defs/EngineScores",
+        "#/$defs/EquityChange",
+        "#/$defs/EsgData",
+        "#/$defs/ExternalEsgRating",
+        "#/$defs/Financials",
+        "#/$defs/IncomeStatement",
+        "#/$defs/KapEvent",
+        "#/$defs/KapEvents",
+        "#/$defs/MacroSnapshot",
+        "#/$defs/MarketData",
+        "#/$defs/MarketSnapshot",
+        "#/$defs/MetaInfo",
+        "#/$defs/OhlcvBar",
+        "#/$defs/PeriodFinancials",
+        "#/$defs/QualityControl",
+        "#/$defs/QualityFlag",
+        "#/$defs/RatingAgency",
+        "#/$defs/RatioValue",
+        "#/$defs/Recommendation",
+        "#/$defs/ReportingPeriod",
+        "#/$defs/Severity",
+        "#/$defs/SourceRef",
+        "#/$defs/Subsidiary",
+        "#/$defs/TechnicalIndicators",
+        "#/$defs/TransmissionImpact"
+      ],
+      "internal_defs": [
+        "$defs.AnalystConsensus",
+        "$defs.AnalystReport",
+        "$defs.BalanceSheet",
+        "$defs.BrandIdentity",
+        "$defs.CashFlowStatement",
+        "$defs.CbamExposure",
+        "$defs.CompanyInfo",
+        "$defs.Confidence",
+        "$defs.Currency",
+        "$defs.DcfResult",
+        "$defs.DcfSensitivityCell",
+        "$defs.EngineOutput",
+        "$defs.EngineRatios",
+        "$defs.EngineScores",
+        "$defs.EquityChange",
+        "$defs.EsgData",
+        "$defs.ExternalEsgRating",
+        "$defs.Financials",
+        "$defs.IncomeStatement",
+        "$defs.KapEvent",
+        "$defs.KapEvents",
+        "$defs.MacroSnapshot",
+        "$defs.MarketData",
+        "$defs.MarketSnapshot",
+        "$defs.MetaInfo",
+        "$defs.OhlcvBar",
+        "$defs.PeriodFinancials",
+        "$defs.QualityControl",
+        "$defs.QualityFlag",
+        "$defs.RatingAgency",
+        "$defs.RatioValue",
+        "$defs.Recommendation",
+        "$defs.ReportingPeriod",
+        "$defs.Severity",
+        "$defs.SourceRef",
+        "$defs.Subsidiary",
+        "$defs.TechnicalIndicators",
+        "$defs.TransmissionImpact"
+      ],
+      "enum_count": 6,
+      "minLength_count": 1,
+      "minItems_count": 1,
+      "pattern_count": 127,
+      "format_count": 10,
+      "loose_string_fields": [
+        {
+          "path": ".$defs.AnalystReport.broker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.AnalystReport.currency",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.CompanyInfo.name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.CompanyInfo.sector",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.ExternalEsgRating.rating",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.KapEvent.disclosure_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.KapEvent.ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.KapEvent.title",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.KapEvent.url",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.MetaInfo.producer",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.MetaInfo.schema_version",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.QualityFlag.code",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.QualityFlag.message",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.SourceRef.source_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": ".$defs.Subsidiary.name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        ".$defs.EngineOutput.warnings"
+      ],
+      "arrays_without_minItems": [
+        ".$defs.AnalystConsensus.reports",
+        ".$defs.CompanyInfo.subsidiaries",
+        ".$defs.DcfResult.pv_fcf",
+        ".$defs.DcfResult.sensitivity",
+        ".$defs.EngineOutput.warnings",
+        ".$defs.EsgData.external_ratings",
+        ".$defs.KapEvents.events",
+        ".$defs.MacroSnapshot.sources",
+        ".$defs.MarketData.history",
+        ".$defs.MetaInfo.sources",
+        ".$defs.PeriodFinancials.sources",
+        ".$defs.QualityControl.flags",
+        ".$defs.QualityControl.missing_fields"
+      ]
+    },
+    {
+      "file": "schemas/shared/agent_output_contract.schema.json",
+      "size_kb": 4.95,
+      "title": "AgentOutputContract",
+      "id": "https://financex.internal/schemas/shared/agent_output_contract.schema.json",
+      "valid_json": true,
+      "required_top": [
+        "output_id",
+        "agent_id",
+        "task_id",
+        "output_type",
+        "timestamp",
+        "confidence_overall",
+        "review_status"
+      ],
+      "total_required": 16,
+      "total_properties": 34,
+      "max_depth": 4,
+      "refs": [
+        "https://financex.internal/schemas/shared/confidence.schema.json",
+        "https://financex.internal/schemas/shared/contradiction_report.schema.json",
+        "https://financex.internal/schemas/shared/evidence.schema.json"
+      ],
+      "internal_defs": [],
+      "enum_count": 6,
+      "minLength_count": 1,
+      "minItems_count": 1,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "agent_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "analysis_session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "fiscal_period_covered",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "claims[].claim_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "warnings[].code",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "warnings[].message",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "missing_inputs[].input_name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "missing_inputs[].description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "review_decision_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "processing_metadata.model_used",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "missing_inputs",
+        "warnings"
+      ],
+      "arrays_without_minItems": [
+        "claims",
+        "warnings",
+        "missing_inputs",
+        "contradictions_detected"
+      ]
+    },
+    {
+      "file": "schemas/shared/confidence.schema.json",
+      "size_kb": 2.33,
+      "title": "ConfidenceObject",
+      "id": "https://financex.internal/schemas/shared/confidence.schema.json",
+      "valid_json": true,
+      "required_top": [
+        "level",
+        "basis"
+      ],
+      "total_required": 4,
+      "total_properties": 9,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 2,
+      "minLength_count": 1,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 1,
+      "loose_string_fields": [
+        {
+          "path": "limiting_factors[].factor",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "propagation_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [],
+      "arrays_without_minItems": [
+        "limiting_factors"
+      ]
+    },
+    {
+      "file": "schemas/shared/contradiction_report.schema.json",
+      "size_kb": 3.88,
+      "title": "ContradictionReport",
+      "id": "https://financex.internal/schemas/shared/contradiction_report.schema.json",
+      "valid_json": true,
+      "required_top": [
+        "contradiction_id",
+        "detected_by",
+        "claim_a",
+        "claim_b",
+        "contradiction_type",
+        "severity",
+        "resolution_required"
+      ],
+      "total_required": 15,
+      "total_properties": 30,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 7,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 2,
+      "loose_string_fields": [
+        {
+          "path": "contradiction_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "analysis_session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "detected_by",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "claim_a.claim_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "claim_a.claim_text",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "claim_a.source_agent",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "claim_a.source_output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "claim_b.claim_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "claim_b.claim_text",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "claim_b.source_agent",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "claim_b.source_output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "resolution_instructions",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "resolution.resolved_by",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "resolution.resolution_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "resolution.surviving_claim_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "claim_a.evidence_refs",
+        "claim_b.evidence_refs"
+      ],
+      "arrays_without_minItems": [
+        "claim_a.evidence_refs",
+        "claim_b.evidence_refs",
+        "affected_analysis_areas"
+      ]
+    },
+    {
+      "file": "schemas/shared/evidence.schema.json",
+      "size_kb": 3.56,
+      "title": "EvidenceReference",
+      "id": "https://financex.internal/schemas/shared/evidence.schema.json",
+      "valid_json": true,
+      "required_top": [
+        "evidence_id",
+        "source_type",
+        "document_id",
+        "timestamp"
+      ],
+      "total_required": 4,
+      "total_properties": 16,
+      "max_depth": 1,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 2,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 2,
+      "loose_string_fields": [
+        {
+          "path": "evidence_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "source_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "document_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "document_title",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "page_ref",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "quote_or_excerpt",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "fiscal_period",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "auditor",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [],
+      "arrays_without_minItems": []
+    },
+    {
+      "file": "schemas/shared/review_decision.schema.json",
+      "size_kb": 4.03,
+      "title": "ReviewDecision",
+      "id": "https://financex.internal/schemas/shared/review_decision.schema.json",
+      "valid_json": true,
+      "required_top": [
+        "review_id",
+        "reviewer_agent",
+        "reviewed_output_id",
+        "decision",
+        "rubric_scores",
+        "reviewed_at"
+      ],
+      "total_required": 11,
+      "total_properties": 30,
+      "max_depth": 4,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 3,
+      "minLength_count": 1,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 3,
+      "loose_string_fields": [
+        {
+          "path": "review_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "reviewer_agent",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "reviewed_output_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "reviewed_agent",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "analysis_session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "rejection_reasons[].description",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "revision_instructions[].instruction_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "reviewer_notes",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [
+        "task_id"
+      ],
+      "arrays_without_minItems": [
+        "rejection_reasons",
+        "rejection_reasons[].affected_claim_ids",
+        "revision_instructions"
+      ]
+    },
+    {
+      "file": "schemas/shared/task_contract.schema.json",
+      "size_kb": 4.7,
+      "title": "TaskContract",
+      "id": "https://financex.internal/schemas/shared/task_contract.schema.json",
+      "valid_json": true,
+      "required_top": [
+        "task_id",
+        "assigned_agent",
+        "requesting_agent",
+        "task_type",
+        "priority",
+        "inputs",
+        "runtime_mode",
+        "quality_threshold",
+        "issued_at"
+      ],
+      "total_required": 11,
+      "total_properties": 29,
+      "max_depth": 3,
+      "refs": [],
+      "internal_defs": [],
+      "enum_count": 4,
+      "minLength_count": 0,
+      "minItems_count": 0,
+      "pattern_count": 0,
+      "format_count": 3,
+      "loose_string_fields": [
+        {
+          "path": "task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "parent_task_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "analysis_session_id",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "assigned_agent",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "requesting_agent",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_ticker",
+          "reason": "string_no_enum_minLength_pattern_format"
+        },
+        {
+          "path": "company_name",
+          "reason": "string_no_enum_minLength_pattern_format"
+        }
+      ],
+      "missing_enum_candidates": [],
+      "critical_fields_not_required": [],
+      "arrays_without_minItems": [
+        "context.prior_outputs"
+      ]
+    }
+  ]
+}

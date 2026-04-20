@@ -1,0 +1,4667 @@
+{
+  "generated_at": "2026-04-20T21:09:05.425594+00:00",
+  "agent_count": 26,
+  "agents": [
+    {
+      "name": "agent_factory",
+      "registered": true,
+      "registry_group": "management",
+      "reports_to": "ceo",
+      "supervises": [],
+      "upstream": [
+        "ceo"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 2.15,
+          "lines": 33,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.86,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 1.43,
+          "lines": 69,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 1.14,
+          "lines": 27,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 2.78,
+          "lines": 75,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 8.36,
+      "system_prompt": {
+        "size_kb": 2.7,
+        "lines": 75,
+        "headings_h1": 1,
+        "headings_h2": 8,
+        "headings_h3_plus": 0,
+        "bullets": 0,
+        "code_blocks": 1,
+        "rule_marker_lines": 11
+      },
+      "knowledge": null,
+      "memory": {
+        "size_kb": 1.36,
+        "lines": 69,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 3,
+        "bullets": 0,
+        "code_blocks": 0,
+        "rule_marker_lines": 0,
+        "feedback_dates": [
+          "2026-04-09"
+        ],
+        "distinct_feedback_dates": 1,
+        "repeated_token_counts": {
+          "başlangıç": 5,
+          "seviyesi": 5
+        },
+        "canonicalizable_hits": {
+          "banka": 1
+        },
+        "migration_candidates_guess": 1
+      },
+      "memory_backup_size_kb": 0.86,
+      "memory_archive_size_kb": null,
+      "output_schema": {
+        "size_kb": 1.11,
+        "required_top_level": 6,
+        "total_required_fields_recursive": 10,
+        "total_properties_recursive": 12,
+        "enum_or_const_count": 2,
+        "minLength_count": 1,
+        "minItems_count": 1,
+        "ref_count": 0,
+        "max_depth": 2
+      },
+      "agent_spec": {
+        "size_kb": 2.12,
+        "inputs": [
+          "hiring_request",
+          "agents_registry",
+          "capability_matrix"
+        ],
+        "outputs": [
+          "agent_design_package"
+        ],
+        "tools": [
+          "template_generator",
+          "schema_validator",
+          "capability_gap_analyzer"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "all"
+        ],
+        "failure_modes": 1,
+        "kpis": 2
+      },
+      "extra_doc_files": [],
+      "red_flags": [
+        "has_memory_backup_file"
+      ]
+    },
+    {
+      "name": "agent_performance_review",
+      "registered": true,
+      "registry_group": "management",
+      "reports_to": "ceo",
+      "supervises": [],
+      "upstream": [
+        "ceo"
+      ],
+      "downstream": [
+        "context_extraction",
+        "final_summary",
+        "financial_analysis",
+        "macro_analysis",
+        "sector_competition",
+        "strategic_synthesis",
+        "technical_analysis"
+      ],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 2.21,
+          "lines": 77,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 3.58,
+          "lines": 113,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 6.07,
+          "lines": 210,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 17.71,
+          "lines": 573,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 29.57,
+      "system_prompt": {
+        "size_kb": 17.15,
+        "lines": 573,
+        "headings_h1": 15,
+        "headings_h2": 20,
+        "headings_h3_plus": 13,
+        "bullets": 163,
+        "code_blocks": 4,
+        "rule_marker_lines": 12
+      },
+      "knowledge": null,
+      "memory": {
+        "size_kb": 3.47,
+        "lines": 113,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 4,
+        "bullets": 22,
+        "code_blocks": 0,
+        "rule_marker_lines": 6,
+        "feedback_dates": [
+          "2026-04-10"
+        ],
+        "distinct_feedback_dates": 1,
+        "repeated_token_counts": {
+          "feedback": 11,
+          "mandatory": 6,
+          "critical": 6,
+          "agents": 5
+        },
+        "canonicalizable_hits": {
+          "IAS29": 1,
+          "defense": 4
+        },
+        "migration_candidates_guess": 0
+      },
+      "memory_backup_size_kb": null,
+      "memory_archive_size_kb": null,
+      "output_schema": {
+        "size_kb": 5.86,
+        "required_top_level": 8,
+        "total_required_fields_recursive": 29,
+        "total_properties_recursive": 53,
+        "enum_or_const_count": 10,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 5
+      },
+      "agent_spec": {
+        "size_kb": 2.14,
+        "inputs": [],
+        "outputs": [],
+        "tools": [],
+        "handoff_count": 0,
+        "runtime_modes": [],
+        "failure_modes": 0,
+        "kpis": 0
+      },
+      "extra_doc_files": [],
+      "red_flags": [
+        "schema_no_minLength_enforcement"
+      ]
+    },
+    {
+      "name": "analyst_consensus_agent",
+      "registered": false,
+      "registry_group": null,
+      "reports_to": null,
+      "supervises": [],
+      "upstream": [],
+      "downstream": [],
+      "files": [
+        {
+          "name": "knowledge.md",
+          "size_kb": 3.68,
+          "lines": 111,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 13.36,
+          "lines": 130,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 8.42,
+          "lines": 181,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 6.24,
+          "lines": 185,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 31.7,
+      "system_prompt": {
+        "size_kb": 6.06,
+        "lines": 185,
+        "headings_h1": 1,
+        "headings_h2": 8,
+        "headings_h3_plus": 8,
+        "bullets": 30,
+        "code_blocks": 3,
+        "rule_marker_lines": 7
+      },
+      "knowledge": {
+        "size_kb": 3.57,
+        "lines": 111,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 6,
+        "bullets": 31,
+        "code_blocks": 1,
+        "rule_marker_lines": 3
+      },
+      "memory": {
+        "size_kb": 13.23,
+        "lines": 130,
+        "headings_h1": 1,
+        "headings_h2": 11,
+        "headings_h3_plus": 12,
+        "bullets": 71,
+        "code_blocks": 0,
+        "rule_marker_lines": 15,
+        "feedback_dates": [
+          "2025-10-15",
+          "2026-02-12",
+          "2026-02-15",
+          "2026-04-12",
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16"
+        ],
+        "distinct_feedback_dates": 8,
+        "repeated_token_counts": {
+          "analist": 28,
+          "varsayımı": 21,
+          "tablosu": 18,
+          "sensitivity": 13,
+          "konsensüs": 12,
+          "holding": 11,
+          "revizyon": 10,
+          "trendi": 10,
+          "analizi": 10,
+          "broker": 9,
+          "konsensus": 9,
+          "implied": 9,
+          "edilmedi": 9,
+          "ebitda": 8,
+          "asimetrik": 7,
+          "raporu": 7,
+          "varsayım": 7,
+          "upgrade": 7,
+          "yatırım": 7,
+          "analistler": 6
+        },
+        "canonicalizable_hits": {
+          "THYAO": 1,
+          "TUPRS": 7,
+          "KCHOL": 10,
+          "EREGL": 4,
+          "SAHOL": 1,
+          "BIMAS": 4,
+          "EBITDAR": 2,
+          "havacılık": 2,
+          "çelik": 3,
+          "banka": 1,
+          "holding": 12,
+          "proxy": 3
+        },
+        "migration_candidates_guess": 7
+      },
+      "memory_backup_size_kb": null,
+      "memory_archive_size_kb": 8.42,
+      "output_schema": null,
+      "agent_spec": null,
+      "extra_doc_files": [],
+      "red_flags": [
+        "not_in_agents_registry_json",
+        "feedback_log_style_8_dates",
+        "canonicalizable_sections_7"
+      ]
+    },
+    {
+      "name": "ceo",
+      "registered": true,
+      "registry_group": "management",
+      "reports_to": null,
+      "supervises": [
+        "qa_review"
+      ],
+      "upstream": [],
+      "downstream": [
+        "agent_factory",
+        "agent_performance_review",
+        "cost_performance_optimizer",
+        "orchestrator",
+        "qa_review"
+      ],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 9.07,
+          "lines": 241,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "ASELS_REPORT_REVIEW_2026_04_10.md",
+          "size_kb": 11.18,
+          "lines": 315,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "audit_log_schema.json",
+          "size_kb": 9.17,
+          "lines": 272,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 6.4,
+          "lines": 112,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "fallback_policy.md",
+          "size_kb": 13.66,
+          "lines": 326,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "feedback_issued.md",
+          "size_kb": 2.65,
+          "lines": 70,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "feedback_reports/  (dir)",
+          "size_kb": 10.75,
+          "lines": null,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "heartbeat_archive.md",
+          "size_kb": 168.97,
+          "lines": 3637,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "hiring_request_schema.json",
+          "size_kb": 7.35,
+          "lines": 232,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 5.24,
+          "lines": 139,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 2.95,
+          "lines": 86,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 44.87,
+          "lines": 540,
+          "mtime_iso": "2026-04-19T19:22:07Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 64.06,
+          "lines": 1240,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "night_training_protocol.md",
+          "size_kb": 8.49,
+          "lines": 240,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 12.01,
+          "lines": 373,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "permanent_rules.md",
+          "size_kb": 4.44,
+          "lines": 64,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "reference_manual.md",
+          "size_kb": 40.45,
+          "lines": 972,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "review_rubric.md",
+          "size_kb": 11.43,
+          "lines": 226,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 25.95,
+          "lines": 594,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 10.75,
+          "lines": 244,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 469.84,
+      "system_prompt": {
+        "size_kb": 25.37,
+        "lines": 594,
+        "headings_h1": 1,
+        "headings_h2": 18,
+        "headings_h3_plus": 48,
+        "bullets": 142,
+        "code_blocks": 4,
+        "rule_marker_lines": 60
+      },
+      "knowledge": {
+        "size_kb": 5.1,
+        "lines": 139,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 13,
+        "bullets": 36,
+        "code_blocks": 0,
+        "rule_marker_lines": 17
+      },
+      "memory": {
+        "size_kb": 44.34,
+        "lines": 540,
+        "headings_h1": 1,
+        "headings_h2": 34,
+        "headings_h3_plus": 47,
+        "bullets": 178,
+        "code_blocks": 0,
+        "rule_marker_lines": 34,
+        "feedback_dates": [
+          "2026-04-16",
+          "2026-04-17",
+          "2026-04-18",
+          "2026-04-19"
+        ],
+        "distinct_feedback_dates": 4,
+        "repeated_token_counts": {
+          "heartbeat": 47,
+          "archive": 42,
+          "sector": 34,
+          "competition": 34,
+          "impact": 31,
+          "timeline": 28,
+          "mapper": 27,
+          "sorunlu": 24,
+          "blocked": 24,
+          "formatter": 23,
+          "industrial": 22,
+          "kri̇ti̇k": 22,
+          "başarisiz": 22,
+          "otonom": 22,
+          "review": 21,
+          "pipeline": 21,
+          "kritik": 19,
+          "ebitdar": 19,
+          "technical": 18,
+          "context": 18
+        },
+        "canonicalizable_hits": {
+          "THYAO": 95,
+          "TUPRS": 13,
+          "KCHOL": 13,
+          "ASELS": 9,
+          "EREGL": 22,
+          "TCELL": 1,
+          "BIMAS": 1,
+          "IAS 29": 4,
+          "IAS29": 4,
+          "EBITDAR": 19,
+          "aviation": 13,
+          "havacılık": 7,
+          "çelik": 4,
+          "banka": 4,
+          "telekom": 1,
+          "holding": 7,
+          "defense": 2,
+          "savunma": 5,
+          "proxy": 1
+        },
+        "migration_candidates_guess": 29
+      },
+      "memory_backup_size_kb": 2.95,
+      "memory_archive_size_kb": 64.06,
+      "output_schema": {
+        "size_kb": 11.64,
+        "required_top_level": 0,
+        "total_required_fields_recursive": 69,
+        "total_properties_recursive": 92,
+        "enum_or_const_count": 15,
+        "minLength_count": 0,
+        "minItems_count": 1,
+        "ref_count": 8,
+        "max_depth": 5
+      },
+      "agent_spec": {
+        "size_kb": 8.83,
+        "inputs": [
+          "user_analysis_request",
+          "agent_output_package",
+          "audit_trigger",
+          "session_state"
+        ],
+        "outputs": [
+          "task_contract",
+          "review_decision",
+          "contradiction_report",
+          "hiring_request",
+          "audit_log_entry",
+          "final_approval"
+        ],
+        "tools": [
+          "session_state_reader",
+          "agent_output_registry",
+          "contradiction_detector",
+          "audit_log_writer",
+          "task_contract_issuer",
+          "review_ledger_writer",
+          "hiring_request_issuer",
+          "cost_budget_monitor",
+          "schema_validator"
+        ],
+        "handoff_count": 4,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 4,
+        "kpis": 5
+      },
+      "extra_doc_files": [
+        "ASELS_REPORT_REVIEW_2026_04_10.md",
+        "audit_log_schema.json",
+        "case_lessons.md",
+        "fallback_policy.md",
+        "feedback_issued.md",
+        "feedback_reports",
+        "heartbeat_archive.md",
+        "hiring_request_schema.json",
+        "night_training_protocol.md",
+        "permanent_rules.md",
+        "reference_manual.md",
+        "review_rubric.md"
+      ],
+      "red_flags": [
+        "memory_bloat_44.34kb",
+        "canonicalizable_sections_29",
+        "system_prompt_heavy_25.37kb",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file",
+        "extra_doc_clutter_12_files"
+      ]
+    },
+    {
+      "name": "context_extraction",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "agent_performance_review",
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 3.34,
+          "lines": 59,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 16.26,
+          "lines": 170,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 6.9,
+          "lines": 164,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.93,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 31.84,
+          "lines": 287,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 41.79,
+          "lines": 670,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 3.27,
+          "lines": 79,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_SISE_20260410.json",
+          "size_kb": 22.05,
+          "lines": 446,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "reference_manual.md",
+          "size_kb": 13.01,
+          "lines": 305,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 14.62,
+          "lines": 342,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.7,
+          "lines": 29,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 155.71,
+      "system_prompt": {
+        "size_kb": 14.29,
+        "lines": 342,
+        "headings_h1": 1,
+        "headings_h2": 8,
+        "headings_h3_plus": 13,
+        "bullets": 74,
+        "code_blocks": 9,
+        "rule_marker_lines": 15
+      },
+      "knowledge": {
+        "size_kb": 6.74,
+        "lines": 164,
+        "headings_h1": 1,
+        "headings_h2": 9,
+        "headings_h3_plus": 5,
+        "bullets": 53,
+        "code_blocks": 1,
+        "rule_marker_lines": 8
+      },
+      "memory": {
+        "size_kb": 31.56,
+        "lines": 287,
+        "headings_h1": 1,
+        "headings_h2": 20,
+        "headings_h3_plus": 34,
+        "bullets": 173,
+        "code_blocks": 0,
+        "rule_marker_lines": 35,
+        "feedback_dates": [
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 4,
+        "repeated_token_counts": {
+          "context": 27,
+          "bildirimi": 27,
+          "pozisyon": 27,
+          "pozisyonu": 24,
+          "tablosu": 21,
+          "raporu": 21,
+          "taahhüt": 20,
+          "profili": 18,
+          "extraction": 17,
+          "eksikler": 17,
+          "sayısal": 17,
+          "bundan": 17,
+          "stratejik": 17,
+          "şirket": 17,
+          "downstream": 16,
+          "mektubu": 16,
+          "yönetim": 16,
+          "profil": 16,
+          "analizi": 14,
+          "maliyet": 13
+        },
+        "canonicalizable_hits": {
+          "THYAO": 42,
+          "TUPRS": 7,
+          "KCHOL": 7,
+          "ASELS": 4,
+          "EREGL": 5,
+          "TCELL": 4,
+          "SAHOL": 4,
+          "BIMAS": 3,
+          "IAS 29": 2,
+          "EBITDAR": 2,
+          "havacılık": 11,
+          "çelik": 2,
+          "banka": 1,
+          "telecom": 1,
+          "telekom": 5,
+          "holding": 13,
+          "savunma": 5
+        },
+        "migration_candidates_guess": 17
+      },
+      "memory_backup_size_kb": 0.93,
+      "memory_archive_size_kb": 41.79,
+      "output_schema": {
+        "size_kb": 3.2,
+        "required_top_level": 10,
+        "total_required_fields_recursive": 14,
+        "total_properties_recursive": 42,
+        "enum_or_const_count": 4,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 3
+      },
+      "agent_spec": {
+        "size_kb": 3.28,
+        "inputs": [
+          "parsed_statements",
+          "kap_disclosures",
+          "company_ir_materials",
+          "task_context"
+        ],
+        "outputs": [
+          "context_package"
+        ],
+        "tools": [
+          "text_extractor",
+          "segment_identifier",
+          "accounting_policy_parser",
+          "management_guidance_tagger",
+          "evidence_formatter"
+        ],
+        "handoff_count": 3,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 2,
+        "kpis": 3
+      },
+      "extra_doc_files": [
+        "case_lessons.md",
+        "output_SISE_20260410.json",
+        "reference_manual.md"
+      ],
+      "red_flags": [
+        "memory_bloat_31.56kb",
+        "canonicalizable_sections_17",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file",
+        "extra_doc_clutter_3_files"
+      ]
+    },
+    {
+      "name": "coo",
+      "registered": false,
+      "registry_group": null,
+      "reports_to": null,
+      "supervises": [],
+      "upstream": [],
+      "downstream": [],
+      "files": [
+        {
+          "name": "case_lessons.md",
+          "size_kb": 8.53,
+          "lines": 109,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 6.0,
+          "lines": 150,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 31.56,
+          "lines": 332,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 6.12,
+          "lines": 113,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 9.05,
+          "lines": 202,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 61.26,
+      "system_prompt": {
+        "size_kb": 8.86,
+        "lines": 202,
+        "headings_h1": 1,
+        "headings_h2": 8,
+        "headings_h3_plus": 11,
+        "bullets": 28,
+        "code_blocks": 4,
+        "rule_marker_lines": 16
+      },
+      "knowledge": {
+        "size_kb": 5.85,
+        "lines": 150,
+        "headings_h1": 1,
+        "headings_h2": 6,
+        "headings_h3_plus": 12,
+        "bullets": 40,
+        "code_blocks": 2,
+        "rule_marker_lines": 13
+      },
+      "memory": {
+        "size_kb": 31.24,
+        "lines": 332,
+        "headings_h1": 1,
+        "headings_h2": 24,
+        "headings_h3_plus": 39,
+        "bullets": 153,
+        "code_blocks": 0,
+        "rule_marker_lines": 33,
+        "feedback_dates": [
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 5,
+        "repeated_token_counts": {
+          "blocked": 36,
+          "delivery": 35,
+          "formatter": 33,
+          "kontrol": 29,
+          "teslim": 26,
+          "direktif": 26,
+          "payload": 25,
+          "kararı": 21,
+          "havacılık": 20,
+          "impact": 19,
+          "başarı": 19,
+          "completeness": 18,
+          "envelope": 18,
+          "bildirimi": 17,
+          "eksikler": 17,
+          "kontrolü": 17,
+          "bundan": 17,
+          "direktifi": 17,
+          "disclaimer": 16,
+          "raporu": 15
+        },
+        "canonicalizable_hits": {
+          "THYAO": 44,
+          "KCHOL": 6,
+          "ASELS": 3,
+          "EREGL": 1,
+          "TCELL": 3,
+          "SAHOL": 1,
+          "BIMAS": 1,
+          "IAS 29": 4,
+          "IAS29": 3,
+          "EBITDAR": 14,
+          "havacılık": 20,
+          "holding": 7,
+          "defense": 2,
+          "savunma": 5
+        },
+        "migration_candidates_guess": 23
+      },
+      "memory_backup_size_kb": null,
+      "memory_archive_size_kb": 6.12,
+      "output_schema": null,
+      "agent_spec": null,
+      "extra_doc_files": [
+        "case_lessons.md"
+      ],
+      "red_flags": [
+        "not_in_agents_registry_json",
+        "memory_bloat_31.24kb",
+        "canonicalizable_sections_23"
+      ]
+    },
+    {
+      "name": "cost_performance_optimizer",
+      "registered": true,
+      "registry_group": "management",
+      "reports_to": "ceo",
+      "supervises": [],
+      "upstream": [
+        "ceo"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "memory.md",
+          "size_kb": 0.92,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 0.92,
+      "system_prompt": null,
+      "knowledge": null,
+      "memory": {
+        "size_kb": 0.9,
+        "lines": 28,
+        "headings_h1": 1,
+        "headings_h2": 5,
+        "headings_h3_plus": 0,
+        "bullets": 0,
+        "code_blocks": 0,
+        "rule_marker_lines": 0,
+        "feedback_dates": [],
+        "distinct_feedback_dates": 0,
+        "repeated_token_counts": {},
+        "canonicalizable_hits": {},
+        "migration_candidates_guess": 0
+      },
+      "memory_backup_size_kb": null,
+      "memory_archive_size_kb": null,
+      "output_schema": null,
+      "agent_spec": null,
+      "extra_doc_files": [],
+      "red_flags": []
+    },
+    {
+      "name": "data_collection",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 3.77,
+          "lines": 74,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 7.23,
+          "lines": 64,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 5.94,
+          "lines": 154,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.94,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 29.02,
+          "lines": 269,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 31.52,
+          "lines": 565,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output/  (dir)",
+          "size_kb": 44.96,
+          "lines": null,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 3.97,
+          "lines": 87,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_SISE_20260410.json",
+          "size_kb": 14.72,
+          "lines": 323,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 20.21,
+          "lines": 485,
+          "mtime_iso": "2026-04-19T19:19:48Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 2.72,
+          "lines": 66,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 165.0,
+      "system_prompt": {
+        "size_kb": 19.73,
+        "lines": 485,
+        "headings_h1": 1,
+        "headings_h2": 18,
+        "headings_h3_plus": 22,
+        "bullets": 120,
+        "code_blocks": 15,
+        "rule_marker_lines": 30
+      },
+      "knowledge": {
+        "size_kb": 5.79,
+        "lines": 154,
+        "headings_h1": 1,
+        "headings_h2": 10,
+        "headings_h3_plus": 9,
+        "bullets": 59,
+        "code_blocks": 0,
+        "rule_marker_lines": 6
+      },
+      "memory": {
+        "size_kb": 28.76,
+        "lines": 269,
+        "headings_h1": 1,
+        "headings_h2": 18,
+        "headings_h3_plus": 30,
+        "bullets": 156,
+        "code_blocks": 0,
+        "rule_marker_lines": 49,
+        "feedback_dates": [
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 4,
+        "repeated_token_counts": {
+          "raporu": 30,
+          "canonical": 23,
+          "bildirimi": 22,
+          "yıllık": 21,
+          "tablosu": 21,
+          "downstream": 17,
+          "kaynak": 15,
+          "segment": 15,
+          "eksikler": 15,
+          "bundan": 15,
+          "manifest": 14,
+          "taraması": 13,
+          "bildirimleri": 13,
+          "olmadan": 12,
+          "amortismanı": 12,
+          "verileri": 11,
+          "collection": 10,
+          "finansal": 10,
+          "insider": 10,
+          "değişimi": 10
+        },
+        "canonicalizable_hits": {
+          "THYAO": 34,
+          "TUPRS": 2,
+          "KCHOL": 3,
+          "ASELS": 5,
+          "EREGL": 6,
+          "TCELL": 5,
+          "SAHOL": 1,
+          "BIMAS": 1,
+          "IAS 29": 7,
+          "EBITDAR": 5,
+          "havacılık": 4,
+          "banka": 1,
+          "telekom": 4,
+          "holding": 8,
+          "savunma": 6,
+          "proxy": 3
+        },
+        "migration_candidates_guess": 15
+      },
+      "memory_backup_size_kb": 0.94,
+      "memory_archive_size_kb": 31.52,
+      "output_schema": {
+        "size_kb": 3.88,
+        "required_top_level": 12,
+        "total_required_fields_recursive": 19,
+        "total_properties_recursive": 46,
+        "enum_or_const_count": 8,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 3
+      },
+      "agent_spec": {
+        "size_kb": 3.7,
+        "inputs": [
+          "task_context",
+          "data_source_registry",
+          "previous_session_cache"
+        ],
+        "outputs": [
+          "data_manifest"
+        ],
+        "tools": [
+          "kap_api_client",
+          "bist_data_fetcher",
+          "company_ir_scraper",
+          "tcmb_data_client",
+          "tuik_data_client",
+          "price_feed_client",
+          "document_registry_writer",
+          "quality_scorer"
+        ],
+        "handoff_count": 3,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 3,
+        "kpis": 4
+      },
+      "extra_doc_files": [
+        "case_lessons.md",
+        "output",
+        "output_SISE_20260410.json"
+      ],
+      "red_flags": [
+        "memory_bloat_28.76kb",
+        "canonicalizable_sections_15",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file",
+        "extra_doc_clutter_3_files"
+      ]
+    },
+    {
+      "name": "esg_agent",
+      "registered": false,
+      "registry_group": null,
+      "reports_to": null,
+      "supervises": [],
+      "upstream": [],
+      "downstream": [],
+      "files": [
+        {
+          "name": "case_lessons.md",
+          "size_kb": 15.23,
+          "lines": 176,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 5.64,
+          "lines": 150,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 6.59,
+          "lines": 83,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 16.04,
+          "lines": 253,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "permanent_rules.md",
+          "size_kb": 2.39,
+          "lines": 48,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 8.01,
+          "lines": 206,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 53.9,
+      "system_prompt": {
+        "size_kb": 7.81,
+        "lines": 206,
+        "headings_h1": 1,
+        "headings_h2": 10,
+        "headings_h3_plus": 14,
+        "bullets": 57,
+        "code_blocks": 2,
+        "rule_marker_lines": 3
+      },
+      "knowledge": {
+        "size_kb": 5.5,
+        "lines": 150,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 18,
+        "bullets": 65,
+        "code_blocks": 0,
+        "rule_marker_lines": 4
+      },
+      "memory": {
+        "size_kb": 6.5,
+        "lines": 83,
+        "headings_h1": 1,
+        "headings_h2": 4,
+        "headings_h3_plus": 4,
+        "bullets": 35,
+        "code_blocks": 0,
+        "rule_marker_lines": 17,
+        "feedback_dates": [
+          "2026-04-15",
+          "2026-04-16"
+        ],
+        "distinct_feedback_dates": 2,
+        "repeated_token_counts": {
+          "maliyet": 8,
+          "raporu": 8,
+          "hesabı": 8,
+          "kontrol": 7,
+          "enerji": 6,
+          "edilmedi": 6,
+          "sürdürülebilirlik": 6,
+          "kaynak": 5,
+          "etkisi": 5,
+          "endeksi": 5,
+          "faaliyet": 5
+        },
+        "canonicalizable_hits": {
+          "TUPRS": 2,
+          "KCHOL": 7,
+          "EREGL": 7,
+          "çelik": 7,
+          "steel": 1,
+          "holding": 4,
+          "proxy": 6
+        },
+        "migration_candidates_guess": 2
+      },
+      "memory_backup_size_kb": null,
+      "memory_archive_size_kb": 16.04,
+      "output_schema": null,
+      "agent_spec": null,
+      "extra_doc_files": [
+        "case_lessons.md",
+        "permanent_rules.md"
+      ],
+      "red_flags": [
+        "not_in_agents_registry_json"
+      ]
+    },
+    {
+      "name": "event_classification",
+      "registered": true,
+      "registry_group": "event",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 2.98,
+          "lines": 55,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 5.96,
+          "lines": 151,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.84,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 28.79,
+          "lines": 331,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 21.16,
+          "lines": 393,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 2.48,
+          "lines": 52,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_SISE_20260410.json",
+          "size_kb": 13.86,
+          "lines": 353,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 4.68,
+          "lines": 110,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.92,
+          "lines": 29,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 82.67,
+      "system_prompt": {
+        "size_kb": 4.57,
+        "lines": 110,
+        "headings_h1": 1,
+        "headings_h2": 9,
+        "headings_h3_plus": 2,
+        "bullets": 7,
+        "code_blocks": 1,
+        "rule_marker_lines": 9
+      },
+      "knowledge": {
+        "size_kb": 5.81,
+        "lines": 151,
+        "headings_h1": 1,
+        "headings_h2": 8,
+        "headings_h3_plus": 5,
+        "bullets": 48,
+        "code_blocks": 2,
+        "rule_marker_lines": 4
+      },
+      "memory": {
+        "size_kb": 28.47,
+        "lines": 331,
+        "headings_h1": 1,
+        "headings_h2": 21,
+        "headings_h3_plus": 32,
+        "bullets": 205,
+        "code_blocks": 1,
+        "rule_marker_lines": 28,
+        "feedback_dates": [
+          "2025-03-25",
+          "2026-04-11",
+          "2026-04-12",
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 8,
+        "repeated_token_counts": {
+          "değişimi": 28,
+          "material": 26,
+          "classification": 25,
+          "impact": 23,
+          "bildirimi": 23,
+          "classify": 20,
+          "temettü": 20,
+          "etkisi": 18,
+          "interaction": 17,
+          "eksikler": 16,
+          "bundan": 16,
+          "regulatory": 15,
+          "confidence": 15,
+          "change": 14,
+          "management": 13,
+          "analizi": 13,
+          "tablosu": 13,
+          "severity": 13,
+          "raporu": 12,
+          "materyallik": 12
+        },
+        "canonicalizable_hits": {
+          "THYAO": 22,
+          "TUPRS": 4,
+          "KCHOL": 5,
+          "ASELS": 2,
+          "EREGL": 4,
+          "TCELL": 5,
+          "SAHOL": 1,
+          "BIMAS": 3,
+          "havacılık": 6,
+          "çelik": 3,
+          "banka": 1,
+          "telekom": 10,
+          "holding": 5,
+          "savunma": 4
+        },
+        "migration_candidates_guess": 17
+      },
+      "memory_backup_size_kb": 0.84,
+      "memory_archive_size_kb": 21.16,
+      "output_schema": {
+        "size_kb": 2.43,
+        "required_top_level": 9,
+        "total_required_fields_recursive": 17,
+        "total_properties_recursive": 23,
+        "enum_or_const_count": 5,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 4
+      },
+      "agent_spec": {
+        "size_kb": 2.92,
+        "inputs": [
+          "kap_watch_output",
+          "disclosure_content",
+          "event_taxonomy"
+        ],
+        "outputs": [
+          "classified_events"
+        ],
+        "tools": [
+          "nlp_classifier",
+          "taxonomy_matcher",
+          "key_term_extractor"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 2,
+        "kpis": 3
+      },
+      "extra_doc_files": [
+        "output_SISE_20260410.json"
+      ],
+      "red_flags": [
+        "memory_bloat_28.47kb",
+        "feedback_log_style_8_dates",
+        "canonicalizable_sections_17",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file"
+      ]
+    },
+    {
+      "name": "event_impact_mapper",
+      "registered": true,
+      "registry_group": "event",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 4.77,
+          "lines": 76,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 7.92,
+          "lines": 223,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.91,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 20.87,
+          "lines": 213,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 18.42,
+          "lines": 289,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 4.8,
+          "lines": 131,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_SISE_20260410.json",
+          "size_kb": 17.03,
+          "lines": 323,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "review_rubric.md",
+          "size_kb": 2.01,
+          "lines": 41,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 8.19,
+          "lines": 180,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 4.49,
+          "lines": 118,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 89.41,
+      "system_prompt": {
+        "size_kb": 8.02,
+        "lines": 180,
+        "headings_h1": 1,
+        "headings_h2": 11,
+        "headings_h3_plus": 0,
+        "bullets": 24,
+        "code_blocks": 1,
+        "rule_marker_lines": 12
+      },
+      "knowledge": {
+        "size_kb": 7.71,
+        "lines": 223,
+        "headings_h1": 1,
+        "headings_h2": 12,
+        "headings_h3_plus": 7,
+        "bullets": 65,
+        "code_blocks": 3,
+        "rule_marker_lines": 4
+      },
+      "memory": {
+        "size_kb": 20.66,
+        "lines": 213,
+        "headings_h1": 1,
+        "headings_h2": 13,
+        "headings_h3_plus": 16,
+        "bullets": 118,
+        "code_blocks": 0,
+        "rule_marker_lines": 35,
+        "feedback_dates": [
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 5,
+        "repeated_token_counts": {
+          "temettü": 30,
+          "impact": 29,
+          "template": 26,
+          "haritalama": 25,
+          "değişimi": 19,
+          "etkisi": 17,
+          "python": 17,
+          "quantification": 15,
+          "rotaları": 15,
+          "başlık": 14,
+          "ebitda": 14,
+          "enerji": 13,
+          "senaryo": 12,
+          "qualitative": 12,
+          "üretilmedi": 12,
+          "analizi": 11,
+          "valuation": 11,
+          "finansman": 11,
+          "routing": 11,
+          "sektör": 9
+        },
+        "canonicalizable_hits": {
+          "THYAO": 30,
+          "TUPRS": 6,
+          "KCHOL": 4,
+          "ASELS": 5,
+          "EREGL": 2,
+          "TCELL": 2,
+          "SAHOL": 1,
+          "BIMAS": 1,
+          "IAS 29": 1,
+          "IAS29": 2,
+          "EBITDAR": 9,
+          "havacılık": 4,
+          "çelik": 3,
+          "banka": 1,
+          "holding": 4,
+          "savunma": 4,
+          "proxy": 13
+        },
+        "migration_candidates_guess": 9
+      },
+      "memory_backup_size_kb": 0.91,
+      "memory_archive_size_kb": 18.42,
+      "output_schema": {
+        "size_kb": 4.67,
+        "required_top_level": 10,
+        "total_required_fields_recursive": 22,
+        "total_properties_recursive": 43,
+        "enum_or_const_count": 9,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 1,
+        "max_depth": 4
+      },
+      "agent_spec": {
+        "size_kb": 4.7,
+        "inputs": [
+          "event_classification_output",
+          "financial_analysis_output",
+          "context_extraction_output"
+        ],
+        "outputs": [
+          "event_impact_maps"
+        ],
+        "tools": [
+          "impact_mapping_engine",
+          "ifrs_rule_lookup",
+          "materiality_calculator",
+          "quantification_framework",
+          "evidence_formatter"
+        ],
+        "handoff_count": 4,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 3,
+        "kpis": 4
+      },
+      "extra_doc_files": [
+        "output_SISE_20260410.json",
+        "review_rubric.md"
+      ],
+      "red_flags": [
+        "memory_bloat_20.66kb",
+        "canonicalizable_sections_9",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file"
+      ]
+    },
+    {
+      "name": "event_timeline_alert",
+      "registered": true,
+      "registry_group": "event",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 2.43,
+          "lines": 40,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "froto_output_20260414.md",
+          "size_kb": 51.93,
+          "lines": 8,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 7.59,
+          "lines": 201,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.9,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 20.39,
+          "lines": 243,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 28.12,
+          "lines": 479,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 2.75,
+          "lines": 62,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 3.3,
+          "lines": 97,
+          "mtime_iso": "2026-04-19T20:29:49Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.88,
+          "lines": 35,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 119.29,
+      "system_prompt": {
+        "size_kb": 3.2,
+        "lines": 97,
+        "headings_h1": 1,
+        "headings_h2": 10,
+        "headings_h3_plus": 3,
+        "bullets": 13,
+        "code_blocks": 1,
+        "rule_marker_lines": 9
+      },
+      "knowledge": {
+        "size_kb": 7.39,
+        "lines": 201,
+        "headings_h1": 1,
+        "headings_h2": 11,
+        "headings_h3_plus": 4,
+        "bullets": 61,
+        "code_blocks": 4,
+        "rule_marker_lines": 4
+      },
+      "memory": {
+        "size_kb": 20.16,
+        "lines": 243,
+        "headings_h1": 1,
+        "headings_h2": 13,
+        "headings_h3_plus": 16,
+        "bullets": 177,
+        "code_blocks": 0,
+        "rule_marker_lines": 33,
+        "feedback_dates": [
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 5,
+        "repeated_token_counts": {
+          "immediate": 65,
+          "medium": 56,
+          "urgency": 37,
+          "değişimi": 22,
+          "timeline": 15,
+          "sonuçları": 15,
+          "rotaları": 14,
+          "senaryo": 14,
+          "olaylar": 13,
+          "bağlantısı": 13,
+          "temettü": 12,
+          "katalystler": 11,
+          "ebitda": 11,
+          "etkisi": 10,
+          "materiality": 10,
+          "blocked": 9,
+          "bildirimi": 9,
+          "stratejik": 9,
+          "calendar": 8,
+          "eksikler": 8
+        },
+        "canonicalizable_hits": {
+          "THYAO": 27,
+          "TUPRS": 2,
+          "ASELS": 3,
+          "EREGL": 4,
+          "TCELL": 2,
+          "SAHOL": 1,
+          "EBITDAR": 2,
+          "havacılık": 2,
+          "çelik": 3,
+          "banka": 1,
+          "holding": 1,
+          "savunma": 5,
+          "proxy": 3
+        },
+        "migration_candidates_guess": 9
+      },
+      "memory_backup_size_kb": 0.9,
+      "memory_archive_size_kb": 28.12,
+      "output_schema": {
+        "size_kb": 2.69,
+        "required_top_level": 10,
+        "total_required_fields_recursive": 20,
+        "total_properties_recursive": 29,
+        "enum_or_const_count": 8,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 4
+      },
+      "agent_spec": {
+        "size_kb": 2.39,
+        "inputs": [
+          "event_impact_mapper_output",
+          "financial_analysis_output",
+          "task_context"
+        ],
+        "outputs": [
+          "event_timeline_alerts"
+        ],
+        "tools": [
+          "timeline_organizer",
+          "urgency_classifier",
+          "calendar_builder"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 1,
+        "kpis": 2
+      },
+      "extra_doc_files": [
+        "froto_output_20260414.md"
+      ],
+      "red_flags": [
+        "memory_bloat_20.16kb",
+        "canonicalizable_sections_9",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file"
+      ]
+    },
+    {
+      "name": "final_summary",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [
+        "report_formatter"
+      ],
+      "upstream": [
+        "agent_performance_review",
+        "orchestrator"
+      ],
+      "downstream": [
+        "report_formatter"
+      ],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 3.18,
+          "lines": 57,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 6.0,
+          "lines": 172,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.93,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 22.33,
+          "lines": 232,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 26.12,
+          "lines": 472,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 2.95,
+          "lines": 65,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 11.06,
+          "lines": 221,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.7,
+          "lines": 29,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 74.27,
+      "system_prompt": {
+        "size_kb": 10.85,
+        "lines": 221,
+        "headings_h1": 1,
+        "headings_h2": 13,
+        "headings_h3_plus": 7,
+        "bullets": 29,
+        "code_blocks": 4,
+        "rule_marker_lines": 23
+      },
+      "knowledge": {
+        "size_kb": 5.83,
+        "lines": 172,
+        "headings_h1": 1,
+        "headings_h2": 10,
+        "headings_h3_plus": 13,
+        "bullets": 41,
+        "code_blocks": 2,
+        "rule_marker_lines": 8
+      },
+      "memory": {
+        "size_kb": 22.1,
+        "lines": 232,
+        "headings_h1": 1,
+        "headings_h2": 14,
+        "headings_h3_plus": 18,
+        "bullets": 128,
+        "code_blocks": 1,
+        "rule_marker_lines": 26,
+        "feedback_dates": [
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 5,
+        "repeated_token_counts": {
+          "tablosu": 44,
+          "ebitda": 27,
+          "kalite": 26,
+          "summary": 23,
+          "yönetici": 19,
+          "formatı": 18,
+          "unblock": 18,
+          "koşulu": 18,
+          "uyarıları": 17,
+          "havacılık": 17,
+          "matris": 14,
+          "direktif": 14,
+          "valuation": 13,
+          "nedeni": 12,
+          "context": 12,
+          "bölümünde": 11,
+          "mevcut": 11,
+          "sorumlu": 11,
+          "recheck": 11,
+          "extraction": 11
+        },
+        "canonicalizable_hits": {
+          "THYAO": 14,
+          "TUPRS": 1,
+          "KCHOL": 2,
+          "ASELS": 3,
+          "EREGL": 2,
+          "TCELL": 2,
+          "IAS 29": 1,
+          "EBITDAR": 11,
+          "havacılık": 18,
+          "çelik": 4,
+          "banka": 1,
+          "holding": 2,
+          "savunma": 5,
+          "proxy": 3,
+          "ticker override": 1
+        },
+        "migration_candidates_guess": 10
+      },
+      "memory_backup_size_kb": 0.93,
+      "memory_archive_size_kb": 26.12,
+      "output_schema": {
+        "size_kb": 2.88,
+        "required_top_level": 12,
+        "total_required_fields_recursive": 19,
+        "total_properties_recursive": 33,
+        "enum_or_const_count": 5,
+        "minLength_count": 0,
+        "minItems_count": 2,
+        "ref_count": 0,
+        "max_depth": 3
+      },
+      "agent_spec": {
+        "size_kb": 3.13,
+        "inputs": [
+          "strategic_synthesis_output",
+          "financial_analysis_output",
+          "event_impact_mapper_output",
+          "all_approved_outputs",
+          "task_context"
+        ],
+        "outputs": [
+          "user_facing_report"
+        ],
+        "tools": [
+          "report_formatter",
+          "confidence_labeler",
+          "disclosure_inserter"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 1,
+        "kpis": 3
+      },
+      "extra_doc_files": [],
+      "red_flags": [
+        "memory_bloat_22.1kb",
+        "canonicalizable_sections_10",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file"
+      ]
+    },
+    {
+      "name": "financial_analysis",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "agent_performance_review",
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 4.4,
+          "lines": 75,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 3.46,
+          "lines": 81,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "ceo_feedback_20260410.md",
+          "size_kb": 7.44,
+          "lines": 257,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "CHECKLIST_CRITICAL_METRICS.md",
+          "size_kb": 5.22,
+          "lines": 190,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "FEEDBACK_2026-04-10_ASELS.md",
+          "size_kb": 2.44,
+          "lines": 80,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "FEEDBACK_2026_04_10.md",
+          "size_kb": 10.02,
+          "lines": 299,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "FEEDBACK_TEMPLATE.md",
+          "size_kb": 9.79,
+          "lines": 243,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 7.08,
+          "lines": 164,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 1.11,
+          "lines": 31,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 30.87,
+          "lines": 281,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 35.88,
+          "lines": 641,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 10.36,
+          "lines": 223,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "permanent_rules.md",
+          "size_kb": 3.18,
+          "lines": 47,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "reference_manual.md",
+          "size_kb": 43.4,
+          "lines": 817,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "review_rubric.md",
+          "size_kb": 1.67,
+          "lines": 41,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 39.11,
+          "lines": 729,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 3.87,
+          "lines": 115,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 219.3,
+      "system_prompt": {
+        "size_kb": 38.4,
+        "lines": 729,
+        "headings_h1": 1,
+        "headings_h2": 18,
+        "headings_h3_plus": 26,
+        "bullets": 227,
+        "code_blocks": 12,
+        "rule_marker_lines": 59
+      },
+      "knowledge": {
+        "size_kb": 6.92,
+        "lines": 164,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 11,
+        "bullets": 34,
+        "code_blocks": 0,
+        "rule_marker_lines": 4
+      },
+      "memory": {
+        "size_kb": 30.59,
+        "lines": 281,
+        "headings_h1": 1,
+        "headings_h2": 18,
+        "headings_h3_plus": 32,
+        "bullets": 167,
+        "code_blocks": 0,
+        "rule_marker_lines": 57,
+        "feedback_dates": [
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 4,
+        "repeated_token_counts": {
+          "ebitda": 47,
+          "ebitdar": 33,
+          "metrics": 27,
+          "sektör": 20,
+          "eksikler": 17,
+          "chairman": 17,
+          "revenue": 16,
+          "bundan": 16,
+          "havacılık": 16,
+          "tahmini": 16,
+          "analizi": 15,
+          "bildirimi": 15,
+          "engine": 15,
+          "snapshot": 15,
+          "tablosu": 14,
+          "industrial": 14,
+          "finansal": 13,
+          "upstream": 12,
+          "margin": 12,
+          "etkisi": 12
+        },
+        "canonicalizable_hits": {
+          "THYAO": 41,
+          "TUPRS": 4,
+          "KCHOL": 4,
+          "ASELS": 7,
+          "EREGL": 2,
+          "TCELL": 4,
+          "SAHOL": 1,
+          "BIMAS": 1,
+          "IAS 29": 16,
+          "IAS29": 10,
+          "EBITDAR": 33,
+          "aviation": 9,
+          "havacılık": 18,
+          "çelik": 3,
+          "banka": 1,
+          "telecom": 1,
+          "telekom": 6,
+          "holding": 9,
+          "defense": 2,
+          "savunma": 8,
+          "proxy": 20,
+          "sektör override": 4
+        },
+        "migration_candidates_guess": 15
+      },
+      "memory_backup_size_kb": 1.11,
+      "memory_archive_size_kb": 35.88,
+      "output_schema": {
+        "size_kb": 10.15,
+        "required_top_level": 12,
+        "total_required_fields_recursive": 66,
+        "total_properties_recursive": 123,
+        "enum_or_const_count": 10,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 49,
+        "max_depth": 4
+      },
+      "agent_spec": {
+        "size_kb": 4.33,
+        "inputs": [
+          "reconciled_financial_data",
+          "parse_standardization_output",
+          "context_extraction_output"
+        ],
+        "outputs": [
+          "financial_analysis_output"
+        ],
+        "tools": [
+          "ratio_calculator",
+          "trend_analyzer",
+          "non_recurring_identifier",
+          "inflation_accounting_adjuster",
+          "evidence_formatter"
+        ],
+        "handoff_count": 4,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 3,
+        "kpis": 4
+      },
+      "extra_doc_files": [
+        "case_lessons.md",
+        "ceo_feedback_20260410.md",
+        "CHECKLIST_CRITICAL_METRICS.md",
+        "FEEDBACK_2026-04-10_ASELS.md",
+        "FEEDBACK_2026_04_10.md",
+        "FEEDBACK_TEMPLATE.md",
+        "permanent_rules.md",
+        "reference_manual.md",
+        "review_rubric.md"
+      ],
+      "red_flags": [
+        "memory_bloat_30.59kb",
+        "canonicalizable_sections_15",
+        "system_prompt_heavy_38.4kb",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file",
+        "extra_doc_clutter_9_files"
+      ]
+    },
+    {
+      "name": "kap_watch",
+      "registered": true,
+      "registry_group": "event",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 2.77,
+          "lines": 53,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 6.97,
+          "lines": 190,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.99,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 29.88,
+          "lines": 318,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 17.5,
+          "lines": 307,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 2.53,
+          "lines": 56,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_SISE_20260410.json",
+          "size_kb": 11.57,
+          "lines": 290,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 3.78,
+          "lines": 107,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.56,
+          "lines": 29,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 77.55,
+      "system_prompt": {
+        "size_kb": 3.67,
+        "lines": 107,
+        "headings_h1": 1,
+        "headings_h2": 10,
+        "headings_h3_plus": 2,
+        "bullets": 19,
+        "code_blocks": 2,
+        "rule_marker_lines": 10
+      },
+      "knowledge": {
+        "size_kb": 6.78,
+        "lines": 190,
+        "headings_h1": 1,
+        "headings_h2": 11,
+        "headings_h3_plus": 10,
+        "bullets": 68,
+        "code_blocks": 2,
+        "rule_marker_lines": 4
+      },
+      "memory": {
+        "size_kb": 29.56,
+        "lines": 318,
+        "headings_h1": 1,
+        "headings_h2": 21,
+        "headings_h3_plus": 32,
+        "bullets": 174,
+        "code_blocks": 2,
+        "rule_marker_lines": 37,
+        "feedback_dates": [
+          "2025-04-16",
+          "2026-03-16",
+          "2026-03-17",
+          "2026-04-10",
+          "2026-04-11",
+          "2026-04-12",
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 11,
+        "repeated_token_counts": {
+          "bildirimi": 46,
+          "bildirim": 39,
+          "bildirimleri": 28,
+          "temettü": 28,
+          "impact": 25,
+          "forward": 25,
+          "disclosure": 23,
+          "material": 23,
+          "sessizlik": 19,
+          "trafik": 18,
+          "takvimi": 17,
+          "eksikler": 16,
+          "açıklaması": 16,
+          "bundan": 16,
+          "tespiti": 15,
+          "edilmedi": 14,
+          "yapılmadı": 14,
+          "değişikliği": 14,
+          "subsidiary": 12,
+          "raporu": 12
+        },
+        "canonicalizable_hits": {
+          "THYAO": 28,
+          "TUPRS": 14,
+          "KCHOL": 7,
+          "ASELS": 2,
+          "EREGL": 14,
+          "TCELL": 7,
+          "SAHOL": 3,
+          "BIMAS": 4,
+          "havacılık": 1,
+          "banka": 2,
+          "telekom": 1,
+          "holding": 6,
+          "savunma": 2,
+          "proxy": 5
+        },
+        "migration_candidates_guess": 17
+      },
+      "memory_backup_size_kb": 0.99,
+      "memory_archive_size_kb": 17.5,
+      "output_schema": {
+        "size_kb": 2.47,
+        "required_top_level": 10,
+        "total_required_fields_recursive": 20,
+        "total_properties_recursive": 29,
+        "enum_or_const_count": 4,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 4
+      },
+      "agent_spec": {
+        "size_kb": 2.72,
+        "inputs": [
+          "watch_list",
+          "monitoring_window",
+          "last_seen_disclosure_id"
+        ],
+        "outputs": [
+          "disclosure_inventory"
+        ],
+        "tools": [
+          "kap_api_client",
+          "disclosure_deduplicator",
+          "kap_rate_limiter",
+          "document_registry_writer"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 2,
+        "kpis": 3
+      },
+      "extra_doc_files": [
+        "output_SISE_20260410.json"
+      ],
+      "red_flags": [
+        "memory_bloat_29.56kb",
+        "feedback_log_style_11_dates",
+        "canonicalizable_sections_17",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file"
+      ]
+    },
+    {
+      "name": "macro_analysis",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "agent_performance_review",
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 2.86,
+          "lines": 52,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 18.13,
+          "lines": 190,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "ceo_feedback_20260410.md",
+          "size_kb": 7.92,
+          "lines": 305,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "CHECKLIST_GEOPOLITICAL.md",
+          "size_kb": 5.67,
+          "lines": 191,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "FEEDBACK_2026-04-10_ASELS.md",
+          "size_kb": 9.38,
+          "lines": 228,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "FEEDBACK_2026_04_10.md",
+          "size_kb": 12.94,
+          "lines": 353,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 5.35,
+          "lines": 140,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.94,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 20.6,
+          "lines": 220,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 33.25,
+          "lines": 521,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 3.62,
+          "lines": 89,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "reference_manual.md",
+          "size_kb": 12.44,
+          "lines": 259,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 13.39,
+          "lines": 281,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.85,
+          "lines": 29,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 148.34,
+      "system_prompt": {
+        "size_kb": 13.12,
+        "lines": 281,
+        "headings_h1": 1,
+        "headings_h2": 14,
+        "headings_h3_plus": 10,
+        "bullets": 66,
+        "code_blocks": 2,
+        "rule_marker_lines": 21
+      },
+      "knowledge": {
+        "size_kb": 5.21,
+        "lines": 140,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 15,
+        "bullets": 39,
+        "code_blocks": 1,
+        "rule_marker_lines": 4
+      },
+      "memory": {
+        "size_kb": 20.39,
+        "lines": 220,
+        "headings_h1": 1,
+        "headings_h2": 12,
+        "headings_h3_plus": 20,
+        "bullets": 94,
+        "code_blocks": 0,
+        "rule_marker_lines": 41,
+        "feedback_dates": [
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 3,
+        "repeated_token_counts": {
+          "etkisi": 40,
+          "jeopolitik": 32,
+          "maliyeti": 26,
+          "ebitda": 24,
+          "impact": 18,
+          "tablosu": 18,
+          "summary": 15,
+          "üretilmedi": 15,
+          "websearch": 14,
+          "havacılık": 13,
+          "üstgeçiş": 12,
+          "segment": 11,
+          "enerji": 11,
+          "tabloda": 11,
+          "mekanizması": 11,
+          "savunma": 10,
+          "bildirimi": 10,
+          "eksikler": 10,
+          "ukrayna": 10,
+          "bundan": 10
+        },
+        "canonicalizable_hits": {
+          "THYAO": 39,
+          "TUPRS": 2,
+          "KCHOL": 4,
+          "ASELS": 8,
+          "EREGL": 6,
+          "EBITDAR": 3,
+          "havacılık": 13,
+          "çelik": 8,
+          "telekom": 1,
+          "holding": 4,
+          "savunma": 10,
+          "proxy": 2
+        },
+        "migration_candidates_guess": 10
+      },
+      "memory_backup_size_kb": 0.94,
+      "memory_archive_size_kb": 33.25,
+      "output_schema": {
+        "size_kb": 3.53,
+        "required_top_level": 10,
+        "total_required_fields_recursive": 15,
+        "total_properties_recursive": 47,
+        "enum_or_const_count": 6,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 4
+      },
+      "agent_spec": {
+        "size_kb": 2.8,
+        "inputs": [
+          "task_context",
+          "macro_data_feed",
+          "context_extraction_output"
+        ],
+        "outputs": [
+          "macro_analysis_output"
+        ],
+        "tools": [
+          "tcmb_data_client",
+          "tuik_data_client",
+          "fx_rate_fetcher",
+          "bddk_data_client"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 2,
+        "kpis": 2
+      },
+      "extra_doc_files": [
+        "case_lessons.md",
+        "ceo_feedback_20260410.md",
+        "CHECKLIST_GEOPOLITICAL.md",
+        "FEEDBACK_2026-04-10_ASELS.md",
+        "FEEDBACK_2026_04_10.md",
+        "reference_manual.md"
+      ],
+      "red_flags": [
+        "memory_bloat_20.39kb",
+        "canonicalizable_sections_10",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file",
+        "extra_doc_clutter_6_files"
+      ]
+    },
+    {
+      "name": "orchestrator",
+      "registered": true,
+      "registry_group": "management",
+      "reports_to": "ceo",
+      "supervises": [
+        "data_collection",
+        "parse_standardization",
+        "reconciliation",
+        "context_extraction",
+        "financial_analysis",
+        "sector_competition",
+        "macro_analysis",
+        "technical_analysis",
+        "strategic_synthesis",
+        "final_summary",
+        "kap_watch",
+        "event_classification",
+        "event_impact_mapper",
+        "event_timeline_alert"
+      ],
+      "upstream": [
+        "ceo"
+      ],
+      "downstream": [
+        "context_extraction",
+        "data_collection",
+        "event_classification",
+        "event_impact_mapper",
+        "event_timeline_alert",
+        "final_summary",
+        "financial_analysis",
+        "kap_watch",
+        "macro_analysis",
+        "parse_standardization",
+        "reconciliation",
+        "sector_competition",
+        "strategic_synthesis",
+        "technical_analysis"
+      ],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 4.27,
+          "lines": 92,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.98,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 1.43,
+          "lines": 69,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 1.78,
+          "lines": 49,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 4.13,
+          "lines": 92,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 3.21,
+          "lines": 76,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 15.8,
+      "system_prompt": {
+        "size_kb": 4.04,
+        "lines": 92,
+        "headings_h1": 1,
+        "headings_h2": 8,
+        "headings_h3_plus": 3,
+        "bullets": 4,
+        "code_blocks": 2,
+        "rule_marker_lines": 7
+      },
+      "knowledge": null,
+      "memory": {
+        "size_kb": 1.36,
+        "lines": 69,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 3,
+        "bullets": 0,
+        "code_blocks": 0,
+        "rule_marker_lines": 0,
+        "feedback_dates": [
+          "2026-04-09"
+        ],
+        "distinct_feedback_dates": 1,
+        "repeated_token_counts": {
+          "başlangıç": 5,
+          "seviyesi": 5
+        },
+        "canonicalizable_hits": {
+          "banka": 1
+        },
+        "migration_candidates_guess": 1
+      },
+      "memory_backup_size_kb": 0.98,
+      "memory_archive_size_kb": null,
+      "output_schema": {
+        "size_kb": 1.73,
+        "required_top_level": 3,
+        "total_required_fields_recursive": 3,
+        "total_properties_recursive": 21,
+        "enum_or_const_count": 2,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 3
+      },
+      "agent_spec": {
+        "size_kb": 4.18,
+        "inputs": [
+          "task_contract",
+          "agent_output_notification",
+          "ceo_review_decision",
+          "platform_health"
+        ],
+        "outputs": [
+          "agent_task_dispatch",
+          "session_state",
+          "escalation_signal"
+        ],
+        "tools": [
+          "session_state_manager",
+          "dependency_resolver",
+          "task_dispatcher",
+          "timeout_monitor",
+          "escalation_router"
+        ],
+        "handoff_count": 4,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 3,
+        "kpis": 4
+      },
+      "extra_doc_files": [],
+      "red_flags": [
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file"
+      ]
+    },
+    {
+      "name": "parse_standardization",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 3.5,
+          "lines": 64,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 6.61,
+          "lines": 177,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.94,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 31.34,
+          "lines": 328,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 28.44,
+          "lines": 454,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 3.78,
+          "lines": 84,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_SISE_20260410.json",
+          "size_kb": 7.64,
+          "lines": 179,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 14.55,
+          "lines": 313,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.8,
+          "lines": 29,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 98.6,
+      "system_prompt": {
+        "size_kb": 14.25,
+        "lines": 313,
+        "headings_h1": 1,
+        "headings_h2": 13,
+        "headings_h3_plus": 20,
+        "bullets": 57,
+        "code_blocks": 5,
+        "rule_marker_lines": 33
+      },
+      "knowledge": {
+        "size_kb": 6.44,
+        "lines": 177,
+        "headings_h1": 1,
+        "headings_h2": 11,
+        "headings_h3_plus": 13,
+        "bullets": 45,
+        "code_blocks": 2,
+        "rule_marker_lines": 13
+      },
+      "memory": {
+        "size_kb": 31.02,
+        "lines": 328,
+        "headings_h1": 1,
+        "headings_h2": 21,
+        "headings_h3_plus": 37,
+        "bullets": 170,
+        "code_blocks": 0,
+        "rule_marker_lines": 61,
+        "feedback_dates": [
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 4,
+        "repeated_token_counts": {
+          "ebitda": 48,
+          "ticari": 31,
+          "income": 29,
+          "tablosu": 25,
+          "eskalasyon": 19,
+          "pending": 18,
+          "raporu": 18,
+          "bildirimi": 17,
+          "satırı": 17,
+          "statement": 16,
+          "revenue": 15,
+          "eksikler": 15,
+          "bundan": 15,
+          "çekilmedi": 14,
+          "ebitdar": 14,
+          "finansal": 14,
+          "expense": 14,
+          "downstream": 13,
+          "upstream": 13,
+          "amortisman": 13
+        },
+        "canonicalizable_hits": {
+          "THYAO": 35,
+          "TUPRS": 1,
+          "KCHOL": 8,
+          "ASELS": 7,
+          "EREGL": 10,
+          "TCELL": 5,
+          "SAHOL": 1,
+          "BIMAS": 3,
+          "IAS 29": 17,
+          "EBITDAR": 14,
+          "aviation": 3,
+          "havacılık": 4,
+          "çelik": 2,
+          "banka": 1,
+          "telekom": 2,
+          "holding": 6,
+          "savunma": 6,
+          "proxy": 3
+        },
+        "migration_candidates_guess": 19
+      },
+      "memory_backup_size_kb": 0.94,
+      "memory_archive_size_kb": 28.44,
+      "output_schema": {
+        "size_kb": 3.7,
+        "required_top_level": 11,
+        "total_required_fields_recursive": 19,
+        "total_properties_recursive": 44,
+        "enum_or_const_count": 4,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 4,
+        "max_depth": 4
+      },
+      "agent_spec": {
+        "size_kb": 3.44,
+        "inputs": [
+          "data_manifest",
+          "raw_documents",
+          "bist_taxonomy_map",
+          "task_context"
+        ],
+        "outputs": [
+          "standardized_statements"
+        ],
+        "tools": [
+          "xbrl_parser",
+          "pdf_table_extractor",
+          "html_parser",
+          "bist_taxonomy_mapper",
+          "balance_checker",
+          "restatement_detector"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 3,
+        "kpis": 3
+      },
+      "extra_doc_files": [
+        "output_SISE_20260410.json"
+      ],
+      "red_flags": [
+        "memory_bloat_31.02kb",
+        "canonicalizable_sections_19",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file"
+      ]
+    },
+    {
+      "name": "qa_review",
+      "registered": true,
+      "registry_group": "management",
+      "reports_to": "ceo",
+      "supervises": [],
+      "upstream": [
+        "ceo"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 3.21,
+          "lines": 60,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 8.37,
+          "lines": 79,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "fallback_policy.md",
+          "size_kb": 1.21,
+          "lines": 27,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 6.07,
+          "lines": 180,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 1.0,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 22.46,
+          "lines": 245,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 27.09,
+          "lines": 525,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 2.49,
+          "lines": 59,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "permanent_rules.md",
+          "size_kb": 3.24,
+          "lines": 56,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "review_rubric.md",
+          "size_kb": 1.45,
+          "lines": 27,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 6.57,
+          "lines": 158,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 2.32,
+          "lines": 52,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 85.48,
+      "system_prompt": {
+        "size_kb": 6.42,
+        "lines": 158,
+        "headings_h1": 1,
+        "headings_h2": 11,
+        "headings_h3_plus": 5,
+        "bullets": 36,
+        "code_blocks": 1,
+        "rule_marker_lines": 10
+      },
+      "knowledge": {
+        "size_kb": 5.89,
+        "lines": 180,
+        "headings_h1": 1,
+        "headings_h2": 11,
+        "headings_h3_plus": 10,
+        "bullets": 23,
+        "code_blocks": 3,
+        "rule_marker_lines": 14
+      },
+      "memory": {
+        "size_kb": 22.22,
+        "lines": 245,
+        "headings_h1": 1,
+        "headings_h2": 14,
+        "headings_h3_plus": 18,
+        "bullets": 142,
+        "code_blocks": 2,
+        "rule_marker_lines": 52,
+        "feedback_dates": [
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 5,
+        "repeated_token_counts": {
+          "kontrol": 36,
+          "impact": 20,
+          "chairman": 18,
+          "havacılık": 17,
+          "kontrolü": 16,
+          "ebitdar": 16,
+          "sektör": 15,
+          "downstream": 13,
+          "cascade": 13,
+          "context": 13,
+          "required": 12,
+          "ebitda": 12,
+          "mevcut": 12,
+          "sector": 12,
+          "revision": 11,
+          "checklist": 11,
+          "competition": 11,
+          "mapper": 11,
+          "hedging": 11,
+          "extraction": 11
+        },
+        "canonicalizable_hits": {
+          "THYAO": 26,
+          "KCHOL": 3,
+          "ASELS": 3,
+          "EREGL": 1,
+          "TCELL": 2,
+          "SAHOL": 1,
+          "IAS 29": 3,
+          "IAS29": 3,
+          "EBITDAR": 16,
+          "aviation": 5,
+          "havacılık": 17,
+          "banka": 1,
+          "holding": 5,
+          "defense": 1,
+          "savunma": 5
+        },
+        "migration_candidates_guess": 10
+      },
+      "memory_backup_size_kb": 1.0,
+      "memory_archive_size_kb": 27.09,
+      "output_schema": {
+        "size_kb": 2.43,
+        "required_top_level": 10,
+        "total_required_fields_recursive": 20,
+        "total_properties_recursive": 25,
+        "enum_or_const_count": 4,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 3
+      },
+      "agent_spec": {
+        "size_kb": 3.15,
+        "inputs": [
+          "agent_output_for_review",
+          "output_schema_ref",
+          "review_rubric_ref",
+          "session_context"
+        ],
+        "outputs": [
+          "qa_assessment_report"
+        ],
+        "tools": [
+          "schema_validator",
+          "evidence_checker",
+          "confidence_calibration_checker",
+          "cross_reference_analyzer"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 2,
+        "kpis": 3
+      },
+      "extra_doc_files": [
+        "case_lessons.md",
+        "fallback_policy.md",
+        "permanent_rules.md",
+        "review_rubric.md"
+      ],
+      "red_flags": [
+        "memory_bloat_22.22kb",
+        "canonicalizable_sections_10",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file",
+        "extra_doc_clutter_4_files"
+      ]
+    },
+    {
+      "name": "reconciliation",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 3.32,
+          "lines": 62,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 7.14,
+          "lines": 77,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "fallback_policy.md",
+          "size_kb": 0.64,
+          "lines": 13,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 7.11,
+          "lines": 200,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.95,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 28.38,
+          "lines": 262,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 21.52,
+          "lines": 344,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 2.75,
+          "lines": 52,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_SISE_20260410.json",
+          "size_kb": 14.12,
+          "lines": 310,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "reference_manual.md",
+          "size_kb": 11.8,
+          "lines": 270,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "review_rubric.md",
+          "size_kb": 0.71,
+          "lines": 14,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 13.32,
+          "lines": 311,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.98,
+          "lines": 29,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 113.74,
+      "system_prompt": {
+        "size_kb": 13.02,
+        "lines": 311,
+        "headings_h1": 1,
+        "headings_h2": 10,
+        "headings_h3_plus": 13,
+        "bullets": 46,
+        "code_blocks": 8,
+        "rule_marker_lines": 22
+      },
+      "knowledge": {
+        "size_kb": 6.92,
+        "lines": 200,
+        "headings_h1": 1,
+        "headings_h2": 16,
+        "headings_h3_plus": 5,
+        "bullets": 53,
+        "code_blocks": 3,
+        "rule_marker_lines": 11
+      },
+      "memory": {
+        "size_kb": 28.13,
+        "lines": 262,
+        "headings_h1": 1,
+        "headings_h2": 19,
+        "headings_h3_plus": 30,
+        "bullets": 142,
+        "code_blocks": 0,
+        "rule_marker_lines": 38,
+        "feedback_dates": [
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 4,
+        "repeated_token_counts": {
+          "skipped": 34,
+          "downstream": 29,
+          "reconciliation": 27,
+          "finansal": 26,
+          "yapılmadı": 24,
+          "eskalasyon": 23,
+          "ebitda": 21,
+          "kontrol": 20,
+          "gerçek": 20,
+          "standardization": 19,
+          "bildirimi": 17,
+          "eksikler": 16,
+          "bundan": 15,
+          "reconcile": 15,
+          "segment": 14,
+          "bilanço": 14,
+          "raporu": 13,
+          "kaynak": 12,
+          "sadece": 12,
+          "kontrolü": 12
+        },
+        "canonicalizable_hits": {
+          "THYAO": 29,
+          "TUPRS": 1,
+          "KCHOL": 8,
+          "ASELS": 4,
+          "EREGL": 8,
+          "TCELL": 5,
+          "SAHOL": 1,
+          "BIMAS": 1,
+          "IAS 29": 9,
+          "IAS29": 7,
+          "havacılık": 12,
+          "banka": 4,
+          "telekom": 1,
+          "holding": 6,
+          "savunma": 2,
+          "proxy": 2
+        },
+        "migration_candidates_guess": 16
+      },
+      "memory_backup_size_kb": 0.95,
+      "memory_archive_size_kb": 21.52,
+      "output_schema": {
+        "size_kb": 2.7,
+        "required_top_level": 11,
+        "total_required_fields_recursive": 18,
+        "total_properties_recursive": 31,
+        "enum_or_const_count": 5,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 3
+      },
+      "agent_spec": {
+        "size_kb": 3.26,
+        "inputs": [
+          "parsed_statements_set",
+          "data_manifest",
+          "task_context"
+        ],
+        "outputs": [
+          "reconciled_dataset"
+        ],
+        "tools": [
+          "discrepancy_detector",
+          "source_priority_resolver",
+          "materiality_calculator",
+          "escalation_router"
+        ],
+        "handoff_count": 3,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 2,
+        "kpis": 3
+      },
+      "extra_doc_files": [
+        "case_lessons.md",
+        "fallback_policy.md",
+        "output_SISE_20260410.json",
+        "reference_manual.md",
+        "review_rubric.md"
+      ],
+      "red_flags": [
+        "memory_bloat_28.13kb",
+        "canonicalizable_sections_16",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file",
+        "extra_doc_clutter_5_files"
+      ]
+    },
+    {
+      "name": "report_formatter",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "final_summary",
+      "supervises": [],
+      "upstream": [
+        "final_summary"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 5.19,
+          "lines": 102,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 7.38,
+          "lines": 81,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 5.76,
+          "lines": 202,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 31.48,
+          "lines": 386,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 27.74,
+          "lines": 684,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "permanent_rules.md",
+          "size_kb": 2.97,
+          "lines": 47,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "reference_manual.md",
+          "size_kb": 22.29,
+          "lines": 572,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 18.25,
+          "lines": 409,
+          "mtime_iso": "2026-04-19T13:59:45Z"
+        }
+      ],
+      "total_size_kb": 121.06,
+      "system_prompt": {
+        "size_kb": 17.85,
+        "lines": 409,
+        "headings_h1": 1,
+        "headings_h2": 20,
+        "headings_h3_plus": 14,
+        "bullets": 86,
+        "code_blocks": 5,
+        "rule_marker_lines": 13
+      },
+      "knowledge": {
+        "size_kb": 5.56,
+        "lines": 202,
+        "headings_h1": 1,
+        "headings_h2": 8,
+        "headings_h3_plus": 14,
+        "bullets": 32,
+        "code_blocks": 10,
+        "rule_marker_lines": 4
+      },
+      "memory": {
+        "size_kb": 31.1,
+        "lines": 386,
+        "headings_h1": 1,
+        "headings_h2": 22,
+        "headings_h3_plus": 37,
+        "bullets": 177,
+        "code_blocks": 0,
+        "rule_marker_lines": 43,
+        "feedback_dates": [
+          "2026-04-12",
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 6,
+        "repeated_token_counts": {
+          "grafik": 31,
+          "kırmızı": 27,
+          "footer": 25,
+          "kontrol": 24,
+          "envelope": 24,
+          "formatter": 22,
+          "teslim": 22,
+          "header": 19,
+          "bildirimi": 19,
+          "raporu": 18,
+          "disclaimer": 18,
+          "eksikler": 17,
+          "içerik": 17,
+          "bundan": 16,
+          "blocked": 15,
+          "finance": 14,
+          "identity": 13,
+          "lacivert": 13,
+          "sayfada": 12,
+          "kontrolü": 12
+        },
+        "canonicalizable_hits": {
+          "THYAO": 40,
+          "TUPRS": 2,
+          "KCHOL": 6,
+          "ASELS": 8,
+          "EREGL": 11,
+          "TCELL": 5,
+          "SAHOL": 1,
+          "BIMAS": 5,
+          "IAS 29": 2,
+          "IAS29": 1,
+          "EBITDAR": 1,
+          "havacılık": 2,
+          "çelik": 3,
+          "banka": 1,
+          "holding": 4
+        },
+        "migration_candidates_guess": 19
+      },
+      "memory_backup_size_kb": null,
+      "memory_archive_size_kb": 27.74,
+      "output_schema": null,
+      "agent_spec": {
+        "size_kb": 5.09,
+        "inputs": [
+          "final_summary_output",
+          "financial_analysis_output",
+          "technical_analysis_output",
+          "macro_analysis_output",
+          "sector_competition_output",
+          "strategic_synthesis_output",
+          "event_impact_mapper_output",
+          "qa_review_output",
+          "context_extraction_output"
+        ],
+        "outputs": [
+          "report_formatter_output"
+        ],
+        "tools": [],
+        "handoff_count": 0,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 3,
+        "kpis": 0
+      },
+      "extra_doc_files": [
+        "case_lessons.md",
+        "permanent_rules.md",
+        "reference_manual.md"
+      ],
+      "red_flags": [
+        "memory_bloat_31.1kb",
+        "feedback_log_style_6_dates",
+        "canonicalizable_sections_19",
+        "extra_doc_clutter_3_files"
+      ]
+    },
+    {
+      "name": "sector_competition",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "agent_performance_review",
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 2.52,
+          "lines": 42,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 17.83,
+          "lines": 188,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 5.24,
+          "lines": 124,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.96,
+          "lines": 34,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 18.96,
+          "lines": 182,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 38.8,
+          "lines": 564,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 2.37,
+          "lines": 49,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 6.45,
+          "lines": 150,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.72,
+          "lines": 29,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "thyao_analysis.md",
+          "size_kb": 45.66,
+          "lines": 601,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "thyao_output.json",
+          "size_kb": 35.27,
+          "lines": 690,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 175.78,
+      "system_prompt": {
+        "size_kb": 6.31,
+        "lines": 150,
+        "headings_h1": 1,
+        "headings_h2": 11,
+        "headings_h3_plus": 5,
+        "bullets": 35,
+        "code_blocks": 2,
+        "rule_marker_lines": 11
+      },
+      "knowledge": {
+        "size_kb": 5.12,
+        "lines": 124,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 16,
+        "bullets": 53,
+        "code_blocks": 0,
+        "rule_marker_lines": 2
+      },
+      "memory": {
+        "size_kb": 18.78,
+        "lines": 182,
+        "headings_h1": 1,
+        "headings_h2": 11,
+        "headings_h3_plus": 20,
+        "bullets": 93,
+        "code_blocks": 0,
+        "rule_marker_lines": 24,
+        "feedback_dates": [
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 3,
+        "repeated_token_counts": {
+          "sektör": 46,
+          "porter": 25,
+          "industrial": 22,
+          "havacılık": 19,
+          "ebitdar": 17,
+          "analizi": 16,
+          "benchmark": 14,
+          "listesi": 14,
+          "upstream": 13,
+          "finansal": 12,
+          "üretilmedi": 12,
+          "tablosu": 11,
+          "sektörü": 11,
+          "standart": 11,
+          "bağımlılığı": 11,
+          "cannot": 11,
+          "aviation": 11,
+          "bildirimi": 10,
+          "eksikler": 10,
+          "bundan": 10
+        },
+        "canonicalizable_hits": {
+          "THYAO": 56,
+          "TUPRS": 3,
+          "KCHOL": 2,
+          "ASELS": 8,
+          "EREGL": 6,
+          "TCELL": 1,
+          "BIMAS": 1,
+          "EBITDAR": 17,
+          "aviation": 11,
+          "havacılık": 19,
+          "çelik": 3,
+          "steel": 3,
+          "banka": 3,
+          "holding": 3,
+          "defense": 3,
+          "savunma": 9,
+          "proxy": 2
+        },
+        "migration_candidates_guess": 10
+      },
+      "memory_backup_size_kb": 0.96,
+      "memory_archive_size_kb": 38.8,
+      "output_schema": {
+        "size_kb": 2.32,
+        "required_top_level": 11,
+        "total_required_fields_recursive": 16,
+        "total_properties_recursive": 30,
+        "enum_or_const_count": 4,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 4
+      },
+      "agent_spec": {
+        "size_kb": 2.48,
+        "inputs": [
+          "financial_analysis_output",
+          "sector_peer_data",
+          "sector_database"
+        ],
+        "outputs": [
+          "sector_benchmarking"
+        ],
+        "tools": [
+          "bist_sector_database",
+          "peer_financial_fetcher",
+          "benchmarking_calculator",
+          "ranking_engine"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 1,
+        "kpis": 2
+      },
+      "extra_doc_files": [
+        "case_lessons.md",
+        "thyao_analysis.md",
+        "thyao_output.json"
+      ],
+      "red_flags": [
+        "memory_bloat_18.78kb",
+        "canonicalizable_sections_10",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file",
+        "extra_doc_clutter_3_files"
+      ]
+    },
+    {
+      "name": "sentiment_news_agent",
+      "registered": false,
+      "registry_group": null,
+      "reports_to": null,
+      "supervises": [],
+      "upstream": [],
+      "downstream": [],
+      "files": [
+        {
+          "name": "case_lessons.md",
+          "size_kb": 13.17,
+          "lines": 152,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 4.08,
+          "lines": 115,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 6.18,
+          "lines": 74,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 8.21,
+          "lines": 175,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 5.88,
+          "lines": 166,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 37.52,
+      "system_prompt": {
+        "size_kb": 5.72,
+        "lines": 166,
+        "headings_h1": 1,
+        "headings_h2": 9,
+        "headings_h3_plus": 10,
+        "bullets": 30,
+        "code_blocks": 2,
+        "rule_marker_lines": 5
+      },
+      "knowledge": {
+        "size_kb": 3.96,
+        "lines": 115,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 10,
+        "bullets": 17,
+        "code_blocks": 1,
+        "rule_marker_lines": 3
+      },
+      "memory": {
+        "size_kb": 6.1,
+        "lines": 74,
+        "headings_h1": 1,
+        "headings_h2": 4,
+        "headings_h3_plus": 4,
+        "bullets": 28,
+        "code_blocks": 0,
+        "rule_marker_lines": 14,
+        "feedback_dates": [
+          "2026-04-15",
+          "2026-04-16"
+        ],
+        "distinct_feedback_dates": 2,
+        "repeated_token_counts": {
+          "sentiment": 17,
+          "tablosu": 12,
+          "analist": 11,
+          "haberi": 8,
+          "insider": 6,
+          "uluslararasi": 6,
+          "bloomberg": 6,
+          "reuters": 6,
+          "sayısal": 6,
+          "kategori": 5,
+          "minimal": 5,
+          "tepkisi": 5,
+          "sektör": 5
+        },
+        "canonicalizable_hits": {
+          "TUPRS": 1,
+          "KCHOL": 4,
+          "EREGL": 4,
+          "çelik": 4,
+          "banka": 1,
+          "holding": 2,
+          "retail": 2
+        },
+        "migration_candidates_guess": 2
+      },
+      "memory_backup_size_kb": null,
+      "memory_archive_size_kb": 8.21,
+      "output_schema": null,
+      "agent_spec": null,
+      "extra_doc_files": [
+        "case_lessons.md"
+      ],
+      "red_flags": [
+        "not_in_agents_registry_json"
+      ]
+    },
+    {
+      "name": "strategic_synthesis",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "agent_performance_review",
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 3.51,
+          "lines": 60,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 5.52,
+          "lines": 166,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.87,
+          "lines": 28,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 24.12,
+          "lines": 252,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 23.0,
+          "lines": 476,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 3.62,
+          "lines": 78,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "permanent_rules.md",
+          "size_kb": 3.12,
+          "lines": 46,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "review_rubric.md",
+          "size_kb": 0.8,
+          "lines": 15,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 8.87,
+          "lines": 198,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 2.01,
+          "lines": 31,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 75.44,
+      "system_prompt": {
+        "size_kb": 8.67,
+        "lines": 198,
+        "headings_h1": 1,
+        "headings_h2": 10,
+        "headings_h3_plus": 8,
+        "bullets": 22,
+        "code_blocks": 6,
+        "rule_marker_lines": 17
+      },
+      "knowledge": {
+        "size_kb": 5.35,
+        "lines": 166,
+        "headings_h1": 1,
+        "headings_h2": 8,
+        "headings_h3_plus": 13,
+        "bullets": 42,
+        "code_blocks": 3,
+        "rule_marker_lines": 5
+      },
+      "memory": {
+        "size_kb": 23.87,
+        "lines": 252,
+        "headings_h1": 1,
+        "headings_h2": 14,
+        "headings_h3_plus": 18,
+        "bullets": 166,
+        "code_blocks": 0,
+        "rule_marker_lines": 31,
+        "feedback_dates": [
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 5,
+        "repeated_token_counts": {
+          "ebitda": 27,
+          "trigger": 25,
+          "üretilmedi": 24,
+          "minimum": 24,
+          "revenue": 19,
+          "senaryo": 18,
+          "formatı": 18,
+          "yatırım": 17,
+          "listesi": 16,
+          "goldman": 16,
+          "sentez": 16,
+          "convergence": 15,
+          "divergence": 15,
+          "yapısı": 15,
+          "sinyal": 14,
+          "tablosu": 14,
+          "operasyonel": 13,
+          "insufficient": 12,
+          "quantification": 12,
+          "tavsiye": 11
+        },
+        "canonicalizable_hits": {
+          "THYAO": 33,
+          "TUPRS": 1,
+          "KCHOL": 2,
+          "ASELS": 3,
+          "EREGL": 2,
+          "TCELL": 2,
+          "SAHOL": 1,
+          "EBITDAR": 4,
+          "havacılık": 9,
+          "çelik": 1,
+          "banka": 1,
+          "telekom": 1,
+          "holding": 5,
+          "savunma": 5,
+          "proxy": 2
+        },
+        "migration_candidates_guess": 10
+      },
+      "memory_backup_size_kb": 0.87,
+      "memory_archive_size_kb": 23.0,
+      "output_schema": {
+        "size_kb": 3.55,
+        "required_top_level": 13,
+        "total_required_fields_recursive": 29,
+        "total_properties_recursive": 36,
+        "enum_or_const_count": 7,
+        "minLength_count": 0,
+        "minItems_count": 0,
+        "ref_count": 0,
+        "max_depth": 4
+      },
+      "agent_spec": {
+        "size_kb": 3.46,
+        "inputs": [
+          "financial_analysis_output",
+          "sector_competition_output",
+          "macro_analysis_output",
+          "technical_analysis_output",
+          "event_impact_mapper_output",
+          "context_extraction_output",
+          "contradiction_reports"
+        ],
+        "outputs": [
+          "strategic_synthesis_output"
+        ],
+        "tools": [
+          "signal_integrator",
+          "convergence_analyzer",
+          "contradiction_addresser",
+          "confidence_aggregator"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 2,
+        "kpis": 3
+      },
+      "extra_doc_files": [
+        "permanent_rules.md",
+        "review_rubric.md"
+      ],
+      "red_flags": [
+        "memory_bloat_23.87kb",
+        "canonicalizable_sections_10",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file"
+      ]
+    },
+    {
+      "name": "technical_analysis",
+      "registered": true,
+      "registry_group": "specialist",
+      "reports_to": "orchestrator",
+      "supervises": [],
+      "upstream": [
+        "agent_performance_review",
+        "orchestrator"
+      ],
+      "downstream": [],
+      "files": [
+        {
+          "name": "agent_spec.json",
+          "size_kb": 2.82,
+          "lines": 48,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "case_lessons.md",
+          "size_kb": 18.13,
+          "lines": 171,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 5.37,
+          "lines": 135,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.backup.md",
+          "size_kb": 0.98,
+          "lines": 31,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 30.92,
+          "lines": 323,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 23.42,
+          "lines": 424,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "output_schema.json",
+          "size_kb": 3.55,
+          "lines": 83,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "permanent_rules.md",
+          "size_kb": 2.86,
+          "lines": 57,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 4.6,
+          "lines": 125,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "test_cases.json",
+          "size_kb": 1.63,
+          "lines": 29,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "thyao_output_20260413.json",
+          "size_kb": 20.35,
+          "lines": 376,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 114.63,
+      "system_prompt": {
+        "size_kb": 4.47,
+        "lines": 125,
+        "headings_h1": 1,
+        "headings_h2": 9,
+        "headings_h3_plus": 6,
+        "bullets": 30,
+        "code_blocks": 1,
+        "rule_marker_lines": 12
+      },
+      "knowledge": {
+        "size_kb": 5.24,
+        "lines": 135,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 16,
+        "bullets": 57,
+        "code_blocks": 0,
+        "rule_marker_lines": 3
+      },
+      "memory": {
+        "size_kb": 30.6,
+        "lines": 323,
+        "headings_h1": 1,
+        "headings_h2": 22,
+        "headings_h3_plus": 34,
+        "bullets": 173,
+        "code_blocks": 1,
+        "rule_marker_lines": 41,
+        "feedback_dates": [
+          "2026-04-11",
+          "2026-04-12",
+          "2026-04-13",
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16",
+          "2026-04-17"
+        ],
+        "distinct_feedback_dates": 7,
+        "repeated_token_counts": {
+          "teknik": 63,
+          "insider": 40,
+          "analizi": 40,
+          "volume": 29,
+          "fibonacci": 29,
+          "bollinger": 28,
+          "standart": 26,
+          "bildirimi": 26,
+          "destek": 19,
+          "seviyeleri": 19,
+          "eksikler": 18,
+          "kaynak": 18,
+          "taraması": 17,
+          "bundan": 17,
+          "mevcut": 17,
+          "değişimi": 17,
+          "momentum": 16,
+          "performans": 16,
+          "fiyatı": 15,
+          "relatif": 15
+        },
+        "canonicalizable_hits": {
+          "THYAO": 46,
+          "TUPRS": 2,
+          "KCHOL": 11,
+          "ASELS": 3,
+          "EREGL": 5,
+          "TCELL": 6,
+          "SAHOL": 2,
+          "BIMAS": 4,
+          "IAS29": 1,
+          "aviation": 1,
+          "havacılık": 10,
+          "çelik": 2,
+          "banka": 1,
+          "telekom": 1,
+          "savunma": 4,
+          "proxy": 2
+        },
+        "migration_candidates_guess": 18
+      },
+      "memory_backup_size_kb": 0.98,
+      "memory_archive_size_kb": 23.42,
+      "output_schema": {
+        "size_kb": 3.47,
+        "required_top_level": 12,
+        "total_required_fields_recursive": 17,
+        "total_properties_recursive": 44,
+        "enum_or_const_count": 15,
+        "minLength_count": 0,
+        "minItems_count": 1,
+        "ref_count": 0,
+        "max_depth": 3
+      },
+      "agent_spec": {
+        "size_kb": 2.77,
+        "inputs": [
+          "price_data",
+          "bist_index_data",
+          "task_context"
+        ],
+        "outputs": [
+          "technical_analysis_output"
+        ],
+        "tools": [
+          "price_feed_client",
+          "indicator_calculator",
+          "pattern_detector",
+          "volume_analyzer"
+        ],
+        "handoff_count": 2,
+        "runtime_modes": [
+          "fast_screening",
+          "standard_institutional",
+          "deep_dive"
+        ],
+        "failure_modes": 2,
+        "kpis": 2
+      },
+      "extra_doc_files": [
+        "case_lessons.md",
+        "permanent_rules.md",
+        "thyao_output_20260413.json"
+      ],
+      "red_flags": [
+        "memory_bloat_30.6kb",
+        "feedback_log_style_7_dates",
+        "canonicalizable_sections_18",
+        "schema_no_minLength_enforcement",
+        "has_memory_backup_file",
+        "extra_doc_clutter_3_files"
+      ]
+    },
+    {
+      "name": "valuation_agent",
+      "registered": false,
+      "registry_group": null,
+      "reports_to": null,
+      "supervises": [],
+      "upstream": [],
+      "downstream": [],
+      "files": [
+        {
+          "name": "case_lessons.md",
+          "size_kb": 5.27,
+          "lines": 92,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "knowledge.md",
+          "size_kb": 6.07,
+          "lines": 166,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory.md",
+          "size_kb": 7.7,
+          "lines": 87,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "memory_archive.md",
+          "size_kb": 21.14,
+          "lines": 397,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "permanent_rules.md",
+          "size_kb": 3.17,
+          "lines": 49,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "reference_manual.md",
+          "size_kb": 10.52,
+          "lines": 238,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        },
+        {
+          "name": "system_prompt.md",
+          "size_kb": 12.64,
+          "lines": 284,
+          "mtime_iso": "2026-04-19T12:49:43Z"
+        }
+      ],
+      "total_size_kb": 66.51,
+      "system_prompt": {
+        "size_kb": 12.37,
+        "lines": 284,
+        "headings_h1": 1,
+        "headings_h2": 10,
+        "headings_h3_plus": 11,
+        "bullets": 62,
+        "code_blocks": 6,
+        "rule_marker_lines": 13
+      },
+      "knowledge": {
+        "size_kb": 5.91,
+        "lines": 166,
+        "headings_h1": 1,
+        "headings_h2": 7,
+        "headings_h3_plus": 14,
+        "bullets": 33,
+        "code_blocks": 4,
+        "rule_marker_lines": 7
+      },
+      "memory": {
+        "size_kb": 7.61,
+        "lines": 87,
+        "headings_h1": 1,
+        "headings_h2": 6,
+        "headings_h3_plus": 6,
+        "bullets": 50,
+        "code_blocks": 0,
+        "rule_marker_lines": 10,
+        "feedback_dates": [
+          "2026-04-14",
+          "2026-04-15",
+          "2026-04-16"
+        ],
+        "distinct_feedback_dates": 3,
+        "repeated_token_counts": {
+          "ebitda": 20,
+          "holding": 9,
+          "discount": 8,
+          "tablosu": 7,
+          "downstream": 7,
+          "kaynak": 5,
+          "sensitivity": 5,
+          "lessons": 5,
+          "formal": 5
+        },
+        "canonicalizable_hits": {
+          "TUPRS": 1,
+          "KCHOL": 3,
+          "EREGL": 2,
+          "TCELL": 1,
+          "EBITDAR": 2,
+          "çelik": 4,
+          "steel": 1,
+          "banka": 4,
+          "holding": 9
+        },
+        "migration_candidates_guess": 3
+      },
+      "memory_backup_size_kb": null,
+      "memory_archive_size_kb": 21.14,
+      "output_schema": null,
+      "agent_spec": null,
+      "extra_doc_files": [
+        "case_lessons.md",
+        "permanent_rules.md",
+        "reference_manual.md"
+      ],
+      "red_flags": [
+        "not_in_agents_registry_json",
+        "canonicalizable_sections_3",
+        "extra_doc_clutter_3_files"
+      ]
+    }
+  ]
+}

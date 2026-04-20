@@ -1,0 +1,527 @@
+{
+  "generated_at": "2026-04-20T21:05:55.037157+00:00",
+  "canonical_order": [
+    [
+      "ceo",
+      "Mandate Interpretation"
+    ],
+    [
+      "coo",
+      "Pre-Flight Check"
+    ],
+    [
+      "data_collection",
+      "Data Acquisition"
+    ],
+    [
+      "parse_standardization",
+      "Document Parsing"
+    ],
+    [
+      "reconciliation",
+      "Data Quality"
+    ],
+    [
+      "context_extraction",
+      "Context Extraction"
+    ],
+    [
+      "financial_analysis",
+      "Financial Analysis"
+    ],
+    [
+      "sector_competition",
+      "Sector & Competition"
+    ],
+    [
+      "macro_analysis",
+      "Macro Analysis"
+    ],
+    [
+      "technical_analysis",
+      "Technical Analysis"
+    ],
+    [
+      "kap_watch",
+      "KAP Watch"
+    ],
+    [
+      "event_classification",
+      "Event Classification"
+    ],
+    [
+      "event_impact_mapper",
+      "Event Impact Mapping"
+    ],
+    [
+      "event_timeline_alert",
+      "Event Timeline"
+    ],
+    [
+      "qa_review",
+      "Quality Review"
+    ],
+    [
+      "strategic_synthesis",
+      "Strategic Synthesis"
+    ],
+    [
+      "final_summary",
+      "Final Summary"
+    ],
+    [
+      "valuation_agent",
+      "Valuation"
+    ],
+    [
+      "sentiment_news_agent",
+      "Sentiment Analysis"
+    ],
+    [
+      "analyst_consensus_agent",
+      "Analyst Consensus"
+    ],
+    [
+      "esg_agent",
+      "ESG Analysis"
+    ],
+    [
+      "report_formatter",
+      "Report Formatting"
+    ]
+  ],
+  "backbone_agents": [
+    "ceo",
+    "coo",
+    "qa_review",
+    "strategic_synthesis",
+    "final_summary",
+    "report_formatter"
+  ],
+  "layer_agents": {
+    "fundamental": [
+      "data_collection",
+      "parse_standardization",
+      "reconciliation",
+      "context_extraction",
+      "financial_analysis"
+    ],
+    "technical": [
+      "technical_analysis"
+    ],
+    "events": [
+      "kap_watch",
+      "event_classification",
+      "event_impact_mapper",
+      "event_timeline_alert"
+    ],
+    "sector": [
+      "sector_competition"
+    ],
+    "macro": [
+      "macro_analysis"
+    ],
+    "valuation": [
+      "valuation_agent"
+    ],
+    "sentiment": [
+      "sentiment_news_agent"
+    ],
+    "consensus": [
+      "analyst_consensus_agent"
+    ],
+    "esg": [
+      "esg_agent"
+    ]
+  },
+  "mode_defaults": {
+    "fast_screening": [
+      "fundamental",
+      "technical",
+      "events"
+    ],
+    "standard_institutional": [
+      "fundamental",
+      "technical",
+      "events",
+      "sector",
+      "macro"
+    ]
+  },
+  "pipeline_modes_identical": true,
+  "sequential_runAgent_calls": 10,
+  "parallel_constructs": 1,
+  "edges": [
+    {
+      "from": "agent_factory",
+      "to": "human_review",
+      "kind": "handoff"
+    },
+    {
+      "from": "all_specialists",
+      "to": "strategic_synthesis",
+      "kind": "handoff"
+    },
+    {
+      "from": "ceo",
+      "to": "agent_factory",
+      "kind": "input_name"
+    },
+    {
+      "from": "ceo",
+      "to": "orchestrator",
+      "kind": "input_name"
+    },
+    {
+      "from": "ceo_agent",
+      "to": "agent_factory",
+      "kind": "handoff"
+    },
+    {
+      "from": "ceo_agent",
+      "to": "final_summary",
+      "kind": "handoff"
+    },
+    {
+      "from": "ceo_agent",
+      "to": "orchestrator",
+      "kind": "handoff"
+    },
+    {
+      "from": "context_extraction",
+      "to": "event_impact_mapper",
+      "kind": "handoff"
+    },
+    {
+      "from": "context_extraction",
+      "to": "financial_analysis",
+      "kind": "handoff"
+    },
+    {
+      "from": "data_collection",
+      "to": "kap_watch",
+      "kind": "handoff"
+    },
+    {
+      "from": "data_collection",
+      "to": "parse_standardization",
+      "kind": "handoff"
+    },
+    {
+      "from": "data_collection",
+      "to": "parse_standardization",
+      "kind": "input_name"
+    },
+    {
+      "from": "data_collection",
+      "to": "reconciliation",
+      "kind": "input_name"
+    },
+    {
+      "from": "event_classification",
+      "to": "event_impact_mapper",
+      "kind": "handoff"
+    },
+    {
+      "from": "event_impact_mapper",
+      "to": "event_timeline_alert",
+      "kind": "handoff"
+    },
+    {
+      "from": "event_impact_mapper",
+      "to": "orchestrator",
+      "kind": "handoff"
+    },
+    {
+      "from": "event_impact_mapper",
+      "to": "strategic_synthesis",
+      "kind": "handoff"
+    },
+    {
+      "from": "event_timeline_alert",
+      "to": "strategic_synthesis",
+      "kind": "handoff"
+    },
+    {
+      "from": "final_summary",
+      "to": "ceo_agent",
+      "kind": "handoff"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "event_impact_mapper",
+      "kind": "input_name"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "event_timeline_alert",
+      "kind": "input_name"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "final_summary",
+      "kind": "input_name"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "macro_analysis",
+      "kind": "handoff"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "orchestrator",
+      "kind": "handoff"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "report_formatter",
+      "kind": "input_name"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "sector_competition",
+      "kind": "handoff"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "sector_competition",
+      "kind": "input_name"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "strategic_synthesis",
+      "kind": "input_name"
+    },
+    {
+      "from": "financial_analysis",
+      "to": "technical_analysis",
+      "kind": "handoff"
+    },
+    {
+      "from": "kap_watch",
+      "to": "event_classification",
+      "kind": "handoff"
+    },
+    {
+      "from": "macro_analysis",
+      "to": "report_formatter",
+      "kind": "input_name"
+    },
+    {
+      "from": "macro_analysis",
+      "to": "strategic_synthesis",
+      "kind": "handoff"
+    },
+    {
+      "from": "macro_analysis",
+      "to": "strategic_synthesis",
+      "kind": "input_name"
+    },
+    {
+      "from": "orchestrator",
+      "to": "ceo",
+      "kind": "input_name"
+    },
+    {
+      "from": "orchestrator",
+      "to": "ceo_agent",
+      "kind": "handoff"
+    },
+    {
+      "from": "orchestrator",
+      "to": "data_collection",
+      "kind": "handoff"
+    },
+    {
+      "from": "orchestrator",
+      "to": "kap_watch",
+      "kind": "handoff"
+    },
+    {
+      "from": "orchestrator",
+      "to": "qa_review",
+      "kind": "handoff"
+    },
+    {
+      "from": "orchestrator",
+      "to": "specialist_agents",
+      "kind": "handoff"
+    },
+    {
+      "from": "parse_standardization",
+      "to": "reconciliation",
+      "kind": "handoff"
+    },
+    {
+      "from": "qa_review",
+      "to": "ceo_agent",
+      "kind": "handoff"
+    },
+    {
+      "from": "reconciliation",
+      "to": "context_extraction",
+      "kind": "handoff"
+    },
+    {
+      "from": "reconciliation",
+      "to": "financial_analysis",
+      "kind": "handoff"
+    },
+    {
+      "from": "sector_competition",
+      "to": "strategic_synthesis",
+      "kind": "handoff"
+    },
+    {
+      "from": "specialist_agents",
+      "to": "orchestrator",
+      "kind": "handoff"
+    },
+    {
+      "from": "strategic_synthesis",
+      "to": "final_summary",
+      "kind": "handoff"
+    },
+    {
+      "from": "strategic_synthesis",
+      "to": "final_summary",
+      "kind": "input_name"
+    },
+    {
+      "from": "strategic_synthesis",
+      "to": "report_formatter",
+      "kind": "input_name"
+    },
+    {
+      "from": "technical_analysis",
+      "to": "report_formatter",
+      "kind": "input_name"
+    },
+    {
+      "from": "technical_analysis",
+      "to": "strategic_synthesis",
+      "kind": "handoff"
+    },
+    {
+      "from": "technical_analysis",
+      "to": "strategic_synthesis",
+      "kind": "input_name"
+    }
+  ],
+  "upstream_map": {
+    "human_review": [
+      "agent_factory"
+    ],
+    "strategic_synthesis": [
+      "all_specialists",
+      "event_impact_mapper",
+      "event_timeline_alert",
+      "financial_analysis",
+      "macro_analysis",
+      "sector_competition",
+      "technical_analysis"
+    ],
+    "agent_factory": [
+      "ceo",
+      "ceo_agent"
+    ],
+    "orchestrator": [
+      "ceo",
+      "ceo_agent",
+      "event_impact_mapper",
+      "financial_analysis",
+      "specialist_agents"
+    ],
+    "final_summary": [
+      "ceo_agent",
+      "financial_analysis",
+      "strategic_synthesis"
+    ],
+    "event_impact_mapper": [
+      "context_extraction",
+      "event_classification",
+      "financial_analysis"
+    ],
+    "financial_analysis": [
+      "context_extraction",
+      "reconciliation"
+    ],
+    "kap_watch": [
+      "data_collection",
+      "orchestrator"
+    ],
+    "parse_standardization": [
+      "data_collection"
+    ],
+    "reconciliation": [
+      "data_collection",
+      "parse_standardization"
+    ],
+    "event_timeline_alert": [
+      "event_impact_mapper",
+      "financial_analysis"
+    ],
+    "ceo_agent": [
+      "final_summary",
+      "orchestrator",
+      "qa_review"
+    ],
+    "macro_analysis": [
+      "financial_analysis"
+    ],
+    "report_formatter": [
+      "financial_analysis",
+      "macro_analysis",
+      "strategic_synthesis",
+      "technical_analysis"
+    ],
+    "sector_competition": [
+      "financial_analysis"
+    ],
+    "technical_analysis": [
+      "financial_analysis"
+    ],
+    "event_classification": [
+      "kap_watch"
+    ],
+    "ceo": [
+      "orchestrator"
+    ],
+    "data_collection": [
+      "orchestrator"
+    ],
+    "qa_review": [
+      "orchestrator"
+    ],
+    "specialist_agents": [
+      "orchestrator"
+    ],
+    "context_extraction": [
+      "reconciliation"
+    ]
+  },
+  "critical_path": [
+    "data_collection",
+    "parse_standardization",
+    "reconciliation",
+    "context_extraction",
+    "financial_analysis",
+    "event_impact_mapper",
+    "event_timeline_alert",
+    "strategic_synthesis",
+    "final_summary"
+  ],
+  "parallelizable_tier_candidates": [
+    "financial_analysis",
+    "valuation_agent",
+    "sentiment_news_agent",
+    "analyst_consensus_agent",
+    "esg_agent"
+  ],
+  "caching_candidates": {
+    "prompts/shared_directives.md": "loaded once per agent call (stable prefix)",
+    "agents/<aid>/system_prompt.md": "stable for that agent across sessions",
+    "agents/<aid>/knowledge.md": "stable unless sector keyword triggers injection",
+    "agents/<aid>/memory.md": "target max 6 KB in code; actual is 18–44 KB for most agents (see agent inventory)"
+  }
+}

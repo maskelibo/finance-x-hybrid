@@ -1,0 +1,752 @@
+{
+  "generated_at": "2026-04-20T21:07:20.911717+00:00",
+  "legacy_folders": [
+    "agents/_legacy_memory_archive/memory/context_extraction.md",
+    "agents/_legacy_memory_archive/memory/data_collection.md",
+    "agents/_legacy_memory_archive/memory/event_classification.md",
+    "agents/_legacy_memory_archive/memory/event_impact_mapper.md",
+    "agents/_legacy_memory_archive/memory/event_timeline_alert.md",
+    "agents/_legacy_memory_archive/memory/final_summary.md",
+    "agents/_legacy_memory_archive/memory/financial_analysis.md",
+    "agents/_legacy_memory_archive/memory/kap_watch.md",
+    "agents/_legacy_memory_archive/memory/macro_analysis.md",
+    "agents/_legacy_memory_archive/memory/orchestrator.md",
+    "agents/_legacy_memory_archive/memory/parse_standardization.md",
+    "agents/_legacy_memory_archive/memory/qa_review.md",
+    "agents/_legacy_memory_archive/memory/reconciliation.md",
+    "agents/_legacy_memory_archive/memory/sector_competition.md",
+    "agents/_legacy_memory_archive/memory/strategic_synthesis.md",
+    "agents/_legacy_memory_archive/memory/technical_analysis.md"
+  ],
+  "findings": [
+    {
+      "path": "TCELL_Yonetim_Kurulu_Raporu_20260411_OLD.pdf",
+      "reason": "legacy_name_marker",
+      "detail": "TCELL_Yonetim_Kurulu_Raporu_20260411_OLD.pdf"
+    },
+    {
+      "path": "agents/agent_factory/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/ceo/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/context_extraction/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/data_collection/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/event_classification/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/event_impact_mapper/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/event_timeline_alert/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/final_summary/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/financial_analysis/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/kap_watch/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/macro_analysis/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/orchestrator/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/parse_standardization/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/qa_review/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/reconciliation/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/sector_competition/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/strategic_synthesis/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/technical_analysis/memory.backup.md",
+      "reason": "legacy_name_marker",
+      "detail": "memory.backup.md"
+    },
+    {
+      "path": "agents/agent_factory/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/analyst_consensus_agent/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/ceo/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/ceo/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/context_extraction/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/context_extraction/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/coo/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/data_collection/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/data_collection/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/esg_agent/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/event_classification/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/event_classification/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/event_impact_mapper/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/event_impact_mapper/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/event_timeline_alert/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/event_timeline_alert/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/final_summary/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/final_summary/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/financial_analysis/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/financial_analysis/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/kap_watch/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/kap_watch/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/macro_analysis/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/macro_analysis/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/orchestrator/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/parse_standardization/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/parse_standardization/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/qa_review/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/qa_review/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/reconciliation/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/reconciliation/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/report_formatter/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/sector_competition/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/sector_competition/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/sentiment_news_agent/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/strategic_synthesis/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/strategic_synthesis/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/technical_analysis/memory.backup.md",
+      "reason": "memory_backup_shadow_copy",
+      "detail": ""
+    },
+    {
+      "path": "agents/technical_analysis/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/valuation_agent/memory_archive.md",
+      "reason": "memory_archive_historical_log",
+      "detail": ""
+    },
+    {
+      "path": "agents/ceo/ASELS_REPORT_REVIEW_2026_04_10.md",
+      "reason": "single_shot_artifact_no_external_refs",
+      "detail": "filename `ASELS_REPORT_REVIEW_2026_04_10.md` not referenced elsewhere"
+    },
+    {
+      "path": "agents/event_timeline_alert/froto_output_20260414.md",
+      "reason": "single_shot_artifact_no_external_refs",
+      "detail": "filename `froto_output_20260414.md` not referenced elsewhere"
+    },
+    {
+      "path": "agents/financial_analysis/FEEDBACK_TEMPLATE.md",
+      "reason": "single_shot_artifact_no_external_refs",
+      "detail": "filename `FEEDBACK_TEMPLATE.md` not referenced elsewhere"
+    },
+    {
+      "path": "agents/reconciliation/output_SISE_20260410.json",
+      "reason": "single_shot_artifact_no_external_refs",
+      "detail": "filename `output_SISE_20260410.json` not referenced elsewhere"
+    },
+    {
+      "path": "agents/sector_competition/thyao_analysis.md",
+      "reason": "single_shot_artifact_no_external_refs",
+      "detail": "filename `thyao_analysis.md` not referenced elsewhere"
+    },
+    {
+      "path": "agents/sector_competition/thyao_output.json",
+      "reason": "single_shot_artifact_no_external_refs",
+      "detail": "filename `thyao_output.json` not referenced elsewhere"
+    },
+    {
+      "path": "agents/technical_analysis/thyao_output_20260413.json",
+      "reason": "single_shot_artifact_no_external_refs",
+      "detail": "filename `thyao_output_20260413.json` not referenced elsewhere"
+    }
+  ],
+  "single_shot_reference_audit": [
+    {
+      "path": "agents/ceo/ASELS_REPORT_REVIEW_2026_04_10.md",
+      "external_refs": 0
+    },
+    {
+      "path": "agents/event_timeline_alert/froto_output_20260414.md",
+      "external_refs": 0
+    },
+    {
+      "path": "agents/financial_analysis/FEEDBACK_TEMPLATE.md",
+      "external_refs": 0
+    },
+    {
+      "path": "agents/reconciliation/output_SISE_20260410.json",
+      "external_refs": 0
+    },
+    {
+      "path": "agents/sector_competition/thyao_analysis.md",
+      "external_refs": 0
+    },
+    {
+      "path": "agents/sector_competition/thyao_output.json",
+      "external_refs": 0
+    },
+    {
+      "path": "agents/technical_analysis/thyao_output_20260413.json",
+      "external_refs": 0
+    },
+    {
+      "path": "agents/context_extraction/output_SISE_20260410.json",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/data_collection/output_SISE_20260410.json",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/event_classification/output_SISE_20260410.json",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/event_impact_mapper/output_SISE_20260410.json",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/financial_analysis/CHECKLIST_CRITICAL_METRICS.md",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/financial_analysis/FEEDBACK_2026_04_10.md",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/financial_analysis/ceo_feedback_20260410.md",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/kap_watch/output_SISE_20260410.json",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/macro_analysis/CHECKLIST_GEOPOLITICAL.md",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/macro_analysis/FEEDBACK_2026_04_10.md",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/macro_analysis/ceo_feedback_20260410.md",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/parse_standardization/output_SISE_20260410.json",
+      "external_refs": 1
+    },
+    {
+      "path": "agents/financial_analysis/FEEDBACK_2026-04-10_ASELS.md",
+      "external_refs": 3
+    },
+    {
+      "path": "agents/macro_analysis/FEEDBACK_2026-04-10_ASELS.md",
+      "external_refs": 3
+    }
+  ],
+  "root_report_duplicates": {
+    "ASELS": [
+      "ASELS_V4_Final_20260417.html",
+      "ASELS_V4_Final_20260417.pdf",
+      "ASELS_V4_Reformat_20260417.html",
+      "ASELS_V4_Reformat_20260417.pdf",
+      "ASELS_Yonetim_Kurulu_Raporu_20260417.html",
+      "ASELS_Yonetim_Kurulu_Raporu_20260417.pdf",
+      "ASELS_Yönetim_Kurulu_Sunumu_2026.pdf"
+    ],
+    "BIMAS": [
+      "BIMAS_Yonetim_Kurulu_Raporu_20260413.html",
+      "BIMAS_Yonetim_Kurulu_Raporu_20260413.pdf"
+    ],
+    "EREGL": [
+      "EREGL_Anthropic_Design_Demo.html",
+      "EREGL_Kapsamli_Analiz_Raporu_2026.html",
+      "EREGL_Yonetim_Kurulu_Raporu_20260413.html",
+      "EREGL_Yonetim_Kurulu_Raporu_20260413.pdf"
+    ],
+    "KCHOL": [
+      "KCHOL_DETAYLI_EKSIK_ANALIZI.md",
+      "KCHOL_EVENT_CLASSIFICATION_SUMMARY.md",
+      "KCHOL_EVENT_TIMELINE_ALERT.json",
+      "KCHOL_EVENT_TIMELINE_SUMMARY.md",
+      "KCHOL_FEEDBACK_SUMMARY.md",
+      "KCHOL_FINANCIAL_ANALYSIS_DEEP_DIVE.md",
+      "KCHOL_Kapsamli_Analiz_Raporu_2026.html",
+      "KCHOL_MACRO_ANALYSIS_OUTPUT.md",
+      "KCHOL_RECONCILIATION_VALIDATION_REPORT.md",
+      "KCHOL_Yonetim_Kurulu_Raporu_2026.pdf",
+      "KCHOL_Yonetim_Kurulu_Raporu_20260410.pdf",
+      "KCHOL_Yonetim_Kurulu_Raporu_20260414.html",
+      "KCHOL_Yonetim_Kurulu_Raporu_20260414.pdf"
+    ],
+    "SISE": [
+      "SISE_DETAYLI_EKSIK_ANALIZI.md",
+      "SISE_FINAL_RAPOR_2026-04-10.md",
+      "SISE_OZET_2026-04-10.md",
+      "SISE_RAPOR_EKSIKLER_VE_PLAN.md",
+      "SISE_YONETIM_RAPORU_2026-04-10.html",
+      "SISE_YONETIM_RAPORU_2026-04-10.pdf",
+      "SISE_YONETIM_RAPORU_FINAL.pdf",
+      "SISE_YONETIM_RAPORU_WEB.html"
+    ],
+    "TCELL": [
+      "TCELL_DETAYLI_EKSIK_ANALIZI.md",
+      "TCELL_Entegre_Faaliyet_Raporu_2025_KAP.pdf",
+      "TCELL_Kapsamli_Analiz_Raporu_2026.html",
+      "TCELL_Kapsamli_Analiz_Raporu_2026_final.html",
+      "TCELL_Kapsamli_Analiz_Raporu_2026_final_v2.html",
+      "TCELL_Yonetim_Kurulu_Raporu_20260411.pdf",
+      "TCELL_Yonetim_Kurulu_Raporu_20260411_OLD.pdf",
+      "TCELL_Yonetim_Kurulu_Raporu_20260414.html",
+      "TCELL_Yonetim_Kurulu_Raporu_20260414.pdf",
+      "TCELL_Yonetim_Kurulu_Raporu_20260415.html",
+      "TCELL_Yonetim_Kurulu_Raporu_20260415.pdf"
+    ],
+    "THYAO": [
+      "THYAO_V4_Final_20260417.pdf",
+      "THYAO_V4_Reformat_20260417.html",
+      "THYAO_Yonetim_Kurulu_Raporu_20260413.html",
+      "THYAO_Yonetim_Kurulu_Raporu_20260413.pdf",
+      "THYAO_Yonetim_Kurulu_Raporu_20260416.html",
+      "THYAO_Yonetim_Kurulu_Raporu_20260416.pdf"
+    ],
+    "TUPRS": [
+      "TUPRS_KURUMSAL_RAPOR_2026_04_12.html",
+      "TUPRS_Kapsamli_Analiz_Raporu_2026.md",
+      "TUPRS_Yonetim_Kurulu_Raporu_2026.html",
+      "TUPRS_Yonetim_Kurulu_Raporu_20260412.pdf",
+      "TUPRS_Yonetim_Kurulu_Raporu_20260419.html",
+      "TUPRS_Yonetim_Kurulu_Raporu_20260419.pdf",
+      "TUPRS_data_collection_manifest_20260412.json"
+    ]
+  },
+  "prose_legacy_mentions_filtered": [
+    {
+      "path": "agents/context_extraction/memory_archive.md",
+      "snippet": "L666: **memory.md değişiklikleri:** \"Son 4 Raporun\" ve \"Sektor Bilgi Bankasi\" kaldırıldı (knowledge.md'ye taşındı). CBAM double-impact, THYAO benchmark, holding disco"
+    },
+    {
+      "path": "agents/coo/memory.md",
+      "snippet": "L40: 1. **QA Gate:** `critical` keyword kaldırildi, `conditional_pass` blocklist'e eklendi, score < 0.75 → BLOCK"
+    },
+    {
+      "path": "agents/coo/memory_archive.md",
+      "snippet": "L53: - `critical` keyword blocklist'ten kaldırıldı (çok geniş, her çıktıda geçiyor)"
+    },
+    {
+      "path": "agents/data_collection/knowledge.md",
+      "snippet": "L133: - **TAS 29 (KGK/yerel):** 7571 sayılı yasa ile 2025-2027 arası uygulamadan kaldırıldı."
+    },
+    {
+      "path": "agents/data_collection/memory_archive.md",
+      "snippet": "L553: 1. **TAS 29 vs IAS 29 netleşti:** 7571 sayılı yasa ile TAS 29 (yerel KGK standardı) 2025-2027 arası uygulamadan kaldırıldı. Ancak IAS 29 (IFRS/SPK zorunlu rapor"
+    },
+    {
+      "path": "agents/event_impact_mapper/system_prompt.md",
+      "snippet": "L36: - The detailed EVENT TYPE mapping tables (300+ lines) are **DEPRECATED**"
+    },
+    {
+      "path": "agents/financial_analysis/memory_archive.md",
+      "snippet": "L637: **memory.md değişiklikleri:** \"Son 3 Raporun\" ve \"Sektor Bilgi Bankasi\" kaldırıldı. Havacılık EBITDAR benchmark, havacılık operasyonel metrikler, TAS 29/IAS 29 "
+    },
+    {
+      "path": "agents/parse_standardization/memory_archive.md",
+      "snippet": "L450: **memory.md değişiklikleri:** CEO feedback bölümü özetlendi (~1,200B tasarruf). \"Son 3 Raporun\" ve \"Sektor Bilgi\" kaldırıldı. CBAM dipnot kalemi ve TAS 29/IAS 2"
+    },
+    {
+      "path": "agents/reconciliation/memory_archive.md",
+      "snippet": "L340: **memory.md değişiklikleri:** CEO feedback özetlendi. \"Son 3 Raporun\" ve \"Sektor Bilgi\" kaldırıldı. IFRS 16 lease borcu Net Borç kuralı + CF yokken score=0.00 k"
+    },
+    {
+      "path": "agents/strategic_synthesis/memory_archive.md",
+      "snippet": "L279: - Brand: Koç family 100-year legacy, strong reputation"
+    },
+    {
+      "path": "backend/src/config.ts",
+      "snippet": "L114: // Feature flag — ADIM 9: Optimized pipeline (true = new parallel phases, false = legacy 11-phase)"
+    },
+    {
+      "path": "backend/src/orchestrator.ts",
+      "snippet": "L1236: // PRE-QA gate kaldırıldı — gereksiz re-run döngüsü yaratıyordu."
+    },
+    {
+      "path": "backend/src/python/adapters/coo.test.ts",
+      "snippet": "L97: const legacy = adaptCooForLegacy(report, 'preflight', 'coo-1');"
+    },
+    {
+      "path": "backend/src/python/adapters/data_collection.test.ts",
+      "snippet": "L44: const legacy = adaptPythonDataCollectionForLegacy(sample, 'dc-1');"
+    },
+    {
+      "path": "backend/src/python/adapters/data_collection.ts",
+      "snippet": "L2: * data_collection adapter — Python DataCollectionManifest → legacy"
+    },
+    {
+      "path": "backend/src/python/adapters/event_classification.test.ts",
+      "snippet": "L15: it('finds events[] from legacy LLM shape', () => {"
+    },
+    {
+      "path": "backend/src/python/adapters/event_classification.ts",
+      "snippet": "L4: * classifier) and reshapes into the legacy event_classification agent"
+    },
+    {
+      "path": "backend/src/python/adapters/event_impact_mapper.test.ts",
+      "snippet": "L19: it('finds events[] from legacy LLM shape', () => {"
+    },
+    {
+      "path": "backend/src/python/adapters/event_impact_mapper.ts",
+      "snippet": "L208: // Legacy/alternate shapes: event_classification LLM output variants"
+    },
+    {
+      "path": "backend/src/python/adapters/event_timeline_alert.test.ts",
+      "snippet": "L73: const legacy = adaptPythonTimelineForLegacy(sample, 'eta-test');"
+    },
+    {
+      "path": "backend/src/python/adapters/event_timeline_alert.ts",
+      "snippet": "L2: * Event timeline alert adapter — bridges the legacy LLM output shape"
+    },
+    {
+      "path": "backend/src/python/adapters/financial_analysis.test.ts",
+      "snippet": "L37: const legacy = adaptPythonFinancialAnalysisForLegacy(healthy, 'kchol', 'fa-1');"
+    },
+    {
+      "path": "backend/src/python/adapters/financial_analysis.ts",
+      "snippet": "L2: * financial_analysis adapter — Python FinancialAnalysisOutput → legacy"
+    },
+    {
+      "path": "backend/src/python/adapters/kap_watch.test.ts",
+      "snippet": "L43: const legacy = adaptPythonKapForLegacy(sample, 'kchol', 'kap-1');"
+    },
+    {
+      "path": "backend/src/python/adapters/kap_watch.ts",
+      "snippet": "L2: * kap_watch adapter — Python KapEvents → legacy disclosure_inventory."
+    },
+    {
+      "path": "backend/src/python/adapters/macro_analysis.test.ts",
+      "snippet": "L21: const legacy = adaptPythonMacroForLegacy(snap, 'KCHOL', 'macro-1');"
+    },
+    {
+      "path": "backend/src/python/adapters/macro_analysis.ts",
+      "snippet": "L3: * legacy macro_analysis agent shape."
+    },
+    {
+      "path": "backend/src/python/adapters/parse_standardization.test.ts",
+      "snippet": "L109: const legacy = adaptParsedPeriodsForLegacy(bundled, 'kchol', 'ps-1');"
+    },
+    {
+      "path": "backend/src/python/adapters/parse_standardization.ts",
+      "snippet": "L3: * → legacy standardized_statements schema."
+    },
+    {
+      "path": "backend/src/python/adapters/reconciliation.test.ts",
+      "snippet": "L32: const legacy = adaptPythonReconciliationForLegacy(allPass, 'KCHOL', 'rec-1');"
+    },
+    {
+      "path": "backend/src/python/adapters/reconciliation.ts",
+      "snippet": "L2: * reconciliation adapter — Python ReconciliationReport → legacy"
+    },
+    {
+      "path": "backend/src/python/adapters/sentiment_news.test.ts",
+      "snippet": "L17: const legacy = adaptPythonNewsForLegacy(py, 'KCHOL', 'news-1');"
+    },
+    {
+      "path": "backend/src/python/adapters/technical_analysis.test.ts",
+      "snippet": "L27: const legacy = adaptPythonTechnicalForLegacy(full, 'KCHOL', 'ta-1');"
+    },
+    {
+      "path": "backend/src/python/adapters/technical_analysis.ts",
+      "snippet": "L2: * Technical analysis adapter — Python TechnicalIndicators → legacy"
+    },
+    {
+      "path": "backend/src/python/agent_runners/analyst_consensus.ts",
+      "snippet": "L34: const legacy = adaptAnalystConsensusForLegacy(reports, ticker, `ac-out-${nanoid()}`, { lastClose });"
+    },
+    {
+      "path": "backend/src/python/agent_runners/coo.ts",
+      "snippet": "L29: let legacy;"
+    },
+    {
+      "path": "backend/src/python/agent_runners/data_collection.ts",
+      "snippet": "L128: const legacy = adaptPythonDataCollectionForLegacy("
+    },
+    {
+      "path": "backend/src/python/agent_runners/esg.ts",
+      "snippet": "L39: const legacy = adaptEsgForLegacy(cbamInputs, ticker, `esg-out-${nanoid()}`, {"
+    },
+    {
+      "path": "backend/src/python/agent_runners/event_classification.ts",
+      "snippet": "L36: const legacy = adaptDisclosuresToClassification(disclosures, ticker, `ec-out-${nanoid()}`);"
+    },
+    {
+      "path": "backend/src/python/agent_runners/event_impact_mapper.ts",
+      "snippet": "L36: const legacy = adaptClassifiedToImpacts("
+    },
+    {
+      "path": "backend/src/python/agent_runners/event_timeline_alert.ts",
+      "snippet": "L125: const legacy = adaptPythonTimelineForLegacy(parsed, `eta-out-${nanoid()}`);"
+    },
+    {
+      "path": "backend/src/python/agent_runners/financial_analysis.ts",
+      "snippet": "L87: const legacy = adaptPythonFinancialAnalysisForLegacy("
+    },
+    {
+      "path": "backend/src/python/agent_runners/kap_watch.ts",
+      "snippet": "L88: const legacy = adaptPythonKapForLegacy("
+    },
+    {
+      "path": "backend/src/python/agent_runners/macro_analysis.ts",
+      "snippet": "L58: const legacy = adaptPythonMacroForLegacy(snap, ticker, `macro-out-${nanoid()}`);"
+    },
+    {
+      "path": "backend/src/python/agent_runners/parse_standardization.ts",
+      "snippet": "L7: * bundle into the legacy standardized_statements schema."
+    },
+    {
+      "path": "backend/src/python/agent_runners/qa_review.ts",
+      "snippet": "L29: const legacy = adaptQaReviewForLegacy(fa, rec, ticker, `qa-out-${nanoid()}`, { llmMarkdownSource });"
+    },
+    {
+      "path": "backend/src/python/agent_runners/reconciliation.ts",
+      "snippet": "L6: * adapts the 7–8 math-check report into the legacy shape."
+    },
+    {
+      "path": "backend/src/python/agent_runners/sector_competition.ts",
+      "snippet": "L29: const legacy = adaptSectorCompetitionForLegacy("
+    },
+    {
+      "path": "backend/src/python/agent_runners/sentiment_news.ts",
+      "snippet": "L39: const legacy = adaptPythonNewsForLegacy("
+    },
+    {
+      "path": "backend/src/python/agent_runners/strategic_synthesis.ts",
+      "snippet": "L33: const legacy = adaptStrategicSynthesisForLegacy("
+    },
+    {
+      "path": "backend/src/python/agent_runners/technical_analysis.ts",
+      "snippet": "L49: const legacy = adaptPythonTechnicalForLegacy("
+    },
+    {
+      "path": "backend/src/python/agent_runners/valuation.ts",
+      "snippet": "L32: const legacy = adaptValuationForLegacy(fa, sc, ticker, `val-out-${nanoid()}`, { llmMarkdownSource });"
+    },
+    {
+      "path": "python-services/src/financex/crawlers/kap.py",
+      "snippet": "L9: Legacy endpoints like `/tr/api/disclosures` and `/api/memberDisclosures`"
+    }
+  ],
+  "stale_files_over_60_days": [],
+  "broken_schema_refs": [
+    {
+      "file": "schemas/shared/agent_output_contract.schema.json",
+      "ref": "https://financex.internal/schemas/shared/confidence.schema.json",
+      "reason": "no_matching_local_schema_file"
+    },
+    {
+      "file": "schemas/shared/agent_output_contract.schema.json",
+      "ref": "https://financex.internal/schemas/shared/confidence.schema.json",
+      "reason": "no_matching_local_schema_file"
+    },
+    {
+      "file": "schemas/shared/agent_output_contract.schema.json",
+      "ref": "https://financex.internal/schemas/shared/evidence.schema.json",
+      "reason": "no_matching_local_schema_file"
+    },
+    {
+      "file": "schemas/shared/agent_output_contract.schema.json",
+      "ref": "https://financex.internal/schemas/shared/contradiction_report.schema.json",
+      "reason": "no_matching_local_schema_file"
+    }
+  ]
+}
