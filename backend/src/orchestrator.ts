@@ -1404,8 +1404,75 @@ async function executeSession(
         console.log(`[QA REVISION] Revize edilecek agent'lar: ${revisionTargets.join(', ')}`);
 
         // Inject TARGETED QA feedback — agent'a spesifik eksik listesi + knowledge.md yönlendirme
-        accumulatedContext['qa_revision_feedback'] = qaOutputRaw.slice(0, 5000);
+        // Pending finding #3 — per-agent QA routing: if the QA output carries a
+        // structured `quality_flags[]` / `findings[]` array with `agent` fields,
+        // build a per-agent feedback slice so each revised agent sees ONLY its
+        // own findings. Fallback to the historical blind 5K slice if parsing
+        // fails (current behaviour) — guaranteed zero regression.
+        const fallbackQaSlice = qaOutputRaw.slice(0, 5000);
+        accumulatedContext['qa_revision_feedback'] = fallbackQaSlice;
         accumulatedContext['qa_revision_round'] = qaRound + 1;
+        const perAgentQaFeedback: Record<string, string> = {};
+        try {
+          // Try to pull a JSON block out of the QA output — reuse the same
+          // progressive extractor that compose.ts uses.
+          const tryExtract = (raw: string): unknown | null => {
+            try { return JSON.parse(raw); } catch { /* fall through */ }
+            const fenced = raw.match(/```json\s*([\s\S]*?)```/i)
+                        || raw.match(/```\s*(\{[\s\S]*?\})\s*```/);
+            if (fenced) {
+              try { return JSON.parse(fenced[1].trim()); } catch { /* fall through */ }
+            }
+            const firstBrace = raw.indexOf('{');
+            if (firstBrace >= 0) {
+              let depth = 0, end = -1;
+              for (let i = firstBrace; i < raw.length; i++) {
+                const ch = raw[i];
+                if (ch === '{') depth++;
+                else if (ch === '}') { depth--; if (depth === 0) { end = i; break; } }
+              }
+              if (end > firstBrace) {
+                try { return JSON.parse(raw.slice(firstBrace, end + 1)); } catch { /* fall through */ }
+              }
+            }
+            return null;
+          };
+          const qaDoc = tryExtract(qaOutputRaw) as Record<string, unknown> | null;
+          if (qaDoc && typeof qaDoc === 'object') {
+            const flagArrayKey = ['quality_flags', 'findings', 'issues', 'flags']
+              .find(k => Array.isArray((qaDoc as Record<string, unknown>)[k]));
+            const flags = flagArrayKey ? (qaDoc as Record<string, unknown>)[flagArrayKey] as unknown[] : [];
+            const crossRefs = Array.isArray((qaDoc as Record<string, unknown>)['cross_reference_findings'])
+              ? (qaDoc as Record<string, unknown>)['cross_reference_findings'] as unknown[]
+              : [];
+            const crossRefText = crossRefs.length > 0
+              ? '\n\n## CROSS-REFERENCE FINDINGS\n' + JSON.stringify(crossRefs, null, 2)
+              : '';
+            const groupedByAgent: Record<string, unknown[]> = {};
+            for (const flag of flags) {
+              if (!flag || typeof flag !== 'object') continue;
+              const flagObj = flag as Record<string, unknown>;
+              const agentField = flagObj.agent ?? flagObj.agent_id ?? flagObj.target_agent;
+              if (typeof agentField === 'string') {
+                (groupedByAgent[agentField] = groupedByAgent[agentField] || []).push(flagObj);
+              }
+            }
+            for (const [agentId, agentFlags] of Object.entries(groupedByAgent)) {
+              // Per-agent payload stays under 4 KB to keep cache friendly.
+              const payload = `## QA FINDINGS FOR ${agentId.toUpperCase()}\n\n`
+                + JSON.stringify(agentFlags, null, 2).slice(0, 3000)
+                + crossRefText.slice(0, 1500);
+              perAgentQaFeedback[agentId] = payload;
+            }
+            if (Object.keys(perAgentQaFeedback).length > 0) {
+              console.log(`[QA ROUTING] per-agent feedback built for: ${Object.keys(perAgentQaFeedback).join(', ')}`);
+            }
+          }
+        } catch (err) {
+          // Fallback intentionally silent — the 5 K slice already set above
+          // will be used. Per-agent routing is observe-first.
+          console.warn(`[QA ROUTING] per-agent split failed, using blind 5K slice: ${(err as Error).message}`);
+        }
         accumulatedContext['qa_revision_instruction'] = [
           `QA REVISION TURU ${qaRound + 1} — ÖNCEKİ ÇIKTINDA EKSİKLER BULUNDU.`,
           ``,
@@ -1433,9 +1500,21 @@ async function executeSession(
             if (originalRun?.output_text) {
               accumulatedContext[`${agentId}_original_output`] = originalRun.output_text.slice(0, 10000);
             }
+            // Pending finding #3 — if a per-agent QA slice is available, swap it
+            // in for the duration of this agent's re-run so the agent sees ONLY
+            // its own findings. Restore the blind fallback afterwards so other
+            // agents in the loop get the unchanged default.
+            const hadPerAgent = Object.prototype.hasOwnProperty.call(perAgentQaFeedback, agentId);
+            if (hadPerAgent) {
+              accumulatedContext['qa_revision_feedback'] = perAgentQaFeedback[agentId];
+            }
             db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, error_message = 'QA revision round ${qaRound + 1} — hedefli düzeltme' WHERE session_id = ? AND agent_id = ?`)
               .run(sessionId, agentId);
             const status = await runSingleAgent(agentId, sessionId, ticker, accumulatedContext, costTracker);
+            if (hadPerAgent) {
+              // Restore the blind fallback for any subsequent consumer in this iteration.
+              accumulatedContext['qa_revision_feedback'] = fallbackQaSlice;
+            }
             if (status === 'rate_limit') return;
             // Revision sonrası: orijinal + revision birleştir
             const revisedRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
