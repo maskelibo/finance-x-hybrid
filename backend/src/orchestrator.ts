@@ -3,6 +3,12 @@ import { db, ensureColumn } from './db.js';
 import { runAgent } from './agent-runner.js';
 import { getAgentMeta } from './agents.js';
 import { runFeedbackLoop } from './feedback-loop.js';
+import {
+  recordQaGateObservation,
+  recordCeoGateObservation,
+  markQaWouldBlockLast,
+} from './gate-observer.js';
+import { shadowValidate } from './schema-shadow-validator.js';
 import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
 import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
@@ -969,6 +975,18 @@ ${esgPythonOutput.slice(0, 10000)}
       // Store output with conservative limit — downstream agents will get even less via dependency matrix
       accumulatedContext[`${agentId}_output`] = result.output.slice(0, 1000000);
 
+      // Phase 3A observe-only: canonical depth shadow validator. Logs
+      // violations; never throws; never blocks.
+      try {
+        const modeRow = db.prepare(`SELECT runtime_mode FROM analysis_sessions WHERE id = ?`)
+          .get(sessionId) as { runtime_mode: string | null } | undefined;
+        shadowValidate(agentId, result.output, {
+          sessionId,
+          ticker,
+          runtimeMode: modeRow?.runtime_mode ?? null,
+        });
+      } catch { /* shadow validator must not break the pipeline */ }
+
       // Schema validation — warn or soft_block (pipeline never stops; soft_block marks critical agents degraded)
       if (SCHEMA_VALIDATION_MODE === 'warn' || SCHEMA_VALIDATION_MODE === 'soft_block') {
         const validation = validateAgentOutput(agentId, result.output);
@@ -1300,6 +1318,17 @@ async function executeSession(
 
         if (!qaBlocksRelease) {
           console.log(`[QA GATE] Round ${qaRound}/${MAX_QA_ROUNDS}: QA PASSED — devam ediliyor`);
+          // Phase 3A observe-only: log the passing decision.
+          recordQaGateObservation({
+            sessionId, ticker, runtimeMode,
+            qaRound,
+            keywordBlock, scoreBlock,
+            wouldHaveBlocked: false,
+            decisionTaken: 'passed',
+            reason: 'pass',
+            scoreNumeric: qaNormalized,
+          });
+          markQaWouldBlockLast(sessionId, false);
           break; // QA passed, continue pipeline
         }
 
@@ -1307,6 +1336,17 @@ async function executeSession(
         // Rapor eksik olabilir ama çıksın — Chairman kendi değerlendirir
         if (qaRound >= MAX_QA_ROUNDS) {
           console.warn(`[QA GATE] ${MAX_QA_ROUNDS} tur revision sonrası hâlâ geçemedi — UYARI ile devam ediliyor`);
+          // Phase 3A observe-only: this is where a hard gate would have blocked.
+          recordQaGateObservation({
+            sessionId, ticker, runtimeMode,
+            qaRound,
+            keywordBlock, scoreBlock,
+            wouldHaveBlocked: true,
+            decisionTaken: 'delivered_with_warning',
+            reason: keywordBlock ? 'keyword-block-after-max-rounds' : 'score-block-after-max-rounds',
+            scoreNumeric: qaNormalized,
+          });
+          markQaWouldBlockLast(sessionId, true);
           accumulatedContext['qa_warning'] = `QA ${MAX_QA_ROUNDS} turda onay veremedi. Rapor eksiklikler içerebilir.`;
 
           // CEO override post-mortem log — QA still blocking after max rounds but we ship anyway.
@@ -1327,6 +1367,16 @@ async function executeSession(
 
         // QA failed, round < max — REVISION: parse which agents need re-run
         console.log(`[QA GATE] Round ${qaRound}/${MAX_QA_ROUNDS}: QA revision requested — revize ediliyor`);
+        // Phase 3A observe-only: revision decision (not a block, but QA asked for rework).
+        recordQaGateObservation({
+          sessionId, ticker, runtimeMode,
+          qaRound,
+          keywordBlock, scoreBlock,
+          wouldHaveBlocked: true,
+          decisionTaken: 'revised',
+          reason: keywordBlock ? 'keyword-block-mid-round' : 'score-block-mid-round',
+          scoreNumeric: qaNormalized,
+        });
         db.prepare(`UPDATE analysis_sessions SET current_phase = ? WHERE id = ?`)
           .run(`QA Revision (Round ${qaRound + 1})`, sessionId);
 
@@ -1515,6 +1565,14 @@ async function executeSession(
   if (approvalFailures.length > 0) {
     const warningMsg = `CEO APPROVAL UYARI — ${approvalFailures.length} eksiklik:\n${approvalFailures.map(f => `  • ${f}`).join('\n')}`;
     console.warn(`\n⚠️  [CEO APPROVAL GATE] ${warningMsg}\n`);
+    // Phase 3A observe-only: this is where a hard CEO gate would have blocked.
+    recordCeoGateObservation({
+      sessionId, ticker, runtimeMode,
+      wouldHaveBlocked: true,
+      decisionTaken: 'continued_with_warning',
+      approvalFailureCount: approvalFailures.length,
+      approvalFailureReasons: approvalFailures,
+    });
     // Block etme, uyarı ile devam et — rapor çıksın, Chairman değerlendirir
     accumulatedContext['ceo_approval_warning'] = warningMsg;
 
@@ -1533,6 +1591,15 @@ async function executeSession(
     }
   } else {
     console.log(`\n✅ [CEO APPROVAL GATE] Tüm kritik agent'lar onaylandı — rapor teslime hazır\n`);
+    // Phase 3A observe-only: record the clean pass so dashboards can show
+    // pass/fail ratio over time.
+    recordCeoGateObservation({
+      sessionId, ticker, runtimeMode,
+      wouldHaveBlocked: false,
+      decisionTaken: 'passed',
+      approvalFailureCount: 0,
+      approvalFailureReasons: [],
+    });
   }
   // ============================================================
   // END CEO APPROVAL GATE

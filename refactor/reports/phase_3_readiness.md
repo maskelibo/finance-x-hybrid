@@ -1,135 +1,187 @@
-# Phase 3 Readiness Checklist
+# Phase 3 Readiness — Migration Roadmap
 
-> What Phase 3 can and cannot start without user input. Every "decision needed" below is a concrete, binary or multi-choice product question — not a technical research task.
+> Bu belge, önceki "4 binary karar" versiyonunun **yerine geçer**. Codex'in 7-aşamalı rollout kuralını kabul eden güncel plan budur.
+>
+> Kural: Canlı davranışı değiştiren hiçbir değişiklik atomik olarak uygulanmaz. Her biri **observe → shadow → flag → cohort → regression → kademeli → hard** aşamalarından geçer.
 
 - Generated: 2026-04-21
-- Prerequisite: Phase 2 landed on branch `refactor/phase-2-canonical` with canonical/ parallel + golden baseline frozen.
+- Önceki versiyon: git `b66f7993:refactor/reports/phase_3_readiness.md` (binary karar tablosu).
 
 ---
 
-## Decisions needed from the user
+## 7-aşamalı rollout kuralı (her riskli değişiklik için zorunlu)
 
-### 1. QA gate behaviour
+| # | aşama | ne yapılır | geçiş kriteri |
+| --- | --- | --- | --- |
+| 1 | **observe-only** | Yeni kural/karar mevcut davranışın yanına log olarak yazılır. Canlı davranış değişmez. | Log sistemi bir haftalık canlı veri topladı |
+| 2 | **shadow-warn** | Aynı log + konsol/dashboard uyarısı. Hâlâ bloklamaz. | İlk aşamada toplanan veriye bakıp "bloklanan durumların X% gerçekten bloklanmalıydı" dedik |
+| 3 | **feature flag** | `FINANCEX_QA_HARD_BLOCK=1` gibi env flag. Flag kapalıyken status quo, açıkken sert. Default kapalı. | Flag 1 ticker × 1 mod'da 5+ seans çalıştı, regresyon yok |
+| 4 | **cohort rollout** | Flag bir ticker kohortu (ör. {TUPRS}), bir mod (ör. fast_screening) için açılır. | Kohortta kalite golden baseline'ı aşıyor |
+| 5 | **regression check** | Her genişletmeden önce `evals/golden/coverage_matrix.py --baseline` yeşil olmak zorunda | — |
+| 6 | **kademeli yayılım** | Cohort büyütülür: 1 ticker → 3 → 10 → tüm BIST30. Her adımda #5 tekrar. | — |
+| 7 | **hard enforcement** | Flag default-on, observe log'u tarihe karışır. | — |
 
-**Question.** Should `qa_review` failing after `MAX_QA_ROUNDS = 2` **block** delivery, or **warn-and-continue** as today?
-
-Reference: `refactor/inventory/runtime_drift_audit.md` § Claim #1.
-
-| choice | description | Phase 3 action |
-| --- | --- | --- |
-| **A — hard block (recommended)** | Pipeline halts, session status becomes `qa_blocked`, no report written, dashboard shows block with reason. | Flip `break` → `return 'qa_blocked'` at `orchestrator.ts:1325`; add session-status enum value; add dashboard surface for the status. |
-| **B — warn-and-continue (status quo)** | Report ships with `qa_warning` stamp; Chairman manually decides. | No code change; doctrine updates to describe warning-only semantics explicitly. |
-| **C — mode-dependent** | Hard block in `deep_dive`; warn-and-continue in `fast_screening`. | Adds a `qa_gate_mode` per runtime mode to `canonical/contracts/pipeline_modes.yaml`. |
-
-**My recommendation:** A. Institutional rubric's entire purpose is blocking delivery below a quality floor. Option C is a soft middle ground if you want fast_screening to stay loose.
-
-### 2. CEO approval gate
-
-**Question.** Should `approvalFailures > 0` in the CEO approval gate block delivery, or warn-and-continue as today?
-
-Reference: `runtime_drift_audit.md` § Claim #2.
-
-| choice | Phase 3 action |
-| --- | --- |
-| **A — hard block** | Flip `orchestrator.ts:1515-1536` to `return 'ceo_blocked'`; mirror dashboard surface. |
-| **B — Chairman override** | Block by default, but expose a "Chairman override" button on the dashboard that re-runs delivery with `approval_failures_overridden = true`. |
-| **C — warn-and-continue (status quo)** | No code change. |
-
-**My recommendation:** B. Block by default protects institutional quality; Chairman override keeps human escape hatch visible.
-
-### 3. Chart.js vs SVG
-
-**Question.** Final chart technology policy. `canonical/rules/output_integrity.md#OI-007` currently declares SVG-only; `agents/report_formatter/agent_spec.json` still asks for Chart.js; `AGENTS.md` and `html-to-pdf.mjs` both ban Chart.js.
-
-| choice | Phase 3 action |
-| --- | --- |
-| **A — SVG only (current canonical)** | Rewrite `agents/report_formatter/agent_spec.json` to remove Chart.js references; strip Chart.js CDN from templates; enforce in `compose.ts`. |
-| **B — Chart.js only** | Rewrite `OI-007`; remove Chart.js ban from `AGENTS.md`; relax `html-to-pdf.mjs` check. |
-| **C — SVG for reports, Chart.js for dashboard** | Split: report formatter stays SVG (current canonical), dashboard frontend may use Chart.js. Update `OI-007` to be explicit about report vs dashboard scope. |
-
-**My recommendation:** A or C. B requires re-enabling CDN dependency in PDF rendering, which has known layout fragility.
-
-### 4. Registry-missing agent status
-
-**Question.** Are these five agents **shipped** (first-class) or **experimental**?
-
-Reference: `refactor/inventory/roster_reconciliation.md`.
-
-| agent | filesystem | runtime | registry | decision needed |
-| --- | :---: | :---: | :---: | --- |
-| `coo` | ✓ | ✓ (backbone) | ✗ | shipped ✓ / experimental ✗ |
-| `valuation_agent` | ✓ | ✓ (deep_dive) | ✗ | shipped ✓ / experimental ✗ |
-| `sentiment_news_agent` | ✓ | ✓ (deep_dive) | ✗ | shipped ✓ / experimental ✗ |
-| `analyst_consensus_agent` | ✓ | ✓ (deep_dive) | ✗ | shipped ✓ / experimental ✗ |
-| `esg_agent` | ✓ | ✓ (deep_dive) | ✗ | shipped ✓ / experimental ✗ |
-
-**Phase 3 action per choice:**
-- **shipped** → promote to `agents_registry.json` with proper `reports_to`/`supervises`; add to `agent_performance_review.monitors[]`.
-- **experimental** → move folder to `agents/_experimental/<id>/`; remove from `AGENT_PIPELINE`; skip in all three modes.
-
-**My recommendation:** `coo` is definitely shipped (backbone). The other four — runtime uses them in deep_dive; suggest shipped if deep_dive is a shipped mode, else move to `_experimental/`.
-
-### 5. Apply context budget migration now or later?
-
-**Question.** Run `sqlite3 backend/finance-x.db < backend/src/migrations/phase2_context_budget.sql` now?
-
-| choice | implication |
-| --- | --- |
-| **A — apply now** | Columns exist but stay NULL until Phase 2.5 instruments `agent-runner.ts`. No risk. |
-| **B — apply at Phase 3 start** | Same net effect, one extra day of unobservable runs. |
-
-**My recommendation:** A. Migration is additive + reversible via tarball backup; the sooner the columns exist, the sooner Phase 2.5 can start populating them opportunistically.
+Tüm riskli işler bu pattern'i takip eder. Atlama yok.
 
 ---
 
-## Unblocked Phase 3 work (can proceed without any of the above)
+## Per-migration durum tablosu
 
-The following Phase 3 items can start immediately, since they only touch prompt / doctrine files that already have canonical equivalents:
-
-### Phase 3.0 — Prompt lint gate
-Wire `refactor/tools/prompt_memory_lint.py` into a pre-commit or pre-PR check that fails on any `size_hard` category finding. This alone prevents further memory/prompt bloat accretion.
-
-Current baseline: **20 hard-cap failures, 27 soft-cap, 130 canonical-candidate info notes** (see `refactor/inventory/lint_baseline_20260421.txt`).
-
-### Phase 3.1 — Pilot agent prompt rewrite
-Pick one agent (recommended: `financial_analysis`, highest leverage + most documented canonical references) and rewrite its `system_prompt.md` to reference `canonical/` ids instead of restating doctrine. Keep original as `system_prompt.original.md` for side-by-side validation until a golden run confirms no regression.
-
-Success criterion: prompt drops below 10 KB, selftests still pass, one full `standard_institutional` run produces ≥ baseline scores.
-
-### Phase 3.2 — Sector override sanity check
-Add one-line call to `canonical._loader.python.loader.get_sector(ticker)` at `backend/src/orchestrator.ts:startAnalysisSession` (via subprocess) and log the resolved sector. No behaviour change — just ensures the canonical resolver is exercised on every run, so stale mappings surface immediately.
-
-### Phase 3.3 — `agent_performance_review.monitors[]` expansion
-Extend the `monitors[]` array in `agents_registry.json` to cover `valuation_agent`, `esg_agent`, `sentiment_news_agent`, `analyst_consensus_agent`. Pure JSON edit; no runtime behaviour change. Requires decision #4 first, though — if agents are moved to `_experimental/`, don't add them.
-
-### Phase 3.4 — Docs alignment with runtime
-Rewrite agent-count sections in `AGENTS.md` and `workflows/full_integrated_analysis.md` to match `canonical/contracts/pipeline_modes.yaml` (fast=16, standard=18, deep=22). Small edits; removes a public doctrine drift surface.
+| migration | hedef sertlik | bugün | ≤ 1 hafta | ≤ 1 ay |
+| --- | --- | --- | --- | --- |
+| QA gate hardening | soft → hard block | observe-only (Phase 3A) | shadow-warn | cohort rollout |
+| CEO approval gate hardening | soft → hard block | observe-only (Phase 3A) | shadow-warn | cohort rollout |
+| Schema `minLength`/`minItems` enforcement | soft string → depth-enforced | shadow validator (Phase 3A) | per-agent opt-in flag | kademeli |
+| Validation retry gate | yok → 4-kategori retry | — | observe-only | shadow |
+| Manifest/retrieval contract | yok → dual-write | — | dual-write başlar | dual-read pilot |
+| Formatter Chart.js vs SVG | çelişkili | ölçüm (iki modda PDF üret) | karar | flag arkası |
+| Memory purge | prose → ≤2 KB | — (canonical henüz kanıtlanmadı) | — | canonical proof sonrası |
+| Dead code deletion | statik → silinmiş | — (her zaman en son) | reference proof | archive + silme |
 
 ---
 
-## Blocked-on-decisions Phase 3 work
+## Phase 3A — şimdi yapılacak observe-only işler
 
-| item | blocked on | ready when |
-| --- | --- | --- |
-| Flip QA gate to hard block | #1 | user chooses A / B / C |
-| Flip CEO approval to hard block | #2 | user chooses A / B / C |
-| Rewrite `report_formatter/agent_spec.json` for chart policy | #3 | user chooses A / B / C |
-| Promote 5 agents into registry OR move to `_experimental/` | #4 | user chooses shipped / experimental for each |
+Hiçbir canlı davranış değişmez. Yalnızca veri toplanır.
 
-All four can be answered in a single review pass since each is binary-ish and reference docs exist.
+### 3A.1 — QA gate observe-only logger
+
+**Ne:** `orchestrator.ts` içindeki QA revision loop'una (line 1244 civarı), her tur sonrası şu alanları DB'ye yazan kod eklenir:
+
+- `qa_round`
+- `qa_keyword_block_triggered` (bool)
+- `qa_score_block_triggered` (bool)
+- `qa_score_value` (numeric)
+- `qa_would_have_blocked` (bool) — keywordBlock OR scoreBlock
+- `qa_decision_taken` (string) — `'continued'` / `'revised'` / `'delivered_with_warning'`
+
+Hedef tablo: yeni `agent_run_gate_events` tablosu (şema Phase 3A migration ile gelir).
+
+**Canlı davranış değişimi:** **YOK.** Mevcut break/revise/continue mantığı aynı.
+
+### 3A.2 — CEO approval gate observe-only logger
+
+**Ne:** `orchestrator.ts:1515-1536` CEO approval gate'ine, `approvalFailures` boş olmadığında şu alanlar yazılır:
+
+- `ceo_approval_failure_count`
+- `ceo_approval_failure_reasons` (JSON array)
+- `ceo_would_have_blocked` (bool)
+- `ceo_decision_taken` — şu an `'continued_with_warning'`
+
+**Canlı davranış değişimi:** **YOK.**
+
+### 3A.3 — Schema shadow validator
+
+**Ne:** İkinci bir AJV örneği, her agent çıktısını `canonical/rules/mandatory_metrics.yaml` + `interpretation_depth` kurallarına karşı doğrular. Fail ederse **rejection yok**, sadece `agent_runs.schema_shadow_violations` JSON kolonuna yazılır.
+
+Mevcut hafif validator (`backend/src/schema-validator.ts`) otorite olarak kalır.
+
+**Canlı davranış değişimi:** **YOK.**
+
+### 3A.4 — 5 agent registry güncellemesi
+
+**Ne:** `agents_registry.json`'a `coo`, `valuation_agent`, `esg_agent`, `sentiment_news_agent`, `analyst_consensus_agent` eklenir. `reports_to`/`supervises` alanları mevcut runtime bağımlılık grafığından çıkarılır.
+
+**Canlı davranış değişimi:** **YOK** — runtime zaten bu agent'ları çalıştırıyor. Registry şimdi runtime ile hizalanıyor.
+
+**Risk:** Düşük — dashboard gibi registry okuyan tüketiciler şimdi tam listeyi görür. Daha az değil.
+
+### 3A.5 — Context budget migration'ı uygula
+
+**Ne:** `backend/src/migrations/phase2_context_budget.sql`'i canlı DB'ye uygula. 13 yeni nullable kolon, 3 index.
+
+**Canlı davranış değişimi:** **YOK** — kolonlar NULL olarak doğar, Phase 3B'de `agent-runner.ts` doldurmaya başlar.
+
+**Risk:** Çok düşük — salt-additive ALTER TABLE, pre-tarball var.
 
 ---
 
-## Phase 3 kickoff gates
+## Phase 3A geçiş kriteri
 
-Before any Phase 3 change touches production code:
+Phase 3A → 3B geçişi için:
 
-1. ✅ Golden baseline pinned — `evals/golden/baseline_20260421.json`
-2. ✅ Canonical truth source in parallel — `canonical/`
-3. ✅ Runtime drift inventoried — `refactor/inventory/runtime_drift_audit.md`
-4. ✅ Code-surface backup — `backups/pre_phase2_code_20260421_003120.tar.gz`
-5. ⏳ User decisions #1-#4 answered
-6. ⏳ `phase2_context_budget.sql` applied (decision #5) — enables Phase 3 regression observability
-7. ⏳ Fresh `pre_phase3_code_*.tar.gz` tarball
+1. `agent_run_gate_events` tablosunda ≥ 10 seans verisi birikti.
+2. `qa_would_have_blocked` ve `ceo_would_have_blocked` dağılımları incelenip, "gerçek bloklama adayı" oranı insan gözüyle değerlendirildi.
+3. `schema_shadow_violations` örnekleri tarandı, hangi kuralın hangi ticker'da hata verdiği somut.
+4. Regression yeşil: `python evals/golden/coverage_matrix.py --baseline evals/golden/baseline_20260421.json` → exit 0.
 
-Items 1-4 are done. Items 5-7 are the go-button for Phase 3.
+Hiçbir şey otomatik olarak sert enforcement'a geçmez. Faz 3B'ye geçmeden kullanıcı onayı zorunlu.
+
+---
+
+## Phase 3B — shadow-warn (sonraki adım, yetki beklenir)
+
+Veriler eline geldikten sonra:
+
+- QA gate: block etmez ama **dashboard'a kırmızı bayrak bas** + kullanıcıya e-posta / Slack bildirimi.
+- CEO gate: aynı.
+- Schema shadow: violations count'u belirli eşiğin üstüne çıkarsa CEO activity log'a yazılır.
+
+Hâlâ blocking değil. Ama insan görmüyorsa çözüm olmayacağı için görünürlük eklenir.
+
+---
+
+## Phase 3C — feature flag + cohort
+
+Bir flag varsayılanı kapalı:
+
+- `FINANCEX_QA_HARD_BLOCK_TICKERS=TUPRS,ASELS` → sadece bu ticker'larda sert, diğerlerinde eskisi gibi.
+- `FINANCEX_SCHEMA_DEPTH_ENFORCE_AGENTS=financial_analysis` → sadece bu agent için sert schema.
+
+Her flag açılışı öncesi:
+
+1. Baseline rerun (goldens)
+2. 3 gün observe verisi
+3. Kullanıcı onayı
+4. Aç
+
+Sorun çıkarsa: flag kapat, rollback 1 env değişkeni.
+
+---
+
+## Phase 3D — kademeli yayılım
+
+Cohort 1 ticker × 1 mod → 3 ticker × 2 mod → 10 ticker × 3 mod → BIST30 × 3 mod.
+
+Her genişletmede goldens yeşil olmak zorunda. Regresyon = rollback.
+
+---
+
+## Phase 3E — hard enforcement
+
+Flag default-on. Observe kolonları tutulmaya devam eder (post-hoc analiz için) ama karar onlardan gelir.
+
+---
+
+## Güvenli Kozmetik İşler (Phase 3A içinde, decision beklemeden)
+
+Bu üçü migration değil, hiçbir davranış değiştirmiyor:
+
+- **Docs alignment** — `AGENTS.md` + `workflows/full_integrated_analysis.md`'deki agent sayıları canonical ile hizalı hale getirilir (fast=16, standard=18, deep=22). Statik dokümantasyon.
+- **Registry 5-agent ekleme** (yukarıda 3A.4).
+- **Canonical reference ekleme** — prompt/memory lint'in flagged ettiği noktalara canonical id referansları eklenir. Prose silinmez, yanına "see MM-07" notu eklenir. Phase 3B prose'u kaldırır.
+
+---
+
+## Kullanıcıdan BEKLENMEYEN kararlar (artık)
+
+Önceki versiyonda 4 binary karar istemiştim. Artık yok:
+
+- ~~"QA hard block?" evet/hayır~~ → Observe-only ile başlar, veri sonrası insan bakar.
+- ~~"CEO hard block?" evet/hayır~~ → Aynı.
+- ~~"Chart.js mi SVG mi?"~~ → Ölçüm sonrası karar.
+- ~~"5 agent shipped mi experimental mi?"~~ → Runtime şimdiden shipped gibi davranıyor; registry hizalanır. Phase 3D'de "experimental" geri adımı mümkün.
+
+---
+
+## Kullanıcıdan BEKLENEN tek şey
+
+Bu belgeyi okuduğunu ve **observe-only aşamasıyla devam etmemi onayladığını** söylemen. Zaten söyledin ("A onaylıyorum"), işler 3A başladı.
+
+Phase 3A sonunda:
+
+- `agent_run_gate_events` tablosunda gerçek veri birikmiş olacak.
+- `schema_shadow_violations` kolonlarında hangi metrik/yorumun derinlik kuralını ihlal ettiği görülecek.
+- Bu veriye **insan** bakacak, Phase 3B'ye geçilip geçilmeyeceğine onun gözetiminde karar verilecek.
+
+Gece otomatik olarak 3B'ye geçmem. Her aşamanın gate'i insan.
