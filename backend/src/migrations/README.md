@@ -16,6 +16,8 @@ restore; the only surface area is schema text the runtime does not yet touch.
 | file | purpose | target phase to apply |
 | --- | --- | --- |
 | `phase2_context_budget.sql` | Add per-run context-budget columns to `agent_runs` | Phase 2.5 (observability before retrieval refactor) |
+| `phase3a_gate_events.sql` | Observe-only gate events table + shadow violation cols | Phase 3A rollout |
+| `phase4_schema_observation.sql` | Add 4-category validation_category + details_json to `agent_runs` | Phase 4A (observe-only) |
 
 ## How to apply (Phase 2.5+ procedure)
 

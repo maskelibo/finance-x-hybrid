@@ -95,7 +95,7 @@
           },
           "evidence_refs": {
             "type": "array",
-            "items": { "$ref": "https://financex.io/schemas/shared/evidence" }
+            "items": { "$ref": "https://financex.internal/schemas/shared/evidence.schema.json" }
           },
           "ifrs_standards_applied": {
             "type": "array",

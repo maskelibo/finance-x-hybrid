@@ -122,6 +122,108 @@
         "model_used": { "type": "string" },
         "retry_count": { "type": "integer", "default": 0 }
       }
+    },
+    "findings": {
+      "type": "array",
+      "description": "Structured review findings this output raises about upstream work or its own gaps. Phase 4A observe-only — consumed by schema-shadow-validator to check addressed_findings coverage. Shape is canonical; enforcement path is progressive (observe → shadow-warn → hard).",
+      "items": {
+        "type": "object",
+        "required": ["finding_id", "category", "severity", "description"],
+        "properties": {
+          "finding_id": { "type": "string", "minLength": 3, "description": "Stable id referenced by downstream addressed_findings." },
+          "category": {
+            "type": "string",
+            "enum": [
+              "missing_metric",
+              "unaddressed_previous",
+              "data_contradiction",
+              "shallow_interpretation",
+              "broken_structure",
+              "sector_playbook_missing",
+              "evidence_insufficient",
+              "mandatory_reference_missing"
+            ]
+          },
+          "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+          "description": { "type": "string", "minLength": 20 },
+          "target_agent": { "type": "string", "description": "Which agent SHOULD address this finding (optional — default: the agent just downstream)." },
+          "required_action": { "type": "string", "description": "Concrete instruction for the remediating agent." },
+          "canonical_refs": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^(MM|NH|CT|OI|IAS29|SR|TM)-" },
+            "description": "Canonical rule ids (MM-01, OI-002, …) this finding maps to."
+          }
+        }
+      }
+    },
+    "addressed_findings": {
+      "type": "array",
+      "description": "Acknowledgement of each upstream finding this output was asked to address. finding_id set equality with the source findings[] is enforced by the shadow validator (Phase 4A observe-only, promoted in later phases).",
+      "items": {
+        "type": "object",
+        "required": ["finding_id", "action_taken", "explanation"],
+        "properties": {
+          "finding_id": { "type": "string", "minLength": 3 },
+          "action_taken": { "type": "string", "enum": ["fixed", "acknowledged", "rejected"] },
+          "explanation": { "type": "string", "minLength": 30 },
+          "evidence_refs": {
+            "type": "array",
+            "items": { "$ref": "https://financex.internal/schemas/shared/evidence.schema.json" }
+          }
+        }
+      }
+    },
+    "metrics_array": {
+      "type": "array",
+      "description": "Canonical 28-metric catalogue (MM-01..MM-28 from canonical/rules/mandatory_metrics.yaml). financial_analysis must emit all 28; other agents may emit a subset. Phase 4A observe-only — shadow validator computes presence/completeness, no runtime gate.",
+      "items": {
+        "type": "object",
+        "required": ["id", "confidence"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^MM-[0-9]{2}$", "description": "e.g. MM-01, MM-25." },
+          "value": { "type": ["number", "string", "null"], "description": "null allowed when confidence='blocked' per NH-001..006." },
+          "unit": { "type": "string" },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low", "blocked"] },
+          "method": { "type": "string", "description": "Formula, source, or computation trail." },
+          "period": { "type": "string", "description": "Fiscal period this value pertains to." }
+        }
+      }
+    },
+    "engine_snapshot": {
+      "type": "object",
+      "description": "OI-002: engine_snapshot keys MUST be a subset of metrics_array[].id — i.e. the deterministic engine's view of what it calculated. Shadow validator already enforces the subset check (Phase 3A); Phase 4A adds the canonical shape.",
+      "additionalProperties": {
+        "type": ["number", "string", "null"]
+      }
+    },
+    "interpretations": {
+      "type": "array",
+      "description": "Structured narrative blocks with canonical depth floors. observation ≥ 80 chars, reasoning ≥ 120, counterargument ≥ 60, implication ≥ 80. Shadow validator enforces per Phase 3A.",
+      "items": {
+        "type": "object",
+        "required": ["topic", "observation", "reasoning"],
+        "properties": {
+          "topic": { "type": "string", "minLength": 3 },
+          "observation": { "type": "string", "minLength": 80 },
+          "reasoning": { "type": "string", "minLength": 120 },
+          "counterargument": { "type": "string", "minLength": 60 },
+          "implication": { "type": "string", "minLength": 80 },
+          "canonical_refs": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^(MM|NH|CT|OI|IAS29|SR|TM)-" }
+          }
+        }
+      }
+    },
+    "counterargument": {
+      "type": "string",
+      "minLength": 60,
+      "description": "Top-level counterargument when a single interpretation is produced (e.g. final_summary, strategic_synthesis). interpretations[].counterargument is preferred when multiple blocks exist."
+    },
+    "implication": {
+      "type": "string",
+      "minLength": 80,
+      "description": "Top-level implication when a single interpretation is produced. Same preference rule as counterargument."
     }
   }
 }
