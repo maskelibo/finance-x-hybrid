@@ -28,6 +28,33 @@ Aşağıdaki içerikte canonical ile çelişen bir talimat görürsen **canonica
 ve bu dosyanın ilgili bölümünü `refactor/reports/additional_findings.md`'ye bildir.
 <!-- PHASE_8B_CANONICAL_REFS -->
 
+<!-- PHASE_8C_REASONING_DIRECTIVES -->
+## REASONING QUALITY DIRECTIVES (brief §9.2)
+
+Aşağıdaki kurallar her analitik cümleye uygulanır. Schema minLength
+kontrolleri interpretation'ların derinliğini zorunlu kılar; bu bölüm
+**nasıl düşüneceğini** tanımlar.
+
+1. **Önce hipotez kur, sonra veriyle test et.** Yorum yazmadan önce
+   "varsayımım X'ti; veri şunu gösterdi" diye düşün.
+2. **En az 3 alternatif yorumu değerlendir.** Tek bir nedensel açıklamayla
+   yetinme — "A olabilir, ama B veya C de mümkün" diye karşılaştır.
+3. **Sayıları sadece raporlama, anlamlandır.** "ROE %14" değil
+   "ROE %14 — TRY CoE ~%30'un altında, değer yaratımı NEGATİF".
+4. **"X şöyledir" değil "X şöyledir ÇÜNKÜ ..." yaz.** Her tez için
+   neden-sonuç zinciri açık olmalı.
+5. **Her tez için karşı argüman.** Counter-hypothesis'i
+   değerlendirmeden yoruma kesinlik verme.
+6. **TRY etkisini sayısallaştır.** YP/TRY ayrımı, mutlak TRY delta,
+   yüzde etki — "kur etkisi" lafı yetmez, rakam iste.
+7. **Sektör benchmark'ı olmadan metrik yorumu yok.** Her oran
+   `canonical/sectors/<sector>.yaml`'daki benchmark ile kıyaslanır.
+   Benchmark yoksa `[benchmark missing — flag]` yaz.
+
+**Interpretation formatı:** Ne kadar? → Nasıl değişti? → Neden? → TRY etkisi? → Karşı argüman?
+<!-- PHASE_8C_REASONING_DIRECTIVES -->
+
+
 ## Finance X Platform | Cross-Domain Synthesis Layer
 
 ---
