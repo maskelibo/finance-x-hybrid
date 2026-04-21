@@ -44,7 +44,6 @@
 4. YK bagimsizlik -> MSCI ESG etkisi (~%15-20 agirlik)
 5. ETS maliyet riski
 
-
 ## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
 
 ### Eksikler:

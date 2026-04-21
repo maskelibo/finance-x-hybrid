@@ -38,7 +38,6 @@
 4. Twitter/X — #BIST30 etiketleri, retail investor sentiment
 5. Bloomberg/Reuters — uluslararasi kurumsal sentiment
 
-
 ## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
 
 ### Eksikler:

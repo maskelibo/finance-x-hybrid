@@ -452,3 +452,205 @@ Bu TCELL'de OLDU. Data_collection 2024 verisi göndermişti ama sen onu DOĞRULA
 **knowledge.md değişiklikleri:** CBAM Provision Kalemi bölümü + IFRS 16 ROU Amortisman Ayrıştırma bölümü eklendi.
 
 **Öğrenme Puanı: 82/100**
+
+## Purge 2026-04-21 23:11 — 14 section (en yeni: 2026-04-16)
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Standard Institutional Raporu (Post-Report Loop)
+
+### Eksikler:
+- **income_statement.ebitda: null** — D&A çekilmediğinden EBITDA hesaplanamadı. 3. THYAO analizinde aynı sorun.
+- **income_statement.depreciation_amortization: null** — Not 11-12 okunmadı; türetme yasağına rağmen hâlâ null bırakılıyor.
+- **income_statement.financial_income, financial_expense, tax_expense: null** — Gelir tablosu zinciri (EBIT→Finance→PBT→Tax→NI) kırık; faiz karşılama ve vergi oranı hesaplanamaz.
+- **cash_flow.investing_cash_flow / capex / free_cash_flow: null** — FCF ve CAPEX/EBITDA bloke. Nakit akış tablosu ICF bölümü hâlâ çekilmedi.
+- **equity_change: {} (tamamen boş)** — 3. THYAO analizinde de SE tablosu hiç çekilmedi.
+- **IFRS 16 ROU + kira borcu ayrıştırılmadı** — Her raporda yazılmasına rağmen uygulanmıyor.
+
+### Bundan Sonra:
+- **Havacılık D&A zorunlu çift satır — 3. direktif, artık kesin kural** — ROU amortismanı + sabit varlık amortismanı. Bir sonraki THYAO'da D&A null ise parse output REDDEDİLİR.
+- **IS zinciri null toleransı sıfır** — financial_income/expense, tax_expense, ebitda, D&A null ise PENDING_IS_CHAIN + eskalasyon zorunlu.
+- **ICF null = CAPEX null = REDDEDİLİR** — 3 rapordur aynı sorun; bir dahaki THYAO'da ICF/CAPEX null tolere edilmez.
+- **Equity_change boş gönderme YASAK** — "PENDING_SE — eskalasyon yapıldı" formatı zorunlu; boş JSON gönderme.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
+
+### Eksikler:
+- **FY2023 CF/SE hâlâ çekilmedi** — 5 yıllık seri zorunluluğu (FY2021-2025) devam ediyor; FY2023 olmadan trend analizi kırık. "Seri kırığı" flaglendi ✓ ama çözüm üretilmedi.
+- **DISC-004 dersi KCHOL'a uygulanmadı: Not 8 ticari borç okunmadı** — EREGL DISC-004'ten öğrenilen "ticari borç Not'tan çek, BS özet satırı yetersiz" kuralı KCHOL'da uygulanmadı. 295,438 mn TL BS özet satırından alındı; Not 8 okunmadı. DPO güvensiz.
+- **Interest expense doğrudan verilmedi** — "TBD 1/21 = eşik altı" ile geçildi. Eşik altı demek "çekmeme" değil; satır zorunlu.
+- **FY2024 EBIT (114,356) FY2025 ile aynı — SUSPECT_DATA flag verildi ✓ ama kaynak doğrulaması yapılmadı** — Şüpheli değer sinyali verildi ama KAP'tan doğrulama yapılmadı. Downstream bu değeri kullandı; reconciliation eskalasyon açtı ✓. Ancak parse aşamasında çözülmeliydi.
+- **CF kapanış mutabakatı -68,012 mn TL fark kapatılamadı** — FX on cash satırı eksik. Bu fark "WARNING" olarak geçildi ama downstream'e açık bir soru olarak kaldı.
+
+### Bundan Sonra:
+- **DISC-004 kuralı her holding raporunda geçerli** — BS ticari borç satırı ≠ Not 8 toplamı riski holding raporlarında da geçerli. Her analizde Not (ilgili dipnot) okunmadan ticari borç satırı kabul edilmez.
+- **SUSPECT_DATA → kaynak doğrulaması zorunlu** — Şüpheli veriyi flag'lemek yetmez; KAP PDF'ten doğrula veya "doğrulanamadı — [VERİ ŞÜPHELI]" etiketiyle lock et. Downstream şüpheli veriyle hesap yapmamalı.
+- **CF mutabakatı farkı >%1 → WARNING değil WARNING + upstream escalation** — 68,012 mn TL fark büyük; reconciliation/financial_analysis chain'i etkileyebilir. Sessiz geçme.
+
+## CEO Geri Bildirimi — 2026-04-16 — EREGL Deep Dive (DISC-004)
+
+**Analiz Oturumu:** eregl-deep-dive-20260415
+**Sirket:** EREGL — Ereğli Demir ve Çelik Fabrikaları
+**Sorun Turu:** Kritik BS Satir Hatasi — Ticari Borc Eksik Kaynak
+
+### Hata
+- Parse BS ciktisi: ticari borc = 19,628mn TRY
+- KAP FY2025 Not 8 (birincil kaynak): ticari borc = 68,762mn TRY
+- Fark: **49,134mn TRY (%249 sapma)**
+- Root cause hipotezi: parse agent BS ana kalem toplamini Not 8 kirilimini cekerek dogrulamadi; Not 8 iliskili taraf + ucuncu taraf + diger kalemleri toplamdan farkli satira dugume atti.
+
+### Analitkl Etki (Bu Raporda)
+- MINIMAL — financial_analysis dogrudan Not 8 = 68,762mn TRY'yi DPO ve CCC hesabinda kullanmis. CEO override ile rapor devam etti.
+- Ancak parse BS kaydi yanlis; gelecek raporda cascad riski var.
+
+### Zorunlu Duzeltme
+1. **BS ticari borc satirini KAP Not 8 birincil kaynagindan cek:** Dogrudan `kap.org.tr` faaliyet raporu Not 8 tablosu — "Ticari Alacak ve Borclara Iliskin Bilgiler" bölümü.
+2. **Not kirilimini BS satirina map et:** toplam ticari borc = iliskili taraf + ucuncu taraf + diger; her biri ayri kaynak etiketiyle.
+3. **Otomatik kontrol ekle:** BS ticari borc vs Note 8 toplam > %5 sapma → FLAG_DISC ve escalate; output gonderme.
+4. **Her celik sirketi icin:** BS altindaki ticari borc satirini gormeden once "Not 8 — Ticari Alacak/Borc kirilimi" fetchi zorunlu.
+
+### Sonraki EREGL Analizinden Once
+- Bu DISC-004 kapalı olmali; parse ciktisinda ticari borc = 68,762mn TRY (Not 8 onaylı).
+
+### Oncelik
+**YUKSEK** — CEO override ile bu rapor devam etti; bir sonraki raporda override yok.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Remediation (thyao-remediation-20260416)
+
+### Eksikler:
+- **EBITDA null — 4. THYAO analizi (tolerans sıfır aşıldı)** — income_statement.ebitda: null. D&A çekilmediği için EBITDA hesaplanamadı. Bu zincir kırılması parse katmanından başlıyor.
+- **income_statement.depreciation_amortization: null** — 4 THYAO analizinde aynı sorun; CF "Amortisman ve İtfa" satırı alınmadı.
+- **income_statement.financial_income/expense/tax_expense: null** — Gelir tablosu zinciri (EBIT→Finance→PBT→Tax→NI) tamamlanmadı.
+- **cash_flow.investing_cash_flow/capex/free_cash_flow: null** — Yatırım faaliyetleri CF bölümü 4 THYAO'da hiç çekilmedi.
+- **equity_change: {} (tamamen boş)** — 4. THYAO, SE tablosu hiç çekilmedi.
+- **IFRS 16 ROU amortismanı ayrıştırılmadı** — EBITDAR hesabı için zorunlu; 4 kez direktif verildi.
+
+### Bundan Sonra:
+- **THYAO parse hard bloker listesi (4. direktif — tolerans yok):**
+  1. D&A → CF "Amortisman ve İtfa" satırı ZORUNLU; null → upstream escalation + parse DURUR
+  2. IFRS 16 ROU amortismanı → ayrı satır; dipnot 26-27 açılır
+  3. IS tam zincir: Revenue→COGS→Brüt→EBITDA→D&A→EBIT→fin.gelir→fin.gider→VÖK→vergi→Net Kar — hepsi dolu
+  4. CF yatırım faaliyetleri → CAPEX + finansal yatırımlar ZORUNLU
+  5. SE → dönem başı + net kar + temettü + dönem sonu kolonu
+- **Null satır = upstream escalation tetikler; "veri yok" yazarak geçmek YASAK.**
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Tam Analiz (thyao-full-20260416)
+
+### Eksikler:
+- **EBITDA null — 3. THYAO analizi, artık tolerans sıfır** — Revenue mevcut, COGS mevcut; ancak D&A çekilmediği için EBITDA = null. Bu hata art arda 3 THYAO raporunda tekrarlandı. Kök neden: D&A upstream'den gelmiyor → parse eskalasyonu yapılmıyor.
+- **D&A null — nakit akış tablosundan alınmadı** — CF tablosunun "Amortisman ve İtfa" satırı her zaman mevcuttur. Bu satır null bırakılamaz.
+- **IS zinciri kırık** — financial_income / financial_expense / tax null. Sonuç: PBT ve net income bridge kurulamadı. IS tam extraction zorunlu — kısmi extraction YASAK.
+- **CF tablosu yatırım faaliyetleri null** — "Yatırım Faaliyetlerinden Nakit Akışları" tamamen boş. FCF hesabı (OCF - CAPEX) yapılamadı.
+- **SE (Özsermaye Değişim Tablosu) boş {}** — 4. zorunlu tablo. Temettü ödemesi, sermaye artırımı, dağıtılmamış karlar değişimi — bunlar strategic_synthesis ve valuation için zorunlu girdi.
+- **IFRS 16 ROU varlık amortismanı ayrıştırılmadı** — EBITDAR = EBITDA + kira gideri; kira gideri null → EBITDAR hesaplanamaz.
+
+### Bundan Sonra:
+- **THYAO parse için kesin kurallar (tolerans sıfır — bir dahaki analizde ihlal = CEO direktifi hattı):**
+  1. D&A → CF "Amortisman ve İtfa" satırı ZORUNLU; null → upstream escalation + parse durdurulur
+  2. IFRS 16 ROU amortismanı → ayrı satır; yoksa dipnot 26-27 açılır
+  3. IS tam zincir: Revenue → COGS → Brüt → OpEx → EBITDA → D&A → EBIT → fin.gelir → fin.gider → VÖK → vergi → Net Kar — hiçbir satır null olamaz
+  4. CF yatırım faaliyetleri → CAPEX + finansal yatırımlar satırları ZORUNLU
+  5. SE → en az: dönem başı + net kar + temettü + dönem sonu kolonu
+- **Null satır = eskalasyon tetikler, geçmez** — "Veri yok" yazarak geçmek YASAK; null görülürse data_collection'a eskalasyon + CEO bildirim.
+
+## CEO Geri Bildirimi — 2026-04-16 — THYAO Full Analiz (thyao-full-20260416-v4)
+
+### Eksikler:
+- **EBITDA null — 4. THYAO analizi, kesin tolerans sıfır ihlali** — income_statement.ebitda: null. D&A upstream'den gelmiyor ve parse katmanından eskalasyon yapılmıyor; bu zincir kırılması kabul edilemez.
+- **D&A null — CF "Amortisman ve İtfa" satırı alınmadı** — 4 THYAO analizinde aynı hata. KAP yıllık raporu her zaman nakit akış tablosunda bu satırı içerir; çekilmeden output gönderilmesi kural ihlali.
+- **IS zinciri kırık** — financial_income: null, financial_expense: null, tax_expense: null. PBT ve net income bridge kurulamadı. Sonuç: faiz karşılama oranı, vergi yükü — tümü hesaplanamadı.
+- **CF yatırım faaliyetleri null** — investing_cash_flow: null; capex: null; free_cash_flow: null. FCF = OCF − CAPEX; CAPEX null → FCF null → Chairman metrik listesi ihlali.
+- **SE (Özsermaye Değişim Tablosu) boş {}** — 4. THYAO analizinde de SE tablosu hiç çekilmedi. Temettü ödemesi doğrulaması bile yapılamıyor.
+- **IFRS 16 ROU amortismanı ayrıştırılmadı** — EBITDAR = EBITDA + kira gideri; kira gideri null → EBITDAR null → havacılık analizinin birincil metriği hesaplanamaz.
+
+### Bundan Sonra:
+- **D&A null = parse output DURUR (4. direktif, hard bloker)** — Null görüldüğünde: (1) data_collection'a eskalasyon "D&A eksik — kaynak: CF tablosu satırı + dipnot 11-12 + IFRS16 ROU ayrıştırması", (2) output gönderilmez, (3) CEO'ya bloker bildirim.
+- **IS zinciri completeness = tam 11/11 satır** — Revenue → COGS → Brüt Kâr → OPEX → EBITDA → D&A → EBIT → Fin.Gelir → Fin.Gider → VÖK → Vergi → Net Kâr. Bir satır null → PENDING_IS_CHAIN eskalasyonu zorunlu.
+- **EBITDAR havacılık özel alanı** — parse çıktısında "aviation_ebitdar" alanı ayrı eklenecek: EBITDA + IFRS16 kira gideri (dipnot). D&A mevcut değilse EBIT + D&A sektör proxy + IFRS 16 = EBITDAR `[conf: MEDIUM]`.
+- **Investing CF ve CAPEX = 4. direktif hard bloker** — null tolere edilmez; "yatırım faaliyetlerinden nakit akışları" tablosu her KAP yıllık raporunda mevcuttur. Çekilmeden parse tamamlanmış sayılmaz.
+
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
+
+### Eksikler:
+- **FY2021-2023 satırları "[VERİ ÇEKME]" ile teslim edildi** — 5 yıllık seri zorunlu; kısmen dolu tablo ile output gönderilmek kural ihlali. Alternatif kaynaklar tükenmeden bırakma.
+- **Ticari borç hatalı çekildi: 19,628 mn TRY (parse) vs Not 8: 68,762 mn TRY** — Bu DISC-004 açık bulgusunun kaynağı. Not 8 ticari borç kırılımı okunmadı; sadece bilanço özet satırı alındı. Sektör (çelik/sanayi) analizinde ticari borç Not'u zorunlu.
+- **FY2024 net kâr hatalı çekildi: 2,431,877 mn (parse) vs doğru: 14,193,046 mn** — Sütun kayması hatası. Reconciliation tarafından düzeltildi ama bu hata kaskad risk yarattı; parse ajanının kendi kontrolünden geçmesi gerekir.
+- **CF ve SE tabloları tam extract edilmedi** — ICF/Finansman CF satırları ve özsermaye hareket tablosu (SE) "kısmi" statüsünde kaldı.
+- **D&A doğrudan kaynaktan çekilmedi** — Reconciliation çıktısında EBITDA tanım farkı (20,452 vs 21,248 mn) doğrudan D&A extraction eksikliğinden kaynaklandı.
+
+### Bundan Sonra:
+- **Ticari borç için Not'u oku** — Bilanço özet satırı yetersiz; ilgili dipnotu (Not 8 veya eşdeğeri) ayrıca çek ve tedarikçi/diğer ayrımını göster. Net Borç formülü etkilenmez ama DPO/CCC hesabı için doğru değer şart.
+- **Sütun kayması kontrolü zorunlu** — FY2024 karşılaştırmalı figürleri EPS × hisse adedi ile cross-check yap; tutmazsa REJECT ver, gönderme.
+- **D&A direkt amortisman notundan çek** — "EBITDA − EBIT = D&A" türetme YASAK; KAP PDF amortisman notundan satır bazlı çek.
+- **CF tam 3 bölüm zorunlu** — OCF + ICF + Finansman CF; herhangi biri eksikse "PENDING" etiketle ve upstream'e eskalasyon yap.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu
+### Eksikler:
+- Cikti `Mock completed output for parse_standardization.` seviyesinde kaldi; standartlastirilmis IS/BS/CF/SE tablolari, birim normalizasyonu ve kaynak-esleme gorunmuyor.
+- IAS 29 etkisi, Net Borc icin gerekli finansal borc/nakit ayrimi, DSO-DIO-DPO hesap girdileri ve 2021-2025 tekil satir haritalamasi downstream'e sunulmadi.
+### Bundan Sonra:
+- Her raporda 4 zorunlu tabloyu standardize et: IS, BS, CF, SE; her satiri orijinal kaynak etiketiyle ve tek para birimiyle ver.
+- IAS 29, working capital ve net borc hesaplari icin gereken alt kalemler ayri kolonlarda gosterilecek; bunlar yoksa `completed` statusu verilmeyecek.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Raporu Post-Report Loop
+### Eksikler:
+- Standardizasyon cikti, Chairman'in zorunlu metriklerini besleyecek alt kalem ayrimini uretmedi; finansal borc, nakit, KV finansal yatirim, ticari alacak, stok, ticari borc gibi kolonlar net degildi.
+- Telekom KPI ve faaliyet raporu baglamindan gelen operasyonel metrikler finansal tablolarla ayni fact pack'e baglanmadi.
+### Bundan Sonra:
+- Parse cikti her zaman `source_label -> standardized_label -> unit -> period -> confidence` map'iyle gelecek; satir adi cevirisi yalniz metin degil veri soyagaci da icerecek.
+- Ratio-ureten alt kalemler ayri etiketlenecek; downstream ajanlar DSO, leverage veya likidite hesabi icin metni degil parse tablosunu kullanacak.
+
+## CEO Geri Bildirimi — 2026-04-15 — TCELL Post-Report Feedback Loop
+### Eksikler:
+- OCF/Cash EBITDA ayrimi, net borc girdileri ve WC alt kalemleri parse katmaninda tek tabloya oturmadi; bu nedenle downstream ayni satiri farkli yorumladi.
+- 2021-2025 tarihsel seri ile FY2025 detayli tablo ayni standardizasyon sozlugunde birlesmedi; delta raporu icin hizli trend zemini zayif kaldi.
+### Bundan Sonra:
+- Parse standardization her sirket icin `ratio_input_table` uretecek; nakit, finansal borc, KV finansal yatirim, ticari alacak, stok, ticari borc, faiz gideri, capex ve D&A ayri satirlarda zorunlu olacak.
+- Tarihsel seri ve cari yil detaylari ayni standard isimlerle baglanacak; ayni metrik birden fazla isimle downstream'e gecmeyecek.
+
+## CEO Geri Bildirimi — 2026-04-14 — THYAO
+
+**CEO 2026-04-14 THYAO eksikleri:** CF/SE yok ama output gonderildi. OpEx alt kalemleri "[Detail missing]". D&A EBITDA-EBIT farkinden turetildi. IAS 29 ayristirmasi yapilmadi.
+- **D&A DOGRUDAN kaynaktan cek** — KAP PDF Amortisman ve Itfa notundan. Turetme YASAK.
+- **IFRS 16 ROU amortismanini D&A'dan ayristir** — Havacilikta D&A icinde IFRS 16 ROU amortismani ayri goster; EBITDAR hesabina temel olustur.
+
+## CEO Geri Bildirimi — 2026-04-14 — BIMAS Raporu
+
+### Eksikler:
+- **Doğru eskalasyon yapıldı ✓** — CF/SE eksik olduğunda "CANNOT PROCEED" kararı verildi ve upstream eskalasyon protokolü uygulandı. Bu doğruydu.
+- **IS + BS tam hazır ama beklemede tutuldu** — Mevcut IS ve BS tabloları standardize edilebilecek durumdayken "tüm tablolar gelene kadar bekle" yorumu benimsenildi. Kural: mevcut tabloları işle, eksik kısımları "PENDING_CF_SE" etiketiyle gönder.
+- **IAS 29 ayrıştırması IS üzerinde başlatılmadı** — IS mevcuttu; IAS 29 parasal kazanç ayrıştırması IS bazında yapılabilirdi ve downstream'e gönderilmeliydi.
+
+### Bundan Sonra:
+- **Kısmi output gönder, tam bloklama yapma** — IS + BS mevcut ise bunları standartlaştırıp çıkt; CF/SE için "PENDING_UPSTREAM" bölümü oluştur. "Tüm tablolar gelene kadar bekle" = pipeline'ı gereksiz durdurmak.
+- **Perakende sektörü ayrıştırma ekstrası** — Stoklardaki detaylar (emtia stoğu, hammadde, yarı mamul, mamul), ticari alacaklar, ticari borçlar satır bazlı mutlaka çıkarılmalı; WC hesabının temelidir.
+- **IFRS 16 kira borcu ayrıştırması** — Perakendecilerde (BIMAS: 14.000+ mağaza) IFRS 16 kira yükümlülükleri bilanço büyüklüğünü önemli ölçüde artırır. Net Borç hesabında finansal kiralama borcu ayrı satırda gösterilmeli.
+
+## CEO Geri Bildirimi — 2026-04-14 — KCHOL Delta Raporu
+
+### Eksikler:
+- **%76 [TBD] oranı eşiği aşmasına rağmen parse devam etti** — Kural: %10 üstü TBD → REJECT. KCHOL'da IS %76 TBD, BS %88 TBD ile output REJECT verildi ✓ (doğru). Ancak alternatif metodlar (XBRL, proxy) denemeden direkt REJECT ile eskalasyon yapıldı.
+- **IS + BS mevcut olmasına rağmen kısmi output gönderilmedi** — Önceki BIMAS dersinde "kısmi output gönder, tam bloklama yapma" kuralı eklenmişti. KCHOL'da aynı hata tekrarlandı: mevcut gelir tablosu ve kısmi bilanço standardize edilip "PENDING_CF_IFRS8" etiketiyle gönderilebilirdi.
+- **IAS 29 ayrıştırması hiç başlatılmadı** — IS mevcuttu (kısmen). IAS 29 parasal kazanç ayrıştırması mevcut IS üzerinde yapılabilirdi; "tüm tablolar gelene kadar bekle" yorumu benimsenildi.
+- **2023 finansal tabloları tamamen eksik** — 5 yıllık time-series zorunluluğu gereği 2021-2025 verisine ihtiyaç var. 2023 tablolarının neden eksik olduğu ve hangi yolların deneneceği belirtilmedi.
+- **Faaliyet raporu PDF sayfa referansı verilmedi** — "Segment Bilgileri bölümü genelde sayfa 20-35" denildi ama PDF çekilmedi; sayfa numaraları tahmini. Kaynak olmadan sayfa numarası yazmak güveni yanıltır.
+
+### Bundan Sonra:
+- **Mevcut tabloları işle, eksikleri etiketle, gönder** — IS veya BS kısmen mevcutsa bunları standardize et; eksik bölümler için "PENDING_[REASON]" etiketi koy ve göndermek; downstream bekletme.
+- **KAP XBRL'den parse dene** — PDF parse başarısızsa XBRL endpoint'i direkt dene (kap.org.tr/tr/api/XBRL endpoints). Başarısızsa sonucu logla.
+- **2023 ve öncesi eksikliğinde KAP historical archive** — 5 yıllık data için KAP'ta "Yıllık Raporlar" bölümünden ilgili yılın raporunu ayrıca fetch et; "2023 mevcut değil" demeden KAP'ta ilgili FY raporunu ara.
+
+## CEO Geri Bildirimi — 2026-04-14 — SAHOL Raporu
+
+### Eksikler:
+- **Revenue: Segment kısmını (195B TRY) konsolide revenue olarak etiketledi** — Gerçek konsolide revenue 1,187B TRY. 5x fark tüm downstream hesapları bozdu.
+- **EBITDA: 9 aylık veriyi (50,577M) FY2024 etiketi ile sundu** — Q3 2024 kümülatif değeri, yıllık değer gibi raporlandı; CRITICAL etiket hatası.
+- **IS zincirinin 9/11 satırı PENDING** — COGS, Gross Profit, OPEX, D&A, EBIT, Finance Income, Finance Cost, PBT, Tax hiç tamamlanmadı.
+- **2020–2021 için "VERİ YOK" yazıldı** — CEO kuralı: "Veri yok" YASAK; alternatif yöntem dene veya escalate et.
+- **Balance Sheet nakit, alacak, stok satırları PENDING** — Toplamlar çekildi ama kritik alt satırlar bırakıldı.
+
+### Bundan Sonra:
+- **Konsolide revenue = tüm segmentlerin toplamı:** Holding analizinde segment kısmi veri ASLA konsolide revenue etiketi taşıyamaz. "Konsolide" yazmadan önce kapsam kontrolü yap.
+- **Dönem etiketi KAP başlığından birebir kopyalanacak:** "9M 2024" olan veri FY2024 satırına yazılamaz. Dönem uyuşmazlığı varsa [UYARI: 9A veri, FY extrapolation gerekiyor] flag'i ekle.
+- **IS zinciri bütünlük protokolü:** Revenue → COGS → Gross Profit → OPEX → EBITDA → D&A → EBIT → Finance → PBT → Tax → Net Income. Her satır ya dolu ya [PENDING+escalation] olmalı. Eksik satır olarak output GÖNDERİLEMEZ.
+- **"Veri yok" YASAK:** 5 alternatif kaynak (KAP PDF, KAP XBRL, IR sitesi, quarterly report, WebFetch) denenmeden eksik beyan edilemez.
+
+---
