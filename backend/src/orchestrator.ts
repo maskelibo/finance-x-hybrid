@@ -14,7 +14,8 @@ import { extractManifest } from './manifest/extract.js';
 import { recordManifest } from './manifest/record.js';
 import { aggregateSessionAddressal } from './checklist/aggregate.js';
 import { persistAddressalReport } from './checklist/persist.js';
-import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
+import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, UPSTREAM_DIGEST_MODE, CHECKLIST_ENFORCEMENT_MODE, CHECKLIST_MIN_ADDRESSAL_RATE, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
+import { digestUpstream } from './upstream-digest.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
 import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
 import { runPythonKapWatch } from './python/agent_runners/kap_watch.js';
@@ -484,7 +485,7 @@ async function runSingleAgent(
 5. TÜRKÇE, kurumsal tarzda
 
 ## Python Teknik Göstergeler
-${pythonOutput.slice(0, 10000)}
+${digestUpstream(pythonOutput, 10000, { label: 'technical_analysis.python' }).digest}
 
 Minimum 1500 karakter.`;
       try {
@@ -545,7 +546,7 @@ Minimum 1500 karakter.`;
 4. TÜRKÇE yaz, kurumsal araştırma tarzında
 
 ## Python Engine Çıktısı (deterministik — doğru kabul et, tekrar hesaplama)
-${pythonOutput.slice(0, 30000)}
+${digestUpstream(pythonOutput, 30000, { label: 'financial_analysis.python' }).digest}
 
 ## Upstream Context
 Ticker: ${ticker}
@@ -641,7 +642,7 @@ Sektör: ${sectorLabel}
 6. TÜRKÇE yaz, kurumsal araştırma tarzında
 
 ## Python Haber/Sentiment Çıktısı
-${snPythonOutput.slice(0, 20000)}
+${digestUpstream(snPythonOutput, 20000, { label: 'sentiment_news.python' }).digest}
 
 ## Ticker: ${ticker} | Sektör: ${accumulatedContext['sector_override'] ?? 'industrial'}
 
@@ -699,11 +700,11 @@ ${snPythonOutput.slice(0, 20000)}
     const pythonOutput = String(accumulatedContext['strategic_synthesis_output'] ?? '');
     if (pythonOutput.length > 50) {
       console.log(`[HYBRID] strategic_synthesis: Python → LLM enrichment`);
-      const faOutput = String(accumulatedContext['financial_analysis_output'] ?? '').slice(0, 15000);
-      const macroOutput = String(accumulatedContext['macro_analysis_output'] ?? '').slice(0, 10000);
-      const techOutput = String(accumulatedContext['technical_analysis_output'] ?? '').slice(0, 8000);
-      const valOutput = String(accumulatedContext['valuation_agent_output'] ?? '').slice(0, 8000);
-      const scOutput = String(accumulatedContext['sector_competition_output'] ?? '').slice(0, 5000);
+      const faOutput = digestUpstream(accumulatedContext['financial_analysis_output'] as string, 15000, { label: 'ss<-fa' }).digest;
+      const macroOutput = digestUpstream(accumulatedContext['macro_analysis_output'] as string, 10000, { label: 'ss<-macro' }).digest;
+      const techOutput = digestUpstream(accumulatedContext['technical_analysis_output'] as string, 8000, { label: 'ss<-tech' }).digest;
+      const valOutput = digestUpstream(accumulatedContext['valuation_agent_output'] as string, 8000, { label: 'ss<-val' }).digest;
+      const scOutput = digestUpstream(accumulatedContext['sector_competition_output'] as string, 5000, { label: 'ss<-sc' }).digest;
       const llmPrompt = `Sen ${ticker} için kapsamlı bir stratejik sentez raporu hazırlayan kıdemli kurumsal araştırma analistisin.
 
 Aşağıda Python engine'in ürettiği sinyal haritası ve tüm upstream analizler var. Senin görevin bunları tutarlı bir yatırım tezi haline getirmek.
@@ -785,7 +786,7 @@ ${scOutput}
     const valPythonOutput = String(accumulatedContext['valuation_agent_output'] ?? '');
     if (valPythonOutput.length > 50) {
       console.log(`[HYBRID] valuation_agent: Python ${Math.round(valPythonOutput.length/1024)}KB → LLM enrichment starting`);
-      const faContext = String(accumulatedContext['financial_analysis_output'] ?? '').slice(0, 15000);
+      const faContext = digestUpstream(accumulatedContext['financial_analysis_output'] as string, 15000, { label: 'valuation<-fa' }).digest;
       const valLlmPrompt = `Sen bir kurumsal araştırma değerleme uzmanısın. Aşağıda Python engine'in hesapladığı DCF değerleme ve emsal çarpanları var. Senin görevin:
 
 1. DCF sonucunu YORUMLA — hisse başına değer vs piyasa fiyatı, upside/downside
@@ -796,7 +797,7 @@ ${scOutput}
 6. TÜRKÇE yaz, kurumsal araştırma tarzında
 
 ## Python Değerleme Çıktısı
-${valPythonOutput.slice(0, 20000)}
+${digestUpstream(valPythonOutput, 20000, { label: 'valuation_agent.python' }).digest}
 
 ## Finansal Analiz Bağlamı
 ${faContext}
@@ -847,7 +848,7 @@ ${faContext}
 6. TÜRKÇE yaz, kurumsal araştırma tarzında
 
 ## Analist Konsensüs Verisi
-${acPythonOutput.slice(0, 15000)}
+${digestUpstream(acPythonOutput, 15000, { label: 'analyst_consensus.python' }).digest}
 
 ## Ticker: ${ticker} | Sektör: ${accumulatedContext['sector_override'] ?? 'industrial'}
 
@@ -895,7 +896,7 @@ ${acPythonOutput.slice(0, 15000)}
 6. TÜRKÇE yaz, kurumsal araştırma tarzında
 
 ## Python ESG/CBAM Çıktısı
-${esgPythonOutput.slice(0, 10000)}
+${digestUpstream(esgPythonOutput, 10000, { label: 'esg.python' }).digest}
 
 ## Ticker: ${ticker} | Sektör: ${accumulatedContext['sector_override'] ?? 'industrial'}
 
@@ -1605,21 +1606,32 @@ async function executeSession(
   }
 
   // ============================================================
-  // Phase 6A observe-only: QA checklist addressal aggregation.
-  // Runs right before the CEO gate so the escalation flag is on record
-  // when CEO data-surface is eventually wired up (Phase 6B shadow-warn).
-  // Never throws; never influences the CEO gate decision in Phase 6A.
+  // Phase 6A/8D: QA checklist addressal enforcement.
+  // - CHECKLIST_ENFORCEMENT_MODE='observe' → log only (legacy Phase 6A).
+  // - CHECKLIST_ENFORCEMENT_MODE='warn'    → surface in CEO failures list as
+  //     informational; CEO gate still runs its own checks (no short-circuit).
+  // - CHECKLIST_ENFORCEMENT_MODE='block'   → hard-fail the CEO gate if
+  //     addressal_rate < CHECKLIST_MIN_ADDRESSAL_RATE.
+  // Threshold default 0.85 (env: CHECKLIST_MIN_ADDRESSAL_RATE).
   // ============================================================
+  let checklistEnforcementFailure: string | null = null;
   try {
     const addressalReport = aggregateSessionAddressal(sessionId);
     if (addressalReport) {
       persistAddressalReport(addressalReport);
-      if (addressalReport.escalation_flag) {
-        console.log(
-          `[CHECKLIST] session ${sessionId} addressal_rate=${addressalReport.addressal_rate} ` +
-          `(${addressalReport.addressed_count}/${addressalReport.finding_count}) — ` +
-          `escalation candidate; unaddressed: ${addressalReport.unaddressed_finding_ids.slice(0, 5).join(', ')}`,
-        );
+      const rate = addressalReport.addressal_rate;
+      const below = rate < CHECKLIST_MIN_ADDRESSAL_RATE;
+      if (addressalReport.escalation_flag || below) {
+        const msg =
+          `addressal_rate=${rate.toFixed(2)} ` +
+          `(${addressalReport.addressed_count}/${addressalReport.finding_count}, ` +
+          `threshold=${CHECKLIST_MIN_ADDRESSAL_RATE}) — ` +
+          `unaddressed: ${addressalReport.unaddressed_finding_ids.slice(0, 5).join(', ') || '(none)'}`;
+        console.log(`[CHECKLIST:${CHECKLIST_ENFORCEMENT_MODE}] session ${sessionId} ${msg}`);
+        if (CHECKLIST_ENFORCEMENT_MODE === 'block' && below) {
+          checklistEnforcementFailure =
+            `QA checklist addressal yetersiz (mode=block): ${msg}`;
+        }
       }
     }
   } catch (err) {
@@ -1639,6 +1651,9 @@ async function executeSession(
   const DEGRADED_MARKERS = ['[DEGRADED]', 'crashed:', 'failed:', '[pending]'];
 
   const approvalFailures: string[] = [];
+  if (checklistEnforcementFailure) {
+    approvalFailures.push(checklistEnforcementFailure);
+  }
 
   for (const agentId of CEO_APPROVAL_AGENTS) {
     // 1. Agent pipeline'da aktif mi?

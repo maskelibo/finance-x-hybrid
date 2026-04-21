@@ -274,6 +274,23 @@ export const SCHEMA_SOFT_BLOCK_AGENTS = new Set(
     .map(s => s.trim()),
 );
 
+// Feature flag — Phase 8D: Upstream digest runtime activation (brief §5).
+// Replaces blind `.slice(0, N)` of upstream outputs with a manifest-aware
+// digest: JSON key-priority extraction or front-and-tail smart slice.
+// Stops the "Lost in the Middle" problem where a 100 KB FA output was
+// front-truncated to 15 KB and downstream never saw the tail findings.
+// 'smart'    → active (default). JSON digest or 60%-head + 30%-tail slice.
+// 'truncate' → legacy. `slice(0, N)` front-only.
+export const UPSTREAM_DIGEST_MODE = (process.env.UPSTREAM_DIGEST_MODE || 'smart') as 'smart' | 'truncate';
+
+// Feature flag — Phase 8D: QA checklist addressal enforcement (brief §6).
+// 'observe' → legacy. Phase 6A aggregator writes metrics, pipeline ignores.
+// 'warn'    → CEO gate surfaces addressal_rate < threshold as an approval
+//              failure candidate but does not hard-fail; Chairman sees it.
+// 'block'   → hard-fail session finalisation when addressal < threshold.
+export const CHECKLIST_ENFORCEMENT_MODE = (process.env.CHECKLIST_ENFORCEMENT_MODE || 'warn') as 'observe' | 'warn' | 'block';
+export const CHECKLIST_MIN_ADDRESSAL_RATE = parseFloat(process.env.CHECKLIST_MIN_ADDRESSAL_RATE || '0.85');
+
 export const HEARTBEAT_INTERVAL_MIN = parseInt(process.env.HEARTBEAT_INTERVAL_MIN || '30', 10);
 export const WATCHDOG_INTERVAL_MIN = parseInt(process.env.WATCHDOG_INTERVAL_MIN || '2', 10);
 export const NIGHT_TRAINING_HOUR_UTC = parseInt(process.env.NIGHT_TRAINING_HOUR_UTC || '23', 10);
