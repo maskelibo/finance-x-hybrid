@@ -38,6 +38,7 @@ Tüm riskli işler bu pattern'i takip eder. Atlama yok.
 | Formatter Chart.js vs SVG | çelişkili | agent_spec.json OI-007'ye hizalı + OI-007/003/008 shadow rules (Phase 7A) | shadow-warn (Phase 7B) | agent_spec otorite tek sese indi |
 | Memory purge | prose → ≤2 KB | — (canonical henüz kanıtlanmadı) | — | canonical proof sonrası |
 | Dead code deletion | statik → silinmiş | — (her zaman en son) | reference proof | archive + silme |
+| Regression harness | 15 rapor × 12 metrik | extended goldens (canonical_rule_refs + evidence_citations + section_count) + canonical structure test (Phase 10A) | quality scorecard (Phase 10B) | historical trend dashboard (Phase 11) |
 
 ---
 
