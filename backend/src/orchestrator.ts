@@ -10,6 +10,8 @@ import {
 } from './gate-observer.js';
 import { shadowValidate } from './schema-shadow-validator.js';
 import { classifyAndRecord } from './validation-gate.js';
+import { extractManifest } from './manifest/extract.js';
+import { recordManifest } from './manifest/record.js';
 import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
 import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
@@ -1002,6 +1004,19 @@ ${esgPythonOutput.slice(0, 10000)}
             currentOutput: result.output,
           });
         } catch { /* validation-gate must not break the pipeline */ }
+
+        // Phase 5A observe-only: extract + persist the retrieval-layer
+        // manifest. Phase 5B will add disk-side dual-write; Phase 5C flips
+        // downstream prompt assembly to read manifest-first. Zero live
+        // behaviour change in 5A.
+        try {
+          const manifest = extractManifest(result.output, {
+            agentId,
+            ticker,
+            runtimeMode: runtimeModeForShadow,
+          });
+          recordManifest({ sessionId, agentId, manifest });
+        } catch { /* manifest extraction must not break the pipeline */ }
       } catch { /* shadow validator must not break the pipeline */ }
 
       // Schema validation — warn or soft_block (pipeline never stops; soft_block marks critical agents degraded)
