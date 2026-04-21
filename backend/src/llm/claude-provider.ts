@@ -77,6 +77,12 @@ export class ClaudeProvider implements LLMProvider {
       let timedOut = false;
       let stalled = false;
       let lastOutputAt = Date.now();
+      // Progress heartbeat: any activity — stdout OR stderr — counts as "alive".
+      // With --output-format=json Claude buffers the entire response until done,
+      // so stdoutBuf can be empty for 10+ minutes on large outputs (FA, synthesis).
+      // stderr still trickles session/progress info, so we use it to differentiate
+      // "hung process" from "long-running process with buffered output".
+      let lastActivityAt = Date.now();
 
       const timeoutHandle = input.timeoutMs
         ? setTimeout(() => {
@@ -85,20 +91,30 @@ export class ClaudeProvider implements LLMProvider {
           }, input.timeoutMs)
         : null;
 
-      // Stall detection: progressive — warn at 3min, kill at stall timeout
+      // Stall detection: progressive — warn at 3min, kill at stall timeout.
+      // Kill condition is "no stdout bytes at all" AND "no activity anywhere
+      // in {stall_timeout}s". If Claude is actively working stderr will have
+      // heartbeat chatter, resetting lastActivityAt and avoiding false kills
+      // on legitimately-long generations.
       const stallCheckInterval = setInterval(() => {
         const silentSecs = (Date.now() - lastOutputAt) / 1000;
+        const inactiveSecs = (Date.now() - lastActivityAt) / 1000;
 
-        // Phase 1: Warning at 180s with 0 tokens
         if (silentSecs > 180 && stdoutBuf.length === 0) {
-          console.warn(`[PROVIDER:claude] Warning — ${Math.round(silentSecs)}s with 0 output tokens`);
+          console.warn(`[PROVIDER:claude] Warning — ${Math.round(silentSecs)}s with 0 output tokens (activity ${Math.round(inactiveSecs)}s ago)`);
         }
 
-        // Phase 2: Kill at stall timeout — but ONLY if truly no output
-        // Ignore stderr resets — only stdout matters for progress
-        if (silentSecs > PROVIDER_STALL_TIMEOUT_S && stdoutBuf.length === 0) {
+        // Only kill when BOTH stdout is empty AND process has produced nothing
+        // on either stream for PROVIDER_STALL_TIMEOUT_S seconds. A single byte
+        // on stderr (progress, notice, session id) is enough to keep alive.
+        if (
+          inactiveSecs > PROVIDER_STALL_TIMEOUT_S &&
+          stdoutBuf.length === 0
+        ) {
           stalled = true;
-          console.warn(`[PROVIDER:claude] Stall confirmed — no output for ${Math.round(silentSecs)}s, killing process`);
+          console.warn(
+            `[PROVIDER:claude] Stall confirmed — no stdout AND no stderr for ${Math.round(inactiveSecs)}s, killing process`,
+          );
           child.kill('SIGTERM');
           clearInterval(stallCheckInterval);
         }
@@ -108,12 +124,14 @@ export class ClaudeProvider implements LLMProvider {
         const text = chunk.toString('utf8');
         stdoutBuf += text;
         lastOutputAt = Date.now();
+        lastActivityAt = Date.now();
         input.onStdout?.(text);
       });
 
       child.stderr.on('data', (chunk: Buffer) => {
         const text = chunk.toString('utf8');
         stderrBuf += text;
+        lastActivityAt = Date.now();
         input.onStderr?.(text);
       });
 

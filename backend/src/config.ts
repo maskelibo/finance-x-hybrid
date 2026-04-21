@@ -253,8 +253,13 @@ for (const w of validatePythonFlagDependencies()) {
   console.warn(w);
 }
 
-// Stall detection: if provider produces no output for this many seconds, kill
-export const PROVIDER_STALL_TIMEOUT_S = parseInt(process.env.PROVIDER_STALL_TIMEOUT_S || '900', 10);
+// Stall detection: if provider produces no activity (stdout OR stderr) for
+// this many seconds, kill the process. With --output-format=json Claude
+// buffers the full response before emitting, so for big-output agents (FA,
+// synthesis, final_summary) stdout silence of 10-20 min is normal. The
+// stall check now also watches stderr as a liveness signal — bumping the
+// default to 1800s (30 min) to give legitimate long generations room.
+export const PROVIDER_STALL_TIMEOUT_S = parseInt(process.env.PROVIDER_STALL_TIMEOUT_S || '1800', 10);
 
 // Feature flag — ADIM 5: Schema validation mode ('off' | 'warn' | 'soft_block')
 // 'off'        = no validation
