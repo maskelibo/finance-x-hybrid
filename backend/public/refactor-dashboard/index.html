@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Finance-X Refactor Observability</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --fg: #1e293b;
+      --muted: #64748b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --accent: #0f4c75;
+      --good: #059669;
+      --warn: #d97706;
+      --bad: #dc2626;
+      --info: #3b82f6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    header {
+      background: var(--accent);
+      color: #fff;
+      padding: 20px 32px;
+    }
+    header h1 { margin: 0 0 4px; font-size: 20px; font-weight: 600; }
+    header p { margin: 0; opacity: 0.85; font-size: 13px; }
+    main { padding: 24px 32px; max-width: 1280px; margin: 0 auto; }
+    .api-key-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .api-key-row input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 8px;
+      font: inherit;
+    }
+    .api-key-row button {
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      border-radius: 4px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font: inherit;
+    }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    section h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin: 0 0 12px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 14px;
+    }
+    .card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .card .value { font-size: 22px; font-weight: 600; margin-top: 2px; }
+    .card .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .status-pill.ok { background: #d1fae5; color: var(--good); }
+    .status-pill.pending { background: #fef3c7; color: var(--warn); }
+    .status-pill.error { background: #fee2e2; color: var(--bad); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      text-align: left;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--bg);
+    }
+    .empty { padding: 12px; color: var(--muted); font-style: italic; font-size: 13px; }
+    .rule { font-family: "SF Mono", Consolas, monospace; font-size: 12px; }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Finance-X Refactor Observability</h1>
+    <p>Phase 3A / 4A / 5A / 6A / 7A observer verilerinin canlı aggregate'i. Read-only.</p>
+  </header>
+  <main>
+    <div class="api-key-row">
+      <label for="api-key">API Key:</label>
+      <input id="api-key" type="password" placeholder="x-api-key header değeri" autocomplete="off">
+      <button id="refresh-btn">Yenile</button>
+      <span id="status-dot" class="status-pill pending">yükleniyor</span>
+    </div>
+
+    <section>
+      <h2>Overview</h2>
+      <div class="cards" id="overview-cards"></div>
+    </section>
+
+    <section>
+      <h2>Phase 3A — Gate Events</h2>
+      <div id="gates-status"></div>
+      <div class="cards" id="gates-by-kind" style="margin-bottom: 12px;"></div>
+      <h3 style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:4px 0 6px;">Recent (25)</h3>
+      <div id="gates-recent"></div>
+    </section>
+
+    <section>
+      <h2>Phase 4A — Validation Categories</h2>
+      <div id="validation-status"></div>
+      <div class="cards" id="validation-by-category"></div>
+    </section>
+
+    <section>
+      <h2>Phase 5A — Manifest Compression</h2>
+      <div id="manifest-status"></div>
+      <div id="manifest-table"></div>
+    </section>
+
+    <section>
+      <h2>Phase 6A — Checklist Addressal</h2>
+      <div id="checklist-status"></div>
+      <div class="cards" id="checklist-rollup" style="margin-bottom: 12px;"></div>
+      <div id="checklist-escalations"></div>
+    </section>
+
+    <section>
+      <h2>Phase 7A — Formatter Doctrine (OI-*)</h2>
+      <div id="doctrine-status"></div>
+      <div id="doctrine-hits"></div>
+    </section>
+  </main>
+
+  <footer>
+    <span id="generated-at"></span>
+  </footer>
+
+  <script>
+    const REFRESH_MS = 30_000;
+    const $ = (id) => document.getElementById(id);
+    const apiKeyInput = $('api-key');
+    apiKeyInput.value = localStorage.getItem('refactor-dashboard-api-key') || '';
+    apiKeyInput.addEventListener('change', () => {
+      localStorage.setItem('refactor-dashboard-api-key', apiKeyInput.value);
+    });
+    $('refresh-btn').addEventListener('click', loadAll);
+
+    async function apiGet(path) {
+      const headers = {};
+      const key = apiKeyInput.value.trim();
+      if (key) headers['x-api-key'] = key;
+      const res = await fetch(path, { headers });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return res.json();
+    }
+
+    function migrationPill(applied, reason) {
+      if (applied) return '<span class="status-pill ok">migration applied</span>';
+      return `<span class="status-pill pending">migration pending${reason ? ' — ' + reason : ''}</span>`;
+    }
+
+    function card(label, value, sub) {
+      return `<div class="card"><div class="label">${label}</div><div class="value">${value}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
+    }
+
+    function renderOverview(data) {
+      const cards = [
+        card('Sessions', data.total_sessions ?? 0),
+        card('Phase 3A gate events', data.phase_3a_gate_events?.n ?? 0),
+        card('Phase 4A validation records', data.phase_4a_validation_records?.n ?? 0),
+        card('Phase 5A manifest records', data.phase_5a_manifest_records?.n ?? 0,
+          data.phase_5a_manifest_records?.avg_ratio != null
+            ? `avg ${data.phase_5a_manifest_records.avg_ratio.toFixed(2)}× compression` : ''),
+        card('Phase 6A checklist sessions', data.phase_6a_checklist_records?.n ?? 0,
+          data.phase_6a_checklist_records?.escalations != null
+            ? `${data.phase_6a_checklist_records.escalations} escalations` : ''),
+      ];
+      $('overview-cards').innerHTML = cards.join('');
+      $('generated-at').textContent = data.generated_at ? `last update: ${new Date(data.generated_at).toLocaleString()}` : '';
+    }
+
+    function renderGates(data) {
+      $('gates-status').innerHTML = migrationPill(data.migration_applied, data.reason);
+      if (!data.migration_applied) { $('gates-by-kind').innerHTML = ''; $('gates-recent').innerHTML = '<div class="empty">migration uygulandığında veri görünecek.</div>'; return; }
+      const byKind = (data.by_kind || []).reduce((acc, row) => {
+        acc[row.gate_kind] = acc[row.gate_kind] || { total: 0, decisions: {} };
+        acc[row.gate_kind].total += row.n;
+        acc[row.gate_kind].decisions[row.decision_taken] = row.n;
+        return acc;
+      }, {});
+      const cards = Object.entries(byKind).map(([kind, v]) => {
+        const sub = Object.entries(v.decisions).map(([d, n]) => `${d}: ${n}`).join(' · ');
+        return card(kind, v.total, sub);
+      });
+      $('gates-by-kind').innerHTML = cards.join('') || '<div class="empty">henüz event yok.</div>';
+
+      const recent = data.recent || [];
+      if (!recent.length) { $('gates-recent').innerHTML = '<div class="empty">no recent events.</div>'; return; }
+      const rows = recent.map(r =>
+        `<tr><td>${r.created_at}</td><td>${r.ticker || ''}</td><td>${r.gate_kind}</td>` +
+        `<td>${r.decision_taken}</td><td>${r.would_have_blocked ? '⛔ would-block' : ''}</td>` +
+        `<td style="max-width:320px;">${(r.reason || '').replace(/</g,'&lt;')}</td></tr>`).join('');
+      $('gates-recent').innerHTML = `<table><thead><tr><th>time</th><th>ticker</th><th>kind</th><th>decision</th><th>flag</th><th>reason</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+
+    function renderValidation(data) {
+      $('validation-status').innerHTML = migrationPill(data.migration_applied, data.reason);
+      if (!data.migration_applied) { $('validation-by-category').innerHTML = ''; return; }
+      const cards = (data.by_category || []).map(c => card(c.validation_category, c.n));
+      $('validation-by-category').innerHTML = cards.join('') || '<div class="empty">henüz validation kaydı yok.</div>';
+    }
+
+    function renderManifest(data) {
+      $('manifest-status').innerHTML = migrationPill(data.migration_applied, data.reason);
+      if (!data.migration_applied) { $('manifest-table').innerHTML = ''; return; }
+      const rows = (data.by_agent || []).map(r =>
+        `<tr><td>${r.agent_id}</td>` +
+        `<td>${Math.round(r.avg_raw_bytes).toLocaleString()}</td>` +
+        `<td>${Math.round(r.avg_manifest_bytes).toLocaleString()}</td>` +
+        `<td>${r.compression_ratio?.toFixed(2) ?? ''}×</td>` +
+        `<td>${r.truncation_risk_count}</td>` +
+        `<td>${r.n}</td></tr>`).join('');
+      $('manifest-table').innerHTML = rows ?
+        `<table><thead><tr><th>agent</th><th>avg raw bytes</th><th>avg manifest bytes</th><th>compression</th><th>truncation risk</th><th>n runs</th></tr></thead><tbody>${rows}</tbody></table>` :
+        '<div class="empty">henüz manifest kaydı yok.</div>';
+    }
+
+    function renderChecklist(data) {
+      $('checklist-status').innerHTML = migrationPill(data.migration_applied, data.reason);
+      if (!data.migration_applied) { $('checklist-rollup').innerHTML = ''; $('checklist-escalations').innerHTML = ''; return; }
+      const r = data.rollup || {};
+      $('checklist-rollup').innerHTML = [
+        card('Sessions scored', r.sessions_scored ?? 0),
+        card('Avg addressal rate', r.avg_addressal_rate != null ? r.avg_addressal_rate.toFixed(3) : '—'),
+        card('Escalation candidates', r.escalation_count ?? 0, 'rate < 0.7'),
+      ].join('');
+      const esc = data.recent_escalations || [];
+      if (!esc.length) { $('checklist-escalations').innerHTML = '<div class="empty">no escalation candidates.</div>'; return; }
+      const rows = esc.map(e =>
+        `<tr><td>${e.created_at}</td><td>${e.ticker || ''}</td>` +
+        `<td>${e.addressal_rate?.toFixed(3) ?? ''}</td>` +
+        `<td>${e.findings_addressed}/${e.findings_total}</td><td>${e.id}</td></tr>`).join('');
+      $('checklist-escalations').innerHTML =
+        `<table><thead><tr><th>time</th><th>ticker</th><th>rate</th><th>addressed/total</th><th>session id</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+
+    function renderDoctrine(data) {
+      $('doctrine-status').innerHTML = migrationPill(data.migration_applied, data.reason);
+      if (!data.migration_applied) { $('doctrine-hits').innerHTML = ''; return; }
+      const rows = (data.oi_violations || []).map(r =>
+        `<tr><td class="rule">${r.rule}</td><td>${r.n}</td></tr>`).join('');
+      $('doctrine-hits').innerHTML = rows ?
+        `<table><thead><tr><th>rule</th><th>hits</th></tr></thead><tbody>${rows}</tbody></table>` :
+        '<div class="empty">henüz OI-* violation yok (iyi haber).</div>';
+    }
+
+    async function loadAll() {
+      $('status-dot').textContent = 'yükleniyor';
+      $('status-dot').className = 'status-pill pending';
+      try {
+        const [overview, gates, validation, manifest, checklist, doctrine] = await Promise.all([
+          apiGet('/api/refactor/overview'),
+          apiGet('/api/refactor/gates'),
+          apiGet('/api/refactor/validation'),
+          apiGet('/api/refactor/manifest'),
+          apiGet('/api/refactor/checklist'),
+          apiGet('/api/refactor/doctrine'),
+        ]);
+        renderOverview(overview);
+        renderGates(gates);
+        renderValidation(validation);
+        renderManifest(manifest);
+        renderChecklist(checklist);
+        renderDoctrine(doctrine);
+        $('status-dot').textContent = 'bağlı';
+        $('status-dot').className = 'status-pill ok';
+      } catch (err) {
+        $('status-dot').textContent = 'hata: ' + err.message;
+        $('status-dot').className = 'status-pill error';
+      }
+    }
+
+    loadAll();
+    setInterval(loadAll, REFRESH_MS);
+  </script>
+</body>
+</html>

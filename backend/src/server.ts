@@ -13,6 +13,7 @@ import { resumeSession, resumeAllPausedSessions } from './orchestrator.js';
 import { getAllSettings, updateSettings } from './settings.js';
 import { runFeedbackLoop } from './feedback-loop.js';
 import { ANALYSIS_LAYERS, ANALYSIS_MODES, VALID_ANALYSIS_LAYERS, VALID_RUNTIME_MODES, type AnalysisLayer, type RuntimeMode } from './analysis-config.js';
+import { registerRefactorDashboardRoutes } from './refactor/dashboard-api.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ALLOWED_ORIGINS, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_INTERVAL_MIN, NIGHT_TRAINING_HOUR_UTC, LLM_PRIMARY_PROVIDER } from './config.js';
@@ -48,6 +49,22 @@ if (API_KEY) {
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'finance-x-backend' });
 });
+
+// Phase 11A — refactor observability dashboard API.
+registerRefactorDashboardRoutes(app);
+
+// Serve the static refactor dashboard UI. Kept outside the /api auth gate
+// so the HTML loads; the API calls it makes still pass through the API key
+// middleware above. ESM-compatible path resolution.
+const REFACTOR_DASHBOARD_DIR = path.resolve(
+  path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')),
+  '..',
+  'public',
+  'refactor-dashboard',
+);
+if (fs.existsSync(REFACTOR_DASHBOARD_DIR)) {
+  app.use('/refactor-dashboard', express.static(REFACTOR_DASHBOARD_DIR));
+}
 
 // Operational metrics — JSON snapshot of session & agent health.
 // Prometheus-compatible text exposition available at GET /metrics (below).
