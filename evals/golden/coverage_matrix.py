@@ -154,6 +154,35 @@ BENCHMARK_RE = re.compile(r"(sekt[öo]r\s+(benchmark|ortalama)|k[üu]resel\s+ort
 COE_RE = re.compile(r"(\bCoE\b|cost\s+of\s+equity|[öo]zkaynak\s+maliyeti)", re.IGNORECASE)
 IAS29_RE = re.compile(r"IAS\s*29|TAS\s*29|enflasyon\s+muhaseb", re.IGNORECASE)
 
+# Phase 10A extensions ─────────────────────────────────────────────────────────
+# CANONICAL_REF_RE: tokens matching canonical rule ids (MM-01, NH-001, OI-003,
+# CT-002, IAS29-001, SR-aviation-001, TM-THYAO). Positive hits mean the
+# report is actually referencing canonical rules rather than re-deriving them
+# from prose — a prerequisite for Phase 8 memory purge.
+CANONICAL_REF_RE = re.compile(
+    r"\b(MM-[0-9]{2}|NH-[0-9]{3}|CT-[0-9]{3}|OI-[0-9]{3}|IAS29-[0-9]{3}|SR-[a-z_]+-[0-9]{3}|TM-[A-Z]{3,5})\b"
+)
+
+# EVIDENCE_RE: common citation surface markers. Each hit is one evidence
+# pointer. Phase 6 checklist enforcement builds on top of these.
+EVIDENCE_RE = re.compile(
+    r"("
+    r"Not\s+\d+|Footnote\s+\d+|Dipnot\s+\d+|"
+    r"page\s+\d+|sayfa\s+\d+|"
+    r"\bKAP\b\s+(?:disclosure|bildirim|tebli[gğ])|"
+    r"\b(?:20\d{2})\s*(?:Q[1-4]|FY)\b|"
+    r"document[_\s]id\s*[:=]|\bdoi:"
+    r")",
+    re.IGNORECASE,
+)
+
+# SECTION_HEADER_RE: top-level h1/h2 headers. Used to check OI-003 12-section
+# floor. Matches both raw markdown and rendered HTML that retained headers.
+SECTION_HEADER_RE = re.compile(
+    r"(<h[12]\b[^>]*>.*?</h[12]>|^#{1,2}\s+.+$)",
+    re.IGNORECASE | re.MULTILINE,
+)
+
 
 @dataclass
 class Score:
@@ -171,6 +200,10 @@ class Score:
     ias29_refs: int
     benchmark_refs: int
     counter_arg_refs: int
+    # Phase 10A extensions
+    canonical_rule_refs: int = 0
+    evidence_citations: int = 0
+    section_count: int = 0
     metric_presence: dict[str, bool] = field(default_factory=dict)
     sector_kpi_presence: dict[str, bool] = field(default_factory=dict)
 
@@ -200,6 +233,9 @@ def score_report(rel_path: str) -> Score:
         for kname, patterns in SECTOR_KPIS[sector]:
             sector_kpi_presence[kname] = any(re.search(pat, text, re.IGNORECASE) for pat in patterns)
 
+    # Phase 10A: count section headers against the raw document (preserves
+    # HTML tags); prose extraction strips them so the count would always be 0.
+    section_count = len(SECTION_HEADER_RE.findall(raw))
     return Score(
         path=rel_path,
         ticker=ticker,
@@ -215,6 +251,9 @@ def score_report(rel_path: str) -> Score:
         ias29_refs=len(IAS29_RE.findall(text)),
         benchmark_refs=len(BENCHMARK_RE.findall(text)),
         counter_arg_refs=len(COUNTER_ARG_RE.findall(text)),
+        canonical_rule_refs=len(CANONICAL_REF_RE.findall(text)),
+        evidence_citations=len(EVIDENCE_RE.findall(text)),
+        section_count=section_count,
         metric_presence=metric_presence,
         sector_kpi_presence=sector_kpi_presence,
     )
@@ -255,6 +294,10 @@ GUARDED_UP_SIGNALS = {
     "ias29_refs",                   # must not decrease
     "benchmark_refs",               # must not decrease
     "counter_arg_refs",             # must not decrease
+    # Phase 10A — new up-guarded signals
+    "canonical_rule_refs",          # must not decrease (target: rise from 0)
+    "evidence_citations",           # must not decrease
+    "section_count",                # must not decrease
 }
 GUARDED_DOWN_SIGNALS = {
     "truncation_markers",           # must not increase
@@ -274,9 +317,16 @@ def diff_vs_baseline(baseline_path: Path) -> int:
             continue
         cur_d = asdict(s)
         for field_name in GUARDED_UP_SIGNALS:
+            # Phase 10A: tolerate signals absent from older baselines so we
+            # don't invalidate pre-Phase-10A frozen files. Once re-frozen with
+            # the new signals present, this line becomes a no-op for them.
+            if field_name not in b:
+                continue
             if cur_d[field_name] < b[field_name]:
                 regressions.append(f"[DOWN] {s.path} · {field_name}: {b[field_name]} → {cur_d[field_name]}")
         for field_name in GUARDED_DOWN_SIGNALS:
+            if field_name not in b:
+                continue
             if cur_d[field_name] > b[field_name]:
                 regressions.append(f"[UP ] {s.path} · {field_name}: {b[field_name]} → {cur_d[field_name]}")
     if regressions:
@@ -303,11 +353,16 @@ def main(argv: list[str]) -> int:
         return diff_vs_baseline(Path(args.baseline))
     if args.print or not any([args.freeze, args.baseline]):
         scores = score_all()
-        print(f"{'ticker':<6} {'sector':<16} {'mm':>6} {'sk':>5} {'coe':>4} {'ias29':>5} {'trunc':>5} {'bench':>5}  report")
+        print(f"{'ticker':<6} {'sector':<16} {'mm':>6} {'sk':>5} {'coe':>4} {'ias29':>5} {'canon':>5} {'evid':>5} {'secs':>4} {'trunc':>5} {'bench':>5}  report")
         for s in scores:
             mm = f"{s.mandatory_metrics_hit}/{s.mandatory_metrics_total}"
             sk = f"{s.sector_kpi_hit}/{s.sector_kpi_total}" if s.sector_kpi_total else "—"
-            print(f"{(s.ticker or '?'):<6} {(s.sector or '—'):<16} {mm:>6} {sk:>5} {s.coe_refs:>4} {s.ias29_refs:>5} {s.truncation_markers:>5} {s.benchmark_refs:>5}  {Path(s.path).name}")
+            print(
+                f"{(s.ticker or '?'):<6} {(s.sector or '—'):<16} {mm:>6} {sk:>5} {s.coe_refs:>4} "
+                f"{s.ias29_refs:>5} {s.canonical_rule_refs:>5} {s.evidence_citations:>5} "
+                f"{s.section_count:>4} {s.truncation_markers:>5} {s.benchmark_refs:>5}  "
+                f"{Path(s.path).name}"
+            )
         return 0
     return 0
 
