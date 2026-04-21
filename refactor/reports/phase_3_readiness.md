@@ -31,8 +31,8 @@ Tüm riskli işler bu pattern'i takip eder. Atlama yok.
 | --- | --- | --- | --- | --- |
 | QA gate hardening | soft → hard block | observe-only (Phase 3A) | shadow-warn | cohort rollout |
 | CEO approval gate hardening | soft → hard block | observe-only (Phase 3A) | shadow-warn | cohort rollout |
-| Schema `minLength`/`minItems` enforcement | soft string → depth-enforced | shadow validator (Phase 3A) | per-agent opt-in flag | kademeli |
-| Validation retry gate | yok → 4-kategori retry | — | observe-only | shadow |
+| Schema `minLength`/`minItems` enforcement | soft string → depth-enforced | shadow validator (Phase 3A) | shared contract opsiyonel alanlar + 4-kategori classifier (Phase 4A) | per-agent opt-in flag (Phase 4B) |
+| Validation retry gate | yok → 4-kategori retry | scaffold + observe only (Phase 4A) | shadow-warn (Phase 4B) | flag + cohort (Phase 4C) |
 | Manifest/retrieval contract | yok → dual-write | — | dual-write başlar | dual-read pilot |
 | Formatter Chart.js vs SVG | çelişkili | ölçüm (iki modda PDF üret) | karar | flag arkası |
 | Memory purge | prose → ≤2 KB | — (canonical henüz kanıtlanmadı) | — | canonical proof sonrası |

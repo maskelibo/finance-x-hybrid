@@ -9,6 +9,7 @@ import {
   markQaWouldBlockLast,
 } from './gate-observer.js';
 import { shadowValidate } from './schema-shadow-validator.js';
+import { classifyAndRecord } from './validation-gate.js';
 import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
 import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
@@ -977,14 +978,30 @@ ${esgPythonOutput.slice(0, 10000)}
 
       // Phase 3A observe-only: canonical depth shadow validator. Logs
       // violations; never throws; never blocks.
+      // Phase 4A observe-only: validation-gate classifies each violation into
+      // the 4-category taxonomy (missing_metric / unaddressed_finding /
+      // shallow_interpretation / broken_structure) and also runs a cross-agent
+      // acknowledgement check against the latest qa_review output. Both still
+      // log-only — no retry, no routing, no blocking.
       try {
         const modeRow = db.prepare(`SELECT runtime_mode FROM analysis_sessions WHERE id = ?`)
           .get(sessionId) as { runtime_mode: string | null } | undefined;
-        shadowValidate(agentId, result.output, {
+        const runtimeModeForShadow = modeRow?.runtime_mode ?? null;
+        const shadowResult = shadowValidate(agentId, result.output, {
           sessionId,
           ticker,
-          runtimeMode: modeRow?.runtime_mode ?? null,
+          runtimeMode: runtimeModeForShadow,
         });
+        try {
+          classifyAndRecord({
+            sessionId,
+            agentId,
+            ticker,
+            runtimeMode: runtimeModeForShadow,
+            shadowViolations: shadowResult.violations,
+            currentOutput: result.output,
+          });
+        } catch { /* validation-gate must not break the pipeline */ }
       } catch { /* shadow validator must not break the pipeline */ }
 
       // Schema validation — warn or soft_block (pipeline never stops; soft_block marks critical agents degraded)
