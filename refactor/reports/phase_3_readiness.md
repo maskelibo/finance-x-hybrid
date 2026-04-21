@@ -39,6 +39,7 @@ Tüm riskli işler bu pattern'i takip eder. Atlama yok.
 | Memory purge | prose → ≤2 KB | — (canonical henüz kanıtlanmadı) | — | canonical proof sonrası |
 | Dead code deletion | statik → silinmiş | — (her zaman en son) | reference proof | archive + silme |
 | Regression harness | 15 rapor × 12 metrik | extended goldens (canonical_rule_refs + evidence_citations + section_count) + canonical structure test (Phase 10A) | quality scorecard (Phase 10B) | historical trend dashboard (Phase 11) |
+| Observability dashboard | yok → canlı | 6 API endpoint + static UI (Phase 11A) | trend grafikleri (Phase 11B) | alerting + CSV export (Phase 11C/D) |
 
 ---
 
