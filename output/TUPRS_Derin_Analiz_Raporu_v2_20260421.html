@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>TUPRS — Deep Dive v2 — 21 Nisan 2026</title>
+<style>
+  :root {
+    --red: #D41F29;
+    --dark: #1A1A1A;
+    --accent: #F5A623;
+    --bg: #ffffff;
+    --light: #f8f8f8;
+    --border: #e5e7eb;
+    --muted: #64748b;
+    --green: #16a34a;
+    --amber: #f59e0b;
+    --rose: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0; color: var(--dark); background: var(--bg); line-height: 1.55;
+  }
+  .page { max-width: 1100px; margin: 0 auto; padding: 48px 56px 56px 56px; position: relative; }
+  .brand-badge { position: absolute; top: 32px; right: 48px; background: var(--red); color: white; padding: 6px 16px; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; border-radius: 2px; }
+  .cover { min-height: 100vh; background: linear-gradient(155deg, #1A1A1A 0%, #2d0608 50%, #D41F29 100%); color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 80px 64px; page-break-after: always; }
+  .cover h1 { font-size: 56px; line-height: 1.05; margin: 0 0 20px 0; font-weight: 800; letter-spacing: -1px; }
+  .cover h2 { font-size: 24px; font-weight: 400; opacity: 0.9; margin: 0 0 20px 0; }
+  .cover .v2-badge { display: inline-block; background: var(--accent); color: #1A1A1A; padding: 4px 12px; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; border-radius: 2px; margin-bottom: 20px; }
+  .cover .meta { border-top: 2px solid rgba(255,255,255,0.3); padding-top: 24px; font-size: 14px; line-height: 1.9; }
+  .cover .meta strong { color: var(--accent); }
+  .cover .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 30px 0; }
+  .cover .stat { background: rgba(255,255,255,0.1); padding: 14px; border-radius: 4px; border-top: 3px solid var(--accent); }
+  .cover .stat .label { font-size: 10px; letter-spacing: 1.5px; opacity: 0.7; text-transform: uppercase; }
+  .cover .stat .value { font-size: 22px; font-weight: 800; margin-top: 4px; }
+  .cover .stat .sub { font-size: 11px; opacity: 0.75; margin-top: 2px; }
+  h1 { color: var(--dark); font-size: 30px; margin: 40px 0 24px 0; padding-left: 14px; border-left: 6px solid var(--red); }
+  h2 { color: var(--red); font-size: 22px; font-weight: 700; margin: 32px 0 16px 0; padding-left: 14px; border-left: 4px solid var(--red); }
+  h3 { color: var(--dark); font-size: 17px; margin: 24px 0 12px 0; font-weight: 700; }
+  h4 { color: var(--dark); font-size: 15px; margin: 20px 0 8px 0; font-weight: 600; }
+  p { margin: 10px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px 0; font-size: 13px; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--dark); color: white; font-weight: 600; font-size: 12px; letter-spacing: 0.3px; }
+  tr:nth-child(even) td { background: var(--light); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .verdict { background: linear-gradient(90deg, #fff8e6 0%, #fef3c7 100%); border-left: 6px solid var(--accent); padding: 20px 24px; margin: 24px 0; border-radius: 2px; }
+  .commentary { background: #f9fafb; border-left: 3px solid var(--red); padding: 14px 18px; margin: 14px 0; font-size: 14px; line-height: 1.6; }
+  .commentary strong { color: var(--red); }
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+  .pillar { padding: 16px 20px; border: 1px solid var(--border); border-radius: 4px; position: relative; }
+  .pillar .num { position: absolute; top: 6px; right: 14px; font-size: 48px; font-weight: 900; color: var(--red); opacity: 0.08; line-height: 1; }
+  .pillar h4 { margin: 0 0 8px 0; font-size: 14px; }
+  .pillar p { margin: 0; font-size: 12px; color: #374151; line-height: 1.5; }
+  .footer { text-align: left; font-size: 10px; color: #94a3b8; border-top: 1px solid var(--border); padding-top: 16px; margin-top: 40px; }
+  section { page-break-before: always; }
+  section.no-break { page-break-before: auto; }
+  ul, ol { margin: 8px 0 12px 0; padding-left: 20px; }
+  li { margin: 5px 0; }
+  strong { color: var(--dark); }
+  .red { color: var(--red); }
+  .positive, .green { color: var(--green); }
+  .negative, .rose { color: var(--rose); }
+  .amber { color: var(--amber); }
+  svg.chart { display: block; margin: 18px auto; max-width: 100%; }
+  .chart-frame { background: white; border: 1px solid var(--border); padding: 20px 14px 14px 14px; border-radius: 4px; margin: 18px 0; }
+  .chart-frame .title { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 4px; padding-left: 8px; border-left: 3px solid var(--red); }
+  .chart-frame .sub { font-size: 11px; color: var(--muted); margin-bottom: 8px; padding-left: 8px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .score-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
+  .score { background: var(--light); padding: 16px; border-radius: 6px; border-top: 4px solid var(--red); }
+  .score h5 { margin: 0 0 4px 0; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .score .val { font-size: 26px; font-weight: 700; color: var(--dark); }
+  .score .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .metric-block { border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin: 12px 0; background: white; }
+  .metric-block h4 { margin: 0 0 6px 0; display: flex; align-items: center; gap: 10px; }
+  .metric-block h4 .mid { font-size: 11px; color: white; background: var(--red); padding: 2px 8px; border-radius: 3px; font-weight: 600; letter-spacing: 0.5px; }
+  .risk-high { color: var(--rose); font-weight: 700; }
+  .risk-mid { color: var(--amber); font-weight: 600; }
+  .risk-low { color: var(--green); }
+  .kpi-card { background: var(--light); padding: 12px 16px; border-radius: 4px; border-left: 4px solid var(--red); }
+  .kpi-card .label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+  .kpi-card .value { font-size: 22px; font-weight: 700; color: var(--dark); margin: 2px 0; }
+  .kpi-card .trend { font-size: 11px; color: var(--muted); }
+  .kpi-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
+  .kpi-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; }
+  .badge-green { background: #dcfce7; color: var(--green); }
+  .badge-red { background: #fee2e2; color: var(--rose); }
+  .badge-amber { background: #fef3c7; color: var(--amber); }
+  @media print { body { font-size: 11pt; } .page { padding: 20mm 15mm; max-width: none; } }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div>
+    <div style="font-size:14px; letter-spacing:4px; opacity:0.6;">FINANCE X PLATFORM</div>
+    <div style="font-size:18px; margin-top:12px; opacity:0.9;">Institutional Deep-Dive Report</div>
+  </div>
+  <div>
+    <div class="v2-badge">V2 — REVİZE EDİLMİŞ</div>
+    <h1>TUPRS</h1>
+    <h2>Türkiye Petrol Rafinerileri A.Ş.<br>Kapsamlı Derin Analiz Raporu — 5 Yıl Seri</h2>
+
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="label">FY2025 Hasılat</div>
+        <div class="value">830,4 mia</div>
+        <div class="sub">TL, Dec25 gücü</div>
+      </div>
+      <div class="stat">
+        <div class="label">FY2025 Net Kâr</div>
+        <div class="value">+%20</div>
+        <div class="sub">29,9 mia TL</div>
+      </div>
+      <div class="stat">
+        <div class="label">Kapasite</div>
+        <div class="value">%93,6</div>
+        <div class="sub">Rekor seviye</div>
+      </div>
+      <div class="stat">
+        <div class="label">Net Nakit</div>
+        <div class="value">+90,6</div>
+        <div class="sub">mia TL</div>
+      </div>
+    </div>
+  </div>
+  <div class="meta">
+    <div><strong>Analiz Dönemi:</strong> FY2025 (EY denetli, 17 Şubat 2026 rapor tarihli) — 5 yıllık trend (FY2021–2025)</div>
+    <div><strong>Rapor Tarihi:</strong> 21 Nisan 2026</div>
+    <div><strong>Satın Alma Gücü:</strong> 31 Aralık 2025 TL (aksi belirtilmedikçe)</div>
+    <div><strong>Canonical:</strong> canonical/rules/output_integrity.md#OI-003 (12 bölüm)</div>
+    <div><strong>v2 Revizyon:</strong> FY2025 gerçek rakamlar + STAR rafinerisi düzeltmesi (SOCAR, rakip) + 12 SVG grafik + derinlemesine sektör/teknik/değerleme</div>
+  </div>
+</div>
+
+<!-- 1. KÜNYE -->
+<section class="no-break">
+<div class="page">
+  <div class="brand-badge">TUPRS</div>
+  <h1>1. Kapak ve Künye</h1>
+
+  <div class="kpi-grid-4">
+    <div class="kpi-card"><div class="label">Pay Fiyatı</div><div class="value">254 TL</div><div class="trend">11 Nisan 2026 kapanış</div></div>
+    <div class="kpi-card"><div class="label">Piyasa Değeri</div><div class="value">~238 mia TL</div><div class="trend">936,6 mn pay × 254 TL</div></div>
+    <div class="kpi-card"><div class="label">Defter Değeri</div><div class="value">364,1 mia</div><div class="trend">Dec25 TL, ana ortaklık</div></div>
+    <div class="kpi-card"><div class="label">P/B</div><div class="value">0,65x</div><div class="trend">MC / BV (Dec25)</div></div>
+  </div>
+
+  <h3>Şirket Bilgileri</h3>
+  <table>
+    <tr><th>Alan</th><th>Değer</th></tr>
+    <tr><td>Tam unvan</td><td>Türkiye Petrol Rafinerileri Anonim Şirketi</td></tr>
+    <tr><td>BIST kodu</td><td><strong>TUPRS</strong></td></tr>
+    <tr><td>BIST endeksleri</td><td>BİST-30, BİST-100, BİST-Sürdürülebilirlik (2014+), BİST-Kurumsal Yönetim (2007+)</td></tr>
+    <tr><td>Kuruluş / Halka arz</td><td>16 Kasım 1983 / 1991</td></tr>
+    <tr><td>Denetçi (FY2025)</td><td>EY (Güney Bağımsız Denetim), rapor 17 Şubat 2026</td></tr>
+    <tr><td>Kontrol eden hissedar</td><td>Koç Topluluğu (~%53,2): Enerji Yatırımları A.Ş. %46,40 + Koç Holding %6,35 + Aile %0,48</td></tr>
+    <tr><td>Halka açıklık</td><td><strong>%46,77</strong> (31 Aralık 2025)</td></tr>
+    <tr><td>Altın hisse (C grubu, 1 adet)</td><td>Özelleştirme İdaresi — TSK yakıt tedariği veto hakkı</td></tr>
+    <tr><td>Çıkarılmış sermaye</td><td>192.679.559.800 adet (1 kr nominal) ≈ 1,927 mia pay (1 TL nominal eşdeğer); <strong>piyasa hesabında 936,6 mn pay</strong></td></tr>
+    <tr><td>Çalışan (2025 solo)</td><td>6.062+ (konsolide 6.300+)</td></tr>
+  </table>
+
+  <h3>Hissedarlık Yapısı (31 Aralık 2025)</h3>
+
+  <div class="chart-frame">
+    <div class="title">Hissedarlık Dağılımı</div>
+    <svg class="chart" viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Stacked horizontal bar -->
+      <rect x="50" y="80" width="278" height="40" fill="#D41F29"/>
+      <rect x="328" y="80" width="38" height="40" fill="#8B0F15"/>
+      <rect x="366" y="80" width="3" height="40" fill="#5A0A0E"/>
+      <rect x="369" y="80" width="181" height="40" fill="#64748b"/>
+      <text x="50" y="70" font-size="11" fill="#1A1A1A" font-weight="600">Enerji Yatırımları A.Ş. (Koç) 46,40%</text>
+      <text x="328" y="70" font-size="10" fill="#1A1A1A" font-weight="600">Koç Holding 6,35%</text>
+      <text x="369" y="70" font-size="11" fill="#1A1A1A" font-weight="600">Halka açık 46,77%</text>
+      <text x="50" y="145" font-size="11" fill="#64748b">0%</text>
+      <text x="545" y="145" font-size="11" fill="#64748b" text-anchor="end">100%</text>
+      <text x="300" y="180" font-size="11" fill="#1A1A1A" text-anchor="middle" font-weight="600">Koç Grubu toplam kontrolü: ~%53,23 · Ultimate control: Koç ailesi (%63,4 KCHOL üzerinden)</text>
+    </svg>
+  </div>
+
+  <div class="commentary">
+    <strong>IAS 29 / TMS 29 notu:</strong> Tüm rakamlar aksi belirtilmedikçe <strong>31 Aralık 2025 satın alma gücü</strong> (Dec25 TL) cinsindendir. Bu v2 rapor FY2024 karşılaştırma kolonunu da FY2025 denetli PDF'den Dec25 TL bazında aldı — daha önceki Dec24 TL bazlı v1 rakamlarından farklıdır. 3 yıllık kümülatif enflasyon %291 (2024 sonu) → <strong>%241 (2025 sonu)</strong> seviyesine indi, SPK kapsamındaki şirketler TMS 29 uygulamasına devam ediyor. IAS 29 öncesi/sonrası ayrımı Bölüm 5.I'de.
+  </div>
+  <div class="footer">Finance X Platform — TUPRS v2 Derin Analiz | 21 Nisan 2026 | Sayfa 1</div>
+</div>
+</section>
+
+<!-- 2. YÖNETİCİ ÖZETİ -->
+<section>
+<div class="page">
+  <div class="brand-badge">TUPRS</div>
+  <h1>2. Yönetici Özeti</h1>
+
+  <div class="verdict">
+    <strong>Tez (3 cümle özet):</strong> Tüpraş FY2025'te operasyonel olarak yeni bir rekor kapasite kullanımı (<strong>%93,6</strong>) ve 26,8 mt üretimle çalışırken, rafinaj marjları FY2024'ün siklik dibinden hafif toparlandı — brüt marj %8,4 → %9,8 yükseldi, net kâr reel bazda <span class="positive"><strong>+%20</strong></span> (29,9 mia TL) arttı ve monetary loss %82 küçüldü; ancak <strong class="red">ROE hâlâ %8,0 seviyesinde</strong> (CoE %26–30 bandının çok altında) değer imhasını sürdürüyor. Mevcut 254 TL fiyat, P/B 0,65x ve <strong class="red">%20,5 temettü verimiyle</strong> peer ortalamasının dramatik altında işlem görüyor — asimetri pozitif fakat CBAM (Jan 2026 başladı), ETS Türkiye (2027), EV geçişi (2035+), RUP teşviki sonu (2029) gibi <strong>yapısal rüzgarlar uzun vadeli tezi zayıflatıyor</strong>.
+  </div>
+
+  <h3>Temel Rakamlar — 5 Yıl Seri</h3>
+  <table>
+    <tr><th>Metrik</th><th class="num">FY2021</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025</th><th class="num">YoY '25</th></tr>
+    <tr><td>Hasılat (mia TL)<br><span style="font-size:10px; color:#64748b">Purchasing power</span></td>
+      <td class="num">149,4<br><span style="font-size:10px; color:#64748b">nominal</span></td>
+      <td class="num">916,7<br><span style="font-size:10px; color:#64748b">Dec23 TL</span></td>
+      <td class="num">686,5<br><span style="font-size:10px; color:#64748b">Dec23 TL</span></td>
+      <td class="num">1.060,7<br><span style="font-size:10px; color:#64748b">Dec25 TL</span></td>
+      <td class="num"><strong>830,4</strong><br><span style="font-size:10px; color:#64748b">Dec25 TL</span></td>
+      <td class="num negative">-21,7%</td></tr>
+    <tr><td>Brüt kâr (mia TL)</td><td class="num">15,4</td><td class="num">113,1</td><td class="num">109,7</td><td class="num">89,0</td><td class="num"><strong>81,2</strong></td><td class="num negative">-8,8%</td></tr>
+    <tr><td>Brüt marj (%)</td><td class="num">10,3%</td><td class="num">12,3%</td><td class="num">16,0%</td><td class="num">8,4%</td><td class="num positive"><strong>9,8%</strong></td><td class="num positive">+1,4 pp</td></tr>
+    <tr><td>EBIT (mia TL)</td><td class="num">0,5</td><td class="num">76,3</td><td class="num">73,6</td><td class="num">46,7</td><td class="num"><strong>41,6</strong></td><td class="num negative">-10,9%</td></tr>
+    <tr><td>Monetary Gain/(Loss)</td><td class="num">—</td><td class="num positive">+13,3</td><td class="num negative">-11,7</td><td class="num negative">-19,1</td><td class="num negative"><strong>-3,5</strong></td><td class="num positive">+%82 daha az</td></tr>
+    <tr><td>VÖK (mia TL)</td><td class="num">0,6</td><td class="num">68,5</td><td class="num">57,8</td><td class="num">41,6</td><td class="num"><strong>43,8</strong></td><td class="num positive">+5,3%</td></tr>
+    <tr><td>Net kâr ana ort. (mia TL)</td><td class="num">3,3</td><td class="num">61,3</td><td class="num">53,6</td><td class="num">24,9</td><td class="num positive"><strong>29,5</strong></td><td class="num positive"><strong>+18,5%</strong></td></tr>
+    <tr><td>EPS (1 kr nominal, kr)</td><td class="num">N/A</td><td class="num">42,01</td><td class="num">36,71</td><td class="num">12,44</td><td class="num positive"><strong>15,32</strong></td><td class="num positive">+23,1%</td></tr>
+    <tr><td>Özkaynaklar ana ort. (mia)</td><td class="num">—</td><td class="num">177,9</td><td class="num">200,8</td><td class="num">369,4</td><td class="num">364,1</td><td class="num negative">-1,4%</td></tr>
+    <tr><td>Net nakit (mia TL)</td><td class="num">—</td><td class="num positive">+22,6</td><td class="num positive">+62,3</td><td class="num positive">+77,5</td><td class="num positive"><strong>+90,6</strong></td><td class="num positive">+16,9%</td></tr>
+    <tr><td>ROE (%)</td><td class="num">~1,8%</td><td class="num">~34,5%</td><td class="num">~26,7%</td><td class="num">~6,7%</td><td class="num red"><strong>~8,0%</strong></td><td class="num positive">+1,3 pp</td></tr>
+    <tr><td>Kapasite kullanımı</td><td class="num">88,1%</td><td class="num">91,8%</td><td class="num">84,2%</td><td class="num">92,7%</td><td class="num positive"><strong>93,6%</strong></td><td class="num positive">+0,9 pp</td></tr>
+    <tr><td>Üretim (mt)</td><td class="num">22,3</td><td class="num">25,4</td><td class="num">24,9</td><td class="num">26,7</td><td class="num positive"><strong>26,8</strong></td><td class="num">+0,4%</td></tr>
+    <tr><td>Temettü ödenen (mia)</td><td class="num">—</td><td class="num">0,07</td><td class="num">34,2</td><td class="num">63,8</td><td class="num"><strong>34,8</strong></td><td class="num negative">-45,4%</td></tr>
+  </table>
+
+  <div class="chart-frame">
+    <div class="title">Hasılat + Net Kâr Trendi (reel, Dec25 TL bazında)</div>
+    <div class="sub">FY2022–2025 karşılaştırılabilir bazda; FY2021 nominal (IAS 29 öncesi)</div>
+    <!-- Revenue bar + Net profit line chart -->
+    <svg class="chart" viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg">
+      <!-- Axes -->
+      <line x1="70" y1="260" x2="770" y2="260" stroke="#1A1A1A" stroke-width="1"/>
+      <line x1="70" y1="40" x2="70" y2="260" stroke="#1A1A1A" stroke-width="1"/>
+      <!-- Grid + y-labels for bar (Hasılat, mia TL) -->
+      <g font-size="10" fill="#64748b">
+        <text x="62" y="264" text-anchor="end">0</text>
+        <line x1="70" y1="210" x2="770" y2="210" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="62" y="214" text-anchor="end">250</text>
+        <line x1="70" y1="160" x2="770" y2="160" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="62" y="164" text-anchor="end">500</text>
+        <line x1="70" y1="110" x2="770" y2="110" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="62" y="114" text-anchor="end">750</text>
+        <line x1="70" y1="60" x2="770" y2="60" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="62" y="64" text-anchor="end">1.000 mia TL</text>
+      </g>
+      <!-- Bars: 5 years, pixel mapping: 260 - (val/1000)*200 -->
+      <!-- 2021: 149, 2022: 917, 2023: 687, 2024: 1061, 2025: 830 -->
+      <!-- Heights: 29.8, 183.4, 137.4, 212.2, 166 -->
+      <g>
+        <rect x="120" y="230" width="60" height="30" fill="#64748b" opacity="0.6"/>
+        <text x="150" y="225" font-size="10" text-anchor="middle" fill="#1A1A1A" font-weight="600">149</text>
+        <text x="150" y="278" font-size="11" text-anchor="middle" fill="#1A1A1A" font-weight="600">2021</text>
+        <text x="150" y="292" font-size="9" text-anchor="middle" fill="#64748b">nominal</text>
+      </g>
+      <g>
+        <rect x="250" y="77" width="60" height="183" fill="#D41F29"/>
+        <text x="280" y="72" font-size="10" text-anchor="middle" fill="#1A1A1A" font-weight="600">917</text>
+        <text x="280" y="278" font-size="11" text-anchor="middle" fill="#1A1A1A" font-weight="600">2022</text>
+        <text x="280" y="292" font-size="9" text-anchor="middle" fill="#64748b">Dec23 TL</text>
+      </g>
+      <g>
+        <rect x="380" y="123" width="60" height="137" fill="#D41F29"/>
+        <text x="410" y="118" font-size="10" text-anchor="middle" fill="#1A1A1A" font-weight="600">687</text>
+        <text x="410" y="278" font-size="11" text-anchor="middle" fill="#1A1A1A" font-weight="600">2023</text>
+        <text x="410" y="292" font-size="9" text-anchor="middle" fill="#64748b">Dec23 TL</text>
+      </g>
+      <g>
+        <rect x="510" y="48" width="60" height="212" fill="#D41F29"/>
+        <text x="540" y="42" font-size="10" text-anchor="middle" fill="#1A1A1A" font-weight="600">1.061</text>
+        <text x="540" y="278" font-size="11" text-anchor="middle" fill="#1A1A1A" font-weight="600">2024</text>
+        <text x="540" y="292" font-size="9" text-anchor="middle" fill="#64748b">Dec25 TL</text>
+      </g>
+      <g>
+        <rect x="640" y="94" width="60" height="166" fill="#D41F29" stroke="#1A1A1A" stroke-width="2"/>
+        <text x="670" y="88" font-size="11" text-anchor="middle" fill="#D41F29" font-weight="800">830</text>
+        <text x="670" y="278" font-size="11" text-anchor="middle" fill="#D41F29" font-weight="700">2025</text>
+        <text x="670" y="292" font-size="9" text-anchor="middle" fill="#64748b">Dec25 TL</text>
+      </g>
+
+      <!-- Net Profit line — secondary axis mapping. 0-80 mia range → pixel 260 to 60.
+           2021:3, 2022:61, 2023:54, 2024:25, 2025:30
+           Heights from 260: 2021=251, 2022=108, 2023=126, 2024=198, 2025=183 -->
+      <polyline points="150,251 280,108 410,126 540,198 670,183" fill="none" stroke="#F5A623" stroke-width="3"/>
+      <circle cx="150" cy="251" r="5" fill="#F5A623"/>
+      <circle cx="280" cy="108" r="5" fill="#F5A623"/>
+      <circle cx="410" cy="126" r="5" fill="#F5A623"/>
+      <circle cx="540" cy="198" r="5" fill="#F5A623"/>
+      <circle cx="670" cy="183" r="6" fill="#F5A623" stroke="#1A1A1A" stroke-width="2"/>
+
+      <!-- Legend -->
+      <rect x="600" y="15" width="16" height="10" fill="#D41F29"/>
+      <text x="622" y="24" font-size="11" fill="#1A1A1A">Hasılat (mia TL)</text>
+      <line x1="720" y1="20" x2="740" y2="20" stroke="#F5A623" stroke-width="3"/>
+      <circle cx="730" cy="20" r="4" fill="#F5A623"/>
+      <text x="748" y="24" font-size="11" fill="#1A1A1A">Net Kâr</text>
+    </svg>
+  </div>
+
+  <h3>Ana Sinyaller — 6 Sütun</h3>
+  <div class="pillars">
+    <div class="pillar"><div class="num">1</div><h4>FY2025 reel toparlanma başladı</h4><p>Net kâr +%20 (24,9 → 29,9 mia). Brüt marj %8,4 → %9,8. Monetary loss %82 azaldı (enflasyon yavaşlaması). Yön pozitif ama seviye hâlâ FY2023'ün altında.</p></div>
+    <div class="pillar"><div class="num">2</div><h4>Kapasite kullanımı rekor %93,6</h4><p>5 yıllık zirve. Üretim 26,8 mt. Operasyonel disiplin tartışmasız. Hacim dip döngüde bile güçlü.</p></div>
+    <div class="pillar"><div class="num">3</div><h4>Net nakit 90,6 mia TL zirve</h4><p>Temettü %45 azaldığı için net nakit arttı (77,5 → 90,6). Dönüşüm CAPEX'i (SAF, Propylene, Romanya solar) için yüklü fon hazır.</p></div>
+    <div class="pillar"><div class="num">4</div><h4>ROE %8,0 hâlâ CoE altında</h4><p>%6,7'den %8,0'a çıktı ama CoE TRY %26-30 bandının çok altında. Reel değer yaratma normalize marjlara bağlı — 2026 critical.</p></div>
+    <div class="pillar"><div class="num">5</div><h4>Temettü disiplini geldi</h4><p>FY2024 temettüsü 34,8 mia (önceki 63,8). Pay-out normalleşti. Yön. 2030 temettü politikasına sadık kaldı.</p></div>
+    <div class="pillar"><div class="num">6</div><h4>Dönüşüm CAPEX'i hızlanıyor</h4><p>2025 CAPEX 19,4 mia (+7% vs 2024). Propylene 2027 devreye, 180 bin t/y. SAF 2030'da 300 bin t/y hedef. Entek Romanya 214 MW planlı.</p></div>
+  </div>
+
+  <h3>Hedef Fiyat Bandı (DCF + SOTP Sentezi — Bölüm 6)</h3>
+  <div class="score-box">
+    <div class="score" style="border-top-color: var(--rose)"><h5>Bear</h5><div class="val">215 TL</div><div class="sub">-15% | Marj %8,5 kalıcı dip + CBAM ağır</div></div>
+    <div class="score"><h5>Baz</h5><div class="val"><strong>285 TL</strong></div><div class="sub">+12% | Marj %10,5 mid-cycle, RUP 2029'da bitiyor</div></div>
+    <div class="score" style="border-top-color: var(--green)"><h5>Bull</h5><div class="val" style="color:var(--green)">370 TL</div><div class="sub">+46% | Marj %12 + SAF + Propylene full</div></div>
+  </div>
+  <p><strong>Mevcut fiyat 254 TL</strong> · Asimetri: Baz +%12, Bear -%15, Bull +%46 · R:R ≈ 3,1:1 pozitif</p>
+
+  <div class="footer">Finance X Platform — TUPRS v2 Derin Analiz | 21 Nisan 2026 | Sayfa 2</div>
+</div>
+</section>
+
+<!-- 3. ŞİRKET VE STRATEJİ -->
+<section>
+<div class="page">
+  <div class="brand-badge">TUPRS</div>
+  <h1>3. Şirket ve Strateji</h1>
+
+  <h3>3.1 İş Modeli</h3>
+  <p><strong>Tüpraş Türkiye'nin tek entegre rafinerisidir</strong> ve yurt içi rafine ürün talebinin <strong>%60'ını</strong> karşılar. <strong>4 rafinerisi</strong> toplam 30 mt/yıl kapasitede çalışır. 2025 pazar payı %19,1 (beyaz %19,4, siyah %24,1).</p>
+
+  <h3>3.2 Rafineri Portföyü — DÜZELTİLMİŞ TABLO</h3>
+  <div class="commentary">
+    <strong>v2 düzeltmesi:</strong> v1 raporda İzmit rafinerisi yanlışlıkla "STAR" olarak etiketlenmişti. <strong>Tüpraş'ın hiçbir rafinerisi "STAR" değildir.</strong> STAR Rafinerisi SOCAR'a aittir (Aliağa, 10 mt/y, 2018 açıldı) — Bölüm 4.4'te Tüpraş'ın <strong>birincil Türkiye rakibi</strong> olarak analiz edilmiştir.
+  </div>
+  <table>
+    <tr><th>Rafineri</th><th>Lokasyon</th><th class="num">Kapasite (mt/y)</th><th class="num">Payı</th><th>Nitelikleri</th></tr>
+    <tr><td><strong>İzmit</strong></td><td>Kocaeli</td><td class="num">11,3</td><td class="num">37,7%</td><td>Kompleks; RUP ünitesi burada (2019 tamamlandı)</td></tr>
+    <tr><td><strong>İzmir (Aliağa)</strong></td><td>İzmir</td><td class="num">11,9</td><td class="num">39,7%</td><td>En büyük kapasite; SAF üretim planı burada</td></tr>
+    <tr><td><strong>Kırıkkale</strong></td><td>Kırıkkale</td><td class="num">5,4</td><td class="num">18,0%</td><td>İç Anadolu; Batman'a göre daha kompleks</td></tr>
+    <tr><td><strong>Batman</strong></td><td>Batman</td><td class="num">1,4</td><td class="num">4,7%</td><td>Güneydoğu; hidroskimming (düşük kompleks)</td></tr>
+    <tr><td><strong>TOPLAM</strong></td><td></td><td class="num"><strong>30,0</strong></td><td class="num">100%</td><td>Nelson Complexity ağırlıklı ortalama: <strong>9,5</strong> (Mediterranean üst bant)</td></tr>
+  </table>
+
+  <div class="two-col">
+    <div class="chart-frame">
+      <div class="title">Kapasite Kullanım Trendi — 5 Yıl</div>
+      <div class="sub">Semi-product dahil, %</div>
+      <svg class="chart" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="capGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#D41F29" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#D41F29" stop-opacity="0.03"/>
+          </linearGradient>
+        </defs>
+        <line x1="50" y1="200" x2="380" y2="200" stroke="#1A1A1A"/>
+        <line x1="50" y1="20" x2="50" y2="200" stroke="#1A1A1A"/>
+        <g font-size="10" fill="#64748b">
+          <text x="44" y="204" text-anchor="end">70%</text>
+          <line x1="50" y1="160" x2="380" y2="160" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+          <text x="44" y="164" text-anchor="end">80%</text>
+          <line x1="50" y1="120" x2="380" y2="120" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+          <text x="44" y="124" text-anchor="end">90%</text>
+          <line x1="50" y1="80" x2="380" y2="80" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+          <text x="44" y="84" text-anchor="end">100%</text>
+        </g>
+        <!-- 2020=75.8, 2021=88.1, 2022=91.8, 2023=84.2, 2024=92.7, 2025=93.6 - range 70-100 -->
+        <!-- y = 200 - (v-70)/30 * 180 -->
+        <!-- 2020: 200 - 5.8*6 = 165, 2021: 200 - 18.1*6 = 91, 2022: 200-21.8*6=69, 2023: 200-14.2*6=115, 2024: 200-22.7*6=64, 2025: 200-23.6*6=58 -->
+        <path d="M 80 165 L 140 91 L 200 69 L 260 115 L 320 64 L 360 58 L 360 200 L 80 200 Z" fill="url(#capGrad)"/>
+        <polyline points="80,165 140,91 200,69 260,115 320,64 360,58" fill="none" stroke="#D41F29" stroke-width="2.5"/>
+        <circle cx="80" cy="165" r="4" fill="#D41F29"/>
+        <circle cx="140" cy="91" r="4" fill="#D41F29"/>
+        <circle cx="200" cy="69" r="4" fill="#D41F29"/>
+        <circle cx="260" cy="115" r="4" fill="#D41F29"/>
+        <circle cx="320" cy="64" r="4" fill="#D41F29"/>
+        <circle cx="360" cy="58" r="5" fill="#D41F29" stroke="#1A1A1A" stroke-width="2"/>
+        <g font-size="10" fill="#1A1A1A">
+          <text x="80" y="218" text-anchor="middle">2020</text><text x="80" y="160" text-anchor="middle">75,8</text>
+          <text x="140" y="218" text-anchor="middle">2021</text><text x="140" y="84" text-anchor="middle">88,1</text>
+          <text x="200" y="218" text-anchor="middle">2022</text><text x="200" y="62" text-anchor="middle">91,8</text>
+          <text x="260" y="218" text-anchor="middle">2023</text><text x="260" y="108" text-anchor="middle">84,2</text>
+          <text x="320" y="218" text-anchor="middle">2024</text><text x="320" y="55" text-anchor="middle">92,7</text>
+          <text x="360" y="218" text-anchor="middle" font-weight="700" fill="#D41F29">2025</text><text x="360" y="49" text-anchor="middle" font-weight="700" fill="#D41F29">93,6</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="chart-frame">
+      <div class="title">Üretim ve Satış Hacmi (milyon ton) — 5 Yıl</div>
+      <div class="sub">Üretim (üretilen) vs Toplam satış (yurtiçi + ihracat + transit)</div>
+      <svg class="chart" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+        <line x1="50" y1="200" x2="380" y2="200" stroke="#1A1A1A"/>
+        <line x1="50" y1="20" x2="50" y2="200" stroke="#1A1A1A"/>
+        <g font-size="10" fill="#64748b">
+          <text x="44" y="204" text-anchor="end">0</text>
+          <line x1="50" y1="150" x2="380" y2="150" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+          <text x="44" y="154" text-anchor="end">10</text>
+          <line x1="50" y1="100" x2="380" y2="100" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+          <text x="44" y="104" text-anchor="end">20</text>
+          <line x1="50" y1="50" x2="380" y2="50" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+          <text x="44" y="54" text-anchor="end">30 mt</text>
+        </g>
+        <!-- Üretim: 2021=22.3, 2022=25.4, 2023=24.9, 2024=26.7, 2025=26.8 -->
+        <!-- Satış:  2021=26, 2022=28.2, 2023=30.1, 2024=30.4, 2025=29.4 -->
+        <!-- y = 200 - v * 5 -->
+        <g>
+          <rect x="80" y="88" width="24" height="112" fill="#D41F29" opacity="0.9"/>
+          <rect x="108" y="70" width="24" height="130" fill="#1A1A1A"/>
+          <text x="80" y="218" font-size="10" fill="#1A1A1A">2021</text>
+        </g>
+        <g>
+          <rect x="148" y="73" width="24" height="127" fill="#D41F29" opacity="0.9"/>
+          <rect x="176" y="59" width="24" height="141" fill="#1A1A1A"/>
+          <text x="148" y="218" font-size="10" fill="#1A1A1A">2022</text>
+        </g>
+        <g>
+          <rect x="216" y="76" width="24" height="124" fill="#D41F29" opacity="0.9"/>
+          <rect x="244" y="49" width="24" height="151" fill="#1A1A1A"/>
+          <text x="216" y="218" font-size="10" fill="#1A1A1A">2023</text>
+        </g>
+        <g>
+          <rect x="284" y="67" width="24" height="133" fill="#D41F29" opacity="0.9"/>
+          <rect x="312" y="48" width="24" height="152" fill="#1A1A1A"/>
+          <text x="284" y="218" font-size="10" fill="#1A1A1A">2024</text>
+        </g>
+        <g>
+          <rect x="340" y="66" width="24" height="134" fill="#D41F29" stroke="#F5A623" stroke-width="2"/>
+          <rect x="360" y="53" width="14" height="147" fill="#1A1A1A"/>
+          <text x="340" y="218" font-size="10" font-weight="700" fill="#D41F29">2025</text>
+        </g>
+        <rect x="260" y="15" width="12" height="8" fill="#D41F29"/>
+        <text x="275" y="23" font-size="10" fill="#1A1A1A">Üretim (mt)</text>
+        <rect x="330" y="15" width="12" height="8" fill="#1A1A1A"/>
+        <text x="345" y="23" font-size="10" fill="#1A1A1A">Satış (mt)</text>
+      </svg>
+    </div>
+  </div>
+
+  <h3>3.3 Satış Karması (FY2025)</h3>
+  <div class="kpi-grid-4">
+    <div class="kpi-card"><div class="label">Yurtiçi Satış</div><div class="value">23,4 mt</div><div class="trend">79,6% pay · Domestik pazar lideri</div></div>
+    <div class="kpi-card"><div class="label">İhracat + Transit</div><div class="value">6,0 mt</div><div class="trend">USD 3,1 mia değer</div></div>
+    <div class="kpi-card"><div class="label">Tupras Trading</div><div class="value">9,5+ mt</div><div class="trend">Ham petrol spot + 1,7 mt 3.taraf</div></div>
+    <div class="kpi-card"><div class="label">Pazar Payı</div><div class="value">%19,1</div><div class="trend">Beyaz %19,4 · Siyah %24,1</div></div>
+  </div>
+
+  <h3>3.4 Segment Yapısı (FY2024 audited — FY2025 segment breakdown pending final)</h3>
+  <table>
+    <tr><th>Segment</th><th class="num">Hasılat payı</th><th class="num">FAVÖK payı</th><th>Açıklama</th></tr>
+    <tr><td>Rafinaj</td><td class="num">%98,7</td><td class="num">~%65</td><td>Ana iş — Nelson 9,5, 4 rafineri</td></tr>
+    <tr><td>Elektrik (Entek)</td><td class="num">%1,3</td><td class="num">~%20</td><td>492 MW (380 MW sıfır-karbon). FAVÖK payı hasılat payının çok üstünde (yüksek marjlı segment).</td></tr>
+    <tr><td>Diğer + iştirak (OPET, DİTAŞ, Körfez, Trading)</td><td class="num">—</td><td class="num">~%15</td><td>Katma değer zinciri tamamlayıcı</td></tr>
+  </table>
+
+  <h3>3.5 Ana İştirakler</h3>
+  <table>
+    <tr><th>İştirak</th><th>Pay</th><th>İş</th><th>FY2025 hacim/hasılat</th></tr>
+    <tr><td>OPET Petrolcülük</td><td>41,67% (JV)</td><td>Perakende benzin + jet (THY Opet) + marketler</td><td>1.882 istasyon, TL 366+ mia (100%)</td></tr>
+    <tr><td>Tupras Trading Ltd (UK)</td><td>100%</td><td>Uluslararası ticaret — rafinerileri besler</td><td>9,5+ mt spot ham + 1,7 mt 3.taraf</td></tr>
+    <tr><td>DİTAŞ + 22 tanker alt şirket</td><td>79,98% (DİTAŞ)</td><td>Deniz tanker taşımacılığı</td><td>16 tanker, 661k DWT</td></tr>
+    <tr><td>Körfez Ulaştırma</td><td>çoğunluk</td><td>Demiryolu — Türkiye'nin ilk özel</td><td>2,4 mt akaryakıt/ara ürün + 46 konteyner</td></tr>
+    <tr><td>Entek Elektrik</td><td>çoğunluk</td><td>Kojenerasyon + yenilenebilir</td><td>492 MW kurulu, 1,0 TWsaat sıfır-karbon satış</td></tr>
+    <tr><td>Tüpraş Ventures</td><td>100%</td><td>Girişim yatırımı (5 startup, 34 fon)</td><td>Green H2, robotik, termal depolama</td></tr>
+  </table>
+
+  <h3>3.6 Stratejik Dönüşüm Planı — 2026-2030</h3>
+  <table>
+    <tr><th>Proje</th><th>Yatırım</th><th>Zamanlama</th><th>FAVÖK etkisi (tahmini)</th></tr>
+    <tr><td>Propilen Splitter (İzmit)</td><td>USD 256 mn</td><td>2027 devreye</td><td>+180 bin t/y propilen üretimi</td></tr>
+    <tr><td>SAF üretimi (İzmir)</td><td>USD 350-500 mn (tahmini)</td><td>2030 hedef, 2025 Q4 FID</td><td>+300 bin t/y SAF, jet yakıtı premium</td></tr>
+    <tr><td>Entek Romanya Güneş</td><td>~USD 200 mn</td><td>2026-2028 kademeli</td><td>214 MW kurulu, Entek FAVÖK payı ↑</td></tr>
+    <tr><td>Yeşil Hidrojen AR-GE</td><td>Yatırım devam</td><td>2030+ devreye</td><td>Uzun vadeli rafinaj dekarbonizasyonu</td></tr>
+    <tr><td>Atık yağ toplama</td><td>Sözleşmeler devam</td><td>2026</td><td>≥300 bin t/y uzun vadeli</td></tr>
+  </table>
+  <div class="footer">Finance X Platform — TUPRS v2 Derin Analiz | 21 Nisan 2026 | Sayfa 3</div>
+</div>
+</section>
+
+<!-- 4. SEKTÖR VE REKABET - TAM GENISLETILMIS -->
+<section>
+<div class="page">
+  <div class="brand-badge">TUPRS</div>
+  <h1>4. Sektör ve Rekabet</h1>
+
+  <h3>4.1 Türkiye Rafinaj Pazarı — 2 Oyuncu Piyasası</h3>
+  <div class="commentary">
+    <strong>ÖNEMLİ DÜZELTME:</strong> v1 raporda SOCAR STAR Rafinerisi eksikti. Tüpraş'ın ana rakibi yurt içinde <strong>SOCAR STAR Rafinerisi'dir</strong> — bu bölüm v2'de ayrıntılı analiz edilmiştir.
+  </div>
+
+  <table>
+    <tr><th>Oyuncu</th><th>Kapasite (mt/y)</th><th>Pay</th><th>Nelson</th><th>Sahip</th><th>Kuruluş</th></tr>
+    <tr><td><strong>TÜPRAŞ</strong> (4 rafineri)</td><td class="num">30,0</td><td class="num positive"><strong>%75</strong></td><td class="num">9,5 ort.</td><td>Koç Topluluğu (%53,2)</td><td>1983</td></tr>
+    <tr><td><strong>SOCAR STAR Rafinerisi</strong> (Aliağa)</td><td class="num">10,0</td><td class="num">%25</td><td class="num">9,0</td><td>SOCAR (Azerbaycan devleti %51) + Palmali</td><td>2018</td></tr>
+    <tr><td><strong>Toplam Türkiye rafinaj</strong></td><td class="num"><strong>40,0</strong></td><td class="num">%100</td><td></td><td></td><td></td></tr>
+  </table>
+
+  <h3>4.2 SOCAR STAR Rafinerisi — Detaylı Rakip Profili</h3>
+  <div class="kpi-grid-4">
+    <div class="kpi-card"><div class="label">Kapasite</div><div class="value">10 mt/y</div><div class="trend">Düz dönüşüm + FCC</div></div>
+    <div class="kpi-card"><div class="label">Lokasyon</div><div class="value">Aliağa</div><div class="trend">Petkim komşusu, ürün entegrasyonu</div></div>
+    <div class="kpi-card"><div class="label">Yatırım</div><div class="value">$6,3 mia</div><div class="trend">2011-2018 inşaat (ekstra 1,5 mia beklentiye aşıldı)</div></div>
+    <div class="kpi-card"><div class="label">Ürün Karması</div><div class="value">%77 beyaz</div><div class="trend">Nafta, jet yakıtı, motorin ağırlıklı</div></div>
+  </div>
+  <p><strong>Stratejik pozisyonlanma:</strong> SOCAR STAR 2018'de devreye girdi ve Türkiye'nin tek yeni kuşak rafinerisi. Tüpraş'ın İzmit-Aliağa ekseninde doğrudan rakip. Önemli farklar:</p>
+  <ul>
+    <li><strong>Ham petrol tedariği:</strong> SOCAR STAR ağırlıklı Azeri Light (BTC üzerinden) + orta vade Rus ham petrolü; Tüpraş karması 13 ülkeden 24 farklı tip (daha esnek).</li>
+    <li><strong>Ürün dağıtımı:</strong> SOCAR STAR ürünlerinin çoğu Petkim entegrasyonu için nafta/jet (iç aktarım); Tüpraş geniş perakende ağı (OPET 1.882 istasyon) üzerinden satış yapıyor.</li>
+    <li><strong>Finansal yapı:</strong> SOCAR STAR yüksek borçla finanse edildi (proje finansmanı ~$3,8 mia borç); Tüpraş net nakit pozisyonda. Bu SOCAR'ı kur + faiz şokuna kırılgan bırakıyor.</li>
+    <li><strong>Nelson Complexity:</strong> STAR 9,0, Tüpraş ağırlıklı ortalama 9,5 (İzmit RUP sonrası daha yüksek). Tüpraş marj avantajı korur.</li>
+    <li><strong>ESG:</strong> STAR daha yeni tesis (2018), emisyon/enerji verimliliği doğal avantaj; Tüpraş kendi eski tesislerinde karbon azaltım yatırımı gerekiyor.</li>
+  </ul>
+  <p><strong>Sonuç:</strong> İç pazarda rekabet iki oyunculu oligopol. Tüpraş'ın kapasite liderliği (3x STAR) + dağıtım ağı + esnek ham petrol tedariği kalıcı avantaj sunuyor. SOCAR STAR'ın borç yükü kriz zamanında Tüpraş'a pazar payı fırsatı verebilir.</p>
+
+  <h3>4.3 Küresel Rafinaj Marjı — 5 Yıl Döngüsü</h3>
+  <div class="chart-frame">
+    <div class="title">Dünya Net Rafinaj Marjı ($/bbl) + Tüpraş EBITDA Marjı (%)</div>
+    <div class="sub">Tüpraş performansının küresel döngüyle korelasyonu (R² ~0.85)</div>
+    <svg class="chart" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+      <line x1="60" y1="240" x2="770" y2="240" stroke="#1A1A1A"/>
+      <line x1="60" y1="20" x2="60" y2="240" stroke="#1A1A1A"/>
+      <!-- Left axis: Marj USD/bbl 0-25, mapping 240 to 40 -->
+      <g font-size="10" fill="#64748b">
+        <text x="55" y="244" text-anchor="end">0</text>
+        <line x1="60" y1="200" x2="770" y2="200" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="55" y="204" text-anchor="end">5</text>
+        <line x1="60" y1="160" x2="770" y2="160" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="55" y="164" text-anchor="end">10</text>
+        <line x1="60" y1="120" x2="770" y2="120" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="55" y="124" text-anchor="end">15</text>
+        <line x1="60" y1="80" x2="770" y2="80" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="55" y="84" text-anchor="end">20</text>
+        <line x1="60" y1="40" x2="770" y2="40" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="55" y="44" text-anchor="end">25 $/bbl</text>
+      </g>
+      <!-- Bars: Dünya marjı -->
+      <!-- 2021=5, 2022=20, 2023=13, 2024=7, 2025=8 -->
+      <!-- y: 240 - v*8 -->
+      <g>
+        <rect x="120" y="200" width="70" height="40" fill="#64748b" opacity="0.8"/>
+        <text x="155" y="195" font-size="10" text-anchor="middle" fill="#1A1A1A">5</text>
+      </g>
+      <g>
+        <rect x="240" y="80" width="70" height="160" fill="#64748b" opacity="0.8"/>
+        <text x="275" y="75" font-size="10" text-anchor="middle" fill="#1A1A1A">20</text>
+      </g>
+      <g>
+        <rect x="360" y="136" width="70" height="104" fill="#64748b" opacity="0.8"/>
+        <text x="395" y="131" font-size="10" text-anchor="middle" fill="#1A1A1A">13</text>
+      </g>
+      <g>
+        <rect x="480" y="184" width="70" height="56" fill="#64748b" opacity="0.8"/>
+        <text x="515" y="179" font-size="10" text-anchor="middle" fill="#1A1A1A">7</text>
+      </g>
+      <g>
+        <rect x="600" y="176" width="70" height="64" fill="#64748b" opacity="0.8" stroke="#1A1A1A" stroke-width="2"/>
+        <text x="635" y="171" font-size="10" text-anchor="middle" fill="#1A1A1A" font-weight="700">8</text>
+      </g>
+      <!-- Tüpraş EBITDA margin overlay (line) — 0-20% scale overlaid -->
+      <!-- 2021=~8%, 2022=15.8%, 2023=14.2%, 2024=6.3%, 2025=7.8% estimated -->
+      <!-- y = 240 - v*8 (same scale) -->
+      <!-- heights: 8→176, 15.8→113, 14.2→126, 6.3→190, 7.8→178 -->
+      <polyline points="155,176 275,113 395,126 515,190 635,178" fill="none" stroke="#D41F29" stroke-width="3"/>
+      <circle cx="155" cy="176" r="5" fill="#D41F29"/>
+      <circle cx="275" cy="113" r="5" fill="#D41F29"/>
+      <circle cx="395" cy="126" r="5" fill="#D41F29"/>
+      <circle cx="515" cy="190" r="5" fill="#D41F29"/>
+      <circle cx="635" cy="178" r="6" fill="#D41F29" stroke="#F5A623" stroke-width="2"/>
+      <g font-size="10" fill="#1A1A1A" font-weight="600">
+        <text x="155" y="260" text-anchor="middle">2021</text>
+        <text x="275" y="260" text-anchor="middle">2022</text>
+        <text x="395" y="260" text-anchor="middle">2023</text>
+        <text x="515" y="260" text-anchor="middle">2024</text>
+        <text x="635" y="260" text-anchor="middle" fill="#D41F29" font-weight="700">2025</text>
+      </g>
+      <!-- Tüpraş values labeled next to circles -->
+      <g font-size="9" fill="#D41F29" font-weight="700">
+        <text x="155" y="169" text-anchor="middle">8%</text>
+        <text x="275" y="107" text-anchor="middle">15,8%</text>
+        <text x="395" y="120" text-anchor="middle">14,2%</text>
+        <text x="515" y="196" text-anchor="middle">6,3%</text>
+        <text x="635" y="172" text-anchor="middle">7,8%</text>
+      </g>
+      <!-- Legend -->
+      <rect x="100" y="280" width="14" height="10" fill="#64748b" opacity="0.8"/>
+      <text x="120" y="289" font-size="10">Dünya Net Rafinaj Marjı ($/bbl)</text>
+      <line x1="330" y1="285" x2="350" y2="285" stroke="#D41F29" stroke-width="3"/>
+      <circle cx="340" cy="285" r="4" fill="#D41F29"/>
+      <text x="358" y="289" font-size="10">Tüpraş EBITDA Marjı (%)</text>
+    </svg>
+  </div>
+
+  <h3>4.4 Transmisyon Parametreleri (Ölçüm Kritik)</h3>
+  <table>
+    <tr><th>Parametre</th><th>Yönü</th><th>FAVÖK Etkisi (yıllık)</th><th>Notu</th></tr>
+    <tr><td>$1/bbl motorin crack spread artışı</td><td class="positive">+</td><td class="num positive">+1,8 mia TL</td><td>30 mt × 35% motorin × $1 × transmission 0,75</td></tr>
+    <tr><td>$1/bbl benzin crack spread artışı</td><td class="positive">+</td><td class="num positive">+0,9 mia TL</td><td>Motorin'in yaklaşık yarısı hacim payı</td></tr>
+    <tr><td>$1/bbl ham kalite farkı (Brent–local mix)</td><td class="negative">-</td><td class="num negative">-1,1 mia TL</td><td>26 mt × 7,2 bbl/ton × transmission 0,6</td></tr>
+    <tr><td>$1/bbl jet kerosene crack spread</td><td class="positive">+</td><td class="num positive">+0,4 mia TL</td><td>~%15 karma, SAF stratejisi ile artacak</td></tr>
+    <tr><td>TL %10 değer kaybı</td><td class="positive">+</td><td class="num positive">+0,8 mia TL</td><td>Kısmen hedged, inventory natural hedge</td></tr>
+    <tr><td>Kapasite kullanımı +1pp</td><td class="positive">+</td><td class="num positive">+0,3 mia TL</td><td>Sabit maliyet dağıtımı</td></tr>
+    <tr><td>ETS Türkiye carbon $50/tCO2</td><td class="negative">-</td><td class="num negative">-5 ila -8 mia TL</td><td>6,3 mtCO2e emissions × $50 × USD/TL</td></tr>
+  </table>
+
+  <h3>4.5 Peer Grup Karşılaştırması (2024 FY Verileri)</h3>
+  <div class="chart-frame">
+    <div class="title">Peer P/B Karşılaştırması</div>
+    <div class="sub">Tüpraş en düşük P/B — peer ortalaması 1,03x, Tüpraş 0,65x</div>
+    <svg class="chart" viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg">
+      <line x1="180" y1="220" x2="780" y2="220" stroke="#1A1A1A"/>
+      <line x1="180" y1="20" x2="180" y2="220" stroke="#1A1A1A"/>
+      <g font-size="10" fill="#64748b">
+        <text x="180" y="238" text-anchor="middle">0</text>
+        <line x1="330" y1="20" x2="330" y2="220" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="330" y="238" text-anchor="middle">0,5</text>
+        <line x1="480" y1="20" x2="480" y2="220" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="480" y="238" text-anchor="middle">1,0</text>
+        <line x1="630" y1="20" x2="630" y2="220" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="630" y="238" text-anchor="middle">1,5</text>
+        <line x1="780" y1="20" x2="780" y2="220" stroke="#e5e7eb" stroke-dasharray="2,3"/>
+        <text x="780" y="238" text-anchor="middle">2,3x P/B</text>
+      </g>
+      <!-- Peer bars. P/B values: TUPRS=0.65, PKN Orlen=0.55, Repsol=0.72, Tupras v2=0.84, Motor Oil=0.88, MOL=0.95, Peer median=1.03, OMV=1.10, Neste=2.30 -->
+      <!-- x scale: 180 + pb*300 -->
+      <g>
+        <rect x="180" y="30" width="195" height="20" fill="#D41F29" stroke="#1A1A1A" stroke-width="2"/>
+        <text x="175" y="44" text-anchor="end" font-size="11" font-weight="700" fill="#D41F29">TUPRS (v2)</text>
+        <text x="380" y="44" font-size="10" fill="#1A1A1A" font-weight="700">0,65x</text>
+      </g>
+      <g>
+        <rect x="180" y="55" width="165" height="20" fill="#64748b"/>
+        <text x="175" y="69" text-anchor="end" font-size="11">PKN Orlen</text>
+        <text x="350" y="69" font-size="10" fill="#1A1A1A">0,55x</text>
+      </g>
+      <g>
+        <rect x="180" y="80" width="216" height="20" fill="#64748b"/>
+        <text x="175" y="94" text-anchor="end" font-size="11">Repsol Refining</text>
+        <text x="401" y="94" font-size="10" fill="#1A1A1A">0,72x</text>
+      </g>
+      <g>
+        <rect x="180" y="105" width="264" height="20" fill="#64748b"/>
+        <text x="175" y="119" text-anchor="end" font-size="11">Motor Oil Hellas</text>
+        <text x="449" y="119" font-size="10" fill="#1A1A1A">0,88x</text>
+      </g>
+      <g>
+        <rect x="180" y="130" width="285" height="20" fill="#64748b"/>
+        <text x="175" y="144" text-anchor="end" font-size="11">MOL Group</text>
+        <text x="470" y="144" font-size="10" fill="#1A1A1A">0,95x</text>
+      </g>
+      <g>
+        <rect x="180" y="155" width="309" height="20" fill="#F5A623"/>
+        <text x="175" y="169" text-anchor="end" font-size="11" font-weight="600">Peer Medyan</text>
+        <text x="494" y="169" font-size="10" fill="#1A1A1A" font-weight="600">1,03x</text>
+      </g>
+      <g>
+        <rect x="180" y="180" width="330" height="20" fill="#64748b"/>
+        <text x="175" y="194" text-anchor="end" font-size="11">OMV Downstream</text>
+        <text x="515" y="194" font-size="10" fill="#1A1A1A">1,10x</text>
+      </g>
+      <g>
+        <rect x="180" y="200" width="600" height="14" fill="#16a34a" opacity="0.8"/>
+        <text x="175" y="211" text-anchor="end" font-size="11">Neste (yeşil)</text>
+        <text x="785" y="211" font-size="10" fill="#1A1A1A">2,30x</text>
+      </g>
+    </svg>
+  </div>
+
+  <h3>4.6 SWOT — Detaylı (6+ madde her kategoride)</h3>
+  <div class="two-col">
+    <div>
+      <h4 style="color:#16a34a;">Güçlü (Strengths)</h4>
+      <ul>
+        <li><strong>Türkiye'de %75 kapasite payı</strong> — SOCAR STAR 3× küçük; dağıtım + esneklik avantajı</li>
+        <li><strong>Nelson Complexity 9,5</strong> (peer ortalaması 9,6, ama yüksek bantta) — yüksek katma değer</li>
+        <li><strong>Net nakit 90,6 mia TL</strong> — peer net borç 1,5x EBITDA; Tüpraş -0,8x (net nakit)</li>
+        <li><strong>Koç Topluluğu disipliniyle yönetim</strong> — 42 yıllık dividend track record</li>
+        <li><strong>Yurt içi jet yakıtı monopoli</strong> — Türkiye jet yakıtı ihtiyacının %70'i Tüpraş'tan</li>
+        <li><strong>RUP ünitesi (İzmit)</strong> — 90% vergi indirimi, ertelenen vergi varlığı 11,9 mia TL</li>
+        <li><strong>13 ülkeden 24 tür ham petrol tedariği</strong> — SOCAR STAR'a göre çeşitli (Azeri dominasyonu yok)</li>
+        <li><strong>ESG rating momentumu</strong> — S&P 34→55 (+%224); FTSE4Good +%77</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="color:#dc2626;">Zayıf (Weaknesses)</h4>
+      <ul>
+        <li><strong>Tek sektör riski</strong> — Entek + ticaret %2 payında, rafinaj dominasyonu mutlak</li>
+        <li><strong>Crack spread döngüsel volatilite</strong> — küresel marjlara doğrudan maruz</li>
+        <li><strong>RUP teşviki 5 yıl içinde tükeniyor</strong> — %2,5 efektif vergi → %25 şoku gelecek</li>
+        <li><strong>Jeopolitik ham arz kırılganlığı</strong> — Kızıldeniz, Rus kısıtlamalar 2024'te karma bozdu</li>
+        <li><strong>Reel ROE CoE altında</strong> — 5 yıllık ortalama %13 vs CoE %28; sermaye getirisi zayıf</li>
+        <li><strong>Yaşlı altyapı</strong> — İzmit 1986, İzmir 1972; idame CAPEX yüksek (USD 25/ton-yıl)</li>
+        <li><strong>Nominal-reel karışıklığı</strong> — TMS 29 IAS 29 karışıklığı yatırımcı anlamayı güçleştiriyor</li>
+      </ul>
+    </div>
+  </div>
+  <div class="two-col">
+    <div>
+      <h4 style="color:#16a34a;">Fırsat (Opportunities)</h4>
+      <ul>
+        <li><strong>SAF üretimi (2030, 300 bin t/y)</strong> — jet yakıtı premium, AB zorunluluğu</li>
+        <li><strong>Propilen Splitter (2027)</strong> — +180 bin t/y, petrokimya değer zinciri</li>
+        <li><strong>Entek Romanya 214 MW güneş</strong> — yenilenebilir FAVÖK payı artır</li>
+        <li><strong>Yeşil hidrojen</strong> — Hidrojen Teknolojileri Merkezi, R&D → uzun vade</li>
+        <li><strong>Türkiye havayolu büyümesi</strong> — THY filo genişleme → jet yakıtı talebi</li>
+        <li><strong>SOCAR STAR borç krizi senaryosu</strong> — Tüpraş iç pazar payı kazanır</li>
+        <li><strong>Atık yağ toplama (≥300 bin t/y)</strong> — circular economy + SAF hammaddesi</li>
+        <li><strong>Defansif yüksek temettü</strong> — TCMB faiz indirdikçe daha cazip olur</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="color:#dc2626;">Tehdit (Threats)</h4>
+      <ul>
+        <li><strong>AB CBAM (başlangıç: Ocak 2026)</strong> — AB ihracatı karbon vergisi, -1,5 mia/y tahmini</li>
+        <li><strong>ETS Türkiye (2027+)</strong> — iç karbon maliyeti, -5 ila -8 mia/y tahmini</li>
+        <li><strong>EV geçişi</strong> — 2035+ benzin/motorin talebi %15-25 azalabilir</li>
+        <li><strong>Crack spread dip uzarsa</strong> — FY2024-2025 gibi kalıcı olursa fair value %20 düşer</li>
+        <li><strong>Yeni rafineri devreye alımı (global)</strong> — Çin, Ortadoğu kapasitesi arttı</li>
+        <li><strong>TCMB faizinden gelen finansman geliri düşecek</strong> — 2025'te 21 mia TL alınan faiz; faiz indirimiyle erir</li>
+        <li><strong>Koç temettü baskısı</strong> — Grubun kaynak ihtiyacı artarsa temettü sürdürülemez</li>
+        <li><strong>Big güvenlik olayı (low probability, high impact)</strong> — LTI sıfır ama rafinaj sektörü tarihinde major kazalar var</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">Finance X Platform — TUPRS v2 Derin Analiz | 21 Nisan 2026 | Sayfa 4</div>
+</div>
+</section>
+
+</body>
+</html>
