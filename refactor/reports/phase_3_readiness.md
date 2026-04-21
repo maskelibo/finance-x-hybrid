@@ -34,6 +34,7 @@ Tüm riskli işler bu pattern'i takip eder. Atlama yok.
 | Schema `minLength`/`minItems` enforcement | soft string → depth-enforced | shadow validator (Phase 3A) | shared contract opsiyonel alanlar + 4-kategori classifier (Phase 4A) | per-agent opt-in flag (Phase 4B) |
 | Validation retry gate | yok → 4-kategori retry | scaffold + observe only (Phase 4A) | shadow-warn (Phase 4B) | flag + cohort (Phase 4C) |
 | Manifest/retrieval contract | yok → dual-write | manifest extractor + observe-only (Phase 5A) | dual-write (Phase 5B) | dual-read pilot (Phase 5C) |
+| QA checklist enforcement | yok → findings/addressed tam kapsama + retry/escalation | session addressal aggregator observe-only (Phase 6A) | dashboard kırmızı bayrak (Phase 6B) | retry route + CEO escalation (Phase 6C) |
 | Formatter Chart.js vs SVG | çelişkili | ölçüm (iki modda PDF üret) | karar | flag arkası |
 | Memory purge | prose → ≤2 KB | — (canonical henüz kanıtlanmadı) | — | canonical proof sonrası |
 | Dead code deletion | statik → silinmiş | — (her zaman en son) | reference proof | archive + silme |

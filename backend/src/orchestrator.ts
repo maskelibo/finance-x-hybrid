@@ -12,6 +12,8 @@ import { shadowValidate } from './schema-shadow-validator.js';
 import { classifyAndRecord } from './validation-gate.js';
 import { extractManifest } from './manifest/extract.js';
 import { recordManifest } from './manifest/record.js';
+import { aggregateSessionAddressal } from './checklist/aggregate.js';
+import { persistAddressalReport } from './checklist/persist.js';
 import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
 import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
@@ -1600,6 +1602,28 @@ async function executeSession(
       .run(`${failedRateLimitAgents.length} agent rate limit nedeniyle bekleniyor: ${allAgentIds.join(', ')}`, sessionId);
     console.log(`⏸️  Session ${sessionId} paused — ${failedRateLimitAgents.length} agent(s) rate-limited, watchdog will auto-resume`);
     return; // Don't mark as completed, don't run feedback loop
+  }
+
+  // ============================================================
+  // Phase 6A observe-only: QA checklist addressal aggregation.
+  // Runs right before the CEO gate so the escalation flag is on record
+  // when CEO data-surface is eventually wired up (Phase 6B shadow-warn).
+  // Never throws; never influences the CEO gate decision in Phase 6A.
+  // ============================================================
+  try {
+    const addressalReport = aggregateSessionAddressal(sessionId);
+    if (addressalReport) {
+      persistAddressalReport(addressalReport);
+      if (addressalReport.escalation_flag) {
+        console.log(
+          `[CHECKLIST] session ${sessionId} addressal_rate=${addressalReport.addressal_rate} ` +
+          `(${addressalReport.addressed_count}/${addressalReport.finding_count}) — ` +
+          `escalation candidate; unaddressed: ${addressalReport.unaddressed_finding_ids.slice(0, 5).join(', ')}`,
+        );
+      }
+    }
+  } catch (err) {
+    console.warn(`[CHECKLIST] aggregation failed (non-fatal): ${(err as Error).message}`);
   }
 
   // ============================================================
