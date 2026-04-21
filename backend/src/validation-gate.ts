@@ -87,6 +87,11 @@ const RULE_TO_CATEGORY: Record<string, ValidationCategory> = {
   'IAS29-001_trio_missing': 'broken_structure',
   'MM-25_roe_without_coe': 'broken_structure',
   shadow_validator_internal_error: 'broken_structure',
+  'OI-007_canvas_forbidden': 'broken_structure',
+  'OI-007_chartjs_reference': 'broken_structure',
+  'OI-007_external_script': 'broken_structure',
+  'OI-003_section_count_below_minimum': 'broken_structure',
+  'OI-008_emoji_in_institutional_output': 'broken_structure',
 };
 
 export function classifyViolation(rule: string): ValidationCategory {

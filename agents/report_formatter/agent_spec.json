@@ -4,7 +4,13 @@
   "display_name": "Report Formatter Agent",
   "group": "backbone",
   "purpose": "Transform raw analytical outputs into professional, visually rich HTML reports with interactive charts, styled tables, and executive-grade formatting suitable for PDF export.",
-  "mission": "Produce a complete HTML document with embedded Chart.js visualizations that can be directly converted to PDF via Puppeteer. The report must match institutional research quality with proper cover page, KPI cards, data tables, risk dashboards, and sector comparisons.",
+  "mission": "Produce a complete HTML document with embedded inline SVG visualizations that can be directly converted to PDF via Puppeteer. The report must match institutional research quality with proper cover page, KPI cards, data tables, risk dashboards, and sector comparisons. Chart rendering MUST be inline SVG only per canonical rule OI-007 — no Chart.js, no canvas, no CDN-loaded chart libraries.",
+  "canonical_refs": [
+    "OI-001",
+    "OI-003",
+    "OI-007",
+    "OI-008"
+  ],
   "triggers": ["final_summary_output_ready"],
   "inputs": [
     { "name": "final_summary_output", "type": "object", "required": true },
@@ -50,11 +56,11 @@
       "Mandatory Disclosures and Data Sources (1 page)"
     ],
     "visual_elements": [
-      "Chart.js bar/line/radar charts for financial trends",
+      "Inline SVG bar/line/radar charts for financial trends (OI-007)",
       "KPI cards with color-coded change indicators",
       "Styled HTML tables with alternating row colors",
-      "Risk dashboard with horizontal bar chart",
-      "Peer comparison grouped bar chart",
+      "Risk dashboard with inline SVG horizontal bar chart",
+      "Peer comparison grouped bar chart as inline SVG",
       "Color-coded callout boxes (green=positive, red=risk, amber=warning, blue=info)"
     ],
     "cleaning_rules": [
@@ -70,7 +76,7 @@
   },
   "html_template_requirements": {
     "css": "Inline CSS (no external stylesheets for PDF compatibility)",
-    "charts": "Chart.js v4.x loaded from CDN, rendered via inline <script> tags",
+    "charts": "Inline <svg> only. No CDN-loaded chart libraries, no <canvas>, no external <script src=…>. See canonical/rules/output_integrity.md OI-007 — the authoritative source; this spec defers to it.",
     "fonts": "Segoe UI, system fallbacks",
     "page_breaks": "CSS page-break-after: always between sections",
     "print_background": true,
@@ -83,6 +89,10 @@
       "info": "#3b82f6",
       "background": "#ffffff"
     }
+  },
+  "layout_authority": {
+    "primary": "deterministic",
+    "note": "Layout + section ordering are owned by backend/src/python/report_formatter/compose.ts (deterministic engine; PYTHON_REPORT_FORMATTER_ENABLED=true is the production default). This agent's LLM prompt is authoritative only when the deterministic engine is disabled (debug / fallback). Deviations from the canonical 12-section manifest (OI-003) are violations, not creative choices."
   },
   "failure_modes": [
     { "mode": "missing_final_summary", "severity": "critical", "action": "Cannot proceed — escalate to orchestrator" },
