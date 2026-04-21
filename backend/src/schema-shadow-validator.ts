@@ -25,6 +25,13 @@
  *   - addressed_finding_shallow       — addressed_findings[].explanation < 30
  *   - metrics_array_item_malformed    — metrics_array[] item id not MM-XX
  *
+ *   Phase 7A (report_formatter doctrine):
+ *   - OI-007_canvas_forbidden          — <canvas> tag in formatter HTML
+ *   - OI-007_chartjs_reference         — Chart.js CDN marker
+ *   - OI-007_external_script           — external <script src=…> in HTML
+ *   - OI-003_section_count_below_minimum — fewer than 12 sections detected
+ *   - OI-008_emoji_in_institutional_output — emoji in formatter HTML
+ *
  * Called from orchestrator.ts right after each agent run. Errors here never
  * propagate — the shadow validator is allowed to fail silently. It is NOT a
  * source of truth; it is a data-collection layer.
@@ -186,6 +193,56 @@ function validateQaReviewOutput(output: string, violations: Violation[]): void {
 }
 
 /**
+ * Phase 7A — report_formatter doctrine (OI-007 + OI-003). Run against the
+ * formatter's HTML output. Fails are observed, never block.
+ *
+ * Checks:
+ *   - OI-007: no <canvas>, no Chart.js CDN, no external <script src=…>
+ *   - OI-003: at least 12 sections (heading count via h1/h2 with explicit
+ *     section markers like "1.", "2.", …, or <section> tags)
+ *   - OI-008: no emoji in institutional output (reuse an emoji regex)
+ */
+function validateReportFormatterOutput(output: string, violations: Violation[]): void {
+  // OI-007 — forbidden chart technology markers.
+  const forbiddenMarkers: Array<{ pattern: RegExp; rule: string; detail: string }> = [
+    { pattern: /<canvas\b/i, rule: 'OI-007_canvas_forbidden', detail: '<canvas> tag present' },
+    { pattern: /chart\.js|chartjs|chart\.min\.js/i, rule: 'OI-007_chartjs_reference', detail: 'Chart.js reference in HTML' },
+    { pattern: /<script\s+src\s*=\s*['"]https?:/i, rule: 'OI-007_external_script', detail: 'external <script src=…> (CDN)' },
+  ];
+  for (const m of forbiddenMarkers) {
+    if (m.pattern.test(output)) {
+      violations.push({ rule: m.rule, detail: m.detail });
+    }
+  }
+
+  // OI-003 — 12-section institutional report. Count top-level sections.
+  const sectionMatches = output.match(/<section\b|<h1\b|<h2\s+class="[^"]*section[^"]*"/gi);
+  const explicitSectionHeaders = output.match(/<h[12][^>]*>\s*(?:\d+\.|Bölüm\s+\d+)/gi);
+  const sectionCount = Math.max(
+    sectionMatches?.length ?? 0,
+    explicitSectionHeaders?.length ?? 0,
+  );
+  if (sectionCount > 0 && sectionCount < 12) {
+    violations.push({
+      rule: 'OI-003_section_count_below_minimum',
+      detail: `${sectionCount} sections detected, canonical minimum 12`,
+    });
+  }
+
+  // OI-008 — emoji in institutional HTML output. Narrowly-scoped check: only
+  // emoji in the visible text (between > and <), not in CSS/JS/attributes.
+  // A single pass through every text node would require HTML parsing; use a
+  // heuristic — any emoji in the raw output is flagged since OI-008 is strict.
+  const emojiPattern = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+  if (emojiPattern.test(output)) {
+    violations.push({
+      rule: 'OI-008_emoji_in_institutional_output',
+      detail: 'emoji character detected in formatter HTML',
+    });
+  }
+}
+
+/**
  * Phase 4A — intra-doc findings ↔ addressed_findings consistency. The
  * cross-agent coverage (downstream addresses upstream's findings) is owned
  * by validation-gate.ts because it needs session context; here we only
@@ -279,6 +336,9 @@ export function shadowValidate(
     }
     if (agentId === 'qa_review') {
       validateQaReviewOutput(output, violations);
+    }
+    if (agentId === 'report_formatter') {
+      validateReportFormatterOutput(output, violations);
     }
     // Phase 4A: any agent output that carries findings[]/addressed_findings[]
     // gets the intra-doc consistency check.

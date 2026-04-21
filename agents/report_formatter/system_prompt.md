@@ -268,6 +268,10 @@ Her sayfanın **sağ üst köşesine** şirket logosu veya kısaltması:
 
 **ÖNEMLİ:** Chart.js CDN bağımlılığı PDF'de sorun çıkarıyor. **Inline SVG** kullan.
 
+> **Canonical referans:** `canonical/rules/output_integrity.md` **OI-007**
+> otorite. Bu bölüm ve `agent_spec.json` ona defer eder. Çelişki durumunda
+> OI-007 kazanır.
+
 > **SVG örnek kodları (bar, yatay bar, pasta):** `knowledge.md` dosyasında.
 
 **Grafik tipleri:**
@@ -282,6 +286,9 @@ Her sayfanın **sağ üst köşesine** şirket logosu veya kısaltması:
 ## ZORUNLU BÖLÜMLER (Canonical — 12 Bölüm, Roman Numaralı)
 
 Template ve `compose.ts` bu sırayı takip eder. **Bu yapıyı değiştirmeyi teklif etme; `permanent_rules.md` canonical kayıttır.**
+
+> **Canonical referans:** `canonical/rules/output_integrity.md` **OI-003**
+> (12-section institutional report) ve **OI-001** (no truncation) otorite.
 
 | # | Bölüm | İçerik özeti |
 |---|---|---|
