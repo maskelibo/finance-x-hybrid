@@ -45,58 +45,13 @@ import { barChart, columnChart, gaugeChart, horizontalBarChart, lineChart, pieCh
 import { formatPct, formatRatio, formatTRY, type TemplateContext, type TemplateValue } from './template_engine.js';
 
 
+// Phase 8K: parseJson delegates to shared parseStructuredOutput (lib/).
+// Implementation identical to pre-refactor; consolidated so manifest/extract.ts
+// and orchestrator.ts can share telemetry counters (getParseModeCounts).
+import { parseStructuredOutputValue } from '../../lib/parse-structured-output.js';
+
 function parseJson<T = unknown>(raw: unknown): T | null {
-  if (raw == null) return null;
-  if (typeof raw === 'object') return raw as T;
-  if (typeof raw !== 'string') return null;
-
-  // Fast path — whole string is a JSON object/array.
-  try { return JSON.parse(raw) as T; } catch { /* fall through */ }
-
-  // Pending finding #1 — "compose ↔ LLM output format" fallback:
-  // LLM agents return markdown with prose + numbers; the original
-  // parser returned null and every consumer rendered "Raporlanmadı".
-  // These fallbacks try progressively broader shapes BEFORE giving up.
-  // Any failure here still returns null → identical legacy behaviour.
-  const text = raw as string;
-
-  // 1) Fenced ```json ... ``` block (most common — agents that use
-  // canonical "STRUCTURED DATA APPENDIX" pattern end with this).
-  const fenced = text.match(/```json\s*([\s\S]*?)```/i)
-              || text.match(/```\s*(\{[\s\S]*?\})\s*```/);
-  if (fenced) {
-    try { return JSON.parse(fenced[1].trim()) as T; } catch { /* fall through */ }
-  }
-
-  // 2) "STRUCTURED DATA APPENDIX" section with JSON body following it.
-  const appendix = text.match(/STRUCTURED\s+DATA\s+APPENDIX[\s\S]*?(\{[\s\S]*\})\s*$/i);
-  if (appendix) {
-    try { return JSON.parse(appendix[1]) as T; } catch { /* fall through */ }
-  }
-
-  // 3) Balanced-brace scan for the first top-level JSON object that is
-  // at least a reasonable size. Protects against tiny inline fragments.
-  const firstBrace = text.indexOf('{');
-  if (firstBrace >= 0) {
-    let depth = 0;
-    let end = -1;
-    for (let i = firstBrace; i < text.length; i++) {
-      const ch = text[i];
-      if (ch === '{') depth++;
-      else if (ch === '}') {
-        depth--;
-        if (depth === 0) { end = i; break; }
-      }
-    }
-    if (end > firstBrace) {
-      const candidate = text.slice(firstBrace, end + 1);
-      if (candidate.length >= 20) {
-        try { return JSON.parse(candidate) as T; } catch { /* fall through */ }
-      }
-    }
-  }
-
-  return null;
+  return parseStructuredOutputValue<T>(raw);
 }
 
 
