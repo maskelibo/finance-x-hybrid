@@ -23,7 +23,10 @@ import {
 // ---------------------------------------------------------------------
 // Defaults
 // ---------------------------------------------------------------------
-const DEFAULT_BIN = path.join(PROJECT_ROOT, 'python-services', '.venv', 'bin', 'financex');
+// Platform-aware venv path: POSIX uses .venv/bin/, Windows uses .venv/Scripts/*.exe
+const DEFAULT_BIN = process.platform === 'win32'
+  ? path.join(PROJECT_ROOT, 'python-services', '.venv', 'Scripts', 'financex.exe')
+  : path.join(PROJECT_ROOT, 'python-services', '.venv', 'bin', 'financex');
 const DEFAULT_CWD = path.join(PROJECT_ROOT, 'python-services');
 const DEFAULT_TIMEOUT_MS = 60_000;
 
