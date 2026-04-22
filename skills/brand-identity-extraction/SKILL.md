@@ -11,19 +11,36 @@ priority: medium
 # Brand Identity Extraction
 
 ## Ne Zaman Kullanılır?
-TBD — Block U2'de doldurulacak.
+context_extraction agent şirket kurumsal kimliğini çıkarırken. report_formatter theme preset uygularken.
 
 ## Prosedür
-TBD — Block U2'de doldurulacak.
+1. Şirket web sitesinden CSS variables çek (primary color, logo font).
+2. Eğer yoksa annual report PDF'te logo renk + typography detect.
+3. JSON schema:
+```json
+{
+  "primary_color": "#C41E3A",
+  "secondary_color": "#1A365D",
+  "logo_url": "...",
+  "font_family": "Open Sans",
+  "theme_preset": "institutional"
+}
+```
+4. Report formatter CSS `:root` variables'a inject.
 
 ## Kurallar
-TBD — Block U2'de doldurulacak.
+- 3 theme preset: `institutional`, `anthropic`, `minimal`.
+- Brand default `institutional` eğer brand detection başarısız.
+- Logo aspect ratio preserve (max 200×80).
+- Color accessibility: primary vs arka plan contrast ≥ 4.5:1 (WCAG AA).
 
 ## Örnek
-TBD — Block U2'de doldurulacak.
+THYAO: primary `#E10600` (red), secondary `#1B1D29`, logo `thy-logo.svg`, theme `institutional`.
 
 ## Bilinen Tuzaklar
-TBD — Block U2'de doldurulacak.
+1. PDF'teki logo imajı düşük çözünürlük → vektör için web scrape.
+2. Bazı markalar CMYK'dan RGB'ye convert hatası → renk sapması.
+3. Global marka lokal logo farklı (Coca Cola TR vs global).
 
 ## Referanslar
-- references/ klasörü (Block U2'de populate)
+- templates/report_base.html CSS variable section

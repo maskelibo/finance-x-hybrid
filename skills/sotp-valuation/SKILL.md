@@ -8,22 +8,35 @@ category: valuation
 priority: high
 ---
 
-# SOTP Valuation
+# SOTP (Sum-of-the-Parts) Valuation
 
 ## Ne Zaman Kullanılır?
-TBD — Block U2'de doldurulacak.
+Holding/konglomera yapıda (KCHOL, SAHOL, DOHOL). Segment'lerin biri diğerinden çok farklı economics'e sahip → tek çarpan anlamsız.
 
 ## Prosedür
-TBD — Block U2'de doldurulacak.
+1. **Segment dökümü** — her iştirak/iş birimi ayrı: net income/ebitda/revenue.
+2. **Her segment için uygun metod**:
+   - Stake'i halka açık → son kapanış × ownership × (1−likidite discount).
+   - Stake'i özel → peer EV/EBITDA × segment EBITDA.
+   - Finansal iştirak (banka) → P/B × book × share.
+3. **Net debt** — holding seviyesi ayrı çek.
+4. **NAV** = Σ segment values − holding net debt.
+5. **Discount to NAV** — piyasa genelde %25-50 discount ile işlem görür (likidite+governance).
 
 ## Kurallar
-TBD — Block U2'de doldurulacak.
+- Minority stake (<20%) fair value ile, eşitlik metodu ile değil.
+- Holding-level giderler (corporate overhead) ayrı satır.
+- Cross-holding varsa çifte sayma önlenir.
+- Currency mismatch: segment USD earnings × current FX ile convert.
 
 ## Örnek
-TBD — Block U2'de doldurulacak.
+KCHOL (basit model): Koç Fiat 120B + Tofaş 80B + Yapı Kredi %41 × market cap 350B = 143.5B + segmentler toplam ~430B. Net debt 50B. NAV ~380B. %35 discount → hedef 247B.
 
 ## Bilinen Tuzaklar
-TBD — Block U2'de doldurulacak.
+1. Intra-group transaction'lar düşmeden segment EBITDA overstated.
+2. Deferred tax liability of parent — NAV'dan düş.
+3. Holding employee options vs segment şirketleri.
 
 ## Referanslar
-- references/ klasörü (Block U2'de populate)
+- _shared_knowledge_modules/sotp.md
+- Holding sektör raporları (Akbank Yatırım, Yapı Kredi Yatırım)

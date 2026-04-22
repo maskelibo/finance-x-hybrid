@@ -11,19 +11,27 @@ priority: high
 # IFRS 16 Lease Adjustments
 
 ## Ne Zaman Kullanılır?
-TBD — Block U2'de doldurulacak.
+Havacılık, perakende, telekom gibi yüksek operating lease kullanan sektörlerde EBITDAR hesaplamak için. IFRS 16 sonrası lease önden right-of-use asset + lease liability olarak bilançoya giriyor.
 
 ## Prosedür
-TBD — Block U2'de doldurulacak.
+1. **Lease liability** → faiz + anapara kısmına ayrıştır (amortizasyon tablosu kullan).
+2. **D&A içinde right-of-use amortization** → ayrı satır, IFRS 16 etkisi.
+3. **EBITDAR** = EBITDA + Rent Expense (pre-IFRS 16) veya EBITDA + D&A_leaseROU + Interest_leaseLiab.
+4. **Net Debt adjusted** = Financial Debt + Lease Liability.
 
 ## Kurallar
-TBD — Block U2'de doldurulacak.
+- EBITDAR havacılık için zorunlu (airline kira-yoğun).
+- Lease-adjusted leverage: Net Debt + 8× Annual Rent (pre-IFRS 16) veya Net Debt + Lease Liability (post).
+- Short-term lease (<12ay) ve low-value (<$5k) IFRS 16 dışı — ayrı tutulur.
 
 ## Örnek
-TBD — Block U2'de doldurulacak.
+THYAO FY2025: EBITDA 184.8B TL + lease-ROU amortization 35B TL + lease-liab faiz 8B TL = EBITDAR ~228B TL, marj ~%23.2.
 
 ## Bilinen Tuzaklar
-TBD — Block U2'de doldurulacak.
+1. "Rent expense" ve "Lease D&A + Interest" arasındaki toplam eşit değil — dönem başı/sonu lease liability değişiminden kaynaklanır.
+2. Sublease gelirleri ayrı satır; lease cost net alınmalı.
+3. Variable lease payment (percentage-of-sales rent) IFRS 16 dışı tutulur.
 
 ## Referanslar
-- references/ klasörü (Block U2'de populate)
+- TFRS 16 Kiralamalar
+- IASB IFRS 16 staff paper — EBITDA vs EBITDAR

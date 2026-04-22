@@ -11,19 +11,32 @@ priority: medium
 # Piotroski F-Score
 
 ## Ne Zaman Kullanılır?
-TBD — Block U2'de doldurulacak.
+Fundamental quality screening. 9 binary criterion, toplam 0-9. F ≥ 7: yüksek kaliteli (value screener). F ≤ 3: zayıf.
 
 ## Prosedür
-TBD — Block U2'de doldurulacak.
+9 kriter (1 puan her biri):
+1. Positive net income
+2. Positive OCF
+3. OCF > Net income (quality)
+4. ROA improved YoY
+5. Long-term debt ratio improved (azalmış)
+6. Current ratio improved
+7. No share issuance (dilution yok)
+8. Gross margin improved YoY
+9. Asset turnover improved YoY
 
 ## Kurallar
-TBD — Block U2'de doldurulacak.
+- YoY improvement = strict greater-than (eşit değil).
+- New IPO'lar için kriter 7 n/a — 8 skor üzerinden değerlendir.
+- Banking hariç — financial sector farklı metrics.
 
 ## Örnek
-TBD — Block U2'de doldurulacak.
+EREGL 2025: NI+ ✓, OCF+ ✓, OCF>NI ✗ (NI büyük), ROA↑ ✓, LTD↓ ✓, CR↓ ✗, dilution ✓ (no issuance), GM↑ ✗, asset turnover↑ ✓ → F=6/9.
 
 ## Bilinen Tuzaklar
-TBD — Block U2'de doldurulacak.
+1. Restated prior year — improvement false positive olabilir.
+2. Asset sales (divestiture) → asset turnover yapay iyileşir.
+3. Emerging market inflation YoY comparison bozar (IAS 29 restated kullan).
 
 ## Referanslar
-- references/ klasörü (Block U2'de populate)
+- Piotroski (2000) "Value Investing: The Use of Historical Financial Statement Information"

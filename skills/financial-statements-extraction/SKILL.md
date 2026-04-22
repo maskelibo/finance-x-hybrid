@@ -11,19 +11,29 @@ priority: critical
 # Financial Statements Extraction
 
 ## Ne Zaman Kullanılır?
-TBD — Block U2'de doldurulacak.
+PDF faaliyet raporu veya SPK konsolide rapordan gelir tablosu (IS), bilanço (BS), nakit akım tablosu (CF), özsermaye değişim (SE) çıkarılacağında.
 
 ## Prosedür
-TBD — Block U2'de doldurulacak.
+1. **PDF text extract** → `pdfplumber` veya `pymupdf`. Scanned ise OCR (tesseract).
+2. **Tablo tespiti** → layout heuristics (çok sütunlu sayısal bloklar, başlık satırları).
+3. **Satır eşleştirme** → Türkçe/İngilizce satır etiketi regex'leri (Hasılat/Revenue, Brüt Kar/Gross Profit, FAVÖK/EBITDA).
+4. **Dönem yayılımı** → Q1/H1/9M/FY + karşılaştırma (current vs previous).
+5. **Unit normalize** → mn TL / bn TL / USD → TRY_mn canonical (fact-layer/unit-normalizer).
 
 ## Kurallar
-TBD — Block U2'de doldurulacak.
+- SPK formatı vs VUK formatı farkı (IAS 29 uygulama).
+- Konsolide vs solo ayrımı.
+- "Satış gelirleri" ≠ "Hasılat" — bazen brüt vs net farkı.
+- İlişkili taraf satışları ayrı satır (segment breakdown'da önemli).
 
 ## Örnek
-TBD — Block U2'de doldurulacak.
+TUPRS 2025 annual: Hasılat 945.7 bn TL → raw 945,700,000,000 → 945,700 mn (canonical TRY_mn).
 
 ## Bilinen Tuzaklar
-TBD — Block U2'de doldurulacak.
+1. PDF sayfa header/footer tablo kesmesi → satır birleştirme gerekli.
+2. Notlara atıflar (*1, 5.2.1) tablo'dan düşer.
+3. Restated comparatives (önceki dönem IAS 29 düzeltmeli) karıştırmamalı.
 
 ## Referanslar
-- references/ klasörü (Block U2'de populate)
+- pdfplumber docs — table_settings
+- SPK Sermaye Piyasası Finansal Raporlama Tebliği

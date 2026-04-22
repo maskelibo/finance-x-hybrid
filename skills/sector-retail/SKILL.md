@@ -1,29 +1,41 @@
 ---
 id: sector-retail
-name: "Sector Playbook â€” Retail"
-description: "Perakende: SSSG, basket size, square-meter verim, maÄŸaza aÄŸÄ± dinamikleri."
-triggers: ['retail', 'perakende', 'bimas', 'mgros', 'sokm', 'sssg', 'ssg', 'maÄŸaza', 'basket size']
+name: "Sector Playbook — Retail"
+description: "Perakende: SSSG, basket size, square-meter verim, mağaza ağı dinamikleri."
+triggers: ['retail', 'perakende', 'bimas', 'mgros', 'sokm', 'sssg', 'ssg', 'mağaza', 'basket size']
 applies_to_agents: ['financial_analysis', 'sector_competition', 'context_extraction']
 category: sector
 priority: medium
 ---
 
-# Sector Playbook â€” Retail
+# Sector Playbook — Retail
 
 ## Ne Zaman Kullanılır?
-TBD — Block U2'de doldurulacak.
+Perakende analizi (BIMAS, MGROS, SOKM). SSSG, basket size, mağaza açılışları, private label.
 
 ## Prosedür
-TBD — Block U2'de doldurulacak.
+Anahtar metrikler:
+- **SSSG** (Same Store Sales Growth) — açılışları hariç like-for-like.
+- **Basket size / transaction** — ticket ortalaması.
+- **Square-meter productivity** — m² başına satış.
+- **Mağaza ağı** — yeni açılış, kapanış, net store count.
+- **Private label penetration** — margin driver.
 
 ## Kurallar
-TBD — Block U2'de doldurulacak.
+- SSSG inflation-adjusted vs nominal ayrımı kritik.
+- Store maturity curve (yeni store Y1 %70, Y2 %85, Y3+ %100).
+- Seasonal: bayram dönemleri Q2 boost.
+- CAPEX genellikle düşük (%3-5 revenue), inventory turnover yüksek (40-60 gün).
 
 ## Örnek
-TBD — Block U2'de doldurulacak.
+BIMAS FY2025: SSSG %61 (nominal), CPI-adjusted %8, basket 185 TL, 14,500 mağaza, private label %35.
 
 ## Bilinen Tuzaklar
-TBD — Block U2'de doldurulacak.
+1. Hipermarket vs hard-discount format farkı — BIMAS vs MGROS.
+2. E-commerce channel ayrı raporlama (BIMAS/SOKM e-com düşük, MGROS orta).
+3. Rent expense ayrı — lease adjustment EBITDAR önemli.
+4. Delivery/last-mile CAPEX yükü.
 
 ## Referanslar
-- references/ klasörü (Block U2'de populate)
+- TUIK Perakende Endeksi
+- Nielsen FMCG Türkiye raporları

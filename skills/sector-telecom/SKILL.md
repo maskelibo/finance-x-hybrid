@@ -1,6 +1,6 @@
 ---
 id: sector-telecom
-name: "Sector Playbook â€” Telecom"
+name: "Sector Playbook — Telecom"
 description: "Telekom: ARPU, churn, net add, 5G spectrum, CAPEX yogunlugu."
 triggers: ['telecom', 'telekom', 'tcell', 'ttkom', 'arpu', 'churn', '5g', 'spectrum', 'subscriber']
 applies_to_agents: ['financial_analysis', 'sector_competition', 'context_extraction']
@@ -8,22 +8,34 @@ category: sector
 priority: medium
 ---
 
-# Sector Playbook â€” Telecom
+# Sector Playbook — Telecom
 
 ## Ne Zaman Kullanılır?
-TBD — Block U2'de doldurulacak.
+Telekom analizi (TCELL, TTKOM). ARPU, churn, net add, 5G CAPEX, spectrum.
 
 ## Prosedür
-TBD — Block U2'de doldurulacak.
+Anahtar metrikler:
+- **ARPU** (Average Revenue Per User) — ayda kullanıcı başına gelir.
+- **Churn** — aylık/yıllık müşteri kaybı oranı (prepaid %25+, postpaid %2-5).
+- **Net add** — yeni - kaybedilen müşteri.
+- **Blended ARPU** — mobil + fiber + TV aggregate.
+- **CAPEX/revenue** — telekom %18-25 (5G yoğun dönemde daha yüksek).
+- **Penetration** — fiber, 5G, postpaid mix.
 
 ## Kurallar
-TBD — Block U2'de doldurulacak.
+- Spectrum auction CAPEX lumpy — amortize et.
+- 5G rollout 2024-2028 dönemi yoğun yatırım.
+- MVNO sözleşmeleri ayrı revenue kalemi.
+- FX exposure: spectrum payments EUR/USD, revenue TRY.
 
 ## Örnek
-TBD — Block U2'de doldurulacak.
+TCELL FY2025: mobile ARPU 127 TL, postpaid oranı %58, churn %2.1 postpaid, 5G CAPEX peak 2026-2027.
 
 ## Bilinen Tuzaklar
-TBD — Block U2'de doldurulacak.
+1. Prepaid revenue top-up lumpy — deferred revenue accounting.
+2. FX-indexed spectrum liability — TRY depreciation leverage artırır.
+3. "Subscriber" definition: inactive SIM thresholds değişebilir.
 
 ## Referanslar
-- references/ klasörü (Block U2'de populate)
+- BTK Türkiye Mobil İstatistik Raporu
+- GSMA Mobile Economy reports

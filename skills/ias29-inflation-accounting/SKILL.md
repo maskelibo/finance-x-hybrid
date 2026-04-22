@@ -11,19 +11,28 @@ priority: critical
 # IAS 29 Hyperinflation Accounting
 
 ## Ne Zaman Kullanılır?
-TBD — Block U2'de doldurulacak.
+Türkiye TÜFE kümülatif 3 yıl >%100 → IAS 29 aktif (2022'den beri). IFRS/SPK konsolide raporlarda uygulanmış; VUK (solo) raporlarda uygulanmamıştır.
 
 ## Prosedür
-TBD — Block U2'de doldurulacak.
+1. **Net Parasal Pozisyon (NMP)** = parasal_varlıklar (nakit+alacak+mevduat) − parasal_yükümlülükler (kredi+ticari_borç). NMP>0 enflasyonda KAYIP, NMP<0 KAZANÇ.
+2. **Parasal Kazanç/Kayıp** = NMP × (TÜFE_t1 / TÜFE_t0 − 1).
+3. **IAS 29 Adjusted EBITDA** = Reported EBITDA − Net Monetary Gain (kazanç varsa EBITDA'dan düş).
+4. **Adjusted NI** = Reported NI − Monetary Gain + Monetary Loss.
 
 ## Kurallar
-TBD — Block U2'de doldurulacak.
+- Nominal vs restated karıştırma — daima "IAS29 başlığı + periyot" etiketi.
+- Amortismanlar tarihsel maliyet × CPI multiplier ile restate edilir.
+- Revenue restate → CPI-current-year bazında.
+- Monetary gain EBITDA'yı SHISIRIR, adjusted EBITDA için geri çıkarılmalı.
 
 ## Örnek
-TBD — Block U2'de doldurulacak.
+THYAO FY2025 reported EBITDA = 184.8 milyar TL (IFRS). Monetary gain (eğer net borçluysa) = 12 milyar TL. IAS29 adjusted EBITDA = 184.8 − 12 = ~172.8 milyar TL.
 
 ## Bilinen Tuzaklar
-TBD — Block U2'de doldurulacak.
+1. Solo (VUK) rapor IAS29 uygulamıyor — karıştırma.
+2. Bankalar hariç tutuluyor (TFRS 10 özel hüküm).
+3. Segment breakdown'da IAS29 restatement uygulanmış mı kontrol et (bazen segment-level restated değil).
 
 ## Referanslar
-- references/ klasörü (Block U2'de populate)
+- TMS 29 Yüksek Enflasyonlu Ekonomilerde Finansal Raporlama
+- TÜİK TÜFE endeks serisi
