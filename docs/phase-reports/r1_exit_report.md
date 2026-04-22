@@ -3,8 +3,13 @@
 - **Faz:** R1 (Block R)
 - **Kategori:** A (smoke test yeterli, canlı test atlanır)
 - **Branch:** `finance-x-execution`
-- **Commit:** `401cc2a8` — `chore(cleanup): remove 756MB of tracked output artifacts and legacy backups [finance-x-audit R]`
+- **Commits (history rewrite sonrası SHA'lar):**
+  - `24c7f10e` — R1 cleanup (eski `401cc2a8`)
+  - `268cfe39` — R1 exit report (eski `0486f5f5`)
+  - `2ed07ede` — gitignore: `.claude/` + filter-repo artifact
 - **Tarih:** 2026-04-22
+- **Backup:** `/c/Users/koray/projeler/finance-x-hybrid-backup-20260422-192410` (2.0 GB, filter-repo öncesi)
+- **Remote:** `origin = github.com/maskelibo/finance-x-hybrid.git` (filter-repo auto-kaldırdı, manuel geri eklendi, **push bekleniyor**)
 
 ---
 
@@ -39,15 +44,20 @@
 
 ### Final repo boyutu
 
-| Ölçüm | Önce | Sonra | Delta |
-|---|---|---|---|
-| Total (`du -sh .`) | 2.0 GB | **2.0 GB** | 0 (çalışma ağacında fiziksel silme minimal — mv + tracked=>untracked) |
-| `.git/` | 629 MB | **629 MB** | 0 (history rewrite yapılmadı — R1 kapsamı dışı) |
-| `output/` | 763 MB | **799 MB** | +36 MB (root→archive taşıması) |
-| Tracked file count | ~1,660 | **713** | **-947** |
-| Tracked content | ~1.3M satır fazladan | gerçek kaynak | -1,297,645 satır |
+| Ölçüm | Başlangıç | Detrack sonrası | **filter-repo sonrası** | Toplam Delta |
+|---|---|---|---|---|
+| Total (`du -sh .`) | 2.0 GB | 2.0 GB | **1.4 GB** | -600 MB |
+| `.git/` | 629 MB | 629 MB | **22 MB** | **-607 MB (-96%)** |
+| `output/` | 763 MB | 799 MB | 799 MB | +36 MB (root→archive; untracked + gitignored) |
+| Tracked file count | ~1,660 | 713 | **714** | -946 |
+| Tracked content | ~1.3M satır fazladan | gerçek kaynak | gerçek kaynak | -1,297,645 satır |
 
-**Not:** Master spec'teki "756 MB → 5 MB" hedefi yalnızca git history rewrite (filter-repo/BFG) ile ulaşılabilir. R1 spec'i sadece detrack + gitignore içerdiği için history dokunulmadı. .git 629 MB olarak kaldı; bu later-phase kararı.
+**History rewrite (filter-repo v2.47.0):**
+- Strip: `.pdf` (any depth), `output/pdfs`, `output/bist30`, `output/TUPRS_*`, root ticker `*.html`/`*.md`/`*.json`, `.agents/skills`, `.claude/{scheduled_tasks.lock,settings.json}`, `agents/_legacy_memory_archive`, `agents/**/memory.backup.md`, named execution docs (`AGENT_FEEDBACK_READY.md` vs.)
+- 2,232 commit yeniden yazıldı, tüm history SHA'ları değişti
+- Süre: 1.58 sn
+
+**Not:** Master spec hedefi "756 MB → 5 MB"; `.git` 22 MB'a inildi (22× master'ın ulaşılmaz seviyesi mi yoksa geniş mesaj hedefi mi belirsiz). Çalışma ağacı 1.4 GB çünkü `output/pdfs/`, `output/bist30/`, `output/archive/` diskte untracked & gitignored halde duruyor (kaynak dosyalar, isteğe bağlı sonraki temizlikle silinebilir).
 
 ---
 
@@ -106,8 +116,9 @@ STEP 4: ✅ 0 açık defect
 
 ## NOTLAR / KARARLAR
 
-- **Git history rewrite**: R1 kapsamı dışı bırakıldı. .git/ 629 MB. İleride `git filter-repo` ile PDF blob'ları temizlenirse ~5 MB'a inebilir. Bu ayrı bir karar (destructive, force-push gerekir).
-- **.claude/ future**: Detrack edildi, untracked. User isterse `.gitignore`'a `.claude/` eklenebilir.
+- **Git history rewrite — UYGULANDI** (user onayıyla): `git-filter-repo` v2.47.0, 2,232 commit yeniden yazıldı, .git 629 MB → 22 MB. Tüm commit SHA'ları değişti; hiçbir clone başka yerde yok (user teyit etti). Backup `finance-x-hybrid-backup-20260422-192410` altında saklandı.
+- **.claude/ — gitignore'a eklendi** (user onayıyla): `/.claude/` satırı eklendi; önceki spesifik patternler (`settings.local.json`, `worktrees/`) kaldırıldı (geniş ignore zaten içeriyor).
+- **Force push — BEKLEMEDE**: Remote (`origin = github.com/maskelibo/finance-x-hybrid.git`) filter-repo tarafından auto-kaldırıldı, manuel geri eklendi. Push yapılmadı — user'dan açık onay bekleniyor. Komut hazır: `git push --force-with-lease origin finance-x-execution`.
 - **4 untracked (önceki session'dan)**: TUPRS root HTML/PDF'leri artık `output/archive/`'e taşındı. Kökteki 2 dosya R1 ile dahil arşive girdi. `output/TUPRS_Derin_Analiz_Raporu_20260422.pdf` ve `output/pdfs/tupras_konsolide_spk_31122022_fixed.pdf` untracked + gitignored kalıyor — artık sorun değil.
 - **Master R1 task #2'de `TUPRS_Entegre_Faaliyet_Raporu_2025_KAP.pdf` → `cache/sources/`**: Bu dosya diskte yok, skip.
 - **Bir tracked `TCELL_Entegre_Faaliyet_Raporu_2025_KAP.pdf` (10 MB)** root'taydı; `mv *.pdf` ile archive'a taşındı (ticker-prefix kuralı gereği ok).
