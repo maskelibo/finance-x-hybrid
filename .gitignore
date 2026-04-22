@@ -5,11 +5,18 @@ dist/
 !.env.example
 *.tsbuildinfo
 
-# Generated output metadata (PDFs are tracked)
-output/**/*.txt
+# Output artifacts
+output/**/*.pdf
+output/**/*.html
 output/**/*.md
 output/**/*.json
-backend/finance_x.db
+output/**/*.txt
+!output/.gitkeep
+!output/archive/.gitkeep
+
+# Source cache
+cache/
+
 backend/finance-x.db
 evals/results/
 
