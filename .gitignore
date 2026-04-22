@@ -6,9 +6,9 @@ dist/
 *.tsbuildinfo
 
 # Generated output metadata (PDFs are tracked)
-output/*.txt
-output/*.md
-output/*.json
+output/**/*.txt
+output/**/*.md
+output/**/*.json
 backend/finance_x.db
 backend/finance-x.db
 evals/results/
