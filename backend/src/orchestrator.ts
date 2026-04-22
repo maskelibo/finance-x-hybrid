@@ -16,6 +16,8 @@ import { aggregateSessionAddressal } from './checklist/aggregate.js';
 import { persistAddressalReport } from './checklist/persist.js';
 import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, UPSTREAM_DIGEST_MODE, CHECKLIST_ENFORCEMENT_MODE, CHECKLIST_MIN_ADDRESSAL_RATE, getStuckThresholdForAgent, getMaxQaRounds, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
 import { parseQaScore, parseQaDecision, classifyQaFailure } from './qa/score-parser.js';
+import { initFactPack } from './fact-pack.js';
+import { getSector as getSectorFromRegistry } from './sector-registry.js';
 import { digestUpstream } from './upstream-digest.js';
 import { deltaMerge } from './delta-merge.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
@@ -1135,6 +1137,14 @@ async function executeSession(
   selectedLayers?: AnalysisLayer[],
 ): Promise<void> {
   db.prepare(`UPDATE analysis_sessions SET status = 'running', error_message = NULL WHERE id = ?`).run(sessionId);
+
+  // R7: initialize canonical fact pack for this session (single source of truth)
+  try {
+    const sectorForPack = getSectorFromRegistry(ticker);
+    initFactPack(sessionId, ticker, sectorForPack);
+  } catch (err) {
+    console.warn(`[fact-pack] init failed for ${sessionId}: ${err instanceof Error ? err.message : err}`);
+  }
 
   const runRows = db.prepare(`SELECT agent_id FROM agent_runs WHERE session_id = ? ORDER BY rowid ASC`)
     .all(sessionId) as Array<{ agent_id: string }>;

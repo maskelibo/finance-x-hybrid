@@ -132,6 +132,13 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_kap_events_published ON kap_events(published_at);
   CREATE INDEX IF NOT EXISTS idx_kap_events_type ON kap_events(event_type);
 
+  CREATE TABLE IF NOT EXISTS fact_packs (
+    session_id TEXT PRIMARY KEY,
+    pack_json TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES analysis_sessions(id) ON DELETE CASCADE
+  );
+
   CREATE TABLE IF NOT EXISTS watchdog_events (
     id TEXT PRIMARY KEY,
     event_type TEXT NOT NULL,
