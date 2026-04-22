@@ -99,31 +99,19 @@
 
 ---
 
-## Son Heartbeat — 2026-04-19 TSİ (Otonom Döngü #129)
+## Son Heartbeat — 2026-04-21 TSİ (Otonom Döngü #130)
 - Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar, takvim].
-- **KAP Erişim:** JS-render engeli devam. Pazar — BIST kapalı, yeni bildirim gelmedi.
-- **WTI:** $82.59 (-11.45%) — Hormuz konsolidasyon bandı $82-85 devam.
-- **BIST30:** 17 Nisan kapanış fiyatları (pazar, değişim yok). AKBNK 83.55 +6.98%, GARAN 146.40 +6.86%, TUPRS 253.00 -5.60%, THYAO 329.00 +3.70%, EREGL 32.04 +3.69%, KCHOL 211.80 +3.57%.
-- **Yeni Haberler:** Trump "İran anlaşması 1-2 gün" dedi → İran ikinci tur müzakereyi **reddetti** → Hormuz volatilitesi sürecek. TUPRS/THYAO izle. | S&P Türkiye notunu korudu ✓ | Karahan Meclis sunumu | A101 → CarrefourSA satın alımı.
-- **Takvim (kritik):** PPK **22 Nisan (3 gün)** | EREGL Q1 earnings **23 Nisan (4 gün)**.
-- **Olağandışı:** İran reddi çelişkisi → Pazartesi WTI açılışını izle. Bankacılık +7% PPK faiz indirimi fiyatlaması olabilir.
+- **KAP Erişim:** JS-render engeli devam. Bildirim listesi alınamadı (sistematik sorun).
+- **WTI:** $90.06 (+3.02%, Haz-26 kontr.) — Önceki döngü $82.59'dan ~+%9 artış. İran müzakere gerilimi Pazartesi petrolü yukarı taşıdı. TUPRS crack spread izlenmeli.
+- **BIST100:** 14,375 (-0.76%) — Pazartesi kapanışı, temkinli seyir. PPK öncesi bekle-gör modu.
+- **EREGL:** 33.72 (+1.26%) — 17 Nisan 32.04'ten +%5.2. 52H high 34.48'e yaklaşıyor. Q1 earnings 2 gün sonra (23 Nisan).
+- **TUPRS:** Fiyat alınamadı (404). WTI +%9 hareketi göz önünde bulundurularak izlenecek.
+- **Takvim (KRİTİK):** PPK **YARIN 22 Nisan** | EREGL Q1 earnings **23 Nisan**.
+- **Olağandışı:** WTI $82→$90 sıçraması (+%9) dikkat çekici. İran 2. tur müzakere reddi Pazartesi petrolü sertçe yukarı taşıdı. TUPRS'ta negatif maliyet baskısı riski var. EREGL 52H zirveye yakın, earnings beklentisi yüksek.
 - P0/P1 yok. **Chairman ALERT: HAYIR.**
 
-## Son Heartbeat — 2026-04-19 TSİ (Otonom Döngü #128)
-- Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar, takvim].
-- **KAP Erişim:** JS-render engeli devam. Pazar günü — BIST kapalı, önemli bildirim beklenmez.
-- **WTI:** ~$82.59-83.85 (-10.25/-11.45%) | **Brent:** $90.38 (-9.07%) — Hormuz tam açık, Cuma kapanışı. Konsolidasyon bandı $82-85 devam.
-- **BIST30 (17 Nisan kapanış):** Bankacılık güçlü rally — AKBNK +6.98%, GARAN +6.86%, EKGYO +6.58%. TUPRS -5.60% (Hormuz/enerji). THYAO +3.70%, EREGL +3.69%, KCHOL +3.57%.
-- **Takvim (kritik):** PPK **22 Nisan (3 gün)** | EREGL Q1 earnings **23 Nisan (4 gün)**.
-- **Olağandışı:** Bankacılık sektörü tek günde +5-7% hareketi dikkat çekici — PPK beklentisiyle mi bağlantılı izlenecek.
-- P0/P1 yok. **Chairman ALERT: HAYIR.**
-
-## Son Heartbeat — 2026-04-18 TSİ (Otonom Döngü #127) [→ Archive]
-- Bkz. heartbeat_archive.md (WTI $83.85 -11.45%, Brent $90.38 -9.07%, BIST 17 Nisan kapanış, PPK 22 Nisan, HAYIR alert)
-- **BIST (kapalı — son kapanış 17 Nisan):** THYAO **329.00** (+3.70%) | TUPRS **253.00** (-5.60%) | ASELS **414.00** (+0.73%) | EREGL **32.04** (+3.69%) | KCHOL **211.80** (+3.57%).
-- **Yeni:** KCHOL fiyatı bu döngüde ilk kez alındı (önceki turda Bigpara 404 idi). Tüm fiyatlar 17 Nisan kapanışı.
-- **Takvim (kritik):** PPK **22 Nisan (4 gün)** | EREGL Q1 earnings **23 Nisan (5 gün)**.
-- P0/P1 yok. **Chairman ALERT: HAYIR.**
+## Önceki Heartbeat — 2026-04-19 TSİ (Döngü #129) [→ Archive]
+- Bkz. heartbeat_archive.md. WTI $82.59 (-11.45%), BIST pazar kapalı, PPK 22 Nisan / EREGL earnings 23 Nisan takvimi teyit edildi.
 
 ---
 
