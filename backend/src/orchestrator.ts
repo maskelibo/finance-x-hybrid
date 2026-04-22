@@ -1422,13 +1422,13 @@ async function executeSession(
             return; // HARD STOP — rapor üretimi engellendi
           }
 
-          // Soft / unknown — deliver with warning, continue pipeline
-          console.warn(`[QA GATE] Soft/unknown QA concerns after ${MAX_QA_ROUNDS} rounds — DELIVERING WITH WARNING`);
+          // Soft / unknown — set warning FLAGS only, keep status='running' for pipeline continuation.
+          // Final status is decided at the terminal UPDATE (line below ~1958) which reads quality_warning.
+          console.warn(`[QA GATE] Soft/unknown QA concerns after ${MAX_QA_ROUNDS} rounds — DELIVERING WITH WARNING (pipeline continues)`);
           const warningReason = `QA ${MAX_QA_ROUNDS} turda tam onay veremedi (${failClass}). Rapor teslim edildi, manual review öneriliyor.`;
           db.prepare(`
             UPDATE analysis_sessions
-            SET status = 'completed_with_warning',
-                quality_warning = 1,
+            SET quality_warning = 1,
                 quality_warning_reason = ?
             WHERE id = ?
           `).run(warningReason, sessionId);
@@ -1949,14 +1949,16 @@ async function executeSession(
   }
 
   // Guard: only mark completed if still running (prevent duplicate completion on resume race)
-  const currentStatus = (db.prepare(`SELECT status FROM analysis_sessions WHERE id = ?`).get(sessionId) as any)?.status;
-  if (currentStatus === 'completed') {
-    console.warn(`[GOVERNANCE] Session ${sessionId} already completed — skipping post-completion hooks`);
+  const currentRow = db.prepare(`SELECT status, quality_warning FROM analysis_sessions WHERE id = ?`).get(sessionId) as { status: string; quality_warning: number | null } | undefined;
+  if (currentRow?.status === 'completed' || currentRow?.status === 'completed_with_warning') {
+    console.warn(`[GOVERNANCE] Session ${sessionId} already ${currentRow.status} — skipping post-completion hooks`);
     return;
   }
 
-  db.prepare(`UPDATE analysis_sessions SET status = 'completed', completed_at = ?, current_phase = NULL WHERE id = ?`)
-    .run(completedAt, sessionId);
+  // Bug-fix (fix-pack-1): if QA flagged a soft warning earlier, terminal status = 'completed_with_warning'.
+  const terminalStatus = currentRow?.quality_warning ? 'completed_with_warning' : 'completed';
+  db.prepare(`UPDATE analysis_sessions SET status = ?, completed_at = ?, current_phase = NULL WHERE id = ?`)
+    .run(terminalStatus, completedAt, sessionId);
 
   // Post-completion: CEO feedback loop
   console.log(`Starting CEO feedback loop for ${ticker}`);
