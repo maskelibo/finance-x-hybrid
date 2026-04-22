@@ -3,6 +3,7 @@ import path from 'node:path';
 import { loadAgent } from './agents.js';
 import { getModelForAgent, AGENTS_ROOT, TARGETED_KNOWLEDGE_INJECTION } from './config.js';
 import { createDefaultProviderRouter } from './llm/default-router.js';
+import { getRecentOpenLessons } from './memory.js';
 import type { ProviderRunResult } from './llm/types.js';
 
 /**
@@ -104,6 +105,7 @@ function extractTargetedKnowledge(knowledgePath: string, context?: Record<string
  */
 const MAX_MEMORY_BYTES = 6 * 1024; // 6KB — Katman 1
 
+/** @deprecated R4: use loadStructuredMemory instead. Kept for backward-compat references. */
 function extractMemorySummary(memoryPath: string): string {
   try {
     const content = fs.readFileSync(memoryPath, 'utf8');
@@ -114,6 +116,42 @@ function extractMemorySummary(memoryPath: string): string {
   } catch {
     return '(hafıza dosyası henüz oluşturulmamış)';
   }
+}
+
+// R4: Yapılandırılmış memory loader — ilk 6KB truncation yerine 3 parça.
+//   permanent_rules.md (max 4KB) + memory.md "Kurallar" bölümü (max 2KB) + son 10 open lesson
+export function loadStructuredMemory(agentId: string, memoryPath: string): string {
+  const sections: string[] = [];
+
+  const rulesPath = memoryPath.replace('memory.md', 'permanent_rules.md');
+  if (fs.existsSync(rulesPath)) {
+    const rules = fs.readFileSync(rulesPath, 'utf8').trim();
+    if (rules.length < 4096) {
+      sections.push(`### Kalıcı Kurallar (permanent_rules.md)\n${rules}`);
+    } else {
+      sections.push(`### Kalıcı Kurallar (permanent_rules.md — ilk 4KB)\n${rules.slice(0, 4096)}`);
+    }
+  }
+
+  if (fs.existsSync(memoryPath)) {
+    const content = fs.readFileSync(memoryPath, 'utf8');
+    const rulesSectionMatch = content.match(/##\s*Kal[ıi]c[ıi]?\s*Kurallar[\s\S]*?(?=\n##\s|\n---|\Z)/i);
+    if (rulesSectionMatch) {
+      sections.push(`### Memory Kurallar\n${rulesSectionMatch[0].slice(0, 2048)}`);
+    } else {
+      sections.push(`### Memory (ilk 2KB)\n${content.slice(0, 2048)}`);
+    }
+  }
+
+  const lessons = getRecentOpenLessons(agentId, 10);
+  if (lessons.length > 0) {
+    const lessonsText = lessons
+      .map(l => `- **${l.ticker || 'N/A'}** (${l.date}, ${l.severity || 'P?'}, ${l.repeat_count}x): ${l.issue}${l.rule ? `\n  → Kural: ${l.rule}` : ''}`)
+      .join('\n');
+    sections.push(`### Son Açık Öğrenimler (lessons.jsonl)\n${lessonsText}`);
+  }
+
+  return sections.join('\n\n');
 }
 
 function getPermanentRulesPath(memoryPath: string): string {
@@ -247,9 +285,9 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
       }
       return [];
     })()),
-    `## Hafıza — Katman 1: Kurallar (otomatik yüklendi)`,
+    `## Hafıza (3 parça: permanent_rules + memory kurallar + son öğrenimler)`,
     ``,
-    extractMemorySummary(agent.memoryPath),
+    loadStructuredMemory(opts.agentId, agent.memoryPath),
     ``,
     `## Hafıza Sistemi`,
     ``,
