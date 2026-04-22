@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/analyst_consensus_agent/output",
+  "title": "Analyst Consensus Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "consensus", "confidence_overall", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "analyst_consensus_agent" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "company": {
+      "type": "object",
+      "required": ["ticker"],
+      "properties": {
+        "name": { "type": "string" },
+        "ticker": { "type": "string" }
+      }
+    },
+    "consensus": {
+      "type": "object",
+      "required": ["analyst_count", "recommendation_distribution", "price_target"],
+      "properties": {
+        "analyst_count": { "type": "integer", "minimum": 0 },
+        "as_of_date": { "type": "string", "format": "date" },
+        "recommendation_distribution": {
+          "type": "object",
+          "properties": {
+            "buy": { "type": "integer", "minimum": 0 },
+            "hold": { "type": "integer", "minimum": 0 },
+            "sell": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "price_target": {
+          "type": "object",
+          "properties": {
+            "average": { "type": ["number", "null"] },
+            "median": { "type": ["number", "null"] },
+            "min": { "type": ["number", "null"] },
+            "max": { "type": ["number", "null"] },
+            "currency": { "type": "string" }
+          }
+        },
+        "revision_trend": {
+          "type": "string",
+          "enum": ["upward", "downward", "mixed", "stable", "unknown"]
+        }
+      }
+    },
+    "analyst_estimates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "recommendation"],
+        "properties": {
+          "source": { "type": "string" },
+          "analyst": { "type": "string" },
+          "published_at": { "type": "string", "format": "date" },
+          "recommendation": {
+            "type": "string",
+            "enum": ["buy", "hold", "sell", "outperform", "underperform", "neutral", "unknown"]
+          },
+          "price_target": { "type": ["number", "null"] },
+          "rationale": { "type": "string" }
+        }
+      }
+    },
+    "crowded_trade_flag": { "type": "boolean" },
+    "confidence_overall": {
+      "type": "string",
+      "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"]
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "review_status": {
+      "type": "string",
+      "enum": ["ready", "needs_revision"]
+    }
+  }
+}

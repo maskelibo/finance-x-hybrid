@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/sentiment_news_agent/output",
+  "title": "Sentiment News Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "sentiment_summary", "news_items", "confidence_overall", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "sentiment_news_agent" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "company": {
+      "type": "object",
+      "required": ["ticker"],
+      "properties": {
+        "name": { "type": "string" },
+        "ticker": { "type": "string" }
+      }
+    },
+    "sentiment_summary": {
+      "type": "object",
+      "required": ["aggregate_score", "distribution", "lookback_days"],
+      "properties": {
+        "aggregate_score": { "type": "number", "minimum": -1, "maximum": 1 },
+        "distribution": {
+          "type": "object",
+          "properties": {
+            "positive_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+            "neutral_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+            "negative_pct": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "lookback_days": { "type": "integer", "minimum": 1 },
+        "themes": { "type": "array", "items": { "type": "string" } },
+        "trend": {
+          "type": "string",
+          "enum": ["improving", "deteriorating", "stable", "mixed", "unknown"]
+        }
+      }
+    },
+    "news_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "title", "published_at", "sentiment"],
+        "properties": {
+          "source": { "type": "string" },
+          "title": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "published_at": { "type": "string", "format": "date-time" },
+          "sentiment": {
+            "type": "string",
+            "enum": ["positive", "neutral", "negative"]
+          },
+          "sentiment_score": { "type": "number", "minimum": -1, "maximum": 1 },
+          "themes": { "type": "array", "items": { "type": "string" } },
+          "summary": { "type": "string" }
+        }
+      }
+    },
+    "catalysts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "theme": { "type": "string" },
+          "direction": { "type": "string", "enum": ["bullish", "bearish", "neutral"] },
+          "horizon": { "type": "string", "enum": ["short_term", "medium_term", "long_term"] }
+        }
+      }
+    },
+    "kap_alignment": {
+      "type": "object",
+      "properties": {
+        "consistent_with_kap": { "type": "boolean" },
+        "discrepancies": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "confidence_overall": {
+      "type": "string",
+      "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"]
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "review_status": {
+      "type": "string",
+      "enum": ["ready", "needs_revision"]
+    }
+  }
+}

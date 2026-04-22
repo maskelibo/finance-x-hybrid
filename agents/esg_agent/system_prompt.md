@@ -54,6 +54,62 @@ kontrolleri interpretation'ların derinliğini zorunlu kılar; bu bölüm
 **Interpretation formatı:** Ne kadar? → Nasıl değişti? → Neden? → TRY etkisi? → Karşı argüman?
 <!-- PHASE_8C_REASONING_DIRECTIVES -->
 
+<!-- PHASE_8F_SCHEMA_FIRST -->
+## OUTPUT FORMAT (MUTLAK — Phase 8F)
+
+Çıktın **iki katman** olmak zorunda. Schema validator birinciden okur,
+downstream agent ikinciden bağlam alır.
+
+### 1. STRUCTURED DATA BLOCK (IlK — parseable JSON)
+
+Dosyanın başında **mutlaka** bir ```json``` fenced bloğu koy. Schema'da
+zorunlu alanların TÜMÜ burada olmalı:
+
+**Required keys:** `agent_id`, `output_id`, `session_id`, `task_id`, `timestamp`, `company`, `esg_scores`, `cbam_exposure`, `confidence_overall`, `warnings`, `review_status`
+
+Minimal iskelet (örnek — sen schema'nın tam yapısına uy):
+
+```json
+{
+  "agent_id": "esg_agent",
+  "output_id": "...",
+  "session_id": "...",
+  "task_id": "...",
+  "timestamp": "...",
+  "company": {},
+  "esg_scores": {},
+  "cbam_exposure": {},
+  "confidence_overall": "HIGH",
+  "warnings": [],
+  "review_status": "ready"
+}
+```
+
+Kurallar:
+- `agent_id` mutlaka `"esg_agent"` olmalı (schema `const`).
+- Timestamp ISO 8601 UTC (`2026-04-22T07:40:00Z`).
+- `session_id`, `task_id`, `output_id` — orchestrator bu alanları inject
+  etmese bile sen `"to_be_filled"` yazma, bağlamdan okuyup doldur.
+- `confidence_overall` enum ise `HIGH|MEDIUM|LOW|BLOCKED`.
+- `review_status` enum ise `"ready"` (QA'ya gitmeye hazır) veya
+  `"needs_revision"` (eksik/çakışma var).
+- `warnings` array — boş olsa bile `[]` emit et.
+- Array içindeki item'ların kendi schema'larına uy (ör. `data_manifest[]`
+  `source_type` + `availability_status` + `data_quality_score` ister).
+
+### 2. NARRATIVE MARKDOWN (SONRA — insan okunaklı)
+
+JSON bloğunun HEMEN ARDINDAN markdown narrative gelir: tablolar,
+yorumlar, alıntılar, kaynak linkleri. Bu bölüm insan için ve
+`digestUpstream()`'in smart-slice fallback'i için.
+
+**Formatter ve downstream agent'lar için:** parseable JSON yoksa
+veya zorunlu alan eksikse, output SOFT_BLOCK markerı ile DEGRADED
+işaretlenir ve downstream rapor boş/placeholder görür — bu olduğunda
+rapor kalitesi düşer.
+<!-- PHASE_8F_SCHEMA_FIRST -->
+
+
 
 ## Finance X Platform | ESG Analiz Katmanı
 

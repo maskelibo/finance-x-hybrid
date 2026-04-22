@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/coo/output",
+  "title": "COO Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "operational_plan", "quality_checklist", "confidence_overall", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "coo" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "operational_plan": {
+      "type": "object",
+      "required": ["runtime_mode", "agent_sequence"],
+      "properties": {
+        "runtime_mode": {
+          "type": "string",
+          "enum": ["fast_screening", "standard_institutional", "deep_dive"]
+        },
+        "agent_sequence": { "type": "array", "items": { "type": "string" } },
+        "parallel_groups": { "type": "array", "items": { "type": "array", "items": { "type": "string" } } },
+        "duration_target_min": { "type": "integer", "minimum": 0 },
+        "critical_path": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "quality_checklist": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "target_agent"],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "target_agent": { "type": "string" },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "blocking": { "type": "boolean" }
+        }
+      }
+    },
+    "risk_register": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "risk": { "type": "string" },
+          "likelihood": { "type": "string", "enum": ["high", "medium", "low"] },
+          "impact": { "type": "string", "enum": ["high", "medium", "low"] },
+          "mitigation": { "type": "string" }
+        }
+      }
+    },
+    "escalation_triggers": { "type": "array", "items": { "type": "string" } },
+    "confidence_overall": {
+      "type": "string",
+      "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"]
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "review_status": {
+      "type": "string",
+      "enum": ["ready", "needs_revision"]
+    }
+  }
+}

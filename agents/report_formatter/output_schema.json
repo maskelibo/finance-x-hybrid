@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/report_formatter/output",
+  "title": "Report Formatter Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "report_id", "formatted_html", "source", "confidence_overall", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "report_formatter" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "report_id": { "type": "string" },
+    "ticker": { "type": "string" },
+    "theme": {
+      "type": "string",
+      "enum": ["institutional", "anthropic", "minimal"]
+    },
+    "formatted_html": {
+      "type": "string",
+      "minLength": 20000,
+      "description": "Full HTML document; minimum 20KB indicates a non-truncated output."
+    },
+    "pdf_path": { "type": ["string", "null"] },
+    "source": {
+      "type": "string",
+      "enum": ["llm", "python", "hybrid"]
+    },
+    "section_count": { "type": "integer", "minimum": 0 },
+    "chart_count": { "type": "integer", "minimum": 0 },
+    "toc": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "section": { "type": "string" },
+          "page": { "type": "integer" }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "page_count": { "type": "integer" },
+        "file_size_kb": { "type": "integer" },
+        "language": { "type": "string", "enum": ["TR", "EN", "TR+EN"] },
+        "sha256": { "type": "string" }
+      }
+    },
+    "confidence_overall": {
+      "type": "string",
+      "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"]
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "review_status": {
+      "type": "string",
+      "enum": ["ready", "needs_revision"]
+    }
+  }
+}

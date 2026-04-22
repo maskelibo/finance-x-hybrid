@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/esg_agent/output",
+  "title": "ESG Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "esg_scores", "cbam_exposure", "confidence_overall", "warnings", "review_status"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "esg_agent" },
+    "output_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "company": {
+      "type": "object",
+      "required": ["ticker"],
+      "properties": {
+        "name": { "type": "string" },
+        "ticker": { "type": "string" }
+      }
+    },
+    "esg_scores": {
+      "type": "object",
+      "required": ["environmental", "social", "governance", "overall"],
+      "properties": {
+        "environmental": {
+          "type": "object",
+          "properties": {
+            "score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+            "scope_1_tco2e": { "type": ["number", "null"] },
+            "scope_2_tco2e": { "type": ["number", "null"] },
+            "scope_3_tco2e": { "type": ["number", "null"] },
+            "carbon_intensity_per_revenue": { "type": ["number", "null"] },
+            "narrative": { "type": "string" }
+          }
+        },
+        "social": {
+          "type": "object",
+          "properties": {
+            "score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+            "employee_safety_indicators": { "type": "string" },
+            "supply_chain_assessment": { "type": "string" },
+            "narrative": { "type": "string" }
+          }
+        },
+        "governance": {
+          "type": "object",
+          "properties": {
+            "score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+            "board_independence_pct": { "type": ["number", "null"] },
+            "transparency_grade": { "type": "string" },
+            "narrative": { "type": "string" }
+          }
+        },
+        "overall": {
+          "type": "object",
+          "properties": {
+            "grade": { "type": "string", "enum": ["AAA", "AA", "A", "BBB", "BB", "B", "CCC", "CC", "C", "unknown"] },
+            "rating_provider": { "type": "string" }
+          }
+        }
+      }
+    },
+    "cbam_exposure": {
+      "type": "object",
+      "required": ["applicable"],
+      "properties": {
+        "applicable": { "type": "boolean" },
+        "estimated_annual_cost_try": { "type": ["number", "null"] },
+        "phase_in_timeline": { "type": "string" },
+        "products_affected": { "type": "array", "items": { "type": "string" } },
+        "mitigation_plan": { "type": "string" }
+      }
+    },
+    "reporting_compliance": {
+      "type": "object",
+      "properties": {
+        "kgk_compliant": { "type": "boolean" },
+        "tsrs_disclosure": { "type": "boolean" },
+        "sustainability_report_year": { "type": ["integer", "null"] }
+      }
+    },
+    "confidence_overall": {
+      "type": "string",
+      "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"]
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "review_status": {
+      "type": "string",
+      "enum": ["ready", "needs_revision"]
+    }
+  }
+}
