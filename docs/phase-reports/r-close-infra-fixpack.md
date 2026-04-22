@@ -151,7 +151,19 @@ Python engine IAS29-adjusted **revenue + gross profit** hesaplıyor (yukarıda).
 
 ---
 
-## 🟢 KARAR — Block R TAM DOĞRULANDI (kritik kuralla birlikte)
+## 🟢 KARAR — Block R TAM DOĞRULANDI + IAS 29 EBITDA Deferral
+
+**IAS 29 adjusted EBITDA formülü Block U U6'da (financial_analysis hybrid enrichment) eklenecek.**
+Block R'de gross IAS 29 mekanizması doğrulandı:
+- `gross_profit_ias29` = **155,639 mn TL** canlı hesaplandı
+- `gross_margin_ias29` = **%16.29** canlı hesaplandı
+- Unit normalizer + fact pack + sector registry pipeline end-to-end operasyonel
+- Python engine deterministic 14+ agent'te çalıştı
+
+Kalan **`ebitda_ias29`** formülü (OPEX + D&A × cpi_multiplier restatement) Python engine enhancement'ıdır — Block U U6'da financial_analysis hybrid enrichment ile eklenecek.
+
+### Block R TAM doğrulandı kabul ediliyor
+
 
 - **UnicodeEncodeError bulundu ve giderildi** (infra fix).
 - **data_collection zinciri canlı çalıştı** (217 disclosure).
