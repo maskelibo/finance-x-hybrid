@@ -1,5 +1,10 @@
 import { spawn } from 'node:child_process';
-import { CLAUDE_PERMISSION_MODE, CLAUDE_SPAWN_OPTIONS, PROVIDER_STALL_TIMEOUT_S } from '../config.js';
+import {
+  CLAUDE_PERMISSION_MODE,
+  CLAUDE_SPAWN_OPTIONS,
+  PROVIDER_STALL_TIMEOUT_S,
+  CLAUDE_OUTPUT_FORMAT,
+} from '../config.js';
 import type { LLMProvider } from './provider-interface.js';
 import type { LLMErrorType, ProviderAvailability, ProviderRunInput, ProviderRunResult } from './types.js';
 
@@ -29,6 +34,110 @@ function detectClaudeErrorType(stderr: string, stdout: string): LLMErrorType {
   return 'unknown';
 }
 
+/**
+ * Stream-json event accumulator — Phase 8G.
+ *
+ * Claude CLI with `--output-format stream-json --verbose` emits NDJSON:
+ *   {"type":"system","subtype":"init","session_id":"...","model":"..."}
+ *   {"type":"assistant","message":{"content":[{"type":"text","text":"..."}]}}
+ *   ... more assistant events as generation streams ...
+ *   {"type":"result","subtype":"success","result":"...","total_cost_usd":..,"usage":{...}}
+ *
+ * We accumulate assistant-message text chunks; if the final `result` event
+ * carries a result string we prefer that (it's the canonical final form).
+ * Cost/tokens come from the result event's total_cost_usd/usage.
+ *
+ * Fail-safe: any parse error on a line is swallowed and the line is kept
+ * in rawBuf so the caller can still see raw stdout in `rawOutput`.
+ */
+class StreamJsonAccumulator {
+  private pendingLine = '';
+  private assistantText = '';
+  private finalResult: string | null = null;
+  private costUsd = 0;
+  private inputTokens = 0;
+  private outputTokens = 0;
+  private sessionId: string | null = null;
+
+  feed(chunk: string): void {
+    this.pendingLine += chunk;
+    let idx: number;
+    while ((idx = this.pendingLine.indexOf('\n')) !== -1) {
+      const line = this.pendingLine.slice(0, idx).trim();
+      this.pendingLine = this.pendingLine.slice(idx + 1);
+      if (!line) continue;
+      this.handleLine(line);
+    }
+  }
+
+  flush(): void {
+    const tail = this.pendingLine.trim();
+    this.pendingLine = '';
+    if (tail) this.handleLine(tail);
+  }
+
+  private handleLine(line: string): void {
+    let evt: unknown;
+    try {
+      evt = JSON.parse(line);
+    } catch {
+      // Not a JSON event — could be a startup warning, noise, etc. Ignore.
+      return;
+    }
+    if (!evt || typeof evt !== 'object') return;
+    const e = evt as Record<string, unknown>;
+    const type = typeof e.type === 'string' ? e.type : '';
+
+    if (type === 'system') {
+      const sid = e.session_id;
+      if (typeof sid === 'string') this.sessionId = sid;
+      return;
+    }
+
+    if (type === 'assistant') {
+      const msg = e.message;
+      if (msg && typeof msg === 'object') {
+        const content = (msg as Record<string, unknown>).content;
+        if (Array.isArray(content)) {
+          for (const block of content) {
+            if (block && typeof block === 'object') {
+              const b = block as Record<string, unknown>;
+              const btype = typeof b.type === 'string' ? b.type : '';
+              if (btype === 'text' && typeof b.text === 'string') {
+                this.assistantText += b.text;
+              }
+            }
+          }
+        }
+      }
+      return;
+    }
+
+    if (type === 'result') {
+      const res = e.result;
+      if (typeof res === 'string' && res.length > 0) {
+        this.finalResult = res;
+      }
+      if (typeof e.total_cost_usd === 'number') this.costUsd = e.total_cost_usd;
+      const usage = e.usage;
+      if (usage && typeof usage === 'object') {
+        const u = usage as Record<string, unknown>;
+        if (typeof u.input_tokens === 'number') this.inputTokens = u.input_tokens;
+        if (typeof u.output_tokens === 'number') this.outputTokens = u.output_tokens;
+      }
+      return;
+    }
+  }
+
+  getOutput(): string {
+    return this.finalResult ?? this.assistantText;
+  }
+
+  getCostUsd(): number { return this.costUsd; }
+  getTokensUsed(): number { return this.inputTokens + this.outputTokens; }
+  getSessionId(): string | null { return this.sessionId; }
+}
+
 export class ClaudeProvider implements LLMProvider {
   readonly id = 'claude' as const;
 
@@ -36,27 +145,25 @@ export class ClaudeProvider implements LLMProvider {
     const startedAt = Date.now();
 
     return new Promise((resolve) => {
-      // Pass the prompt on stdin (not argv) so large prompts don't hit
-      // cmd.exe's ~8KB command-line ceiling on Windows (ENAMETOOLONG) and
-      // so that on POSIX we avoid `E2BIG` for >128KB prompts too.
-      const args = [
+      const useStreamJson = CLAUDE_OUTPUT_FORMAT === 'stream-json';
+      const args: string[] = [
         '-p',
-        '--model',
-        input.model,
-        '--output-format',
-        'json',
-        '--input-format',
-        'text',
+        '--model', input.model,
+        '--input-format', 'text',
+        '--output-format', useStreamJson ? 'stream-json' : 'json',
       ];
-
+      if (useStreamJson) {
+        // stream-json requires --verbose; partial messages give us a heartbeat
+        // so stall detection doesn't false-positive on large outputs.
+        args.push('--verbose', '--include-partial-messages');
+      }
       if (CLAUDE_PERMISSION_MODE) {
         args.push('--permission-mode', CLAUDE_PERMISSION_MODE);
       }
 
-      // Windows: spawn the `.cmd` wrapper. Node 20+ blocks direct .cmd
-      // execution as EINVAL, so we go through `cmd.exe /d /s /c` which
-      // doesn't have that restriction and doesn't inflate the command
-      // line (prompt is on stdin, argv stays small).
+      // Windows: spawn through cmd.exe /d /s /c so Node 20+ .cmd EINVAL
+      // restriction is bypassed and the prompt (on stdin) doesn't inflate
+      // the command line past cmd.exe's ~8KB ceiling.
       const isWin = process.platform === 'win32';
       const binary = isWin ? 'cmd.exe' : 'claude';
       const spawnArgs = isWin ? ['/d', '/s', '/c', 'claude.cmd', ...args] : args;
@@ -66,7 +173,6 @@ export class ClaudeProvider implements LLMProvider {
         stdio: ['pipe', 'pipe', 'pipe'],
       });
 
-      // Write the prompt and close stdin so Claude starts generating.
       if (child.stdin) {
         child.stdin.write(input.prompt);
         child.stdin.end();
@@ -77,12 +183,8 @@ export class ClaudeProvider implements LLMProvider {
       let timedOut = false;
       let stalled = false;
       let lastOutputAt = Date.now();
-      // Progress heartbeat: any activity — stdout OR stderr — counts as "alive".
-      // With --output-format=json Claude buffers the entire response until done,
-      // so stdoutBuf can be empty for 10+ minutes on large outputs (FA, synthesis).
-      // stderr still trickles session/progress info, so we use it to differentiate
-      // "hung process" from "long-running process with buffered output".
       let lastActivityAt = Date.now();
+      const accumulator = useStreamJson ? new StreamJsonAccumulator() : null;
 
       const timeoutHandle = input.timeoutMs
         ? setTimeout(() => {
@@ -91,26 +193,19 @@ export class ClaudeProvider implements LLMProvider {
           }, input.timeoutMs)
         : null;
 
-      // Stall detection: progressive — warn at 3min, kill at stall timeout.
-      // Kill condition is "no stdout bytes at all" AND "no activity anywhere
-      // in {stall_timeout}s". If Claude is actively working stderr will have
-      // heartbeat chatter, resetting lastActivityAt and avoiding false kills
-      // on legitimately-long generations.
+      // Stall detection — Phase 8E (stderr-aware) + 8G (stream-json events
+      // flow steadily so stdout is rarely silent in the first place).
       const stallCheckInterval = setInterval(() => {
         const silentSecs = (Date.now() - lastOutputAt) / 1000;
         const inactiveSecs = (Date.now() - lastActivityAt) / 1000;
 
         if (silentSecs > 180 && stdoutBuf.length === 0) {
-          console.warn(`[PROVIDER:claude] Warning — ${Math.round(silentSecs)}s with 0 output tokens (activity ${Math.round(inactiveSecs)}s ago)`);
+          console.warn(
+            `[PROVIDER:claude] Warning — ${Math.round(silentSecs)}s with 0 output tokens (activity ${Math.round(inactiveSecs)}s ago)`,
+          );
         }
 
-        // Only kill when BOTH stdout is empty AND process has produced nothing
-        // on either stream for PROVIDER_STALL_TIMEOUT_S seconds. A single byte
-        // on stderr (progress, notice, session id) is enough to keep alive.
-        if (
-          inactiveSecs > PROVIDER_STALL_TIMEOUT_S &&
-          stdoutBuf.length === 0
-        ) {
+        if (inactiveSecs > PROVIDER_STALL_TIMEOUT_S && stdoutBuf.length === 0) {
           stalled = true;
           console.warn(
             `[PROVIDER:claude] Stall confirmed — no stdout AND no stderr for ${Math.round(inactiveSecs)}s, killing process`,
@@ -125,6 +220,7 @@ export class ClaudeProvider implements LLMProvider {
         stdoutBuf += text;
         lastOutputAt = Date.now();
         lastActivityAt = Date.now();
+        if (accumulator) accumulator.feed(text);
         input.onStdout?.(text);
       });
 
@@ -134,7 +230,6 @@ export class ClaudeProvider implements LLMProvider {
         lastActivityAt = Date.now();
         input.onStderr?.(text);
       });
-
 
       child.on('error', (err) => {
         if (timeoutHandle) clearTimeout(timeoutHandle);
@@ -183,15 +278,24 @@ export class ClaudeProvider implements LLMProvider {
         let tokensUsed = 0;
         let costUsd = 0;
 
-        try {
-          const parsed = JSON.parse(stdoutBuf);
-          if (parsed.result) parsedOutput = parsed.result;
-          if (parsed.total_cost_usd) costUsd = parsed.total_cost_usd;
-          if (parsed.usage) {
-            tokensUsed = (parsed.usage.input_tokens || 0) + (parsed.usage.output_tokens || 0);
+        if (accumulator) {
+          accumulator.flush();
+          const acc = accumulator.getOutput();
+          if (acc.length > 0) parsedOutput = acc;
+          costUsd = accumulator.getCostUsd();
+          tokensUsed = accumulator.getTokensUsed();
+        } else {
+          // Legacy json mode: single JSON blob at end.
+          try {
+            const parsed = JSON.parse(stdoutBuf);
+            if (parsed.result) parsedOutput = parsed.result;
+            if (parsed.total_cost_usd) costUsd = parsed.total_cost_usd;
+            if (parsed.usage) {
+              tokensUsed = (parsed.usage.input_tokens || 0) + (parsed.usage.output_tokens || 0);
+            }
+          } catch {
+            // Raw fallback — keep stdoutBuf as-is.
           }
-        } catch {
-          // Keep raw output if provider didn't return JSON.
         }
 
         resolve({
