@@ -341,6 +341,11 @@ export const SKILLS_ENABLED = (process.env.SKILLS_ENABLED ?? 'true') === 'true';
 export const MAX_SKILLS_PER_AGENT = parseInt(process.env.MAX_SKILLS_PER_AGENT || '3', 10);
 export const SKILL_EXCERPT_ENGINE_ENABLED = (process.env.SKILL_EXCERPT_ENGINE_ENABLED ?? 'true') === 'true';
 
+// U3: Document intelligence (Qdrant RAG).
+export const DOCUMENT_INTEL_ENABLED = (process.env.DOCUMENT_INTEL_ENABLED ?? 'true') === 'true';
+export const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333';
+export const EMBEDDING_PROVIDER = process.env.EMBEDDING_PROVIDER || 'local'; // 'local' | 'openai'
+
 export const CLAUDE_SPAWN_OPTIONS = {
   cwd: PROJECT_ROOT,
   env: CLAUDE_SPAWN_ENV,

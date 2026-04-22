@@ -55,3 +55,6 @@ feedback-export-*
 
 # Filter-repo artifact (cleanup script)
 .git-rewrite-strip-paths.txt
+
+# U3: Qdrant local binary + storage (Docker-less setup)
+_qdrant/
