@@ -1,0 +1,170 @@
+version: 1.0.0
+last_updated: "2026-04-22"
+
+skills:
+  # ------- Data acquisition -------
+  - id: bist-kap-fetching
+    name: "BIST KAP Disclosure Fetching"
+    description: "KAP API'sinden disclosure + PDF çekme; rate-limit, retry, JSON metadata parse."
+    triggers: ["kap disclosure", "faaliyet raporu", "bildirim çek", "yönetim kurulu raporu", "kap.org.tr", "financial statement filing"]
+    applies_to_agents: [data_collection, kap_watch, event_classification]
+    category: data_acquisition
+    priority: critical
+
+  # ------- Accounting -------
+  - id: ias29-inflation-accounting
+    name: "IAS 29 Hyperinflation Accounting"
+    description: "Turkiye TUFE >%100 donemlerinde IAS 29. Net monetary position, parasal kazanc/kayip, adjusted EBITDA/NI."
+    triggers: ["ias 29", "ias29", "enflasyon muhasebesi", "parasal kazanc", "hyperinflation", "tufe", "monetary position"]
+    applies_to_agents: [parse_standardization, reconciliation, financial_analysis, valuation_agent]
+    category: accounting
+    priority: critical
+
+  - id: ifrs16-lease-adjustment
+    name: "IFRS 16 Lease Adjustments"
+    description: "Operating lease faiz ve itfa ayristirma; EBITDAR icin kira giderini operating cost'tan geri ekleme."
+    triggers: ["ifrs 16", "operating lease", "kira gideri", "ebitdar", "lease liability", "right of use"]
+    applies_to_agents: [parse_standardization, reconciliation, financial_analysis, valuation_agent]
+    category: accounting
+    priority: high
+
+  - id: financial-statements-extraction
+    name: "Financial Statements Extraction"
+    description: "PDF faaliyet raporundan IS/BS/CF/SE tablolarini extract etme; IFRS/SPK layout."
+    triggers: ["gelir tablosu", "bilanco", "nakit akim", "income statement", "balance sheet", "cash flow", "spk", "konsolide finansal"]
+    applies_to_agents: [parse_standardization, reconciliation, data_collection]
+    category: data_acquisition
+    priority: critical
+
+  # ------- Ratios / metrics -------
+  - id: financial-ratios-calculation
+    name: "28 Mandatory Metric Formulas"
+    description: "DSO/DIO/DPO/CCC/NWC/ROE/ROCE/ROIC/FCF... 28 Chairman zorunlu metrik formul rehberi."
+    triggers: ["28 metric", "ratio", "dso", "dio", "dpo", "ccc", "roe", "roce", "roic", "fcf", "nwc", "capex/ebitda"]
+    applies_to_agents: [financial_analysis, reconciliation]
+    category: financial_analysis
+    priority: critical
+
+  # ------- Valuation -------
+  - id: dcf-valuation
+    name: "DCF Valuation"
+    description: "WACC, terminal value, scenario analysis; 5-yillik projeksiyon + sensitivity table."
+    triggers: ["dcf", "discounted cash flow", "wacc", "terminal value", "intrinsic value", "dfa"]
+    applies_to_agents: [valuation_agent, strategic_synthesis]
+    category: valuation
+    priority: critical
+
+  - id: sotp-valuation
+    name: "SOTP Valuation"
+    description: "Holding/konglomera icin Sum-of-the-Parts; net asset value, NAV discount."
+    triggers: ["sotp", "sum of the parts", "holding", "nav", "discount to nav", "konglomera"]
+    applies_to_agents: [valuation_agent, sector_competition, strategic_synthesis]
+    category: valuation
+    priority: high
+
+  - id: altman-z-score
+    name: "Altman Z-Score"
+    description: "Bankruptcy risk scoring: Z = 1.2A + 1.4B + 3.3C + 0.6D + 1.0E (public manufacturing)."
+    triggers: ["altman", "z-score", "bankruptcy risk", "iflas riski", "distress"]
+    applies_to_agents: [financial_analysis, valuation_agent]
+    category: financial_analysis
+    priority: medium
+
+  - id: piotroski-f-score
+    name: "Piotroski F-Score"
+    description: "Quality score 9 binary criterion: profitability, leverage, operating efficiency."
+    triggers: ["piotroski", "f-score", "quality score", "kalite skoru"]
+    applies_to_agents: [financial_analysis]
+    category: financial_analysis
+    priority: medium
+
+  # ------- Report / format -------
+  - id: goldman-report-structure
+    name: "Goldman 12-Section Report"
+    description: "12 bolumlu Yonetim Kurulu raporu sablonu; metin-gorsel sandvic kurali."
+    triggers: ["12 bolum", "yonetim kurulu raporu", "goldman template", "executive report", "chairman brief"]
+    applies_to_agents: [report_formatter, final_summary, strategic_synthesis]
+    category: report_format
+    priority: high
+
+  - id: brand-identity-extraction
+    name: "Brand Identity Extraction"
+    description: "Sirket logo/renk/font/CSS identity cikarimi; theme preset integrasyonu."
+    triggers: ["brand identity", "logo", "kurumsal renk", "css theme", "marka kimlik"]
+    applies_to_agents: [context_extraction, report_formatter]
+    category: report_format
+    priority: medium
+
+  # ------- Technical -------
+  - id: technical-indicators
+    name: "Technical Indicators"
+    description: "MACD, RSI, Bollinger Bands, VWAP, support/resistance; tvdatafeed + ta library."
+    triggers: ["macd", "rsi", "bollinger", "vwap", "support resistance", "teknik analiz", "technical indicator"]
+    applies_to_agents: [technical_analysis]
+    category: technical
+    priority: high
+
+  # ------- Sector (8) -------
+  - id: sector-aviation
+    name: "Sector Playbook — Aviation"
+    description: "Havacilik: EBITDAR, CASK/RASK, LF, RPK/ASK, fuel hedge, IFRS 16 impact."
+    triggers: ["aviation", "havacilik", "airline", "thyao", "pegys", "ebitdar", "load factor", "ask", "rpk", "cask", "rask"]
+    applies_to_agents: [financial_analysis, sector_competition, context_extraction, macro_analysis]
+    category: sector
+    priority: high
+
+  - id: sector-banking
+    name: "Sector Playbook — Banking"
+    description: "Banka: NIM, CET1, cost of risk, BDDK coklu metrik, BASEL; NPL ratio trend."
+    triggers: ["banking", "banka", "akbnk", "garan", "ykbnk", "isctr", "halkb", "vakbn", "nim", "cet1", "bddk", "basel", "npl"]
+    applies_to_agents: [financial_analysis, sector_competition, context_extraction]
+    category: sector
+    priority: high
+
+  - id: sector-steel
+    name: "Sector Playbook — Steel"
+    description: "Celik: HRC spread, CBAM, demir cevheri/komur pass-through, kapasite kullanim."
+    triggers: ["steel", "celik", "eregl", "krdmd", "hrc", "hot rolled", "cbam", "demir cevheri", "blast furnace"]
+    applies_to_agents: [financial_analysis, sector_competition, macro_analysis]
+    category: sector
+    priority: high
+
+  - id: sector-refinery
+    name: "Sector Playbook — Refinery"
+    description: "Rafineri: crack spread (gasoline/diesel/jet), Brent exposure, hedge, marj."
+    triggers: ["refinery", "rafineri", "tuprs", "crack spread", "brent", "gasoline", "diesel", "jet fuel"]
+    applies_to_agents: [financial_analysis, sector_competition, macro_analysis]
+    category: sector
+    priority: high
+
+  - id: sector-holding
+    name: "Sector Playbook — Holding"
+    description: "Holding: NAV, SOTP, discount to NAV, segment reporting, ittifak kumemizasyon."
+    triggers: ["holding", "kchol", "sahol", "dohol", "enkai", "nav", "sotp", "discount", "segment"]
+    applies_to_agents: [financial_analysis, sector_competition, valuation_agent, strategic_synthesis]
+    category: sector
+    priority: high
+
+  - id: sector-telecom
+    name: "Sector Playbook — Telecom"
+    description: "Telekom: ARPU, churn, net add, 5G spectrum, CAPEX yogunlugu."
+    triggers: ["telecom", "telekom", "tcell", "ttkom", "arpu", "churn", "5g", "spectrum", "subscriber"]
+    applies_to_agents: [financial_analysis, sector_competition, context_extraction]
+    category: sector
+    priority: medium
+
+  - id: sector-retail
+    name: "Sector Playbook — Retail"
+    description: "Perakende: SSSG, basket size, square-meter verim, mağaza ağı dinamikleri."
+    triggers: ["retail", "perakende", "bimas", "mgros", "sokm", "sssg", "ssg", "mağaza", "basket size"]
+    applies_to_agents: [financial_analysis, sector_competition, context_extraction]
+    category: sector
+    priority: medium
+
+  - id: sector-defense
+    name: "Sector Playbook — Defense & Electronics"
+    description: "Savunma: backlog, R&D/revenue, SSB yatirim, ihracat kalemi, export licensing."
+    triggers: ["defense", "savunma", "asels", "backlog", "ssb", "r&d", "export license", "defence"]
+    applies_to_agents: [financial_analysis, sector_competition, context_extraction]
+    category: sector
+    priority: medium

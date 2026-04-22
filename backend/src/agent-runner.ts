@@ -5,6 +5,8 @@ import { getModelForAgent, AGENTS_ROOT, TARGETED_KNOWLEDGE_INJECTION } from './c
 import { createDefaultProviderRouter } from './llm/default-router.js';
 import { getRecentOpenLessons } from './memory.js';
 import { getSector as getSectorFromRegistry } from './sector-registry.js';
+import { getTriggeredSkills, readSkillExcerpt, readSkillContent } from './skills/registry.js';
+import { SKILLS_ENABLED, MAX_SKILLS_PER_AGENT, SKILL_EXCERPT_ENGINE_ENABLED } from './config.js';
 import type { ProviderRunResult } from './llm/types.js';
 
 /**
@@ -359,6 +361,27 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     requiresWebResearch ? `` : '',
     requiresWebResearch ? `Bu direktif CEO Meta-Ajan tarafından onaylandı. Uygulamazsan raporun reddedilir.` : '',
     ``,
+    // U1: Skills — context-triggered skill injection (excerpt engine preferred, full fallback)
+    ...((() => {
+      if (!SKILLS_ENABLED) return [];
+      const triggered = getTriggeredSkills(opts.agentId, opts.context || {}).slice(0, MAX_SKILLS_PER_AGENT);
+      if (triggered.length === 0) return [];
+      const picks: string[] = [
+        `## Tetiklenen Skill'ler (${triggered.length})`,
+        `Aşağıdaki skill'ler mevcut göreve uygun — prosedürlerini uygula:`,
+        ``,
+      ];
+      for (const skill of triggered) {
+        const body = SKILL_EXCERPT_ENGINE_ENABLED
+          ? (readSkillExcerpt(skill.id, opts.context || {}, 2000) || readSkillContent(skill.id, 2500))
+          : readSkillContent(skill.id, 2500);
+        picks.push(`### ${skill.name} (${skill.id})`);
+        picks.push(body || skill.description);
+        picks.push(``);
+      }
+      console.log(`[skills] ${opts.agentId}: ${triggered.length} triggered — ${triggered.map(s => s.id).join(', ')}`);
+      return picks;
+    })()),
     `## Current Task`,
     opts.taskPrompt,
     ``,

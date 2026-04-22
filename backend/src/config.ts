@@ -336,6 +336,11 @@ export const CLAUDE_PERMISSION_MODE = (process.env.CLAUDE_PERMISSION_MODE || 'by
 // R8: PII scrubber toggle — default true (sensitive data never leaves process).
 export const PII_FILTER_ENABLED = (process.env.PII_FILTER_ENABLED ?? 'true') === 'true';
 
+// U1: Skills infrastructure toggles.
+export const SKILLS_ENABLED = (process.env.SKILLS_ENABLED ?? 'true') === 'true';
+export const MAX_SKILLS_PER_AGENT = parseInt(process.env.MAX_SKILLS_PER_AGENT || '3', 10);
+export const SKILL_EXCERPT_ENGINE_ENABLED = (process.env.SKILL_EXCERPT_ENGINE_ENABLED ?? 'true') === 'true';
+
 export const CLAUDE_SPAWN_OPTIONS = {
   cwd: PROJECT_ROOT,
   env: CLAUDE_SPAWN_ENV,
