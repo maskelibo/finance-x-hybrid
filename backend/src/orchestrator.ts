@@ -16,6 +16,7 @@ import { aggregateSessionAddressal } from './checklist/aggregate.js';
 import { persistAddressalReport } from './checklist/persist.js';
 import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, UPSTREAM_DIGEST_MODE, CHECKLIST_ENFORCEMENT_MODE, CHECKLIST_MIN_ADDRESSAL_RATE, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
 import { digestUpstream } from './upstream-digest.js';
+import { deltaMerge } from './delta-merge.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
 import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
 import { runPythonKapWatch } from './python/agent_runners/kap_watch.js';
@@ -1533,7 +1534,14 @@ async function executeSession(
             const originalRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
               .get(sessionId, agentId) as { output_text: string | null } | undefined;
             if (originalRun?.output_text) {
-              accumulatedContext[`${agentId}_original_output`] = originalRun.output_text.slice(0, 10000);
+              // Phase 8J: smart digest instead of blind front-truncate — preserves
+              // tail findings/metrics that the agent needs to reference when
+              // producing a delta.
+              accumulatedContext[`${agentId}_original_output`] = digestUpstream(
+                originalRun.output_text,
+                10000,
+                { label: `revision<-${agentId}.original` },
+              ).digest;
             }
             // Pending finding #3 — if a per-agent QA slice is available, swap it
             // in for the duration of this agent's re-run so the agent sees ONLY
@@ -1551,14 +1559,22 @@ async function executeSession(
               accumulatedContext['qa_revision_feedback'] = fallbackQaSlice;
             }
             if (status === 'rate_limit') return;
-            // Revision sonrası: orijinal + revision birleştir
+            // Revision sonrası: Phase 8J delta merge — hem JSON block'ları
+            // (post-8F agents) hem narrative'ları akıllıca birleştirir;
+            // fail olursa eski concat davranışına düşer.
             const revisedRun = db.prepare(`SELECT output_text FROM agent_runs WHERE session_id = ? AND agent_id = ?`)
               .get(sessionId, agentId) as { output_text: string | null } | undefined;
             if (originalRun?.output_text && revisedRun?.output_text) {
-              const merged = originalRun.output_text + '\n\n---\n## QA REVISION EKI\n' + revisedRun.output_text;
+              const mergeResult = deltaMerge(originalRun.output_text, revisedRun.output_text);
+              console.log(
+                `[DELTA-MERGE] ${agentId} strategy=${mergeResult.strategy}` +
+                (mergeResult.strategy === 'json_deep_merge'
+                  ? ` keys=${mergeResult.mergedKeys.length}`
+                  : ''),
+              );
               db.prepare(`UPDATE agent_runs SET output_text = ? WHERE session_id = ? AND agent_id = ?`)
-                .run(merged, sessionId, agentId);
-              accumulatedContext[`${agentId}_output`] = merged.slice(0, 1000000);
+                .run(mergeResult.merged, sessionId, agentId);
+              accumulatedContext[`${agentId}_output`] = mergeResult.merged.slice(0, 1000000);
             }
           }
         }
