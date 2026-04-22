@@ -46,11 +46,12 @@ feedback-export-*
 # Editor / tool temp files
 *.tmp
 .vscode/
-.claude/settings.local.json
+/.claude/
 /.idea/
 /.agents/
 
 # Doc maintenance cursor
 .doc-review-cursor
 
-.claude/worktrees/
+# Filter-repo artifact (cleanup script)
+.git-rewrite-strip-paths.txt
