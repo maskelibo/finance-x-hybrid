@@ -78,13 +78,15 @@ export function normalizeFactValue(factKey: string, value: number, rawUnit: RawU
   if (k.endsWith('_x') || k.includes('_multiple')) {
     return { value, unit: 'x' };
   }
-  if (k.includes('_days') || k.endsWith('_dso') || k.endsWith('_dio') || k.endsWith('_dpo') || k.endsWith('_ccc')) {
+  if (k.includes('days') || k.endsWith('_dso') || k.endsWith('_dio') || k.endsWith('_dpo') || k.endsWith('_ccc')) {
     return { value: Math.round(value), unit: 'days' };
   }
-  if (k.includes('_pct') || k.includes('_margin') || k.includes('_ratio') || k.includes('_rate')) {
+  if (k.includes('pct') || k.includes('margin') || k.includes('ratio') || k.includes('rate')) {
     return { value: normalizePercentage(value, rawUnit), unit: 'decimal' };
   }
-  if (k.includes('_try_mn') || k.includes('_revenue') || k.includes('_ebitda') || k.includes('_debt') || k.includes('_capex') || k.includes('_fcf') || k.includes('_opex')) {
+  // Currency detection — match common financial terms regardless of underscore prefix.
+  const CURRENCY_TERMS = ['try_mn', 'revenue', 'ebitda', 'debt', 'capex', 'fcf', 'opex', 'net_sales', 'gross_profit', 'op_income', 'cash'];
+  if (CURRENCY_TERMS.some(t => k.includes(t))) {
     const result = normalizeToTRYMn(value, rawUnit);
     return { value: result.normalized_value, unit: result.canonical_unit, conversion: result.conversion_note };
   }

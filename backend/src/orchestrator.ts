@@ -18,6 +18,7 @@ import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BL
 import { parseQaScore, parseQaDecision, classifyQaFailure } from './qa/score-parser.js';
 import { initFactPack } from './fact-pack.js';
 import { getSector as getSectorFromRegistry } from './sector-registry.js';
+import { traceAgent, traceSession } from './observability/tracer.js';
 import { digestUpstream } from './upstream-digest.js';
 import { deltaMerge } from './delta-merge.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
@@ -293,7 +294,9 @@ export function startAnalysisSession(
     insertRun.run(nanoid(), sessionId, agentId, meta.displayName);
   }
 
-  const promise = executeSession(sessionId, ticker, runtimeMode, selectedLayers).catch((err) => {
+  const promise = traceSession(sessionId, ticker, () =>
+    executeSession(sessionId, ticker, runtimeMode, selectedLayers)
+  ).catch((err) => {
     console.error(`Session ${sessionId} crashed:`, err);
     db.prepare(`
       UPDATE analysis_sessions
@@ -321,7 +324,9 @@ export function resumeSession(sessionId: string): boolean {
   if (!['paused', 'paused_rate_limit', 'paused_stuck_agent', 'failed'].includes(session.status)) return false;
   const selectedLayers = parseSelectedLayers(session.selected_layers);
 
-  const promise = executeSession(session.id, session.ticker, session.runtime_mode as RuntimeMode, selectedLayers).catch((err) => {
+  const promise = traceSession(session.id, session.ticker, () =>
+    executeSession(session.id, session.ticker, session.runtime_mode as RuntimeMode, selectedLayers)
+  ).catch((err) => {
     console.error(`Session ${sessionId} resume crashed:`, err);
     db.prepare(`
       UPDATE analysis_sessions
@@ -1252,8 +1257,11 @@ async function executeSession(
       if (agentsToRun.length === 0) continue;
 
       if (agentsToRun.length === 1) {
-        // Single agent — run directly
-        const status = await runSingleAgent(agentsToRun[0], sessionId, ticker, accumulatedContext, costTracker);
+        // Single agent — run directly (R8b: OTel trace wrap)
+        const onlyId = agentsToRun[0];
+        const status = await traceAgent(onlyId, sessionId, phase.name, () =>
+          runSingleAgent(onlyId, sessionId, ticker, accumulatedContext, costTracker),
+        );
         if (status === 'rate_limit') return;
       } else {
         // Multiple agents — run with concurrency limit to avoid API throttling
@@ -1263,7 +1271,9 @@ async function executeSession(
         for (let i = 0; i < agentsToRun.length; i += MAX_CONCURRENT) {
           const batch = agentsToRun.slice(i, i + MAX_CONCURRENT);
           const batchResults = await Promise.all(
-            batch.map(id => runSingleAgent(id, sessionId, ticker, accumulatedContext, costTracker))
+            batch.map(id => traceAgent(id, sessionId, phase.name, () =>
+              runSingleAgent(id, sessionId, ticker, accumulatedContext, costTracker),
+            )),
           );
           results.push(...batchResults);
           if (batchResults.includes('rate_limit')) return;

@@ -748,6 +748,11 @@ import('./observability/setup.js').then(m => m.initTracing()).catch(err => {
   console.warn('[tracing] init skipped:', err instanceof Error ? err.message : err);
 });
 
+// R8b: Wire event bus subscribers (auto-trigger on material KAP disclosures, etc.)
+import('./event-bus-wiring.js').then(m => m.initEventBusWiring()).catch(err => {
+  console.warn('[event-bus] wiring skipped:', err instanceof Error ? err.message : err);
+});
+
 app.listen(PORT, () => {
   console.log(`\n🚀 Finance X Backend`);
   console.log(`   http://localhost:${PORT}`);

@@ -139,6 +139,21 @@ db.exec(`
     FOREIGN KEY (session_id) REFERENCES analysis_sessions(id) ON DELETE CASCADE
   );
 
+  CREATE TABLE IF NOT EXISTS canonical_facts (
+    id TEXT PRIMARY KEY,
+    session_id TEXT NOT NULL,
+    fact_key TEXT NOT NULL,
+    value_json TEXT NOT NULL,
+    unit TEXT NOT NULL,
+    raw_unit TEXT,
+    sources_json TEXT NOT NULL DEFAULT '[]',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(session_id, fact_key),
+    FOREIGN KEY (session_id) REFERENCES analysis_sessions(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_facts_session ON canonical_facts(session_id);
+
   CREATE TABLE IF NOT EXISTS watchdog_events (
     id TEXT PRIMARY KEY,
     event_type TEXT NOT NULL,
