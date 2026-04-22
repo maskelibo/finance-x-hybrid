@@ -94,6 +94,23 @@ export function getStuckThresholdForAgent(agentId: string): number {
 }
 export const CONTEXT_CHAR_LIMIT = parseInt(process.env.CONTEXT_CHAR_LIMIT || '15000', 10);
 
+// R5: Dynamic QA Round Governor — profile-aware max revision rounds.
+// RuntimeMode ids: fast_screening (LIGHT), standard_institutional (STANDARD), deep_dive (INSTITUTIONAL).
+// Master spec aliases (LIGHT/STANDARD/FULL/INSTITUTIONAL) accepted for forward compat.
+export function getMaxQaRounds(profile?: string | null): number {
+  const rounds: Record<string, number> = {
+    fast_screening: 2,
+    standard_institutional: 3,
+    deep_dive: 5,
+    LIGHT: 2,
+    STANDARD: 3,
+    FULL: 4,
+    INSTITUTIONAL: 5,
+  };
+  if (profile && rounds[profile] !== undefined) return rounds[profile];
+  return parseInt(process.env.MAX_QA_ROUNDS || '3', 10);
+}
+
 // Feature flags — ADIM 4
 export const DIGEST_MODE = (process.env.DIGEST_MODE || 'true') === 'true';
 export const TARGETED_KNOWLEDGE_INJECTION = (process.env.TARGETED_KNOWLEDGE_INJECTION || 'true') === 'true';

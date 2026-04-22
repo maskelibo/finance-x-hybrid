@@ -61,7 +61,7 @@ export type QaGateObservation = {
   keywordBlock: boolean;
   scoreBlock: boolean;
   wouldHaveBlocked: boolean;            // keywordBlock || scoreBlock
-  decisionTaken: 'continued' | 'revised' | 'delivered_with_warning' | 'passed';
+  decisionTaken: 'continued' | 'revised' | 'delivered_with_warning' | 'passed' | 'blocked';
   reason: string;
   scoreNumeric: number | null;
   detail?: unknown;

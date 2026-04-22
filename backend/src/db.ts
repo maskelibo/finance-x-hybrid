@@ -157,6 +157,9 @@ export function ensureColumn(tableName: string, columnName: string, columnDefini
 ensureColumn('analysis_sessions', 'selected_layers', 'TEXT');
 ensureColumn('analysis_sessions', 'overall_score', 'REAL');
 ensureColumn('analysis_sessions', 'theme', 'TEXT'); // 'institutional' | 'anthropic' | 'minimal'
+// R5: QA hard gate — critical vs soft fail tracking
+ensureColumn('analysis_sessions', 'quality_warning', 'INTEGER DEFAULT 0');
+ensureColumn('analysis_sessions', 'quality_warning_reason', 'TEXT');
 ensureColumn('agent_runs', 'provider_used', 'TEXT');
 ensureColumn('agent_runs', 'retry_count', 'INTEGER DEFAULT 0');
 
@@ -166,7 +169,7 @@ export type AnalysisSession = {
   company_name: string | null;
   runtime_mode: string;
   selected_layers: string | null;
-  status: 'pending' | 'running' | 'paused_rate_limit' | 'paused_stuck_agent' | 'blocked_for_review' | 'completed' | 'failed';
+  status: 'pending' | 'running' | 'paused_rate_limit' | 'paused_stuck_agent' | 'blocked_for_review' | 'completed' | 'completed_with_warning' | 'qa_failed' | 'failed';
   current_phase: string | null;
   started_at: string;
   completed_at: string | null;
@@ -174,6 +177,8 @@ export type AnalysisSession = {
   total_tokens: number;
   overall_score: number | null;
   error_message: string | null;
+  quality_warning: number | null;
+  quality_warning_reason: string | null;
 };
 
 export type AgentRun = {

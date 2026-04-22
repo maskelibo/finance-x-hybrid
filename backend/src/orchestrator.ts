@@ -14,7 +14,8 @@ import { extractManifest } from './manifest/extract.js';
 import { recordManifest } from './manifest/record.js';
 import { aggregateSessionAddressal } from './checklist/aggregate.js';
 import { persistAddressalReport } from './checklist/persist.js';
-import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, UPSTREAM_DIGEST_MODE, CHECKLIST_ENFORCEMENT_MODE, CHECKLIST_MIN_ADDRESSAL_RATE, getStuckThresholdForAgent, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
+import { CONTEXT_CHAR_LIMIT, DIGEST_MODE, SCHEMA_VALIDATION_MODE, SCHEMA_SOFT_BLOCK_AGENTS, FINANCIAL_ENGINE_ENABLED, BYPASS_CEO_FOR_TESTS, REPORT_PAYLOAD_MODE, FORMATTER_MINIMAL_CONTEXT, REGRESSION_EVAL_ENABLED, UPSTREAM_DIGEST_MODE, CHECKLIST_ENFORCEMENT_MODE, CHECKLIST_MIN_ADDRESSAL_RATE, getStuckThresholdForAgent, getMaxQaRounds, PROJECT_ROOT, PYTHON_EVENT_TIMELINE_ALERT_ENABLED, PYTHON_TECHNICAL_ANALYSIS_ENABLED, PYTHON_KAP_WATCH_ENABLED, PYTHON_DATA_COLLECTION_ENABLED, PYTHON_PARSE_STANDARDIZATION_ENABLED, PYTHON_RECONCILIATION_ENABLED, PYTHON_FINANCIAL_ANALYSIS_ENABLED, PYTHON_MACRO_ANALYSIS_ENABLED, PYTHON_SENTIMENT_NEWS_ENABLED, PYTHON_EVENT_CLASSIFICATION_ENABLED, PYTHON_EVENT_IMPACT_MAPPER_ENABLED, PYTHON_COO_ENABLED, PYTHON_QA_REVIEW_ENABLED, PYTHON_SECTOR_COMPETITION_ENABLED, PYTHON_STRATEGIC_SYNTHESIS_ENABLED, PYTHON_VALUATION_ENABLED, PYTHON_ANALYST_CONSENSUS_ENABLED, PYTHON_ESG_ENABLED, PYTHON_REPORT_FORMATTER_ENABLED } from './config.js';
+import { parseQaScore, parseQaDecision, classifyQaFailure } from './qa/score-parser.js';
 import { digestUpstream } from './upstream-digest.js';
 import { deltaMerge } from './delta-merge.js';
 import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeline_alert.js';
@@ -1292,10 +1293,10 @@ async function executeSession(
     // QA zaten eksikleri tespit ediyor.
 
     // ============================================================
-    // QA REVISION LOOP — Max 2 tur revision, sonra block
+    // QA REVISION LOOP — Dynamic max rounds (R5: profile-aware) + hard gate
     // ============================================================
     if (phase.name === 'Quality Review') {
-      const MAX_QA_ROUNDS = 2;
+      const MAX_QA_ROUNDS = getMaxQaRounds(runtimeMode);
 
       for (let qaRound = 1; qaRound <= MAX_QA_ROUNDS; qaRound++) {
         const qaOutputRaw = String(accumulatedContext['qa_review_output'] || '');
@@ -1335,16 +1336,8 @@ async function executeSession(
         ];
         const keywordBlock = QA_BLOCK_KEYWORDS.some(marker => qaOutput.includes(marker));
 
-        // Score-based blocking: extract numeric QA score, block if < 0.75
-        const qaScoreMatch = qaOutputRaw.match(/overall[_\s-]*(?:score|puan|skor)["\s:]*([0-9]+(?:[.,][0-9]+)?)/i)
-          || qaOutputRaw.match(/(?:genel|toplam)[_\s]*(?:score|puan|skor)["\s:]*([0-9]+(?:[.,][0-9]+)?)/i)
-          || qaOutputRaw.match(/kalite[_\s-]*(?:score|puan|skor)["\s:]*([0-9]+(?:[.,][0-9]+)?)/i)
-          || qaOutputRaw.match(/qa[_\s-]*(?:score|puan|skor)["\s:]*([0-9]+(?:[.,][0-9]+)?)/i);
-        const qaNumericRaw = qaScoreMatch ? parseFloat(qaScoreMatch[1].replace(',', '.')) : null;
-        // Normalize: scores on 0-10 scale are converted to 0-1
-        const qaNormalized = qaNumericRaw !== null
-          ? (qaNumericRaw > 1.5 ? qaNumericRaw / 10 : qaNumericRaw)
-          : null;
+        // R5: score extraction via shared parser
+        const qaNormalized = parseQaScore(qaOutputRaw);
         const scoreBlock = qaNormalized !== null && qaNormalized < 0.75;
         if (scoreBlock && !keywordBlock) {
           console.log(`[QA GATE] Score-based block: QA score ${qaNormalized?.toFixed(2)} < 0.75`);
@@ -1368,37 +1361,72 @@ async function executeSession(
           break; // QA passed, continue pipeline
         }
 
-        // QA failed — if this is the last round, LOG WARNING but CONTINUE
-        // Rapor eksik olabilir ama çıksın — Chairman kendi değerlendirir
+        // R5: QA HARD GATE — critical → block session, soft → continue with warning
         if (qaRound >= MAX_QA_ROUNDS) {
-          console.warn(`[QA GATE] ${MAX_QA_ROUNDS} tur revision sonrası hâlâ geçemedi — UYARI ile devam ediliyor`);
-          // Phase 3A observe-only: this is where a hard gate would have blocked.
+          const failClass = classifyQaFailure(qaOutputRaw);
           recordQaGateObservation({
             sessionId, ticker, runtimeMode,
             qaRound,
             keywordBlock, scoreBlock,
             wouldHaveBlocked: true,
-            decisionTaken: 'delivered_with_warning',
-            reason: keywordBlock ? 'keyword-block-after-max-rounds' : 'score-block-after-max-rounds',
+            decisionTaken: failClass === 'critical' ? 'blocked' : 'delivered_with_warning',
+            reason: `max-rounds-${failClass}`,
             scoreNumeric: qaNormalized,
           });
           markQaWouldBlockLast(sessionId, true);
-          accumulatedContext['qa_warning'] = `QA ${MAX_QA_ROUNDS} turda onay veremedi. Rapor eksiklikler içerebilir.`;
 
-          // CEO override post-mortem log — QA still blocking after max rounds but we ship anyway.
+          if (failClass === 'critical') {
+            console.error(`[QA GATE] Critical QA failures after ${MAX_QA_ROUNDS} rounds — SESSION BLOCKED`);
+            db.prepare(`
+              UPDATE analysis_sessions
+              SET status = 'qa_failed',
+                  error_message = ?,
+                  completed_at = ?
+              WHERE id = ?
+            `).run(
+              `Critical QA failures after ${MAX_QA_ROUNDS} rounds — rapor güvenilir değil.`,
+              new Date().toISOString(),
+              sessionId,
+            );
+            try {
+              db.prepare(`INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, created_at) VALUES (?, 'qa_block', ?, ?, 'qa_review', 'alert', ?)`)
+                .run(
+                  nanoid(),
+                  `QA BLOCKED — ${ticker}`,
+                  `Critical QA failures after ${MAX_QA_ROUNDS} rounds; session bloklandı.`,
+                  new Date().toISOString(),
+                );
+            } catch (err: any) {
+              console.warn(`[QA BLOCK LOG] Failed: ${err.message}`);
+            }
+            return; // HARD STOP — rapor üretimi engellendi
+          }
+
+          // Soft / unknown — deliver with warning, continue pipeline
+          console.warn(`[QA GATE] Soft/unknown QA concerns after ${MAX_QA_ROUNDS} rounds — DELIVERING WITH WARNING`);
+          const warningReason = `QA ${MAX_QA_ROUNDS} turda tam onay veremedi (${failClass}). Rapor teslim edildi, manual review öneriliyor.`;
+          db.prepare(`
+            UPDATE analysis_sessions
+            SET status = 'completed_with_warning',
+                quality_warning = 1,
+                quality_warning_reason = ?
+            WHERE id = ?
+          `).run(warningReason, sessionId);
+          accumulatedContext['qa_warning'] = warningReason;
+
           try {
             db.prepare(`INSERT INTO ceo_activities (id, activity_type, title, description, triggered_by, status, created_at) VALUES (?, 'ceo_override', ?, ?, 'ceo', 'logged', ?)`)
               .run(
                 nanoid(),
-                `CEO Override — ${ticker}`,
-                `QA flagged issues but CEO approved delivery. Session: ${sessionId}. Review post-mortem.\nQA ${MAX_QA_ROUNDS} revision turu sonrası hâlâ onay vermedi — CEO rapor teslimine izin verdi.`,
+                `CEO Override (soft) — ${ticker}`,
+                `Soft QA concerns after ${MAX_QA_ROUNDS} rounds; rapor uyarı bayrağıyla teslim edildi.`,
                 new Date().toISOString(),
               );
           } catch (err: any) {
-            console.warn(`[CEO OVERRIDE LOG] Failed to persist QA-revision override event: ${err.message}`);
+            console.warn(`[CEO OVERRIDE LOG] Failed: ${err.message}`);
           }
 
-          break; // Block etme, devam et
+          break; // Soft fail — continue pipeline with warning
         }
 
         // QA failed, round < max — REVISION: parse which agents need re-run
@@ -1419,9 +1447,13 @@ async function executeSession(
         // Sadece P0/P1 blocker olarak işaretlenen agent'ları revize et
         // QA çıktısında her agent'ın adı geçer (değerlendirme yapıyor) — ama sadece
         // "BLOCKER" veya "P0" veya "P1" ile birlikte geçenler gerçekten revize edilmeli
+        // R5: expanded — all analytical agents revisable
         const REVISABLE_AGENTS = [
-          'financial_analysis', 'data_collection', 'reconciliation',
-          'context_extraction', 'valuation_agent',
+          'data_collection', 'parse_standardization', 'reconciliation', 'context_extraction',
+          'financial_analysis', 'sector_competition', 'macro_analysis', 'technical_analysis',
+          'valuation_agent', 'esg_agent', 'sentiment_news_agent', 'analyst_consensus_agent',
+          'event_classification', 'event_impact_mapper', 'event_timeline_alert',
+          'strategic_synthesis', 'final_summary',
         ];
         const agentsToRevise: string[] = [];
         for (const agentId of REVISABLE_AGENTS) {
@@ -1958,7 +1990,13 @@ const AGENT_DEPENDENCIES: Record<string, string[]> = {
   event_classification: ['kap_watch_output'],
   event_impact_mapper: ['event_classification_output', 'context_extraction_output'],
   event_timeline_alert: ['event_classification_output', 'event_impact_mapper_output'],
-  qa_review: ['financial_analysis_output', 'context_extraction_output', 'reconciliation_output', 'valuation_agent_output'],
+  qa_review: [
+    'financial_analysis_output', 'context_extraction_output', 'reconciliation_output',
+    'valuation_agent_output', 'macro_analysis_output', 'technical_analysis_output',
+    'sector_competition_output', 'event_impact_mapper_output',
+    'strategic_synthesis_output', 'esg_agent_output', 'sentiment_news_agent_output',
+    'analyst_consensus_agent_output',
+  ],
   strategic_synthesis: ['financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'context_extraction_output', 'event_impact_mapper_output', 'valuation_agent_output'],
   final_summary: ['strategic_synthesis_output', 'financial_analysis_output', 'valuation_agent_output', 'qa_review_output', 'macro_analysis_output', 'technical_analysis_output', 'sector_competition_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output'],
   report_formatter: ['final_summary_output', 'strategic_synthesis_output', 'financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'valuation_agent_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output', 'event_impact_mapper_output', 'analyst_consensus_agent_output', 'reconciliation_output'],
