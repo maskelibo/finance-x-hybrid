@@ -37,10 +37,14 @@ for (const r of runs) {
 
 console.log(`\n=== R-FEATURE CHECKS ===`);
 
-// R6: sector from registry
-const sectorSeen = runs.some(r => (r.error_message || '').toLowerCase().includes('aviation')) ||
-  fs.readFileSync('/tmp/fx-server.log', 'utf8').includes('[sector] THYAO → aviation (from registry)');
-console.log(`R6 sector registry (THYAO → aviation): ${sectorSeen ? '✅' : '⚠️ server log'te kanıt yok'}`);
+// R6: sector from registry — look for marker in server log across both /tmp and C:/tmp
+const logPaths = ['/tmp/fx-server.log', 'C:\\Users\\koray\\AppData\\Local\\Temp\\fx-server.log', 'C:/tmp/fx-server.log'];
+let serverLog = '';
+for (const p of logPaths) {
+  try { serverLog = fs.readFileSync(p, 'utf8'); break; } catch {}
+}
+const sectorSeen = serverLog.includes('[sector] THYAO → aviation (from registry)');
+console.log(`R6 sector registry (THYAO → aviation): ${sectorSeen ? '✅ server log confirmed' : '⚠️  no proof'}`);
 
 // R7: fact pack initialized
 const pack = getFactPack(SID);
@@ -65,7 +69,6 @@ const qaSignal = session.status === 'qa_failed' ? 'HARD BLOCKED (critical)' :
 console.log(`R5 QA hard gate signal: ${qaSignal}`);
 
 // R8: PII scrub fired?
-const serverLog = fs.existsSync('/tmp/fx-server.log') ? fs.readFileSync('/tmp/fx-server.log','utf8') : '';
 const piiMatches = serverLog.match(/\[PII\] Scrubbed[^\n]*/g) || [];
 console.log(`R8 PII scrubber fires: ${piiMatches.length}`);
 
