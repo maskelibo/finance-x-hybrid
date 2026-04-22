@@ -1,0 +1,64 @@
+# Finance-X Sector Override Registry
+# Authoritative ticker → sector mapping.
+# LLM doesn't guess sector; this list wins over heuristic detection.
+
+sector_overrides:
+  # Havacılık
+  THYAO: aviation
+  PEGYS: aviation
+  ONUIR: aviation
+
+  # Savunma / Elektronik
+  ASELS: defense_electronics
+  HAEFN: defense_electronics
+  OTKAR: defense_industrial
+
+  # Holding / Konglomera
+  KCHOL: holding
+  SAHOL: holding
+  DOHOL: holding
+  ENKAI: holding
+  TKFEN: holding
+
+  # Rafineri / Enerji
+  TUPRS: refinery
+  AYGAZ: energy_distribution
+
+  # Çelik / Demir
+  EREGL: steel
+  KRDMD: steel
+  OYAKC: steel
+
+  # Telekom
+  TCELL: telecom
+  TTKOM: telecom
+
+  # Bankacılık
+  AKBNK: banking
+  GARAN: banking
+  ISCTR: banking
+  YKBNK: banking
+  HALKB: banking
+  VAKBN: banking
+
+  # Perakende
+  BIMAS: retail
+  MGROS: retail
+  SOKM: retail
+
+  # Sigortacılık
+  ANHYT: insurance
+  ANSGR: insurance
+
+  # Gıda
+  ULKER: food
+  CCOLA: beverage
+
+  # Cam / İnşaat malzemesi
+  SISE: glass_construction
+  TRKCM: glass
+
+  # Otomotiv
+  FROTO: automotive
+  TTRAK: automotive
+  TOASO: automotive

@@ -20,7 +20,8 @@
     "express": "^4.21.1",
     "nanoid": "^5.0.9",
     "pdf-parse": "^2.4.5",
-    "puppeteer": "^24.40.0"
+    "puppeteer": "^24.40.0",
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",

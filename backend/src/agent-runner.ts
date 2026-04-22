@@ -4,6 +4,7 @@ import { loadAgent } from './agents.js';
 import { getModelForAgent, AGENTS_ROOT, TARGETED_KNOWLEDGE_INJECTION } from './config.js';
 import { createDefaultProviderRouter } from './llm/default-router.js';
 import { getRecentOpenLessons } from './memory.js';
+import { getSector as getSectorFromRegistry } from './sector-registry.js';
 import type { ProviderRunResult } from './llm/types.js';
 
 /**
@@ -180,6 +181,17 @@ function readSharedKnowledgeModule(sector: string): string | null {
 }
 
 function detectSector(context?: Record<string, unknown>): string | null {
+  // R6: registry is authoritative — ticker lookup first
+  const ticker = String(context?.['ticker'] || '').toUpperCase();
+  if (ticker) {
+    const fromRegistry = getSectorFromRegistry(ticker);
+    if (fromRegistry) {
+      console.log(`[sector] ${ticker} → ${fromRegistry} (from registry)`);
+      return fromRegistry;
+    }
+  }
+
+  // Fallback: keyword heuristic on context_extraction_output
   const ctxOutput = String(context?.['context_extraction_output'] || '').toLowerCase();
   const SECTOR_MAP: Array<{ keywords: string[]; sector: string }> = [
     { keywords: ['banka', 'bank', 'finans', 'nim', 'cet1', 'bddk'], sector: 'banking' },
