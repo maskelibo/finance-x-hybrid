@@ -125,27 +125,27 @@ export const REGRESSION_EVAL_ENABLED = (process.env.REGRESSION_EVAL_ENABLED || '
 // flipping the switch in .env turns on a single runner at a time —
 // gives us per-agent rollback if a prod issue shows up.
 // ---------------------------------------------------------------------
-export const PYTHON_PIPELINE_ENABLED = (process.env.PYTHON_PIPELINE_ENABLED || 'false') === 'true';
-export const PYTHON_KAP_WATCH_ENABLED = (process.env.PYTHON_KAP_WATCH_ENABLED || 'false') === 'true';
-export const PYTHON_DATA_COLLECTION_ENABLED = (process.env.PYTHON_DATA_COLLECTION_ENABLED || 'false') === 'true';
-export const PYTHON_PARSE_STANDARDIZATION_ENABLED = (process.env.PYTHON_PARSE_STANDARDIZATION_ENABLED || 'false') === 'true';
-export const PYTHON_RECONCILIATION_ENABLED = (process.env.PYTHON_RECONCILIATION_ENABLED || 'false') === 'true';
-export const PYTHON_FINANCIAL_ANALYSIS_ENABLED = (process.env.PYTHON_FINANCIAL_ANALYSIS_ENABLED || 'false') === 'true';
-export const PYTHON_TECHNICAL_ANALYSIS_ENABLED = (process.env.PYTHON_TECHNICAL_ANALYSIS_ENABLED || 'false') === 'true';
+export const PYTHON_PIPELINE_ENABLED = (process.env.PYTHON_PIPELINE_ENABLED ?? 'true') === 'true';
+export const PYTHON_KAP_WATCH_ENABLED = (process.env.PYTHON_KAP_WATCH_ENABLED ?? 'true') === 'true';
+export const PYTHON_DATA_COLLECTION_ENABLED = (process.env.PYTHON_DATA_COLLECTION_ENABLED ?? 'true') === 'true';
+export const PYTHON_PARSE_STANDARDIZATION_ENABLED = (process.env.PYTHON_PARSE_STANDARDIZATION_ENABLED ?? 'true') === 'true';
+export const PYTHON_RECONCILIATION_ENABLED = (process.env.PYTHON_RECONCILIATION_ENABLED ?? 'true') === 'true';
+export const PYTHON_FINANCIAL_ANALYSIS_ENABLED = (process.env.PYTHON_FINANCIAL_ANALYSIS_ENABLED ?? 'true') === 'true';
+export const PYTHON_TECHNICAL_ANALYSIS_ENABLED = (process.env.PYTHON_TECHNICAL_ANALYSIS_ENABLED ?? 'true') === 'true';
 export const PYTHON_TECHNICAL_BARS = parseInt(process.env.PYTHON_TECHNICAL_BARS || '250', 10);
-export const PYTHON_MACRO_ANALYSIS_ENABLED = (process.env.PYTHON_MACRO_ANALYSIS_ENABLED || 'false') === 'true';
-export const PYTHON_ANALYST_CONSENSUS_ENABLED = (process.env.PYTHON_ANALYST_CONSENSUS_ENABLED || 'false') === 'true';
-export const PYTHON_SENTIMENT_NEWS_ENABLED = (process.env.PYTHON_SENTIMENT_NEWS_ENABLED || 'false') === 'true';
-export const PYTHON_ESG_ENABLED = (process.env.PYTHON_ESG_ENABLED || 'false') === 'true';
-export const PYTHON_EVENT_CLASSIFICATION_ENABLED = (process.env.PYTHON_EVENT_CLASSIFICATION_ENABLED || 'false') === 'true';
-export const PYTHON_EVENT_IMPACT_MAPPER_ENABLED = (process.env.PYTHON_EVENT_IMPACT_MAPPER_ENABLED || 'false') === 'true';
-export const PYTHON_EVENT_TIMELINE_ALERT_ENABLED = (process.env.PYTHON_EVENT_TIMELINE_ALERT_ENABLED || 'false') === 'true';
-export const PYTHON_VALUATION_ENABLED = (process.env.PYTHON_VALUATION_ENABLED || 'false') === 'true';
-export const PYTHON_STRATEGIC_SYNTHESIS_ENABLED = (process.env.PYTHON_STRATEGIC_SYNTHESIS_ENABLED || 'false') === 'true';
-export const PYTHON_QA_REVIEW_ENABLED = (process.env.PYTHON_QA_REVIEW_ENABLED || 'false') === 'true';
-export const PYTHON_COO_ENABLED = (process.env.PYTHON_COO_ENABLED || 'false') === 'true';
-export const PYTHON_REPORT_FORMATTER_ENABLED = (process.env.PYTHON_REPORT_FORMATTER_ENABLED || 'false') === 'true';
-export const PYTHON_SECTOR_COMPETITION_ENABLED = (process.env.PYTHON_SECTOR_COMPETITION_ENABLED || 'false') === 'true';
+export const PYTHON_MACRO_ANALYSIS_ENABLED = (process.env.PYTHON_MACRO_ANALYSIS_ENABLED ?? 'true') === 'true';
+export const PYTHON_ANALYST_CONSENSUS_ENABLED = (process.env.PYTHON_ANALYST_CONSENSUS_ENABLED ?? 'true') === 'true';
+export const PYTHON_SENTIMENT_NEWS_ENABLED = (process.env.PYTHON_SENTIMENT_NEWS_ENABLED ?? 'true') === 'true';
+export const PYTHON_ESG_ENABLED = (process.env.PYTHON_ESG_ENABLED ?? 'true') === 'true';
+export const PYTHON_EVENT_CLASSIFICATION_ENABLED = (process.env.PYTHON_EVENT_CLASSIFICATION_ENABLED ?? 'true') === 'true';
+export const PYTHON_EVENT_IMPACT_MAPPER_ENABLED = (process.env.PYTHON_EVENT_IMPACT_MAPPER_ENABLED ?? 'true') === 'true';
+export const PYTHON_EVENT_TIMELINE_ALERT_ENABLED = (process.env.PYTHON_EVENT_TIMELINE_ALERT_ENABLED ?? 'true') === 'true';
+export const PYTHON_VALUATION_ENABLED = (process.env.PYTHON_VALUATION_ENABLED ?? 'true') === 'true';
+export const PYTHON_STRATEGIC_SYNTHESIS_ENABLED = (process.env.PYTHON_STRATEGIC_SYNTHESIS_ENABLED ?? 'true') === 'true';
+export const PYTHON_QA_REVIEW_ENABLED = (process.env.PYTHON_QA_REVIEW_ENABLED ?? 'true') === 'true';
+export const PYTHON_COO_ENABLED = (process.env.PYTHON_COO_ENABLED ?? 'true') === 'true';
+export const PYTHON_REPORT_FORMATTER_ENABLED = (process.env.PYTHON_REPORT_FORMATTER_ENABLED ?? 'true') === 'true';
+export const PYTHON_SECTOR_COMPETITION_ENABLED = (process.env.PYTHON_SECTOR_COMPETITION_ENABLED ?? 'true') === 'true';
 
 
 // ---------------------------------------------------------------------
@@ -278,7 +278,7 @@ export const CLAUDE_OUTPUT_FORMAT = (process.env.CLAUDE_OUTPUT_FORMAT || 'stream
 //                Pipeline still continues — we never hard-fail a session on schema.
 // Default is now 'soft_block' so bad upstream JSON surfaces in the final report
 // instead of silently corrupting the composed template context.
-export const SCHEMA_VALIDATION_MODE = (process.env.SCHEMA_VALIDATION_MODE || 'soft_block') as 'off' | 'warn' | 'soft_block';
+export const SCHEMA_VALIDATION_MODE = (process.env.SCHEMA_VALIDATION_MODE ?? 'warn') as 'off' | 'warn' | 'soft_block';
 // Agents where soft_block applies (degraded flag set). Expanded to cover the
 // three agents whose outputs directly drive the composed report: missing or
 // malformed JSON here is what produces "broken-looking" PDFs.
