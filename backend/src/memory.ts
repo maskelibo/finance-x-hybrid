@@ -57,6 +57,23 @@ export function appendAgentMemory(agentId: string, section: string, content: str
   fs.writeFileSync(memoryPath(agentId), current + entry, 'utf8');
 }
 
+export function readLessonsJsonl(agentId: string): any[] {
+  const filePath = path.join(AGENTS_ROOT, path.basename(agentId), 'lessons.jsonl');
+  if (!fs.existsSync(filePath)) return [];
+  return fs.readFileSync(filePath, 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map(line => { try { return JSON.parse(line); } catch { return null; } })
+    .filter(Boolean);
+}
+
+export function getRecentOpenLessons(agentId: string, limit = 10): any[] {
+  return readLessonsJsonl(agentId)
+    .filter(l => l.status === 'open')
+    .sort((a, b) => (b.last_seen || b.date).localeCompare(a.last_seen || a.date))
+    .slice(0, limit);
+}
+
 // Backward compatibility for CEO-specific callers
 export function readCEOMemory(): string {
   return readAgentMemory('ceo');
