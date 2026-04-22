@@ -21,7 +21,10 @@ import {
   type PythonTimelineOutput,
 } from '../adapters/event_timeline_alert.js';
 
-const DEFAULT_BIN = path.join(PROJECT_ROOT, 'python-services', '.venv', 'bin', 'financex');
+// Platform-aware venv path (R-close infra): Windows uses Scripts/*.exe, POSIX uses bin/
+const DEFAULT_BIN = process.platform === 'win32'
+  ? path.join(PROJECT_ROOT, 'python-services', '.venv', 'Scripts', 'financex.exe')
+  : path.join(PROJECT_ROOT, 'python-services', '.venv', 'bin', 'financex');
 const DEFAULT_CWD = path.join(PROJECT_ROOT, 'python-services');
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -48,7 +51,11 @@ function runFinancexTimelineBucket(
     const child = spawn(bin, ['timeline', 'bucket', '--reference-date', referenceDate], {
       cwd: DEFAULT_CWD,
       stdio: ['pipe', 'pipe', 'pipe'],
-      env: { ...process.env },
+      env: {
+        ...process.env,
+        PYTHONIOENCODING: 'utf-8',
+        PYTHONUTF8: '1',
+      },
     });
 
     let stdout = '';

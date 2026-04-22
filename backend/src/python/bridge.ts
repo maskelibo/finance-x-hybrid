@@ -62,7 +62,15 @@ export function runFinancexCommand(
     const child = spawn(bin, args, {
       cwd,
       stdio: ['ignore', 'pipe', 'pipe'],
-      env: { ...process.env, ...opts.env },
+      // R-close infra: force UTF-8 stdio for Python; Windows default cp1254 can't encode
+      // Turkish/SPA chars → UnicodeEncodeError in typer.echo(). PYTHONUTF8=1 also sets
+      // filesystem/argv encoding as a belt-and-suspenders.
+      env: {
+        ...process.env,
+        PYTHONIOENCODING: 'utf-8',
+        PYTHONUTF8: '1',
+        ...opts.env,
+      },
     });
 
     let stdout = '';
