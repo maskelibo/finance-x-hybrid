@@ -743,6 +743,11 @@ if (fs.existsSync(dashboardPath)) {
   console.log(`⚠️  Dashboard build not found at ${dashboardPath} — run: cd dashboard && npm run build`);
 }
 
+// R8: Init OpenTelemetry (no-op if OTEL_EXPORTER_URL not set)
+import('./observability/setup.js').then(m => m.initTracing()).catch(err => {
+  console.warn('[tracing] init skipped:', err instanceof Error ? err.message : err);
+});
+
 app.listen(PORT, () => {
   console.log(`\n🚀 Finance X Backend`);
   console.log(`   http://localhost:${PORT}`);

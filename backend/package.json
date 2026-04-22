@@ -12,6 +12,11 @@
     "schemas:regen": "cd ../python-services && uv run financex schemas export --out ../backend/generated/schemas"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.215.0",
+    "@opentelemetry/resources": "^2.7.0",
+    "@opentelemetry/sdk-node": "^0.215.0",
+    "@opentelemetry/semantic-conventions": "^1.40.0",
     "ajv": "^8.18.0",
     "ajv-formats": "^3.0.1",
     "better-sqlite3": "^11.5.0",

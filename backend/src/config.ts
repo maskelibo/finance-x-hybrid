@@ -333,6 +333,9 @@ export const CLAUDE_SPAWN_ENV = {
 
 export const CLAUDE_PERMISSION_MODE = (process.env.CLAUDE_PERMISSION_MODE || 'bypassPermissions').trim();
 
+// R8: PII scrubber toggle — default true (sensitive data never leaves process).
+export const PII_FILTER_ENABLED = (process.env.PII_FILTER_ENABLED ?? 'true') === 'true';
+
 export const CLAUDE_SPAWN_OPTIONS = {
   cwd: PROJECT_ROOT,
   env: CLAUDE_SPAWN_ENV,

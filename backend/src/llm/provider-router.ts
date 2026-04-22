@@ -1,4 +1,6 @@
 import { ClaudeProvider } from './claude-provider.js';
+import { scrubPii } from './pii-filter.js';
+import { PII_FILTER_ENABLED } from '../config.js';
 import type { LLMProvider } from './provider-interface.js';
 import type { ProviderAvailability, ProviderId, ProviderRunInput, ProviderRunResult } from './types.js';
 
@@ -14,7 +16,15 @@ export class ProviderRouter {
   }
 
   async run(input: ProviderRunInput): Promise<ProviderRunResult> {
-    return this.provider.run(input);
+    let runInput = input;
+    if (PII_FILTER_ENABLED && typeof input.prompt === 'string') {
+      const scrub = scrubPii(input.prompt);
+      if (scrub.hasMatches) {
+        console.warn(`[PII] Scrubbed before provider: ${JSON.stringify(scrub.matches)}`);
+        runInput = { ...input, prompt: scrub.cleaned };
+      }
+    }
+    return this.provider.run(runInput);
   }
 
   getProvider(_id: ProviderId): LLMProvider {
