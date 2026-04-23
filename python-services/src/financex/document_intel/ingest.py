@@ -12,7 +12,15 @@ from typing import Iterable, Optional
 
 import fitz  # PyMuPDF
 from qdrant_client import QdrantClient
-from qdrant_client.http.models import Distance, PointStruct, VectorParams
+from qdrant_client.http.models import (
+    Distance,
+    FieldCondition,
+    Filter,
+    FilterSelector,
+    MatchValue,
+    PointStruct,
+    VectorParams,
+)
 
 from .embedding import EmbeddingProvider, get_default_embedder
 
@@ -134,6 +142,18 @@ def ingest_pdf(
     embedder = embedder or get_default_embedder()
     client = get_qdrant_client(qdrant_url)
     ensure_collection(client, ticker, vector_size=embedder.dim)
+
+    # Idempotency: drop any prior points with this doc_id before upserting.
+    # Protects against doc_id reuse with changed text or prior runs with
+    # different point-id derivation.
+    client.delete(
+        collection_name=collection_name(ticker),
+        points_selector=FilterSelector(
+            filter=Filter(
+                must=[FieldCondition(key="doc_id", match=MatchValue(value=doc_id))]
+            )
+        ),
+    )
 
     chunks = list(parse_pdf(pdf_path, ticker, doc_id, doc_type, fiscal_period))
     if not chunks:
