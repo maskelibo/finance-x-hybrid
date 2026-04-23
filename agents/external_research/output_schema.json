@@ -25,7 +25,9 @@
                 "title": { "type": "string" },
                 "publisher": { "type": "string" },
                 "publication_date": { "type": "string" },
-                "snippet": { "type": "string" }
+                "snippet": { "type": "string" },
+                "credibility": { "type": "string", "enum": ["high", "medium", "low"] },
+                "credibility_reason": { "type": "string" }
               }
             }
           },
