@@ -213,6 +213,7 @@ const LAYER_AGENTS: Record<AnalysisLayer, string[]> = {
   sentiment: ['sentiment_news_agent'],
   consensus: ['analyst_consensus_agent'],
   esg: ['esg_agent'],
+  knowledge: ['research_brief', 'knowledge_base', 'document_evidence', 'external_research'],
 };
 
 // Agents that always run regardless of layers (backbone)
@@ -221,10 +222,14 @@ const BACKBONE_AGENTS = ['ceo', 'coo', 'qa_review', 'strategic_synthesis', 'fina
 const AGENT_PIPELINE: Array<{ id: string; phase: string }> = [
   { id: 'ceo', phase: 'Mandate Interpretation' },
   { id: 'coo', phase: 'Pre-Flight Check' },
+  { id: 'research_brief', phase: 'Research Brief' },
   { id: 'data_collection', phase: 'Data Acquisition' },
   { id: 'parse_standardization', phase: 'Document Parsing' },
   { id: 'reconciliation', phase: 'Data Quality' },
   { id: 'context_extraction', phase: 'Context Extraction' },
+  { id: 'knowledge_base', phase: 'Knowledge Retrieval' },
+  { id: 'document_evidence', phase: 'Evidence Synthesis' },
+  { id: 'external_research', phase: 'External Research' },
   { id: 'financial_analysis', phase: 'Financial Analysis' },
   { id: 'sector_competition', phase: 'Sector & Competition' },
   { id: 'macro_analysis', phase: 'Macro Analysis' },
@@ -1996,6 +2001,10 @@ async function executeSession(
 const AGENT_DEPENDENCIES: Record<string, string[]> = {
   ceo: [],
   coo: ['ceo_output'],
+  research_brief: ['ceo_output', 'coo_output'],
+  knowledge_base: ['research_brief_output', 'context_extraction_output'],
+  document_evidence: ['knowledge_base_output', 'research_brief_output', 'context_extraction_output'],
+  external_research: ['research_brief_output'],
   data_collection: ['ceo_output', 'coo_output'],
   kap_watch: ['ceo_output'],
   parse_standardization: ['data_collection_output'],
@@ -2019,9 +2028,9 @@ const AGENT_DEPENDENCIES: Record<string, string[]> = {
     'strategic_synthesis_output', 'esg_agent_output', 'sentiment_news_agent_output',
     'analyst_consensus_agent_output',
   ],
-  strategic_synthesis: ['financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'context_extraction_output', 'event_impact_mapper_output', 'valuation_agent_output'],
-  final_summary: ['strategic_synthesis_output', 'financial_analysis_output', 'valuation_agent_output', 'qa_review_output', 'macro_analysis_output', 'technical_analysis_output', 'sector_competition_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output'],
-  report_formatter: ['final_summary_output', 'strategic_synthesis_output', 'financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'valuation_agent_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output', 'event_impact_mapper_output', 'analyst_consensus_agent_output', 'reconciliation_output'],
+  strategic_synthesis: ['financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'context_extraction_output', 'event_impact_mapper_output', 'valuation_agent_output', 'document_evidence_output'],
+  final_summary: ['strategic_synthesis_output', 'financial_analysis_output', 'valuation_agent_output', 'qa_review_output', 'macro_analysis_output', 'technical_analysis_output', 'sector_competition_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output', 'document_evidence_output'],
+  report_formatter: ['final_summary_output', 'strategic_synthesis_output', 'financial_analysis_output', 'technical_analysis_output', 'macro_analysis_output', 'sector_competition_output', 'valuation_agent_output', 'context_extraction_output', 'esg_agent_output', 'sentiment_news_agent_output', 'event_impact_mapper_output', 'analyst_consensus_agent_output', 'reconciliation_output', 'document_evidence_output'],
 };
 
 // Agent tipine göre context karakter limiti
@@ -2039,6 +2048,11 @@ const AGENT_CONTEXT_LIMITS: Record<string, number> = {
   qa_review: 60000, strategic_synthesis: 60000, final_summary: 80000,
   report_formatter: 60000,
   ceo: 50000, coo: 20000,
+  // U5: Evidence-driven research layer
+  research_brief: 15000,      // hafif — yalnızca ceo/coo output özeti
+  knowledge_base: 20000,      // retrieval output structured, az context gerek
+  document_evidence: 45000,   // knowledge_base çıktısı + context_extraction
+  external_research: 15000,   // U5 scaffold; U7'de artacak
 };
 
 // ============================================================

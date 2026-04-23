@@ -6,6 +6,14 @@ import sys
 from dataclasses import dataclass
 from typing import List, Optional
 
+# Windows cp1254 default breaks on chars like '↗'. Reconfigure stdio to UTF-8
+# so JSON output + piping / redirection works regardless of terminal codepage.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+    except Exception:
+        pass
+
 from .retriever import RetrievedChunk, retrieve
 
 

@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/research_brief/output",
+  "title": "Research Brief Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "ticker", "research_objective", "priority_topics", "sub_questions", "confidence_overall"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "research_brief" },
+    "ticker": { "type": "string" },
+    "research_objective": { "type": "string", "minLength": 10 },
+    "sector_context": { "type": "string" },
+    "priority_topics": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["topic", "rationale", "evidence_need", "priority"],
+        "properties": {
+          "topic": { "type": "string" },
+          "rationale": { "type": "string" },
+          "evidence_need": { "type": "string", "enum": ["rag", "external", "rag+external", "calc"] },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "sub_questions": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 12,
+      "items": { "type": "string" }
+    },
+    "external_research_scope": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "confidence_overall": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://financex.io/schemas/agents/knowledge_base/output",
+  "title": "Knowledge Base Agent Output Schema",
+  "type": "object",
+  "required": ["agent_id", "ticker", "sub_questions_queried", "evidence_by_question", "aggregate_metrics", "confidence_overall"],
+  "properties": {
+    "agent_id": { "type": "string", "const": "knowledge_base" },
+    "ticker": { "type": "string" },
+    "sub_questions_queried": { "type": "integer", "minimum": 0 },
+    "evidence_by_question": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sub_question", "chunks_retrieved", "evidence"],
+        "properties": {
+          "sub_question": { "type": "string" },
+          "chunks_retrieved": { "type": "integer", "minimum": 0 },
+          "top_relevance": { "type": ["number", "null"] },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["doc_id", "page", "snippet", "relevance"],
+              "properties": {
+                "doc_id": { "type": "string" },
+                "doc_type": { "type": "string" },
+                "fiscal_period": { "type": "string" },
+                "page": { "type": "integer" },
+                "section": { "type": ["string", "null"] },
+                "snippet": { "type": "string", "maxLength": 800 },
+                "relevance": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "aggregate_metrics": {
+      "type": "object",
+      "required": ["total_chunks", "avg_top_relevance", "questions_with_zero_evidence"],
+      "properties": {
+        "total_chunks": { "type": "integer", "minimum": 0 },
+        "avg_top_relevance": { "type": "number", "minimum": 0, "maximum": 1 },
+        "questions_with_zero_evidence": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "confidence_overall": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] }
+  }
+}

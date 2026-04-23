@@ -34,6 +34,10 @@ const AGENT_REGISTRY: Array<Pick<AgentDef, 'id' | 'displayName' | 'group'>> = [
   { id: 'sentiment_news_agent', displayName: 'Haber & Sentiment', group: 'specialist' },
   { id: 'analyst_consensus_agent', displayName: 'Analist Konsensüs', group: 'specialist' },
   { id: 'esg_agent', displayName: 'ESG Analizi', group: 'specialist' },
+  { id: 'research_brief', displayName: 'Araştırma Planı', group: 'specialist' },
+  { id: 'knowledge_base', displayName: 'Bilgi Tabanı (RAG)', group: 'specialist' },
+  { id: 'document_evidence', displayName: 'Doküman Kanıtı', group: 'specialist' },
+  { id: 'external_research', displayName: 'Dış Kaynak Araştırma', group: 'specialist' },
 ];
 
 export function loadAgent(agentId: string): AgentDef {

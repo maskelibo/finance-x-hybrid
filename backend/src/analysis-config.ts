@@ -8,6 +8,7 @@ export const ANALYSIS_LAYERS = [
   { id: 'sentiment', label: 'Duygu Analizi' },
   { id: 'consensus', label: 'Analist Konsensusu' },
   { id: 'esg', label: 'ESG Analizi' },
+  { id: 'knowledge', label: 'Bilgi Tabani (RAG + External)' },
 ] as const;
 
 export const ANALYSIS_MODES = [

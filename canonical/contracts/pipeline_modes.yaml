@@ -33,6 +33,8 @@ layers:
   sentiment:    [sentiment_news_agent]
   consensus:    [analyst_consensus_agent]
   esg:          [esg_agent]
+  # U5 (Block U): evidence-driven research layer
+  knowledge:    [research_brief, knowledge_base, document_evidence, external_research]
 
 # Modes as CURRENTLY resolved by buildPipelineForLayers().
 # agent count column matches runtime drift audit.
