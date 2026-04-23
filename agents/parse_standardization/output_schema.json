@@ -17,7 +17,8 @@
         "income_statement": { "$ref": "#/definitions/ParsedStatement" },
         "balance_sheet": { "$ref": "#/definitions/ParsedStatement" },
         "cash_flow_statement": { "$ref": "#/definitions/ParsedStatement" },
-        "notes_extracted": { "$ref": "#/definitions/ParsedNotes" }
+        "notes_extracted": { "$ref": "#/definitions/ParsedNotes" },
+        "ias29": { "$ref": "#/definitions/Ias29Block" }
       }
     },
     "parsing_metadata": {
@@ -78,6 +79,25 @@
         "segment_data": { "type": "object" },
         "contingent_liabilities": { "type": "array", "items": { "type": "object" } },
         "related_party_transactions": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "Ias29Block": {
+      "type": "object",
+      "description": "IAS 29 / TMS 29 hyperinflation accounting signals. Populate when Turkish IFRS filings mark statements as restated. Net monetary position is a non-operating item (excluded from EBITDA).",
+      "properties": {
+        "ias29_applied": { "type": "boolean", "description": "True when filing is inflation-adjusted per IAS 29." },
+        "restatement_note_ref": { "type": "string", "description": "Note reference for inflation-accounting methodology (e.g., 'Not 2.1')." },
+        "operating_profit_restated": { "type": ["number", "null"] },
+        "depreciation_restated": { "type": ["number", "null"] },
+        "amortization_restated": { "type": ["number", "null"] },
+        "net_monetary_position_gain_loss": {
+          "type": ["number", "null"],
+          "description": "Net Parasal Pozisyon Kazanç/Kaybı (Note 35 typical). EXCLUDED from EBITDA."
+        },
+        "reported_ebitda": {
+          "type": ["number", "null"],
+          "description": "Management-disclosed EBITDA, if present. Used for reconciliation."
+        }
       }
     }
   }

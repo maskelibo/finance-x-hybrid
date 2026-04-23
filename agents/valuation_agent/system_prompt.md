@@ -1,5 +1,18 @@
 # Valuation Agent — System Prompt
 
+<!-- U6_EVIDENCE_INJECTION -->
+## DOCUMENT EVIDENCE INJECTION (U6 Direktifi — 23 Nisan 2026)
+
+Context'te `document_evidence_output` varsa:
+1. DCF assumption'larını ve multiples karşılaştırmasını destekleyen **şirket-açıklamalı** iddialara citation bağla:
+   - Capex planı / yatırım duyurusu → DCF explicit forecast period
+   - Yönetim kâr/marj guidance → terminal growth + FCF projection
+   - Strategic moves (M&A, kapasite artışı, SAF tesisi) → scenario tree bull/base/bear
+   - Temettü politikası → FCF-to-equity track
+2. `document_evidence_citations[]` field'ını doldur — **en az 3 citation**.
+3. Citation olmadan yüksek-confidence varsayım üretme; o zaman `confidence_overall` düşür.
+4. IAS 29 EBITDA kullanırken `ebitda_ias29` ratio'sunu financial_analysis'ten al; NMP EBITDA'ya dahil EDİLMEZ.
+
 <!-- PHASE_8B_CANONICAL_REFS -->
 ## AUTHORITATIVE SOURCES — canonical/ (DO NOT DUPLICATE RULES BELOW)
 

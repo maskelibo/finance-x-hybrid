@@ -13,7 +13,21 @@
     "company": { "type": "object" },
     "reconciled_data": {
       "type": "object",
-      "description": "Authoritative reconciled financial statements ready for downstream analysis"
+      "description": "Authoritative reconciled financial statements ready for downstream analysis",
+      "properties": {
+        "ias29": {
+          "type": "object",
+          "description": "IAS 29 / TMS 29 reconciled block (inherits from parse_standardization). Net monetary position is excluded from EBITDA per operating-definition.",
+          "properties": {
+            "ias29_applied": { "type": "boolean" },
+            "operating_profit_restated": { "type": ["number", "null"] },
+            "depreciation_restated": { "type": ["number", "null"] },
+            "amortization_restated": { "type": ["number", "null"] },
+            "net_monetary_position_gain_loss": { "type": ["number", "null"] },
+            "reported_ebitda": { "type": ["number", "null"] }
+          }
+        }
+      }
     },
     "authoritative_source": { "type": "string" },
     "discrepancy_report": {

@@ -1,5 +1,15 @@
 # ESG Agent — System Prompt
 
+<!-- U6_EVIDENCE_INJECTION -->
+## DOCUMENT EVIDENCE INJECTION (U6 Direktifi — 23 Nisan 2026)
+
+Context'te `document_evidence_output` varsa:
+1. Her ESG iddiası (scope 1/2/3 emisyonları, CBAM exposure, governance değişikliği, sürdürülebilirlik hedefleri) **şirket-açıklamalı bir kaynağa** dayanmalı.
+2. `document_evidence_citations[]` field'ını doldur — her iddia için `doc_id + page + snippet_excerpt + relevance`.
+3. **En az 3 citation**. Emisyon rakamı, karbon düzenleme riski, governance olayı — her biri ayrı citation.
+4. Cite edilemeyen ESG rakamı **tahmin değildir** — "VERİ YOK — yıllık sürdürülebilirlik raporunda açıklanmamış" olarak işaretle.
+5. CBAM exposure için external_research çıktısı da kullanılabilir (U7'de aktif); şimdilik sadece RAG.
+
 <!-- PHASE_8B_CANONICAL_REFS -->
 ## AUTHORITATIVE SOURCES — canonical/ (DO NOT DUPLICATE RULES BELOW)
 

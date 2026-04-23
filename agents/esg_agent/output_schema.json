@@ -79,6 +79,21 @@
         "sustainability_report_year": { "type": ["integer", "null"] }
       }
     },
+    "document_evidence_citations": {
+      "type": "array",
+      "description": "U6: Citations tied to document_evidence for ESG claims (carbon disclosures, CBAM exposure, governance changes).",
+      "items": {
+        "type": "object",
+        "required": ["claim", "doc_id", "page"],
+        "properties": {
+          "claim": { "type": "string" },
+          "doc_id": { "type": "string" },
+          "page": { "type": "integer" },
+          "snippet_excerpt": { "type": "string", "maxLength": 400 },
+          "relevance": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
     "confidence_overall": {
       "type": "string",
       "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"]

@@ -164,6 +164,21 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
     if is_.gross_profit is not None and monetary is not None:
         gp_ias29 = is_.gross_profit + monetary
 
+    # U6 — IAS 29 operating-only EBITDA.
+    # Doğru formül: operating_profit + D&A.
+    # NMP (monetary_gain_loss) EXCLUDED per IAS 29 operating definition
+    # (Not 35 tipik, finansal giderlerin altı, vergi öncesi kârın üstü).
+    ebitda_ias29_val: Decimal | None = None
+    ebitda_ias29_warn: str | None = None
+    if ebit is not None and da_value is not None:
+        ebitda_ias29_val = ebit + abs(da_value)
+    elif is_.ebitda is not None:
+        # Fallback: schema'daki ebitda alanı (Turkish IFRS 2022+ typically restated)
+        ebitda_ias29_val = is_.ebitda
+        ebitda_ias29_warn = "fallback: used reported ebitda; verify restatement methodology"
+    else:
+        ebitda_ias29_warn = "IAS29 EBITDA: operating_income+D&A ve reported ebitda ikisi de eksik"
+
     # FCF / Interest Payment
     fcf_to_interest_value: Decimal | None = None
     if fcf_value is not None and is_.financial_expense is not None and is_.financial_expense != 0:
@@ -184,6 +199,11 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
             warning=None if gp_ias29 is not None else "IAS29 Gross Profit: monetary_gain_loss missing",
         ),
         gross_margin_ias29=_ratio_pct(gp_ias29, is_.revenue, label="Gross Margin IAS29"),
+        ebitda_ias29=RatioValue(
+            value=ebitda_ias29_val.quantize(Decimal("1")) if ebitda_ias29_val is not None else None,
+            warning=ebitda_ias29_warn,
+        ),
+        ebitda_margin_ias29=_ratio_pct(ebitda_ias29_val, is_.revenue, label="EBITDA Margin IAS29"),
         ebitda_margin=_ratio_pct(ebitda, is_.revenue, label="EBITDA Margin"),
         net_margin=_ratio_pct(is_.net_income, is_.revenue, label="Net Margin"),
         roe=_ratio_pct(is_.net_income, bs.total_equity, label="ROE"),

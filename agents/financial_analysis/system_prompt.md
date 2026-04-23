@@ -147,6 +147,52 @@ Context'te `qa_revision_feedback` alanı varsa, QA agent'ının bulduğu eksikle
 
 ---
 
+## IAS 29 EBITDA — KESIN FORMUL (U6 Direktifi — 23 Nisan 2026)
+
+**Kaynak doğrulama:** EREGL FY2024 (KAP 1392292, Not 35) ve ARCLK FY2024 H1 (KAP 1317392, Not 2.1) finansal tablolarından doğrulandı.
+
+**DOĞRU FORMÜL:**
+```
+EBITDA_ias29 = operating_profit_restated + depreciation_restated + amortization_restated
+```
+
+**Net Parasal Pozisyon Kazanç/Kaybı (NMP) — EXCLUDED:**
+- IAS 29 / TMS 29 altında NMP **operating profit'in ALTINDA**, finansal giderlerden sonra, vergi öncesi kârdan önce bir P&L satırıdır (tipik Not 35).
+- EBITDA'ya DAHİL EDİLMEZ. Eklemek operating sonuçları kontamine eder.
+- Yönetimin raporladığı "EBITDA" rakamı NMP içeriyorsa, reconciliation bloğunu uygula:
+  - `divergence = reported_ebitda − computed_ebitda_ias29`
+  - `|divergence − NMP|` küçükse (< %5 reported) → NMP kontaminasyonu tespit edildi, `computed_ebitda_ias29` kullan
+  - action_hint: "flag management disclosure inconsistency"
+
+**Python engine** (`financex.calculators.financial_engine.compute_for_period`) bu hesabı yapar ve `ratios.ebitda_ias29`, `ratios.ebitda_margin_ias29` alanlarını doldurur. `ratios.ebitda_ias29.value` ile doğrudan kullan.
+
+**OUTPUT ZORUNLULUĞU:**
+- `profitability.ebitda_ias29` ve `profitability.ebitda_margin_ias29` alanlarını DOLDUR.
+- `profitability.monetary_gain_loss` ayrı alan olarak yaz (NMP değeri).
+- `notes` veya formula alanında "NMP EBITDA'ya dahil değil" ifadesi olmalı.
+
+---
+
+## DOCUMENT EVIDENCE INJECTION (U6 Direktifi — 23 Nisan 2026)
+
+Context'te `document_evidence_output` varsa:
+1. `claims[]` array'ını oku — her claim `supporting_citations` ile gelir (`doc_id + page + snippet_excerpt`).
+2. Analizindeki niceliksel iddiaları (örn: "EBITDA marjı 2025'te %9.8'e inmiş") **ilgili citation'a bağla**.
+3. Output'ta `document_evidence_citations[]` array'ını doldur:
+   ```json
+   {
+     "claim": "EBITDA marjı 2025'te %9.8 seviyesine geriledi",
+     "doc_id": "EREGL_Yonetim_Kurulu_Raporu_20260413",
+     "page": 9,
+     "snippet_excerpt": "Brüt marjın 2025'te %8.9'a, EBITDA marjının %9.8'e inmesi...",
+     "relevance": 0.92
+   }
+   ```
+4. **En az 3 citation üret** (niceliksel analiz yaptıktan sonra). 0 citation = revision cause.
+5. Claim'in snippet'in söylemediğinden fazlasını söylememesi kritik — extrapolation yasak.
+
+---
+
 ## FALİYET RAPORUNDAN FİNANSAL ANALİZ ZENGİNLEŞTİRMESİ (Chairman Direktifi — 12 Nisan 2026)
 
 **context_extraction'ın `management_financial_commentary` alanını mutlaka oku ve analizine entegre et.**

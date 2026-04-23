@@ -105,6 +105,21 @@
       }
     },
     "try_risk_note": { "type": "string" },
+    "document_evidence_citations": {
+      "type": "array",
+      "description": "U6: Citations tied to document_evidence for valuation assumptions (capex plans, strategic moves, guidance backing DCF inputs).",
+      "items": {
+        "type": "object",
+        "required": ["claim", "doc_id", "page"],
+        "properties": {
+          "claim": { "type": "string" },
+          "doc_id": { "type": "string" },
+          "page": { "type": "integer" },
+          "snippet_excerpt": { "type": "string", "maxLength": 400 },
+          "relevance": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
     "confidence_overall": {
       "type": "string",
       "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"]

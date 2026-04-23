@@ -33,7 +33,7 @@
     },
     "profitability": {
       "type": "object",
-      "required": ["net_sales", "gross_profit", "gross_margin", "gross_profit_ias29", "gross_margin_ias29", "monetary_gain_loss", "ebitda", "ebitda_margin", "ebit_margin", "net_profit_margin", "pre_tax_profit", "net_income", "opex_to_revenue", "roe", "roce", "roa", "roic"],
+      "required": ["net_sales", "gross_profit", "gross_margin", "gross_profit_ias29", "gross_margin_ias29", "monetary_gain_loss", "ebitda", "ebitda_margin", "ebitda_ias29", "ebitda_margin_ias29", "ebit_margin", "net_profit_margin", "pre_tax_profit", "net_income", "opex_to_revenue", "roe", "roce", "roa", "roic"],
       "properties": {
         "net_sales": { "$ref": "#/definitions/RatioMetric" },
         "gross_profit": { "$ref": "#/definitions/RatioMetric" },
@@ -43,6 +43,8 @@
         "monetary_gain_loss": { "$ref": "#/definitions/RatioMetric" },
         "ebitda": { "$ref": "#/definitions/RatioMetric" },
         "ebitda_margin": { "$ref": "#/definitions/RatioMetric" },
+        "ebitda_ias29": { "$ref": "#/definitions/RatioMetric" },
+        "ebitda_margin_ias29": { "$ref": "#/definitions/RatioMetric" },
         "ebit_margin": { "$ref": "#/definitions/RatioMetric" },
         "net_profit_margin": { "$ref": "#/definitions/RatioMetric" },
         "pre_tax_profit": { "$ref": "#/definitions/RatioMetric" },
@@ -183,6 +185,21 @@
     "evidence_refs": {
       "type": "array",
       "items": { "$ref": "https://financex.internal/schemas/shared/evidence.schema.json" }
+    },
+    "document_evidence_citations": {
+      "type": "array",
+      "description": "U6: Citations tied to document_evidence agent output. Each entry maps a claim to a doc_id + page from the knowledge_base retrieval.",
+      "items": {
+        "type": "object",
+        "required": ["claim", "doc_id", "page"],
+        "properties": {
+          "claim": { "type": "string", "description": "The analytical claim this citation supports." },
+          "doc_id": { "type": "string" },
+          "page": { "type": "integer" },
+          "snippet_excerpt": { "type": "string", "maxLength": 400 },
+          "relevance": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
     },
     "warnings": { "type": "array", "items": { "type": "string" } },
     "missing_inputs": { "type": "array", "items": { "type": "string" } },

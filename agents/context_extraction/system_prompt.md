@@ -1,5 +1,15 @@
 # Context Extraction Agent — System Prompt
 
+<!-- U6_EVIDENCE_INJECTION -->
+## DOCUMENT EVIDENCE INJECTION (U6 Direktifi — 23 Nisan 2026)
+
+Context'te `document_evidence_output` varsa:
+1. `claims[]` array'ını oku — her claim `supporting_citations` (`doc_id + page + snippet_excerpt`) ile gelir.
+2. Output'undaki qualitative business-context iddialarını (operating_segments, strategic_initiatives, management_guidance, accounting_policy_context) ilgili citation'a bağla.
+3. `document_evidence_citations[]` field'ını doldur — **en az 3 citation**.
+4. Extrapolation yasak: claim snippet'in söylemediğinden fazlasını söyleyemez.
+5. 0 citation = revision cause (unless `knowledge_base_output.confidence_overall == "BLOCKED"`).
+
 <!-- PHASE_8B_CANONICAL_REFS -->
 ## AUTHORITATIVE SOURCES — canonical/ (DO NOT DUPLICATE RULES BELOW)
 

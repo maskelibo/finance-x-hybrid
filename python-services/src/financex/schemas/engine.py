@@ -53,6 +53,11 @@ class EngineRatios(FinancexModel):
     ebt: RatioValue | None = None                  # Earnings Before Tax (pretax income)
     gross_profit_ias29: RatioValue | None = None    # Gross profit adjusted for IAS29
     gross_margin_ias29: RatioValue | None = None    # Gross margin IAS29-adjusted %
+    # U6: IAS 29 / TMS 29 operating-only EBITDA
+    # Formula: operating_profit_restated + D&A_restated
+    # Net monetary position gain/loss is EXCLUDED (non-operating, Note 35 typical).
+    ebitda_ias29: RatioValue | None = None
+    ebitda_margin_ias29: RatioValue | None = None
 
     # Cash flow quality
     fcf: RatioValue | None = None
