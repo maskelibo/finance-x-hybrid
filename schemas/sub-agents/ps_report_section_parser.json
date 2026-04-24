@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PS Report Section Parser Output",
+  "type": "object",
+  "required": ["ticker", "fiscal_period", "sections", "extraction_gaps"],
+  "properties": {
+    "ticker":        { "type": "string", "pattern": "^[A-Z]{3,6}$" },
+    "fiscal_period": { "type": "string" },
+    "sections": {
+      "type": "object",
+      "properties": {
+        "ceo_letter":          { "type": "object" },
+        "strategy":            { "type": "object" },
+        "capex_guidance":      { "type": "object" },
+        "esg_narrative":       { "type": "object" },
+        "segment_commentary":  { "type": "object" },
+        "risk_factors":        { "type": "array" }
+      }
+    },
+    "extraction_gaps": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PS Statement Extractor Output",
+  "type": "object",
+  "required": ["ticker", "statements_by_period", "parse_errors"],
+  "properties": {
+    "ticker": { "type": "string", "pattern": "^[A-Z]{3,6}$" },
+    "statements_by_period": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fiscal_period", "source_pdf"],
+        "properties": {
+          "fiscal_period":    { "type": "string" },
+          "source_pdf":       { "type": "string" },
+          "sector_detected":  { "type": ["string", "null"] },
+          "income_statement": { "type": ["object", "null"] },
+          "balance_sheet":    { "type": ["object", "null"] },
+          "cash_flow":        { "type": ["object", "null"] },
+          "confidence":       { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "parse_errors": { "type": "array" }
+  }
+}

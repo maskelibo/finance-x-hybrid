@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PS Notes Parser Output",
+  "type": "object",
+  "required": ["ticker", "fiscal_period", "notes", "extraction_gaps"],
+  "properties": {
+    "ticker":        { "type": "string", "pattern": "^[A-Z]{3,6}$" },
+    "fiscal_period": { "type": "string" },
+    "notes": {
+      "type": "object",
+      "properties": {
+        "depreciation_amortization": { "$ref": "#/definitions/Valued" },
+        "ifrs16_lease_expenses":     { "$ref": "#/definitions/Valued" },
+        "ias29_net_monetary_position": { "$ref": "#/definitions/Valued" },
+        "debt_maturity_schedule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year":           { "type": "integer" },
+              "amount_try_mn":  { "type": "number" },
+              "currency":       { "type": "string" }
+            }
+          }
+        },
+        "segment_notes": { "type": "array" }
+      }
+    },
+    "extraction_gaps": { "type": "array", "items": { "type": "string" } }
+  },
+  "definitions": {
+    "Valued": {
+      "type": ["object", "null"],
+      "properties": {
+        "value_try_mn": { "type": ["number", "null"] },
+        "source":       { "type": "string" },
+        "confidence":   { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW"] }
+      }
+    }
+  }
+}

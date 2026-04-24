@@ -55,7 +55,43 @@ sub_agents:
     parallelizable: true
     retry_max: 2
 
-  # S3  — parse_standardization (3 sub-agents, hybrid)
+  # ===== S3 — parse_standardization (3 sub-agents, hybrid) =====
+  - id: ps_statement_extractor
+    parent_agent_id: parse_standardization
+    display_name: "Statement Extractor (Deterministic)"
+    description: "PyMuPDF + pandas ile IS/BS/CF/SE tablolarını çıkarır, LLM yok."
+    tier: deterministic
+    python_module: financex.subagents.ps_statement_extractor
+    timeout_ms: 180000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/ps_statement_extractor.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: ps_notes_parser
+    parent_agent_id: parse_standardization
+    display_name: "Notes Parser (LLM)"
+    description: "Dipnotları parse eder: D&A, IFRS 16 lease, IAS 29, debt notes, segment notes."
+    tier: llm
+    model: sonnet
+    timeout_ms: 360000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/ps_notes_parser.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: ps_report_section_parser
+    parent_agent_id: parse_standardization
+    display_name: "Report Section Parser (LLM)"
+    description: "CEO message, strategy, capex, ESG narrative, segment commentary parsing."
+    tier: llm
+    model: sonnet
+    timeout_ms: 360000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/ps_report_section_parser.json
+    parallelizable: true
+    retry_max: 2
+
   # S4  — financial_analysis    (5 sub-agents, parallel) — EN BÜYÜK ETKİ
   # S5  — report_formatter      (4 deterministic workers, parallel)
   # S6  — macro_analysis        (3 sub-agents, parallel)

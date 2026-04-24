@@ -26,6 +26,7 @@ import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_ana
 import { runPythonKapWatch } from './python/agent_runners/kap_watch.js';
 import { runPythonDataCollection } from './python/agent_runners/data_collection.js';
 import { runDataCollectionSubagentAware } from './python/agent_runners/data_collection_with_subagents.js';
+import { runParseStandardizationSubagentAware } from './python/agent_runners/parse_standardization_with_subagents.js';
 import { runPythonParseStandardization } from './python/agent_runners/parse_standardization.js';
 import { runPythonReconciliation } from './python/agent_runners/reconciliation.js';
 import { runPythonFinancialAnalysis } from './python/agent_runners/financial_analysis.js';
@@ -614,7 +615,7 @@ Minimum 1500 karakter.`;
     return outcome === 'ok' ? 'ok' : 'failed';
   }
   if (PYTHON_PARSE_STANDARDIZATION_ENABLED && agentId === 'parse_standardization') {
-    const outcome = await runPythonParseStandardization(sessionId, runId, ticker, accumulatedContext);
+    const outcome = await runParseStandardizationSubagentAware(sessionId, runId, ticker, accumulatedContext);
     return outcome === 'ok' ? 'ok' : 'failed';
   }
   if (PYTHON_RECONCILIATION_ENABLED && agentId === 'reconciliation') {
