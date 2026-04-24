@@ -153,7 +153,55 @@ sub_agents:
     parallelizable: true
     retry_max: 2
 
-  # S5  — report_formatter      (4 deterministic workers, parallel)
+  # ===== S5 — report_formatter (4 deterministic workers) =====
+  - id: rf_layout_planner
+    parent_agent_id: report_formatter
+    display_name: "Report Layout Planner"
+    description: "12-section + cover + TOC layout plan (Goldman structure)."
+    tier: deterministic
+    python_module: financex.subagents.rf_layout_planner
+    timeout_ms: 30000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/rf_layout_planner.json
+    parallelizable: false
+    retry_max: 1
+
+  - id: rf_section_renderer
+    parent_agent_id: report_formatter
+    display_name: "Section HTML Renderer"
+    description: "Per-section HTML render via Jinja template."
+    tier: deterministic
+    python_module: financex.subagents.rf_section_renderer
+    timeout_ms: 60000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/rf_section_renderer.json
+    parallelizable: true
+    retry_max: 1
+
+  - id: rf_svg_chart_renderer
+    parent_agent_id: report_formatter
+    display_name: "SVG Chart Renderer"
+    description: "Deterministic SVG chart generation (Chart.js forbidden)."
+    tier: deterministic
+    python_module: financex.subagents.rf_svg_chart_renderer
+    timeout_ms: 30000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/rf_svg_chart_renderer.json
+    parallelizable: true
+    retry_max: 1
+
+  - id: rf_html_validator
+    parent_agent_id: report_formatter
+    display_name: "HTML Validator & Polisher"
+    description: "Final HTML quality gate: 12 sections, SPK disclaimer, min 50KB, valid markup."
+    tier: deterministic
+    python_module: financex.subagents.rf_html_validator
+    timeout_ms: 15000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/rf_html_validator.json
+    parallelizable: false
+    retry_max: 1
+
   # S6  — macro_analysis        (3 sub-agents, parallel)
   # S7  — valuation_agent       (4 sub-agents, parallel)
   # S8  — sector_competition    (3 sub-agents + holding dynamic)

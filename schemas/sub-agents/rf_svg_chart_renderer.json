@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RF SVG Chart Renderer Output",
+  "type": "object",
+  "required": ["chart_id", "svg", "byte_count"],
+  "properties": {
+    "chart_id":   { "type": "string" },
+    "svg":        { "type": "string" },
+    "byte_count": { "type": "integer", "minimum": 0 }
+  }
+}

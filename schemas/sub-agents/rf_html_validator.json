@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RF HTML Validator Output",
+  "type": "object",
+  "required": ["valid", "issues", "html_size_bytes"],
+  "properties": {
+    "valid":            { "type": "boolean" },
+    "issues":           { "type": "array" },
+    "html_size_bytes":  { "type": "integer", "minimum": 0 },
+    "section_count":    { "type": "integer" },
+    "svg_count":        { "type": "integer" }
+  }
+}
