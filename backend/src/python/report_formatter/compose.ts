@@ -38,7 +38,7 @@ import {
   commentaryValuation,
   translateRiskCode,
 } from './auto_commentary.js';
-import { buildNarrativeBlocks } from './llm_narrative.js';
+import { buildNarrativeBlocks, cleanupMarkdownForFallback } from './llm_narrative.js';
 import { resolvePeerBundle } from './peer_sets.js';
 import { resolveSwot } from './swot_analysis.js';
 import { barChart, columnChart, gaugeChart, horizontalBarChart, lineChart, pieChart, priceBandChart, radarChart, stackedAreaChart, timelineChart, waterfallChart } from './svg_charts.js';
@@ -241,7 +241,21 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     if (roe != null && roe > 10 && !rawStrengths.some(s => s.includes('ROE'))) rawStrengths.push(`ROE %${roe.toFixed(1)} — sektör ortalamasının üzerinde`);
     if (gm != null && gm > 15 && !rawStrengths.some(s => s.includes('marj'))) rawStrengths.push(`Brüt marj %${gm.toFixed(1)}`);
     // OCF from parse — latestAnnual not yet defined here, use parsed directly
-    const latestFY = arrayFrom(parsed?.standardized_statements ?? []).find((s: Record<string, unknown>) => String(s.period_label ?? '').startsWith('FY-'));
+    // Fix #21 — find() picked FIRST FY (FY-2020). Sort by year DESC, but skip
+    // empty placeholder rows (parse_standardization emits FY-2026 stubs with
+    // revenue=0 and null CF fields; BIMAS had 46 such placeholders that
+    // hijacked latestFY → canonical CF table rendered empty).
+    const _hasRealData = (s: Record<string, unknown>) => {
+      const rev = (s.income_statement as Record<string, unknown> | null)?.revenue;
+      return rev != null && Number(rev) > 0;
+    };
+    const latestFY = arrayFrom(parsed?.standardized_statements ?? [])
+      .filter((s: Record<string, unknown>) => String(s.period_label ?? '').startsWith('FY-') && _hasRealData(s))
+      .sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
+        const ya = parseInt(String(a.period_label ?? '').replace('FY-', ''), 10) || 0;
+        const yb = parseInt(String(b.period_label ?? '').replace('FY-', ''), 10) || 0;
+        return yb - ya;
+      })[0];
     const cfBlock = (latestFY?.cash_flow as Record<string, unknown> | null) ?? {};
     const ocf = numOrNull(cfBlock.operating_cash_flow);
     if (ocf != null && ocf > 0) rawStrengths.push(`Güçlü operasyonel nakit akışı: ${(ocf / 1e9).toFixed(1)} milyar TL`);
@@ -271,7 +285,18 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   // FA has ratios (roe, gross_margin, net_margin...)
   const faCn = (fa?.canonical_numbers ?? {}) as Record<string, unknown>;
   const parsedStatements = arrayFrom(parsed?.standardized_statements ?? []);
-  const latestAnnual = parsedStatements.find((s: Record<string, unknown>) => String(s.period_label ?? '').startsWith('FY-'));
+  // Fix #21 — same bug as line 244 + same FY-2026 placeholder filter.
+  const _hasRealAnnualData = (s: Record<string, unknown>) => {
+    const rev = (s.income_statement as Record<string, unknown> | null)?.revenue;
+    return rev != null && Number(rev) > 0;
+  };
+  const latestAnnual = parsedStatements
+    .filter((s: Record<string, unknown>) => String(s.period_label ?? '').startsWith('FY-') && _hasRealAnnualData(s))
+    .sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
+      const ya = parseInt(String(a.period_label ?? '').replace('FY-', ''), 10) || 0;
+      const yb = parseInt(String(b.period_label ?? '').replace('FY-', ''), 10) || 0;
+      return yb - ya;
+    })[0];
   const parseBS = (latestAnnual?.balance_sheet as Record<string, unknown> | null) ?? {};
   const parseIS = (latestAnnual?.income_statement as Record<string, unknown> | null) ?? {};
   const parseCF = (latestAnnual?.cash_flow as Record<string, unknown> | null) ?? {};
@@ -310,6 +335,12 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     financing_cash_flow: parseCF.financing_cash_flow,
     dividends_paid: parseCF.dividends_paid,
     depreciation_amortization: parseCF.depreciation_amortization ?? parseIS.depreciation_amortization,
+    // Fix #6 — ΔWC + Normalize FCF + period-annualized projections (CEO mandate quartet)
+    change_in_working_capital: parseCF.change_in_working_capital ?? faCn.change_in_working_capital,
+    wc_release: faCn.wc_release,
+    normalized_fcf: faCn.normalized_fcf,
+    fcf_annualized: faCn.fcf_annualized,
+    normalized_fcf_annualized: faCn.normalized_fcf_annualized,
   };
 
   // Compute derived metrics if missing
@@ -333,6 +364,29 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   // FCF = OCF - |CAPEX| (if FA didn't compute it)
   if (!canonicalNumbers.fcf && ocfVal != null && capexVal != null) {
     canonicalNumbers.fcf = ocfVal - Math.abs(capexVal);
+  }
+
+  // Fix #6 — fallback compute Normalize FCF + annualization if FA agent omitted them
+  const fcfVal = numOrNull(canonicalNumbers.fcf);
+  const wcChangeVal = numOrNull(canonicalNumbers.change_in_working_capital);
+  if (canonicalNumbers.wc_release == null && wcChangeVal != null) {
+    canonicalNumbers.wc_release = -wcChangeVal;
+  }
+  if (canonicalNumbers.normalized_fcf == null && fcfVal != null && wcChangeVal != null) {
+    canonicalNumbers.normalized_fcf = fcfVal - wcChangeVal;
+  }
+  // Period-aware multiplier mirrors python engine _annualize_multiplier
+  const periodLabelRaw = String(fa?.period_label ?? '');
+  const annualMultiplier =
+    periodLabelRaw.startsWith('Q1-') ? 4 :
+    periodLabelRaw.startsWith('H1-') ? 2 :
+    periodLabelRaw.startsWith('Q3-') ? 4 / 3 :
+    1;
+  if (canonicalNumbers.fcf_annualized == null && fcfVal != null) {
+    canonicalNumbers.fcf_annualized = fcfVal * annualMultiplier;
+  }
+  if (canonicalNumbers.normalized_fcf_annualized == null && canonicalNumbers.normalized_fcf != null) {
+    canonicalNumbers.normalized_fcf_annualized = (canonicalNumbers.normalized_fcf as number) * annualMultiplier;
   }
 
   // Net Debt / EBITDA
@@ -389,10 +443,20 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
   const workingCapitalTable = buildWorkingCapitalTable(canonicalNumbers, standardizedStatementsForWC(parsed));
 
+  const isNonFy = /^(Q[1-4]|H1)-/.test(periodLabelRaw);
+  const annualSuffix = isNonFy ? ` (yıllıklandırılmış — ${periodLabelRaw} bazından projeksiyon)` : '';
   const canonicalCashFlow = buildCanonicalTable(canonicalNumbers, [
     ['operating_cash_flow', 'Operasyonel Nakit Akışı (OCF)'],
     ['capex', 'Yatırım Harcaması (CAPEX)'],
     ['free_cash_flow', 'Serbest Nakit Akışı (FCF)'],
+    // Fix #6 — CEO mandate quartet (WC release + Normalize FCF + annualized projeksiyonlar)
+    ['change_in_working_capital', 'İşletme Sermayesi Değişimi (ΔWC)'],
+    ['wc_release', 'Nakit Serbest Bırakımı (−ΔWC)'],
+    ['normalized_fcf', 'Normalize Edilmiş FCF (FCF − ΔWC)'],
+    ...(isNonFy ? [
+      ['fcf_annualized', `FCF Yıllıklandırılmış${annualSuffix}`],
+      ['normalized_fcf_annualized', `Normalize FCF Yıllıklandırılmış${annualSuffix}`],
+    ] as Array<[string, string]> : []),
     ['investing_cash_flow', 'Yatırım Faaliyetlerinden Nakit'],
     ['financing_cash_flow', 'Finansman Faaliyetlerinden Nakit'],
     ['dividends_paid', 'Ödenen Temettü'],
@@ -469,15 +533,50 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const macroInflation = (macro?.inflation as Record<string, unknown> | null) ?? {};
   const macroGrowth = (macro?.growth as Record<string, unknown> | null) ?? {};
   const macroEquity = (macro?.equity as Record<string, unknown> | null) ?? {};
+
+  // Cosmetic 2 — Python engine emits None for policy_rate/cpi/gdp/bist when
+  // TCMB API is unreachable. The LLM's narrative JSON envelope still has
+  // these (from WebSearch). Parse the envelope and use as fallback.
+  let macroEnv: Record<string, Record<string, unknown>> = {};
+  try {
+    const narr = String(macro?.llm_narrative ?? '');
+    const m = narr.match(/```json\s*(\{[\s\S]*?\})\s*```/);
+    if (m) {
+      const parsed = JSON.parse(m[1]);
+      if (parsed && typeof parsed === 'object' && parsed.macro_environment) {
+        macroEnv = parsed.macro_environment as Record<string, Record<string, unknown>>;
+      }
+    }
+  } catch { /* narrative not JSON-parseable, fallback to engine values only */ }
+
+  const fromEnv = (group: string, key: string): unknown => {
+    const g = macroEnv[group] as Record<string, unknown> | undefined;
+    return g?.[key];
+  };
+
   const macroContext = {
-    usd_try: formatNumber(macroFx.usd_try ?? macro?.usd_try, 4, ' TL'),
-    eur_try: formatNumber(macroFx.eur_try ?? macro?.eur_try, 4, ' TL'),
-    policy_rate: formatPctFromMacro(macroRates.policy_rate ?? macro?.tcmb_policy_rate),
+    usd_try: formatNumber(macroFx.usd_try ?? macro?.usd_try ?? fromEnv('currency', 'usd_try'), 4, ' TL'),
+    eur_try: formatNumber(macroFx.eur_try ?? macro?.eur_try ?? fromEnv('currency', 'eur_try'), 4, ' TL'),
+    policy_rate: formatPctFromMacro(macroRates.policy_rate ?? macro?.tcmb_policy_rate ?? fromEnv('monetary_policy', 'policy_rate')),
     tcmb_10y: formatPctFromMacro(macroRates.tcmb_10y ?? macro?.tcmb_10y_bond_yield),
-    cpi_yoy: formatPctFromMacro(macroInflation.cpi_yoy ?? macro?.cpi_yoy),
-    gdp_yoy: formatPctFromMacro(macroGrowth.gdp_yoy ?? macro?.gdp_yoy),
-    bist100_ytd_return: formatPctFromMacro(macroEquity.bist100_ytd_return ?? macro?.bist100_ytd_return),
-    bist100_level: formatNumber(macroEquity.bist100_level, 0),
+    cpi_yoy: formatPctFromMacro(macroInflation.cpi_yoy ?? macro?.cpi_yoy ?? fromEnv('inflation', 'cpi_yoy')),
+    // Fix #27 — macro_analysis narrative uses `gdp_fy2025_yoy` (year-first)
+    // not `gdp_yoy_fy2025`. Check both shapes.
+    gdp_yoy: formatPctFromMacro(
+      macroGrowth.gdp_yoy
+        ?? macro?.gdp_yoy
+        ?? fromEnv('growth', 'gdp_fy2025_yoy')
+        ?? fromEnv('growth', 'gdp_yoy_fy2025')
+        ?? fromEnv('growth', 'gdp_yoy'),
+    ),
+    bist100_ytd_return: formatPctFromMacro(macroEquity.bist100_ytd_return ?? macro?.bist100_ytd_return ?? fromEnv('equity', 'bist100_ytd_return')),
+    bist100_level: formatNumber(macroEquity.bist100_level ?? fromEnv('equity', 'bist100_level'), 0),
+    // Fix #27 — hide rows when data is genuinely missing instead of
+    // showing "Raporlanmadı". macro_analysis does not currently collect
+    // 10Y bond yield; BIST-100 YTD is only sometimes populated.
+    tcmb_10y_has: (macroRates.tcmb_10y ?? macro?.tcmb_10y_bond_yield) != null,
+    bist100_has: (macroEquity.bist100_level ?? fromEnv('equity', 'bist100_level')) != null,
+    bist100_ytd_has: (macroEquity.bist100_ytd_return ?? macro?.bist100_ytd_return ?? fromEnv('equity', 'bist100_ytd_return')) != null,
   };
 
   // ----- VII. Teknik -----
@@ -490,7 +589,11 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const rsi = numOrNull(techMomentum.rsi_14 ?? tech?.rsi_14 ?? tech?.rsi);
   const techVolatility = (tech?.volatility as Record<string, unknown> | null) ?? {};
   // last_close may not be in tech output — fallback to orchestrator pre-fetch or Bollinger middle (≈MA20)
-  const lastClose = numOrNull(techPriceData.last_close ?? tech?.last_close ?? ctx['last_close_price'] ?? techVolatility.bollinger_middle ?? techMA.ma_20);
+  // Fix #28 — stop using MA20/bollinger_middle as last_close fallback. They
+  // are NOT the close — in BIMAS 20260424 report "Son Kapanış" was 720.58 TL
+  // which was actually MA20 (last close was ~763 TL). If real last_close is
+  // missing, leave null so the UI can show "—" rather than lying.
+  const lastClose = numOrNull(techPriceData.last_close ?? tech?.last_close ?? ctx['last_close_price']);
   const volumeAvg = numOrNull(techPriceData.volume_avg ?? tech?.volume_avg ?? tech?.average_volume);
   const maTable: Array<{ period: string; value: string; vs_close: string }> = [];
   const maEntries: Array<[string, unknown]> = [
@@ -519,6 +622,10 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
       : '—',
     last_close: lastClose != null ? formatTRY(lastClose, 2) + ' TL' : '—',
     volume_avg: volumeAvg != null ? formatTRY(volumeAvg, 0) : '—',
+    // Fix #28 — surface the data snapshot date so "Son Kapanış" can't be
+    // misread as real-time. BIMAS 20260424 showed 720 TL from the 2026-04-22
+    // daily bar; user correctly spotted that market price was ~763 TL.
+    as_of_date: typeof tech?.as_of_date === 'string' ? String(tech.as_of_date) : null,
   } : null;
   const technicalHas = !!technical;
 
@@ -614,28 +721,45 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   // ----- Scenarios (Bull/Base/Bear) -----
   // If valuation agent provided DCF, derive scenarios from its
   // per_share_value ± sensitivity. Otherwise leave empty.
+  //
+  // Fix #8 (2026-04-24): previously the table showed target prices with
+  // no visibility into WACC, terminal-g, or multiplier assumption; readers
+  // couldn't audit the bear/base/bull math. The derivation pack now
+  // surfaces the exact WACC, terminal growth and ±multiplier used.
 
   const dcfPerShare = numOrNull(dcf?.per_share_value);
+  const dcfWacc = numOrNull(dcf?.wacc);
+  const dcfTg = numOrNull(dcf?.terminal_growth);
   const lastCloseForDcf = lastClose ?? numOrNull(tech?.last_close);
+  const bearMultiplier = 0.75;
+  const bullMultiplier = 1.25;
+  const fmtWacc = (v: number | null) => v != null ? `%${(v * 100).toFixed(1)}` : 'belirsiz';
+  const fmtTg = (v: number | null) => v != null ? `%${(v * 100).toFixed(1)}` : 'belirsiz';
+  const baseDerivation = dcfWacc != null && dcfTg != null
+    ? `WACC ${fmtWacc(dcfWacc)}, Terminal g ${fmtTg(dcfTg)}`
+    : 'DCF değerleme (WACC/Terminal g detayı eksik)';
   const scenarios = dcfPerShare != null ? {
-    bear_price: formatTRY(dcfPerShare * 0.75, 2) + ' TL',
-    bear_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare * 0.75 / lastClose - 1) * 100), 1)}` : '−25% DCF',
+    bear_price: formatTRY(dcfPerShare * bearMultiplier, 2) + ' TL',
+    bear_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare * bearMultiplier / lastClose - 1) * 100), 1)}` : '−25% DCF',
+    bear_derivation: `DCF fair value × ${bearMultiplier.toFixed(2)} = ${formatTRY(dcfPerShare * bearMultiplier, 2)} TL (bear kötümser senaryo, stres varsayımları altında)`,
     bear_triggers: [
-      'WACC +200bps artış',
-      'Terminal g -150bps düşüş',
+      `WACC +200bps artış (${fmtWacc((dcfWacc ?? 0) + 0.02)})`,
+      `Terminal g -150bps düşüş (${fmtTg((dcfTg ?? 0) - 0.015)})`,
       'Jeopolitik risk materyalizasyonu',
     ],
     base_price: formatTRY(dcfPerShare, 2) + ' TL',
     base_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare / lastClose - 1) * 100), 1)}` : 'DCF Orta',
+    base_derivation: `DCF fair value — ${baseDerivation}`,
     base_triggers: [
-      'Mevcut WACC + terminal varsayımı',
+      `Mevcut WACC ${fmtWacc(dcfWacc)} + terminal g ${fmtTg(dcfTg)} varsayımı`,
       'Yönetim guidance tutması',
       'Makro ortamda büyük değişim yok',
     ],
-    bull_price: formatTRY(dcfPerShare * 1.25, 2) + ' TL',
-    bull_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare * 1.25 / lastClose - 1) * 100), 1)}` : '+25% DCF',
+    bull_price: formatTRY(dcfPerShare * bullMultiplier, 2) + ' TL',
+    bull_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare * bullMultiplier / lastClose - 1) * 100), 1)}` : '+25% DCF',
+    bull_derivation: `DCF fair value × ${bullMultiplier.toFixed(2)} = ${formatTRY(dcfPerShare * bullMultiplier, 2)} TL (bull iyimser senaryo, re-rating varsayımı)`,
     bull_triggers: [
-      'WACC -100bps düşüş',
+      `WACC -100bps düşüş (${fmtWacc((dcfWacc ?? 0) - 0.01)})`,
       'Güçlü kapasite genişleme',
       'Pozitif sektör katalizörleri',
     ],
@@ -751,9 +875,16 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // pull announced_at from event_classification upstream if possible
     const events = parseJson<{ classified_events?: Array<Record<string, unknown>> }>(ctx['event_classification_output']);
     const match = events?.classified_events?.find(c => c.disclosure_id === disclosureRef);
+    // Fix #15 (2026-04-24): increase label limit from 40 → 100 chars so
+    // KAP event titles are readable instead of ellipsized to "Kurumsal
+    // Yönetim Bilgi F…" which leaves the reader unable to identify the
+    // event. Raw label may still be longer than any single SVG glyph row
+    // can fit — timelineChart handles responsive truncation downstream.
+    const rawLabel = String(e.event_summary ?? '').trim();
+    const label = rawLabel.length > 100 ? rawLabel.slice(0, 97) + '…' : rawLabel;
     return {
       date: String(match?.announced_at ?? '').slice(0, 10),
-      label: String(e.event_summary ?? '').slice(0, 40),
+      label,
       direction: String(e.impact_direction ?? 'neutral') as 'positive' | 'negative' | 'neutral' | 'mixed' | 'uncertain',
     };
   }).filter(e => e.date);
@@ -947,7 +1078,16 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
       const pf = numOrNull(piotroski?.value);
       if (pf) params.push({ label: 'Piotroski F-Skoru', value: `${Math.round(pf)}/9` });
       params.push({ label: 'Sektör', value: SECTOR_LABEL_TR[sectorRaw] ?? sectorRaw });
-      params.push({ label: 'Dönem', value: String(fa?.period_label ?? '—') });
+      const periodLabel = String(fa?.period_label ?? '—');
+      // Fix #16 (2026-04-24): if period is non-FY (Q1/H1/Q3), mark it
+      // explicitly so the reader doesn't mistake a cumulative YTD figure
+      // for a full-year number. ARCLK pre-fix showed "Dönem Q1-2026" as
+      // a tiny cell while "Hasılat 40.9 milyar" was centered as if annual.
+      const isNonFy = /^(Q[1-4]|H1)-/.test(periodLabel);
+      params.push({
+        label: 'Dönem',
+        value: isNonFy ? `${periodLabel} (ara dönem — yıllıklandırılmadı)` : periodLabel,
+      });
       return params;
     })(),
     key_params_has: true,
@@ -969,14 +1109,67 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
       if (roe != null) { fsNotes.push(`ROE %${roe.toFixed(1)}`); }
       rows.push({ dimension: 'Finansal Sağlık', score: `${fsScore}/10`, weight: '%30', note: fsNotes.join('; ') || '—' });
 
-      // Büyüme Potansiyeli
-      rows.push({ dimension: 'Büyüme Potansiyeli', score: '6/10', weight: '%20', note: 'Filo genişleme + IST hub küresel #1' });
+      // Büyüme Potansiyeli — revenue YoY / capex intensity fallback
+      // Fix #10 (2026-04-24): pre-fix this row was a HARDCODED THY copy
+      // ("Filo genişleme + IST hub küresel #1") that appeared on every
+      // ticker report including ARCLK (white goods). Now ticker-aware.
+      {
+        const rev = numOrNull(canonicalNumbers.revenue_trymn);
+        const prev = numOrNull(canonicalNumbers.prev_revenue_trymn);
+        let growthScore = 5;
+        const growthNotes: string[] = [];
+        if (rev != null && prev != null && prev > 0) {
+          const g = ((rev - prev) / prev) * 100;
+          growthNotes.push(`Gelir YoY %${g.toFixed(1)}`);
+          growthScore = g > 20 ? 8 : g > 10 ? 7 : g > 0 ? 5 : g > -10 ? 4 : 3;
+        } else {
+          growthNotes.push('Gelir YoY değerlendirmesi için karşılaştırılabilir dönem verisi eksik');
+        }
+        rows.push({
+          dimension: 'Büyüme Potansiyeli',
+          score: `${growthScore}/10`,
+          weight: '%20',
+          note: growthNotes.join('; '),
+        });
+      }
 
-      // Sektör Pozisyonu
-      rows.push({ dimension: 'Sektör Pozisyonu', score: '8/10', weight: '%15', note: 'Bayrak taşıyıcı; Rusya üstgeçiş ayrıcalığı; 340+ destinasyon' });
+      // Sektör Pozisyonu — derived from sector registry + GM benchmark
+      {
+        const sectorLabel = sectorRawForBanner || 'genel';
+        const sectorNotes: string[] = [`Sektör: ${sectorLabel}`];
+        if (gm != null) {
+          sectorNotes.push(`Brüt Marj %${gm.toFixed(1)}`);
+        }
+        const sectorScore = gm != null ? (gm > 30 ? 7 : gm > 20 ? 6 : gm > 10 ? 5 : 4) : 5;
+        rows.push({
+          dimension: 'Sektör Pozisyonu',
+          score: `${sectorScore}/10`,
+          weight: '%15',
+          note: sectorNotes.join('; '),
+        });
+      }
 
-      // Makro Uyumluluk
-      rows.push({ dimension: 'Makro Uyumluluk', score: '5/10', weight: '%15', note: 'Gelir USD bazlı (olumlu); yüksek USD borç + Brent baskısı (olumsuz)' });
+      // Makro Uyumluluk — derived from currency exposure / leverage context
+      {
+        const macroNotes: string[] = [];
+        const ndebt = numOrNull(canonicalNumbers.net_debt_to_ebitda);
+        if (ndebt != null) {
+          macroNotes.push(
+            ndebt > 5 ? 'Yüksek kaldıraç — faiz şokuna duyarlı'
+            : ndebt > 3 ? 'Orta kaldıraç — makro hareketlere ölçülü duyarlı'
+            : 'Düşük kaldıraç — makro şoklara dayanıklı',
+          );
+        } else {
+          macroNotes.push('Makro duyarlılık için kaldıraç verisi eksik');
+        }
+        const macroScore = ndebt != null ? (ndebt > 5 ? 4 : ndebt > 3 ? 5 : 7) : 5;
+        rows.push({
+          dimension: 'Makro Uyumluluk',
+          score: `${macroScore}/10`,
+          weight: '%15',
+          note: macroNotes.join('; '),
+        });
+      }
 
       // Teknik Görünüm
       let techScore = 5;
@@ -986,7 +1179,14 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
       rows.push({ dimension: 'Teknik Görünüm', score: `${techScore}/10`, weight: '%10', note: techNotes.join('; ') || '—' });
 
       // Yönetim Kalitesi
-      rows.push({ dimension: 'Yönetim Kalitesi', score: '5/10', weight: '%10', note: 'Yeni CEO — içeriden atama; ilk açıklama bekleniyor' });
+      // Yönetim Kalitesi — sector-agnostic default (hardcoded THY placeholder
+      // removed in Fix #10). LLM-filled from context_extraction if available.
+      rows.push({
+        dimension: 'Yönetim Kalitesi',
+        score: '5/10',
+        weight: '%10',
+        note: 'Yönetim değişikliği veya son KAP duyurularına göre değerlendirilir',
+      });
 
       return rows;
     })(),
@@ -1376,7 +1576,12 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
  *  final_summary fails or doesn't emit anchor headings. */
 function fallbackNarrative(llm: string | undefined, autoText: string, hybridNarrative?: string | undefined): string {
   if (llm && llm.trim().length > 200) return llm;
-  if (hybridNarrative && hybridNarrative.trim().length > 200) return hybridNarrative;
+  // Fix #20 — sanitize hybridSS before use; bypassed sliceSection's cleanup so
+  // raw ```json {agent_id...} envelopes leaked into narrative_valuation.
+  if (hybridNarrative) {
+    const cleaned = cleanupMarkdownForFallback(hybridNarrative);
+    if (cleaned && cleaned.trim().length > 200) return cleaned;
+  }
   return autoText;
 }
 
@@ -1483,6 +1688,31 @@ function mdToHtml(md: string): string {
   text = text.replace(/\bstrategic_synthesis_output\b/gi, 'stratejik sentez');
   text = text.replace(/\bcontext_extraction\b/gi, 'bağlam çıkarma');
   text = text.replace(/\bsnippet'ları\b/gi, 'verileri');
+
+  // Cosmetic 1 — Convert markdown blockquote (`> text`) to <blockquote> styled
+  // box. BIMAS report had `<p>> <strong>Sektör Notu:</strong> ...</p>` because
+  // the `>` lived inside a paragraph. Run before paragraph wrapping.
+  {
+    const lines = text.split('\n');
+    const out: string[] = [];
+    let i = 0;
+    while (i < lines.length) {
+      if (/^\s{0,3}>\s+/.test(lines[i])) {
+        const block: string[] = [];
+        while (i < lines.length && /^\s{0,3}>\s+/.test(lines[i])) {
+          block.push(lines[i].replace(/^\s{0,3}>\s+/, ''));
+          i++;
+        }
+        out.push(
+          `<blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a; font-style:normal;">${block.join('<br>')}</blockquote>`,
+        );
+      } else {
+        out.push(lines[i]);
+        i++;
+      }
+    }
+    text = out.join('\n');
+  }
 
   // Convert markdown tables to HTML tables — tolerant parser that
   // handles both line-broken tables and Claude's inline squished
@@ -1666,8 +1896,18 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
 
   if (annual.length === 0) return { years: [], revenue_row: [], balance_row: [], cashflow_row: [], ratio_row: [], dividend_row: [], has_data: false };
 
-  // Take last 5 periods.
-  const recent = annual.slice(-5);
+  // Fix #26 — prefer yearly (FY) entries for the trend table. Previously
+  // slice(-5) picked Q1-2025/H1-2025/Q3-2025/FY-2025/FY-2026-placeholder,
+  // hiding FY-2020..FY-2024 real data. New logic: if ≥3 FY entries with
+  // non-zero revenue exist, use last 5 FY-only; otherwise fall back to
+  // the mixed-period recency behavior (e.g. newly listed companies).
+  const isReal = (s: Record<string, unknown>) => {
+    const rev = (s.income_statement as Record<string, unknown> | null)?.revenue;
+    const n = rev == null ? 0 : Number(rev);
+    return Number.isFinite(n) && n > 0;
+  };
+  const fyReal = annual.filter(s => String(s.period_label ?? '').startsWith('FY-') && isReal(s));
+  const recent = (fyReal.length >= 3 ? fyReal : annual).slice(-5);
   const years = recent.map(s => String(s.period_label ?? s.year ?? ''));
 
   const currentYear = new Date().getFullYear();
@@ -2086,10 +2326,12 @@ function buildOwnershipPie(ticker: string, sectorRaw: string): Array<{ label: st
       { label: 'Türk Silahlı Kuvvetlerini Güçlendirme Vakfı', value: 74.20 },
       { label: 'Halka Açık', value: 25.80 },
     ],
+    // Kaynak: BIMAS 31.12.2025 Finansal Raporu, Not 19-a (Sermaye ve Sermaye Yedekleri)
     BIMAS: [
-      { label: 'Top Doğuş Yat. Hold.', value: 16.15 },
-      { label: 'DW Partners (Mustafa Latif Topbaş)', value: 16.13 },
-      { label: 'Halka Açık', value: 67.72 },
+      { label: 'Merkez Bereket Gıda San. ve Tic. A.Ş.', value: 15.41 },
+      { label: 'Naspak Gıda San. ve Tic. A.Ş.', value: 11.67 },
+      { label: 'Diğer', value: 1.54 },
+      { label: 'Halka Açık', value: 71.39 },
     ],
     PGSUS: [
       { label: 'ESAS Holding', value: 54.16 },
@@ -2366,6 +2608,29 @@ function buildPeerStats(
   if (!sc?.benchmarks) return null;
   const bm = (arrayFrom(sc.benchmarks)).find(b => b.metric_code === metric);
   if (!bm || bm.company_value == null) return null;
+
+  // Fix #7 (2026-04-24): detect fake peer table. When sector_competition
+  // returns peers=0 but still fills median/q1/q3 with the company value
+  // (or leaves them null), we must NOT render a misleading "Emsal Medyan"
+  // row where every column is identical. Instead, signal that peer data
+  // is unavailable so the template can hide the row or show a disclaimer.
+  const epsilon = 0.001;
+  const medianSameAsCompany =
+    bm.median != null &&
+    typeof bm.median === 'number' &&
+    typeof bm.company_value === 'number' &&
+    Math.abs(Number(bm.median) - Number(bm.company_value)) < epsilon;
+  const hasRealPeers = bm.median != null && !medianSameAsCompany;
+
+  if (!hasRealPeers) {
+    // Return the company value only + a null median placeholder so template
+    // shows "Emsal verisi yok" instead of a misleading identical column.
+    return {
+      company_formatted: formatValueByCode(metric, bm.company_value),
+      median_formatted: 'Emsal grubu oluşturulamadı',
+      q1_q3: '—',
+    };
+  }
   return {
     company_formatted: formatValueByCode(metric, bm.company_value),
     median_formatted: formatValueByCode(metric, bm.median),

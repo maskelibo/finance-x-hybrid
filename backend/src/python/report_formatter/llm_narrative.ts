@@ -97,8 +97,143 @@ export function sliceSection(
 
 
 /** Light markdown → HTML-paragraph conversion safe for template {{&raw}}. */
+// Fix #20 — exported so compose.ts/fallbackNarrative can sanitize the
+// hybridSS path (strategic_synthesis raw llm_narrative) before it bypasses
+// sliceSection's cleanupMarkdown call. BIMAS 20260423 leaked a full
+// ```json {agent_id, output_id, ...} ``` envelope into "Senaryo Analizi —
+// Yorumlu" because narrativeBlocks.valuation was empty (no valuation_agent
+// + no Bear/Base/Bull anchor in finalText) → fell through to raw hybridSS.
+export function cleanupMarkdownForFallback(md: string): string {
+  return cleanupMarkdown(md);
+}
+
 function cleanupMarkdown(md: string): string {
   let out = md.trim();
+
+  // -----------------------------------------------------------------
+  // Fix #3 / #9 / #17 / #18 (2026-04-24): strip raw agent metadata
+  // that used to leak into the final report. ARCLK 20260423 pages
+  // 19-27 were a direct dump of macro_analysis agent JSON + its
+  // markdown, including AGENT SELF-ASSESSMENT blocks, raw [src: ...]
+  // attribution, output/session ids, LLM internal "thinking" prose.
+  // Every pattern here corresponds to a concrete leak observed
+  // in that report.
+  // -----------------------------------------------------------------
+
+  // (1) Drop fenced code blocks (```json ... ``` and ```any ... ```)
+  out = out.replace(/```[a-z]*\s*\n?([\s\S]*?)```/gi, (_, body) => {
+    // If the fence was JSON and body includes "agent_id" / "output_id" it's
+    // an agent envelope — drop entirely. Otherwise preserve the inner text.
+    if (/"agent_id"|"output_id"|"session_id"/.test(body)) return '';
+    return body.trim();
+  });
+
+  // (2) Drop raw JSON agent envelopes that weren't even fenced
+  out = out.replace(
+    /\{\s*"agent_id"\s*:\s*"[^"]+"[\s\S]*?"review_status"\s*:\s*"[^"]+"\s*\}/g,
+    '',
+  );
+
+  // Fix #23 — strip inline `{ "structured_financials": {...} }` data blobs
+  // BIMAS 20260424 leaked the full numeric payload as a standalone JSON
+  // paragraph. Also covers top-level "nota" / "canonical_*" data envelopes.
+  out = out.replace(
+    /\{\s*"structured_financials"\s*:\s*\{[\s\S]*?\}(?:\s*,\s*"[a-z_]+"\s*:\s*(?:"[^"]*"|\{[\s\S]*?\}|\[[\s\S]*?\]))*\s*\}/g,
+    '',
+  );
+  out = out.replace(
+    /\{\s*"(?:canonical_numbers|canonical_financials|parsed_statements)"\s*:\s*\{[\s\S]*?\}\s*\}/g,
+    '',
+  );
+
+  // Fix #24 — strip "Agent | Durum | Etki" internal pipeline-status table.
+  // Match markdown table rows whose cells list internal agent names +
+  // PRESENT/DEGRADED/MISSING/PARTIAL status markers. Internal diagnostic,
+  // not investor-facing.
+  out = out.replace(
+    /\|\s*Agent\s*\|\s*Durum\s*\|\s*Etki[^\n]*\n[\s\S]{0,3000}?(?=\n\s*\n|\n#|$)/gi,
+    '',
+  );
+  // Also catch HTML-rendered form if LLM emitted a raw <table>
+  out = out.replace(
+    /<table>[^<]*<thead>\s*<tr>\s*<th>\s*Agent\s*<\/th>\s*<th>\s*Durum\s*<\/th>\s*<th>\s*Etki\s*<\/th>[\s\S]*?<\/table>/gi,
+    '',
+  );
+
+  // Fix #26 — drop markdown tables where >50% of data cells are
+  // "(Raporlanmadı)" / "Raporlanmadı". BIMAS had LLM emit multi-year CF
+  // tables with 4 of 5 year columns = "(Raporlanmadı)" because LLM only
+  // looked at FY-2025 data while parse_standardization had FY-2020..FY-2024
+  // available. These misleading stub tables should be stripped; the real
+  // multi-year trend comes from compose.ts buildMultiYearTrend.
+  out = out.replace(/(\|[^\n]*\|[^\n]*\n){3,}/g, (block) => {
+    const rows = block.split('\n').filter(l => l.trim().startsWith('|'));
+    if (rows.length < 3) return block;
+    const cells: string[] = [];
+    for (const row of rows) {
+      for (const cell of row.split('|').slice(1, -1)) {
+        cells.push(cell.trim());
+      }
+    }
+    const nonEmpty = cells.filter(c => c.length > 0 && !/^-+$/.test(c));
+    const unreported = nonEmpty.filter(c => /\b\(?Raporlanmadı\)?\b|^—$/i.test(c)).length;
+    if (nonEmpty.length >= 10 && unreported / nonEmpty.length > 0.5) return '\n';
+    return block;
+  });
+
+  // (3) Drop AGENT SELF-ASSESSMENT / Known gaps / Confidence internal blocks
+  //     — ## AGENT SELF-ASSESSMENT ... until end-of-section or end-of-string
+  out = out.replace(/##+\s*AGENT\s*SELF[-\s]?ASSESSMENT[\s\S]*?(?=\n##+\s|\n\*\*|$)/gi, '');
+  out = out.replace(/\bKnown\s*gaps?\s*:[\s\S]*?(?=\n\n|$)/gi, '');
+  out = out.replace(/^Confidence\s*:\s*0?\.\d+.*$/gim, '');
+  out = out.replace(/\bllm_override\s*:\s*(?:true|false)\b/gi, '');
+  out = out.replace(/\bdata\s*completeness\s*:\s*\d+%.*$/gim, '');
+
+  // (4) Strip LLM "thinking" prose that leaked pre-answer
+  out = out.replace(/^(?:Tüm veri(?:\s*setim|\s*noktaları)?\s*(?:tamamlandı|doğrulandı|hazır)[\.,]?.*|Şimdi[^\n]{0,80}(?:yazıyorum|hazırlıyorum|derliyorum|üretiyorum)[\.,]?.*|Yapılandırılmış çıktıyı oluşturuyorum[\.,]?.*|Knowledge_base çıktısını işleyip[^\n]*|Kapsamlı (?:analizi|raporu|sentezi)[^\n]{0,40}(?:derliyorum|hazırlıyorum|üretiyorum)[\.,]?.*|[A-Z]{3,6}\s+FY\d{4}\s+stratejik sentezi[^\n]*)$/gim, '');
+  out = out.replace(/^Aşağıda[^\n]{0,50}sunuyorum[\.,]?.*$/gim, '');
+  // Standalone preamble fragments that LLM emits before --- separator
+  out = out.replace(/^[A-ZÇŞÜÖİĞ]{3,6}\s+FY\d{4}[^\n]{0,200}(?:hazırlıyorum|derliyorum|üretiyorum|analiz ediyorum)[\.,]?\s*$/gim, '');
+  // Drop ``` ... --- pattern where preamble is followed by separator
+  out = out.replace(/^\s*---\s*$/gm, '');
+
+  // Fix #22 — strip agent's own document header that bled into the report.
+  // BIMAS macro section had: "Nisan 2026 | Finance X Platform | Makro Analiz Ajansı"
+  // pattern: month + year + | Finance X Platform + | <agent name>
+  out = out.replace(/^\*\*(?:Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık)\s+20\d{2}\s*\|\s*Finance X[^*]*\*\*\s*$/gim, '');
+  out = out.replace(/^(?:Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık)\s+20\d{2}\s*\|\s*Finance X[^\n]*$/gim, '');
+
+  // Cosmetic 1 — convert markdown `> text` blockquotes to styled <blockquote>
+  // BEFORE the narrative reaches compose.ts (which doesn't run mdToHtml on
+  // these slots — only on the full final_summary dump).
+  {
+    const lines = out.split('\n');
+    const acc: string[] = [];
+    let i = 0;
+    while (i < lines.length) {
+      if (/^\s{0,3}>\s+/.test(lines[i])) {
+        const block: string[] = [];
+        while (i < lines.length && /^\s{0,3}>\s+/.test(lines[i])) {
+          block.push(lines[i].replace(/^\s{0,3}>\s+/, ''));
+          i++;
+        }
+        acc.push(
+          `<blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">${block.join('<br>')}</blockquote>`,
+        );
+      } else {
+        acc.push(lines[i]);
+        i++;
+      }
+    }
+    out = acc.join('\n');
+  }
+
+  // (5) Drop [src: ...] inline attribution — internal bookkeeping, not
+  //     useful for readers. Preserve the cell content around it.
+  out = out.replace(/\s*\[src:\s*[^\]]+\]/gi, '');
+
+  // (6) Drop schema envelope bits that occasionally appear outside fenced JSON
+  out = out.replace(/^\s*"(?:agent_id|output_id|session_id|task_id|timestamp|review_status)"\s*:\s*"[^"]*",?\s*$/gim, '');
 
   // Fix escaped pipes that break markdown tables (LLM writes \| inside cells)
   out = out.replace(/\\\|/g, '—');
@@ -142,6 +277,57 @@ function cleanupMarkdown(md: string): string {
   out = out.replace(/\bsnippet(?:'?s)?\b/gi, 'veri parçaları');
   out = out.replace(/\bfundamental has both positive and negative signals\s*[—\-]\s*inspect closer\.?/gi,
     'Temel göstergeler hem olumlu hem olumsuz sinyaller içermektedir — detaylı inceleme gerekmektedir.');
+
+  // -----------------------------------------------------------------
+  // Fix #2 + #14 (2026-04-24): Python financial_engine emits English
+  // flag text ("Net margin negative (-1.70%)", "Current ratio 0.96 < 1
+  // — short-term obligations exceed current assets"). These land in
+  // report body verbatim. Translate canonical phrases to Turkish.
+  // -----------------------------------------------------------------
+  const engineFlagTranslations: Array<[RegExp, string]> = [
+    [/Net margin negative\s*\(([-\d.,%]+)\)\.?/gi, 'Net marj negatif ($1) — şirket zarar üretiyor.'],
+    [/Current ratio\s+([\d.,]+)\s*<\s*1\s*—\s*short-term obligations exceed current assets\.?/gi,
+      'Cari oran $1 — dönen varlıklar kısa vadeli borçları karşılamıyor, likidite kırılganlığı var.'],
+    [/Net Debt\/EBITDA\s+([\d.,]+)\s*>\s*5x\s*—\s*elevated distress risk\.?/gi,
+      'Net Borç/FAVÖK $1x — yüksek kaldıraç, faiz şokuna aşırı duyarlı.'],
+    [/Interest coverage\s+([\d.,]+)\s*<\s*2x\s*—\s*earnings barely cover financing cost\.?/gi,
+      'Faiz karşılama oranı $1x — faaliyet kârı finansman giderini zar zor karşılıyor.'],
+    [/Piotroski F\s+([\d]+)\s*\/\s*9\s*—\s*low quality fundamentals\.?/gi,
+      'Piotroski F-skoru $1/9 — temel finansal sağlık düşük kalitede.'],
+    [/Altman Z\s*([\d.,]+)\s*<\s*1\.8\s*—\s*bankruptcy risk zone\.?/gi,
+      'Altman Z-skoru $1 — iflas riski bölgesi (<1.8).'],
+    [/ROE\s+([-\d.,%]+)\s*<\s*0\s*—\s*value destruction\.?/gi,
+      'ROE $1 — özsermaye değeri azalıyor, yatırımcı sermayesi eriyor.'],
+    [/negative free cash flow\s*\(([-\d.,%B]+)\)\s*—\s*cash burn\.?/gi,
+      'Serbest nakit akışı negatif ($1) — operasyonlardan nakit çıkıyor.'],
+    [/warning:\s*EBIT\s+or\s+D&A\s+missing/gi,
+      'uyarı: FAVÖK hesaplaması için EBIT veya D&A verisi eksik'],
+    [/warning:\s*market_cap\s+missing/gi,
+      'uyarı: piyasa değeri eksik — Altman Z hesaplanamadı'],
+  ];
+  for (const [re, replacement] of engineFlagTranslations) {
+    out = out.replace(re, replacement);
+  }
+
+  // Internal risk code enum → Türkçe human label
+  const riskCodeMap: Record<string, string> = {
+    'NET_LOSS': 'Net Zarar',
+    'OVERLEVERAGED': 'Yüksek Kaldıraç',
+    'LIQUIDITY_TIGHT': 'Likidite Sıkışıklığı',
+    'INTEREST_COVERAGE_LOW': 'Faiz Karşılama Düşük',
+    'INTEREST_COVERAGE_LOW ': 'Faiz Karşılama Düşük ',
+    'DATA_QUALITY_LOW': 'Veri Kalitesi Düşük',
+    'DSO_ANOMALY': 'DSO Anomalisi',
+    'DIO_ANOMALY': 'Stok Dönüş Anomalisi',
+    'DPO_ANOMALY': 'Tedarikçi Ödeme Anomalisi',
+    'FCF_NEGATIVE': 'FCF Negatif',
+    'VALUE_DESTROYING': 'Değer Yıkımı',
+    'UNANNUALIZED_Q1': 'Q1 Yıllıklaştırılmamış',
+  };
+  for (const [code, label] of Object.entries(riskCodeMap)) {
+    const re = new RegExp(`\\b${code}\\b`, 'g');
+    out = out.replace(re, label);
+  }
   // Strip AGENT SELF-ASSESSMENT section entirely — internal metadata
   out = out.replace(/##?\s*AGENT SELF-ASSESSMENT[\s\S]*$/gi, '');
   out = out.replace(/\bpending_ceo_review\b/gi, 'CEO onayı bekliyor');

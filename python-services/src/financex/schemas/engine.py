@@ -65,6 +65,13 @@ class EngineRatios(FinancexModel):
     ocf_to_ebitda: RatioValue | None = None
     capex_to_ebitda: RatioValue | None = None
     interest_burden: RatioValue | None = None
+    # Fix #6 — CEO mandate: 4 FCF metrics (raw + normalized + annualized + WC release component).
+    # Normalized FCF = FCF − ΔWC; isolates structural cash gen from one-off WC swings.
+    # Annualized FCF projects sub-annual periods to full year for FY band reference.
+    wc_release: RatioValue | None = None              # Negative ΔWC = cash released (positive value)
+    normalized_fcf: RatioValue | None = None          # FCF stripped of WC effect
+    fcf_annualized: RatioValue | None = None          # FCF × period multiplier (Q1×4, H1×2, Q3×4/3)
+    normalized_fcf_annualized: RatioValue | None = None  # Same projection on normalized FCF
 
     # Banking-specific (None for industrial companies)
     nim: RatioValue | None = None                # Net Interest Margin

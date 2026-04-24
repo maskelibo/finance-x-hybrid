@@ -3,7 +3,7 @@
   "$id": "https://financex.io/schemas/agents/reconciliation/output",
   "title": "Reconciliation Agent Output Schema",
   "type": "object",
-  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "reconciled_data", "discrepancy_report", "confidence_overall", "warnings", "review_status"],
+  "required": ["agent_id", "output_id", "session_id", "task_id", "timestamp", "company", "reconciled_data", "discrepancy_report", "data_quality_score", "confidence_overall", "warnings", "review_status"],
   "properties": {
     "agent_id": { "type": "string", "const": "reconciliation" },
     "output_id": { "type": "string" },
@@ -28,6 +28,12 @@
           }
         }
       }
+    },
+    "data_quality_score": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "0-1 kalite skoru: 1.0 = tüm kontroller pass, <0.60 = data quality gate TRIGGER. Zorunlu alan (B6 fix 2026-04-23) — eksikliği regression_detected'a sebep oluyordu."
     },
     "authoritative_source": { "type": "string" },
     "discrepancy_report": {

@@ -24,7 +24,7 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Iterable
 
-from financex.schemas.base import Sector
+from financex.schemas.base import ReportingPeriod, Sector
 from financex.schemas.engine import (
     DcfResult,
     DcfSensitivityCell,
@@ -83,6 +83,48 @@ def _days(num: Decimal | None, denom: Decimal | None, *, label: str, days: int =
     return RatioValue(value=((num / denom) * Decimal(days)).quantize(Decimal("0.01")))
 
 
+# ---------------------------------------------------------------------
+# Period-aware multipliers (Fix #5 — 2026-04-24)
+#
+# Turkish KAP filings are YTD cumulative. Q1 is 3 months of revenue/EBITDA/
+# opex, H1 is 6 months, Q3 is 9 months, Q4 == FY is 12 months.
+# When we compute a stock/flow ratio (Net Debt / EBITDA) the denominator
+# must be ANNUALIZED so the ratio is comparable to the benchmark (which
+# is annual). Without annualization, ARCLK Q1-2026 Net Debt/EBITDA came
+# out as 28.97x (stock 169.78B / Q1 flow 5.86B) — fake distress signal;
+# annualized gives 7.24x (high leverage, not distress).
+#
+# Similarly `_days(num, denom, days=360)` assumes denom is annual flow.
+# For Q1 denom we must pass days=91 (3 months) to get a realistic DSO.
+# ---------------------------------------------------------------------
+def _annualize_multiplier(period: ReportingPeriod) -> Decimal:
+    """Multiplier to extrapolate cumulative YTD flow to 12-month equivalent."""
+    return {
+        ReportingPeriod.Q1: Decimal("4"),
+        ReportingPeriod.H1: Decimal("2"),
+        ReportingPeriod.Q3: Decimal("4") / Decimal("3"),
+        ReportingPeriod.Q4: Decimal("1"),
+        ReportingPeriod.FY: Decimal("1"),
+    }.get(period, Decimal("1"))
+
+
+def _period_days(period: ReportingPeriod) -> int:
+    """Calendar-day span of cumulative YTD flow — used by DSO/DIO/DPO."""
+    return {
+        ReportingPeriod.Q1: 91,
+        ReportingPeriod.H1: 181,
+        ReportingPeriod.Q3: 273,
+        ReportingPeriod.Q4: 365,
+        ReportingPeriod.FY: 365,
+    }.get(period, 365)
+
+
+def _annualize(value: Decimal | None, period: ReportingPeriod) -> Decimal | None:
+    if value is None:
+        return None
+    return value * _annualize_multiplier(period)
+
+
 def _roic(
     ebit: Decimal | None,
     tax_expense: Decimal | None,
@@ -135,9 +177,29 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
     if ebitda is None and ebit is not None and da_value is not None:
         ebitda = ebit + abs(da_value)
 
-    dso = _days(bs.trade_receivables, is_.revenue, label="DSO")
-    dio = _days(bs.inventories, cogs_abs, label="DIO")
-    dpo = _days(bs.trade_payables, cogs_abs, label="DPO")
+    # Fix #5 — period-aware days: cumulative YTD flow needs its own day count.
+    period_days = _period_days(pf.period)
+    dso = _days(bs.trade_receivables, is_.revenue, label="DSO", days=period_days)
+    dio = _days(bs.inventories, cogs_abs, label="DIO", days=period_days)
+    dpo = _days(bs.trade_payables, cogs_abs, label="DPO", days=period_days)
+
+    # Fix #12 (2026-04-24) — DSO/DIO/DPO anomali tespiti.
+    # Turkish BIST sanayi beyaz eşya normali: DSO 40-90, DIO 60-120, DPO 60-180.
+    # Dışına çıkan değerler tipik olarak parse hatası (örn. receivables 0'a
+    # yakın olduğunda DSO ~0). Bu durumda raw value'yu silme, ama agent
+    # için "anomaly" flag ekle. Downstream yorum bunu görür.
+    def _flag_anomaly(rv: RatioValue, low: int, high: int, label: str) -> RatioValue:
+        if rv.value is None or rv.value == 0:
+            return rv
+        v = float(rv.value)
+        if v < low or v > high:
+            tag = f"anomaly_detected: {label} {v:.2f} out of plausible range [{low}-{high}] — verify upstream data"
+            # Preserve value but attach warning so downstream LLM sees the flag.
+            return RatioValue(value=rv.value, warning=tag)
+        return rv
+    dso = _flag_anomaly(dso, 5, 200, "DSO")
+    dio = _flag_anomaly(dio, 15, 400, "DIO")
+    dpo = _flag_anomaly(dpo, 15, 400, "DPO")
     ccc_val = None
     ccc_warn = None
     if dso.value is not None and dio.value is not None and dpo.value is not None:
@@ -152,6 +214,21 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
     fcf_value: Decimal | None = None
     if cf and cf.operating_cash_flow is not None and cf.capex is not None:
         fcf_value = cf.operating_cash_flow - abs(cf.capex)
+
+    # Fix #6 — Normalize FCF for one-off WC swings + annualize for FY band reference.
+    # CF konvansiyonu: ΔWC pozitif → WC arttı (nakit emildi). wc_release = -ΔWC
+    # böylece pozitif değer = nakit serbest bırakıldı (positive cash impact).
+    # Normalize FCF = FCF − ΔWC = FCF + wc_release. Sub-annual periyotlar
+    # için _annualize FY band için projeksiyon verir (CEO mandate, 4 metrik).
+    wc_change = cf.change_in_working_capital if cf else None
+    wc_release_value: Decimal | None = None
+    normalized_fcf_value: Decimal | None = None
+    if wc_change is not None:
+        wc_release_value = -wc_change
+    if fcf_value is not None and wc_change is not None:
+        normalized_fcf_value = fcf_value - wc_change
+    fcf_annualized_value = _annualize(fcf_value, pf.period)
+    normalized_fcf_annualized_value = _annualize(normalized_fcf_value, pf.period)
 
     # EBT (Earnings Before Tax) — pretax income or derive from NI + tax
     ebt_value: Decimal | None = getattr(is_, 'pretax_income', None)
@@ -230,7 +307,16 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
             value=net_debt_value.quantize(Decimal("1")) if net_debt_value is not None else None,
             warning=None if net_debt_value is not None else "Net Debt: short/long debt or cash missing",
         ),
-        net_debt_to_ebitda=_ratio_raw(net_debt_value, ebitda, label="Net Debt/EBITDA"),
+        # Fix #5 — Net Debt is a STOCK (bilanço anı), EBITDA is cumulative FLOW.
+        # For non-FY periods the flow is annualized before the ratio so the
+        # threshold benchmark (>5x distress) compares apples-to-apples.
+        net_debt_to_ebitda=_ratio_raw(
+            net_debt_value,
+            _annualize(ebitda, pf.period),
+            label=f"Net Debt/EBITDA (annualized from {pf.period.value})",
+        ),
+        # Interest coverage: both sides of the ratio are flows of the same period
+        # → no annualization needed; but warn if period is sub-annual.
         interest_coverage=_ratio_raw(
             ebitda,
             abs(is_.financial_expense) if is_.financial_expense is not None else None,
@@ -251,6 +337,32 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
         fcf_to_interest=RatioValue(
             value=fcf_to_interest_value.quantize(Decimal("0.0001")) if fcf_to_interest_value is not None else None,
             warning=None if fcf_to_interest_value is not None else "FCF/Interest: FCF or financial_expense missing",
+        ),
+        # Fix #6 — CEO mandate quartet
+        wc_release=RatioValue(
+            value=wc_release_value.quantize(Decimal("1")) if wc_release_value is not None else None,
+            warning=None if wc_release_value is not None
+            else "WC release: change_in_working_capital missing from CF (ΔWC required)",
+        ),
+        normalized_fcf=RatioValue(
+            value=normalized_fcf_value.quantize(Decimal("1")) if normalized_fcf_value is not None else None,
+            warning=None if normalized_fcf_value is not None
+            else "Normalized FCF: needs FCF and ΔWC (FCF − ΔWC strips one-off WC swings)",
+        ),
+        fcf_annualized=RatioValue(
+            value=fcf_annualized_value.quantize(Decimal("1")) if fcf_annualized_value is not None else None,
+            warning=(
+                None if fcf_annualized_value is not None else "FCF annualized: FCF missing"
+            ) if pf.period in (ReportingPeriod.FY, ReportingPeriod.Q4)
+            else f"FCF annualized from {pf.period.value} (extrapolation — verify seasonality)",
+        ),
+        normalized_fcf_annualized=RatioValue(
+            value=normalized_fcf_annualized_value.quantize(Decimal("1")) if normalized_fcf_annualized_value is not None else None,
+            warning=(
+                None if normalized_fcf_annualized_value is not None
+                else "Normalized FCF annualized: needs FCF and ΔWC"
+            ) if pf.period in (ReportingPeriod.FY, ReportingPeriod.Q4)
+            else f"Normalized FCF annualized from {pf.period.value} (extrapolation — verify seasonality)",
         ),
         ocf_to_ebitda=_ratio_pct(
             cf.operating_cash_flow if cf else None, ebitda, label="OCF/EBITDA"
@@ -332,6 +444,15 @@ def _banking_ratios(pf: PeriodFinancials) -> EngineRatios:
     if cf and cf.operating_cash_flow is not None and cf.capex is not None:
         fcf_value = cf.operating_cash_flow - abs(cf.capex)
 
+    # Fix #6 — CEO mandate quartet (banks)
+    wc_change = cf.change_in_working_capital if cf else None
+    wc_release_value: Decimal | None = -wc_change if wc_change is not None else None
+    normalized_fcf_value: Decimal | None = (
+        fcf_value - wc_change if (fcf_value is not None and wc_change is not None) else None
+    )
+    fcf_annualized_value = _annualize(fcf_value, pf.period)
+    normalized_fcf_annualized_value = _annualize(normalized_fcf_value, pf.period)
+
     # Piotroski-like quality checks still work for banks via the generic fields
     ratios = EngineRatios(
         # Generic slots (backward compat)
@@ -349,6 +470,30 @@ def _banking_ratios(pf: PeriodFinancials) -> EngineRatios:
         fcf=RatioValue(
             value=fcf_value.quantize(Decimal("1")) if fcf_value is not None else None,
             warning=None if fcf_value is not None else "FCF: OCF or CAPEX missing in banking report",
+        ),
+        # Fix #6 — CEO mandate quartet (banks)
+        wc_release=RatioValue(
+            value=wc_release_value.quantize(Decimal("1")) if wc_release_value is not None else None,
+            warning=None if wc_release_value is not None else "WC release: ΔWC missing from CF",
+        ),
+        normalized_fcf=RatioValue(
+            value=normalized_fcf_value.quantize(Decimal("1")) if normalized_fcf_value is not None else None,
+            warning=None if normalized_fcf_value is not None else "Normalized FCF: needs FCF and ΔWC",
+        ),
+        fcf_annualized=RatioValue(
+            value=fcf_annualized_value.quantize(Decimal("1")) if fcf_annualized_value is not None else None,
+            warning=(
+                None if fcf_annualized_value is not None else "FCF annualized: FCF missing"
+            ) if pf.period in (ReportingPeriod.FY, ReportingPeriod.Q4)
+            else f"FCF annualized from {pf.period.value} (extrapolation)",
+        ),
+        normalized_fcf_annualized=RatioValue(
+            value=normalized_fcf_annualized_value.quantize(Decimal("1")) if normalized_fcf_annualized_value is not None else None,
+            warning=(
+                None if normalized_fcf_annualized_value is not None
+                else "Normalized FCF annualized: needs FCF and ΔWC"
+            ) if pf.period in (ReportingPeriod.FY, ReportingPeriod.Q4)
+            else f"Normalized FCF annualized from {pf.period.value} (extrapolation)",
         ),
         # Banking-specific named fields
         nim=nim,

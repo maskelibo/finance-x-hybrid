@@ -261,6 +261,15 @@ CASH_FLOW_MAP: dict[str, str] = {
     "yabanci para cevrim farklarinin nakit ve nakit benzerleri uzerindeki etkisi": "fx_impact",
     "yabanci para cevrim farklarinin etkisi": "fx_impact",
     "kur farki etkisi": "fx_impact",
+    # Fix #6 — ΔWC from CF statement. CF konvansiyonu: pozitif = WC arttı (nakit emildi),
+    # negatif = WC azaldı (nakit serbest bırakıldı). Normalize FCF için zorunlu.
+    "isletme sermayesinde gerceklesen degisimler": "change_in_working_capital",
+    "isletme sermayesindeki degisim": "change_in_working_capital",
+    "isletme sermayesi degisimleri": "change_in_working_capital",
+    "isletme sermayesindeki degisikliklere iliskin duzeltmeler": "change_in_working_capital",
+    "calisma sermayesindeki degisimler": "change_in_working_capital",
+    "net isletme sermayesindeki degisim": "change_in_working_capital",
+    "isletme sermayesi degisikliklerinden onceki faaliyet kari": "change_in_working_capital",
 }
 
 

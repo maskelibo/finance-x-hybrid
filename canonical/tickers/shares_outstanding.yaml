@@ -1,0 +1,40 @@
+# BIST30 shares_outstanding + float (millions of shares)
+#
+# Source: KAP sermaye bilgileri (Sermaye Tutari / 1 TL nominal = pay sayisi)
+# Crosschecked against company IR pages as of 2026-04-23.
+#
+# Used by data_collection.py to compute market_cap_try_millions alongside
+# the BIST spot price pulled by technical_analysis. Feeds Altman Z + DCF in
+# calculators/financial_engine.py (both were returning None pre-fix because
+# market_cap was not being emitted — see docs/phase-reports/fix-a2-b5.md).
+#
+# shares: total shares outstanding, millions
+# float:  free-float shares, millions (approximate)
+# updated: ISO date of source
+schema_version: 1
+
+tickers:
+  AKBNK:  { shares: 5200, float: 2300, updated: "2026-04-23", note: "Sabanci Holding lead shareholder" }
+  ARCLK:  { shares:  676, float:  173, updated: "2026-04-23", note: "Koc Group controlled" }
+  ASELS:  { shares: 4560, float:  687, updated: "2026-04-23", note: "SSTEK + TSK Foundation controlled" }
+  BIMAS:  { shares:  607, float:  370, updated: "2026-04-23", note: "Wide float, no single controller" }
+  EKGYO:  { shares: 3800, float:  950, updated: "2026-04-23", note: "TOKI controlled REIT" }
+  ENKAI:  { shares: 5400, float:  650, updated: "2026-04-23" }
+  EREGL:  { shares: 3500, float: 1545, updated: "2026-04-23", note: "Oyak controlled" }
+  FROTO:  { shares:  351, float:   60, updated: "2026-04-23", note: "Ford + Koc" }
+  GARAN:  { shares: 4200, float: 1250, updated: "2026-04-23", note: "BBVA 49% controlling" }
+  ISCTR:  { shares: 4500, float: 1800, updated: "2026-04-23" }
+  KCHOL:  { shares: 2536, float:  470, updated: "2026-04-23", note: "Koc family holding" }
+  KOZAL:  { shares:  152, float:   64, updated: "2026-04-23" }
+  MGROS:  { shares:  181, float:  116, updated: "2026-04-23" }
+  PETKM:  { shares: 2520, float:  988, updated: "2026-04-23", note: "Socar controlled" }
+  PGSUS:  { shares:  102, float:   47, updated: "2026-04-23", note: "Sabanci + Esas Holding" }
+  SAHOL:  { shares: 2040, float:  843, updated: "2026-04-23", note: "Sabanci family holding" }
+  SISE:   { shares: 3060, float: 1250, updated: "2026-04-23", note: "Is Bankasi + Sabanci" }
+  TCELL:  { shares: 2200, float:  900, updated: "2026-04-23", note: "TWF + Ziraat" }
+  THYAO:  { shares: 1380, float:  690, updated: "2026-04-23", note: "TWF 49% controlling" }
+  TOASO:  { shares:  500, float:  123, updated: "2026-04-23", note: "Koc + Stellantis" }
+  TTKOM:  { shares: 3500, float:  525, updated: "2026-04-23", note: "TWF controlled" }
+  TUPRS:  { shares:  193, float:   56, updated: "2026-04-23", note: "Koc Holding controlled" }
+  VAKBN:  { shares: 10000, float: 2400, updated: "2026-04-23", note: "Treasury + VTMK" }
+  YKBNK:  { shares: 8447, float: 2960, updated: "2026-04-23", note: "Unicredit + Koc" }

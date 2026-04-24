@@ -238,6 +238,17 @@ app.post('/api/analysis/start', (req, res) => {
     const sessionId = startAnalysisSession(cleanTicker, mode, filteredLayers, resolvedTheme);
     res.json({ sessionId, ticker: cleanTicker, runtimeMode: mode, layers: filteredLayers, theme: resolvedTheme, status: 'started' });
   } catch (err: any) {
+    // Duplicate-ticker guard from orchestrator: surface the existing session id
+    // with HTTP 409 so callers can poll the active pipeline instead of
+    // double-spawning.
+    if (err?.name === 'DuplicateSessionError') {
+      return res.status(409).json({
+        error: err.message,
+        existingSessionId: err.existingSessionId,
+        ticker: cleanTicker,
+        code: 'duplicate_session',
+      });
+    }
     res.status(500).json({ error: err.message });
   }
 });

@@ -6,6 +6,8 @@
  * both the Python-migrated and legacy-LLM shapes).
  */
 
+import { getSector } from '../../sector-registry.js';
+
 export interface PythonPeriodFinancials {
   period: string;
   year: number;
@@ -22,6 +24,10 @@ export interface LegacyStandardizedStatement {
   period_label: string;
   year: number;
   currency: string;
+  // Cosmetic 3 — Python detect_sector defaults to INDUSTRIAL when PDF first
+  // page lacks a recognised hint. We override at adapter layer using the
+  // ticker→sector registry so downstream agents see retail/banking/etc.
+  sector: string;
   balance_sheet: Record<string, string | null>;
   income_statement: Record<string, string | null>;
   cash_flow: Record<string, string | null>;
@@ -92,10 +98,13 @@ export function adaptParsedPeriodsForLegacy(
   ticker: string,
   outputId: string,
 ): LegacyParseStandardizationOutput {
+  // Cosmetic 3 — registry override: BIMAS/MGROS/SOKM → retail, GARAN/AKBNK → banking, etc.
+  const registrySector = getSector(ticker.toUpperCase());
   const statements: LegacyStandardizedStatement[] = periods.map(({ pdf, parsed }) => ({
     period_label: `${parsed.period}-${parsed.year}`,
     year: parsed.year,
     currency: parsed.currency ?? 'TRY',
+    sector: registrySector ?? parsed.sector ?? 'industrial',
     balance_sheet: parsed.balance_sheet ?? {},
     income_statement: parsed.income_statement ?? {},
     cash_flow: parsed.cash_flow ?? {},

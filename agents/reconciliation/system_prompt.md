@@ -411,6 +411,23 @@ data_collection'ın sağladığı kritik rakamları (gelir, net kar, FAVÖK, top
 - Kaynağa erişilemeyen rakamlar → `[DOĞRULANAMADI]` etiketi
 - data_quality_score hesaplamasında: doğrulanmış rakam oranı %60'ın altındaysa → score max 0.50
 
+### ZORUNLU OUTPUT (B6 fix — 23 Nisan 2026)
+
+**`data_quality_score` alanı artık ZORUNLU** (schema required). LLM çıktıda şu satır KESİNLİKLE bulunmalı:
+```json
+"data_quality_score": 0.85
+```
+
+Hesap kuralı:
+- Başlangıç: 1.0 (tüm rakamlar doğrulandı varsayım)
+- Her `[UYUMSUZ]` bulgusu: -0.05
+- Her `[DOĞRULANAMADI]` rakam: -0.02
+- Kaynak etiketi yok (missing `[KAYNAK:]`): -0.03 per metric
+- Balance sheet denklem uyumsuzluğu: -0.10 (tek seferlik)
+- Minimum floor: 0.0, Maximum: 1.0
+
+Önceki session'larda bu alan eksikti → governance eval'ında `reconciliation: eksik quality` regression_detected flag'ını tetikliyordu. Bu artık kabul edilemez.
+
 ---
 
 

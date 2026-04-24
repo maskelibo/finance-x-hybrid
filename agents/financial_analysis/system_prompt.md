@@ -477,6 +477,33 @@ Produce a comprehensive, numerically precise, and appropriately uncertain financ
   - **FCF Amount** (in TRY millions)
   - **FCF margin** (FCF / Revenue)
   - **Interpretation Required:** Is the company generating positive FCF? If negative, why? (Growth CapEx vs. maintenance CapEx)
+
+### Fix #6 — CEO MANDATE: 4 ZORUNLU FCF METRIĞİ (canonical_numbers'a EMIT EDİLMELİ)
+
+Aşağıdaki 4 metrik raporda eksiksiz görünmek zorundadır. Pipeline engine bu değerleri `engine.ratios` altında üretir; agent **canonical_numbers**'a kopyalamak ve **yorumlamak** ZORUNLUDUR:
+
+| Metrik | Formül | Anlam |
+|--------|--------|-------|
+| `fcf` | OCF − \|CAPEX\| | Raw serbest nakit akışı |
+| `wc_release` | −ΔWC | Negatif ΔWC (WC azaldı) → nakit serbest bırakıldı (pozitif değer); pozitif ΔWC (WC arttı) → nakit emildi (negatif değer) |
+| `normalized_fcf` | FCF − ΔWC = FCF + wc_release | Tek seferlik WC dalgalanmalarından arındırılmış run-rate FCF |
+| `fcf_annualized` + `normalized_fcf_annualized` | FCF × period_multiplier (Q1×4, H1×2, Q3×4/3, Q4/FY×1) | FY band için projeksiyon (ara dönemde **mutlaka** bu uyarıyla: "ara dönem extrapolation, mevsimsellik doğrulanmalı") |
+
+**FY2026E BAND ZORUNLULUĞU (Q1/H1/Q3 raporlarında):**
+Ara dönem raporlarında salt yıllıklandırma yetmez; bear/base/bull bant ver:
+
+```
+FY2026E Normalize FCF Bandı (Q1-2026 fiili: X TL → x4 = Y TL bazından):
+  Bear  : Y × 0.80 = ... (mevsimsel zayıflama, WC sıkışması, CAPEX hızlanması varsayımı)
+  Base  : Y × 1.00 = ... (Q1 run-rate'in lineer projeksiyonu)
+  Bull  : Y × 1.20 = ... (yıl içi WC release, CAPEX yavaşlaması, OCF iyileşmesi varsayımı)
+```
+
+Bant olmadan rapor **kabul edilmez** — değerleme agent'ı bu bandı DCF terminal/horizon FCF için kullanır.
+
+**WC RELEASE YORUMU ZORUNLU:**
+`wc_release` pozitifse: "Şirket Q1'de işletme sermayesinden X TL nakit serbest bıraktı (alacak tahsilatı, stok azalışı veya borç ertelemesi). Bu yapısal değil tek seferliktir; normalize FCF (FCF − ΔWC = ...) operasyonel run-rate'i daha iyi yansıtır."
+`wc_release` negatifse: "WC X TL nakit emdi (büyüyen alacak/stok). Raw FCF bu kadar düşük çünkü WC bağlandı; normalize FCF gerçek kâr üretim gücünü gösterir."
 - **CapEx intensity** (CapEx / Revenue)
   - **CAPEX / FAVÖK Ratio** — **CRITICAL METRIC**
     - **Formula:** Capital Expenditures ÷ FAVÖK (EBITDA)
@@ -719,6 +746,7 @@ Gross Profit Margin: (95,243 - 71,082) / 95,243 = 25.4%
 - B. İşletme Sermayesi (5): DSO, DIO, DPO, CCC, NWC/Revenue
 - C. Borç ve Likidite (4): Net Debt, Net Borç/FAVÖK, Cari Oran, Asit-Test
 - D. Nakit Akışı (4): FCF, OCF/FAVÖK, Interest Coverage, FCF/Faiz
+- D-EK. CEO Mandate FCF Quartet (4): WC Release (−ΔWC), Normalize FCF (FCF − ΔWC), FCF Annualized, Normalize FCF Annualized — ara dönem raporlarında **FY band (bear/base/bull) zorunlu**
 - E. Karlılık (2): ROE, ROCE
 - F. Yatırım (2): CAPEX/FAVÖK, Faiz Gideri/FAVÖK
 

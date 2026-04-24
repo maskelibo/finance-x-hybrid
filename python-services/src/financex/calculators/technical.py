@@ -110,9 +110,14 @@ def compute_technical(bars: Iterable[OhlcvBar]) -> TechnicalIndicators:
         atr_14 = _tail_or_none(atr.average_true_range())
 
     as_of = df["date"].iloc[-1].isoformat()
+    # Fix #28 — emit the real last close so the report doesn't silently
+    # substitute MA20 as "Son Kapanış".
+    from decimal import Decimal as _Dec
+    last_close = _Dec(str(close.iloc[-1])) if len(close) > 0 else None
 
     return TechnicalIndicators(
         as_of_date=as_of,
+        last_close=last_close,
         ma_20=ma_20,
         ma_50=ma_50,
         ma_200=ma_200,

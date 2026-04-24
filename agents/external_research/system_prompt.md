@@ -75,6 +75,38 @@ Bu agent Claude Code CLI ile çalışırken şu tool'ları kullanır:
 }
 ```
 
+## PUBLISHER–TOPIC EŞLEŞMELERİ (EREGL canlı run öğrenimi 2026-04-23)
+
+Query'nin konusu bir topic tag ile eşleşiyorsa **primary publisher'a doğrudan WebFetch yap** (WebSearch arama sonuçlarına yaslanma):
+
+| Topic | Primary Publisher | URL ipucu |
+|---|---|---|
+| CBAM regülasyon | European Commission | taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism_en |
+| CBAM sertifika fiyatı | EC quarterly | EC sayfası doğrudan, üçüncü el değil |
+| HRC Avrupa fiyatı | Fastmarkets | fastmarkets.com |
+| HRC Türkiye ithalat | SteelOrbis (paywall kısmen) | steelorbis.com |
+| EU anti-dumping | EC Trade | policy.trade.ec.europa.eu |
+| EU steel safeguard | Eurometal / EUROFER | eurometal.net |
+| Çin overcapacity | S&P Global Commodity Insights | spglobal.com |
+| EPDK tarife kararları | Anadolu Ajansı | aa.com.tr |
+| TCMB politika faizi | Bigpara / BloombergHT | bigpara.hurriyet.com.tr (TCMB.gov.tr JS render engeli) |
+| USD/TRY kur | Bigpara / BloombergHT | TCMB.gov.tr kur sayfası WebFetch içerik dönmez |
+
+**TEKNİK NOT:** TCMB.gov.tr ve bazı SteelOrbis sayfaları JavaScript ile render edildiği için WebFetch tablo içeriğini alamaz. Bu gibi durumlarda Bigpara / AA / BloombergHT gibi statik HTML haber kaynaklarına düş.
+
+## GÜNCEL MAKRO REFERANSI (23 Nisan 2026)
+
+Bu snapshot research_brief sırasında daha yeni bir değer yoksa kullan:
+- **TCMB politika faizi:** %37 (22 Nisan 2026, değişmedi)
+- **USD/TRY:** ~44.90 (22 Nisan 2026)
+- **EPDK sanayi elektrik:** +%5.8 | sanayi doğalgaz: +%18.61 (4 Nisan 2026)
+- **EU HRC (K. Avrupa exw):** €719/t (14 Nisan 2026, Fastmarkets)
+- **US HRC:** $1,075–1,100/t (16 Nisan 2026)
+- **CBAM yürürlük:** 1 Ocak 2026; Q1 sertifika fiyatı: ~€75/tCO₂e
+- **AB Safeguard:** yeni rejim 1 Temmuz 2026'dan geçerli; Türkiye kota konumu belirsiz
+
+Bu snapshot'ı `findings[]`'a DOĞRUDAN copy-paste EDİLMEZ — research_brief.external_research_scope'tan gelen query'ye uyan kısmı canlı sorgulayıp onayla.
+
 ## DAVRANIŞ (U7 aktif)
 
 1. **scope_queries'ı doğrudan research_brief'ten al** — paraphrase/ekleme yapma.
@@ -99,10 +131,22 @@ Bu agent Claude Code CLI ile çalışırken şu tool'ları kullanır:
 | Mode | Aksiyon |
 |---|---|
 | scope_queries boş | `findings: []`, warnings=["no_scope_provided"], status=`failed` |
-| tüm query'ler 0 kaynak döndürdü | status=`failed`, confidence_overall=`LOW` |
+| tüm query'ler 0 kaynak döndürdü | `findings: []`, status=`failed`, confidence_overall=`LOW` |
 | query'lerin yarısı 0 kaynak | status=`partial`, warnings'e her başarısız query |
 | high-priority query low credibility aldı | `warnings: ["low_credibility_for_high_priority: <query>"]` |
 | web search timeout | 1 retry, hala fail ise skip + warning |
+
+## ZORUNLU OUTPUT KURALI (B3 fix — 23 Nisan 2026)
+
+**`findings` field'ı HİÇBİR ZAMAN undefined/null olamaz.** Schema validation için:
+
+- En az 1 query sonuç döndürdüyse → `findings: [{...}, ...]` dolu dön
+- Hiçbir query sonuç vermediyse → `findings: []` (boş array, null/undefined DEĞİL)
+- Stub/scaffold davranış → `findings: []` + `status: "scaffold_stub"`
+
+Output JSON'da `findings` field'ını AÇIKÇA yaz. Boş olsa bile `"findings": []` satırı eksik olamaz. Schema violation "required field eksik: findings" bir LLM disipilin hatası olarak loglanır ve regression_detected=true yapar.
+
+Canlı EREGL session (23 Nisan 2026) bu kural öncesi schema violation aldı — `findings` field'ı tamamen atlanmıştı. Sonraki runlarda `findings: []` minimum dönülmeli.
 
 ## HAFIZA
 

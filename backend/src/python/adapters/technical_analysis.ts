@@ -9,6 +9,7 @@
 
 export interface PythonTechnicalIndicators {
   as_of_date?: string | null;
+  last_close?: string | null;
   ma_20?: string | null;
   ma_50?: string | null;
   ma_200?: string | null;
@@ -29,6 +30,9 @@ export interface LegacyTechnicalOutput {
   output_id: string;
   ticker: string;
   as_of_date: string | null;
+  price_data: {
+    last_close: string | null;
+  };
   moving_averages: {
     ma_20: string | null;
     ma_50: string | null;
@@ -67,6 +71,9 @@ export function adaptPythonTechnicalForLegacy(
     output_id: outputId,
     ticker: ticker.toUpperCase(),
     as_of_date: py.as_of_date ?? null,
+    price_data: {
+      last_close: py.last_close ?? null,
+    },
     moving_averages: {
       ma_20: py.ma_20 ?? null,
       ma_50: py.ma_50 ?? null,

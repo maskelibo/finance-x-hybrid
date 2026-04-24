@@ -135,6 +135,9 @@ class CashFlowStatement(FinancexModel):
     net_borrowing: Money | None = None
     fx_impact: Money | None = None
     net_change_in_cash: Money | None = None
+    # Fix #6 — ΔWC from CF statement (positive = WC absorbed cash, negative = WC released cash).
+    # Required for Normalized FCF = FCF − ΔWC (strips one-off WC swings to expose run-rate cash gen).
+    change_in_working_capital: Money | None = None
 
 
 class EquityChange(FinancexModel):

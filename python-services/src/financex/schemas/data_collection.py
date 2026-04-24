@@ -74,6 +74,25 @@ class DataCollectionManifest(FinancexModel):
         description="Years within the window that lack a financial or activity report.",
     )
 
+    # B5 fix (2026-04-23): market-cap pre-compute.
+    # Needed by Altman Z + DCF in financial_engine.compute_for_period.
+    # Pre-Block-U THYAO session showed DCF_NULL: market_cap missing; this
+    # field plumbs shares_outstanding (canonical/tickers/shares_outstanding.yaml)
+    # × BIST spot price (technical_analysis fetch) so the engine can hydrate.
+    spot_price_try: float | None = Field(
+        default=None,
+        description="BIST spot price (TRY) at time of collection, from isyatirim.",
+    )
+    shares_outstanding_millions: float | None = Field(
+        default=None,
+        description="Total shares outstanding (millions) from canonical registry.",
+    )
+    market_cap_try_millions: float | None = Field(
+        default=None,
+        description="market_cap = spot_price_try × shares_outstanding_millions. "
+                    "Null when either input is missing.",
+    )
+
     def financial_reports(self) -> list[CollectedDocument]:
         return [d for d in self.documents if d.kind == "financial_report"]
 

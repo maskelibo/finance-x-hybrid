@@ -272,12 +272,43 @@ function buildPipelineForLayers(runtimeMode: RuntimeMode, layers?: AnalysisLayer
   return basePipeline.filter(agentId => required.has(agentId));
 }
 
+/**
+ * If a session for the same ticker is currently pending/running, refuse to
+ * start a new one. Caller gets the existing sessionId back so rapid double-
+ * click on the dashboard or retry-logic in a shell script cannot spawn two
+ * concurrent pipelines for the same company. Silent deduplication by design.
+ *
+ * (Bug origin: 2026-04-23 EREGL session had two rows 9 seconds apart —
+ * both dispatched executeSession, shared KAP rate-limits, produced
+ * duplicated phase logs and ambiguous final state.)
+ */
+export class DuplicateSessionError extends Error {
+  constructor(public readonly existingSessionId: string, ticker: string) {
+    super(`A session for ${ticker} is already running (id=${existingSessionId}). Refusing to start a duplicate.`);
+    this.name = 'DuplicateSessionError';
+  }
+}
+
 export function startAnalysisSession(
   ticker: string,
   runtimeMode: RuntimeMode,
   layers?: AnalysisLayer[],
   theme?: string,
 ): string {
+  const upperTicker = ticker.toUpperCase();
+
+  // Duplicate-ticker guard — only one active pipeline per ticker at a time.
+  const existing = db.prepare(
+    `SELECT id FROM analysis_sessions
+     WHERE ticker = ?
+       AND status IN ('pending', 'running', 'paused_rate_limit', 'paused_stuck_agent', 'paused')
+     ORDER BY started_at DESC
+     LIMIT 1`,
+  ).get(upperTicker) as { id: string } | undefined;
+  if (existing) {
+    throw new DuplicateSessionError(existing.id, upperTicker);
+  }
+
   const sessionId = nanoid();
   const now = new Date().toISOString();
   const selectedLayers = layers && layers.length > 0 ? layers : MODE_DEFAULT_LAYERS[runtimeMode];
@@ -286,7 +317,7 @@ export function startAnalysisSession(
   db.prepare(`
     INSERT INTO analysis_sessions (id, ticker, runtime_mode, selected_layers, theme, status, started_at)
     VALUES (?, ?, ?, ?, ?, 'pending', ?)
-  `).run(sessionId, ticker.toUpperCase(), runtimeMode, JSON.stringify(selectedLayers), resolvedTheme, now);
+  `).run(sessionId, upperTicker, runtimeMode, JSON.stringify(selectedLayers), resolvedTheme, now);
 
   const agentIds = buildPipelineForLayers(runtimeMode, selectedLayers);
   const insertRun = db.prepare(`
@@ -379,12 +410,25 @@ export function resumeAllPausedSessions(): number {
 const EXECUTION_PHASES: Array<{ name: string; agents: string[][] }> = [
   { name: 'Mandate', agents: [['ceo']] },
   { name: 'Pre-Flight', agents: [['coo']] },
+  // U5/U6 Block U: research_brief ceo/coo sonrası plan üretir; knowledge
+  // retrieval + document_evidence context_extraction'dan ÖNCE çalışır ki
+  // context_extraction document_evidence_output'u tüketebilsin.
+  { name: 'Research Brief', agents: [['research_brief']] },
   // kap_watch önce çalışır — data_collection onun disclosure listesini
   // --prefetched ile reuse eder; böylece KAP'a ikinci byCriteria çağrısı
   // yapılmaz ve rate-limit (~60-90s) tetiklenmez.
   { name: 'Data Acquisition', agents: [['kap_watch'], ['data_collection']] },
   { name: 'Parsing', agents: [['parse_standardization']] },
+  // Block U knowledge retrieval: knowledge_base + external_research paralel
+  // (ikisi de research_brief'e bağlı), sonra document_evidence (knowledge_base
+  // çıktısına bağlı). Layer 'knowledge' opt-in edilmediyse activeAgentIds
+  // filter tüm bu agent'ları pas geçer (mevcut davranışı korur).
+  { name: 'Knowledge Retrieval', agents: [
+    ['knowledge_base', 'external_research'],
+    ['document_evidence'],
+  ]},
   // reconciliation + context_extraction paralel (ikisi de parse+data_collection'a bağlı)
+  // U6: context_extraction artık document_evidence_output'u da okur.
   { name: 'Data Quality & Context', agents: [['reconciliation', 'context_extraction']] },
   // Analysis: FA + bağımsız agent'lar paralel + events paralel (kap_watch zaten tamamlanmış)
   { name: 'Analysis & Events', agents: [
@@ -423,31 +467,60 @@ function buildCeoBypassOutput(ticker: string): string {
  * If agent is flagging upstream failures, log a warning so we can add
  * dependency-aware retry in future (for now just observability).
  */
-function detectUpstreamGap(agentId: string, output: string): { hasGap: boolean; gapPatterns: string[]; upstreamAgents: string[] } {
+/**
+ * Detect upstream-caused gaps in agent output.
+ *
+ * A4 fix (2026-04-23): only evaluate gaps against agents that are
+ * ACTUAL upstream dependencies for `agentId` per AGENT_DEPENDENCIES.
+ * Earlier version scanned every output for the strings "parse" /
+ * "data_collection" + gap keywords; that produced false positives for
+ * the CEO agent (its mandate naturally names downstream agents
+ * including parse_standardization / data_collection). Pre-fix log:
+ * "[GAP DETECT] ceo: 1 upstream gaps, upstream agents:
+ *  parse_standardization, data_collection" — CEO has NO upstream.
+ */
+function detectUpstreamGap(
+  agentId: string,
+  output: string,
+): { hasGap: boolean; gapPatterns: string[]; upstreamAgents: string[] } {
   const gapPatterns: string[] = [];
   const upstreamAgents = new Set<string>();
 
-  // Look for PENDING context patterns that indicate upstream-caused gaps
-  const patterns = [
+  // Only agents with declared dependencies can have upstream gaps.
+  const declaredDeps = AGENT_DEPENDENCIES[agentId] ?? [];
+  const depAgentIds = declaredDeps.map(d => d.replace(/_output$/, ''));
+  if (depAgentIds.length === 0) {
+    return { hasGap: false, gapPatterns: [], upstreamAgents: [] };
+  }
+
+  // Generic "upstream X is missing/pending/broken" pattern — matches only
+  // when an actual dependency's id appears near a gap keyword. Prevents
+  // CEO mandate text from triggering because it mentions agent names in a
+  // descriptive (non-gap) context.
+  const GAP_KEYWORDS = /(eksik|yok|pending|gap|retry|tamamla(?:nmad|namad)|hata|fail(?:ed|ure)?)/i;
+  const GENERIC_MARKERS = [
     /\[VERİ YOK\s*\|\s*denendi:\s*([^;]+);[^\]]+\]/gi,
     /upstream[a-z\s]*(eksik|yok|pending|gap|retry)/gi,
-    /parse.{0,50}(eksik|yok|pending|tamamla)/gi,
-    /data_collection.{0,50}(eksik|yok|pending|indir)/gi,
   ];
 
-  for (const pattern of patterns) {
+  for (const pattern of GENERIC_MARKERS) {
     const matches = output.matchAll(pattern);
     for (const match of matches) {
       gapPatterns.push(match[0].slice(0, 200));
     }
   }
 
-  // Detect which upstream agent might need re-run
-  if (/parse_standardization|parse/i.test(output) && /eksik|yok|pending/i.test(output)) {
-    upstreamAgents.add('parse_standardization');
-  }
-  if (/data_collection|KAP.*indir/i.test(output) && /eksik|yok|pending/i.test(output)) {
-    upstreamAgents.add('data_collection');
+  // Only flag a specific upstream agent when BOTH its id AND a gap keyword
+  // appear within a short window.
+  for (const depAgentId of depAgentIds) {
+    const nearRe = new RegExp(
+      `${depAgentId.replace(/_/g, '[_\\s]?')}[\\s\\S]{0,80}?${GAP_KEYWORDS.source}`,
+      'i',
+    );
+    if (nearRe.test(output)) {
+      upstreamAgents.add(depAgentId);
+      gapPatterns.push(`${depAgentId}: nearby gap keyword`);
+    }
   }
 
   return {
@@ -1217,14 +1290,54 @@ async function executeSession(
   }
 
   // Pre-fetch technical indicators for ticker (best-effort, non-blocking)
+  let currentPrice: number | undefined;
   try {
     const indicators = await computeIndicators(ticker);
     if (indicators) {
       accumulatedContext['technical_indicators'] = JSON.stringify(indicators);
+      currentPrice = indicators.currentPrice;
       console.log(`[ORCHESTRATOR] Technical indicators: price=${indicators.currentPrice} RSI=${indicators.rsi14.toFixed(1)} MACD=${indicators.macd.line.toFixed(2)}`);
     }
   } catch (err) {
     console.warn(`[ORCHESTRATOR] Technical indicators failed (non-fatal):`, err);
+  }
+
+  // B5 fix (2026-04-23): market_cap pre-compute via canonical shares_outstanding
+  // × spot price from indicators. Before this, DCF + Altman Z returned null
+  // because market_cap was never plumbed into accumulatedContext — seen in the
+  // THYAO 20260423 report: "DCF_NULL: market_cap eksik".
+  try {
+    if (currentPrice != null) {
+      const yamlPath = path.join(PROJECT_ROOT, 'canonical', 'tickers', 'shares_outstanding.yaml');
+      if (fs.existsSync(yamlPath)) {
+        const yamlText = fs.readFileSync(yamlPath, 'utf-8');
+        // Line-grep the ticker entry: "  THYAO:  { shares: 1380, ... }"
+        const m = yamlText.match(new RegExp(`^\\s+${ticker.toUpperCase()}:\\s*\\{[^}]*shares:\\s*(\\d+(?:\\.\\d+)?)`, 'm'));
+        if (m) {
+          const sharesMillions = parseFloat(m[1]);
+          const marketCapMillions = Math.round(currentPrice * sharesMillions * 100) / 100;
+          const marketCapPack = {
+            ticker: ticker.toUpperCase(),
+            spot_price_try: currentPrice,
+            shares_outstanding_millions: sharesMillions,
+            market_cap_try_millions: marketCapMillions,
+            source: 'canonical/tickers/shares_outstanding.yaml × technical_analysis spot',
+            as_of: new Date().toISOString(),
+          };
+          accumulatedContext['market_cap_snapshot'] = JSON.stringify(marketCapPack);
+          console.log(
+            `[ORCHESTRATOR] market_cap: ${marketCapMillions.toLocaleString()} mn TRY ` +
+            `(= ${currentPrice} × ${sharesMillions}mn shares)`,
+          );
+        } else {
+          console.warn(`[ORCHESTRATOR] market_cap: ${ticker} not in shares_outstanding.yaml — Altman Z + DCF will be null`);
+        }
+      }
+    } else {
+      console.warn(`[ORCHESTRATOR] market_cap: spot price missing — Altman Z + DCF will be null`);
+    }
+  } catch (err: any) {
+    console.warn(`[ORCHESTRATOR] market_cap pre-compute failed (non-fatal): ${err.message}`);
   }
 
   // Version snapshot — capture artifact hashes at session start

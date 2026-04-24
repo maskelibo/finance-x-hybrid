@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import yaml from 'yaml';
 import { PROJECT_ROOT } from '../config.js';
+import { getSector } from '../sector-registry.js';
 
 export type SkillMeta = {
   id: string;
@@ -41,12 +42,47 @@ export function getSkillsForAgent(agentId: string): SkillMeta[] {
   return loadSkillsRegistry().filter(s => s.applies_to_agents.includes(agentId));
 }
 
+// Map registry sector id → sector-X skill id. sector_registry.yml uses
+// composite keys (defense_electronics, energy_distribution); collapse them
+// to the closest skill playbook. Unmapped sectors fall through.
+const SECTOR_TO_SKILL_ID: Record<string, string> = {
+  aviation: 'sector-aviation',
+  banking: 'sector-banking',
+  steel: 'sector-steel',
+  refinery: 'sector-refinery',
+  holding: 'sector-holding',
+  telecom: 'sector-telecom',
+  retail: 'sector-retail',
+  defense: 'sector-defense',
+  defense_electronics: 'sector-defense',
+  defense_industrial: 'sector-defense',
+};
+
 export function getTriggeredSkills(agentId: string, context: Record<string, unknown>): SkillMeta[] {
   const agentSkills = getSkillsForAgent(agentId);
   const contextText = JSON.stringify(context).toLowerCase();
-  return agentSkills.filter(skill =>
-    skill.triggers.some(trigger => contextText.includes(trigger.toLowerCase())),
-  );
+
+  // B2 fix (2026-04-23): sector-X skills must be gated by the ticker's
+  // authoritative sector from config/sector_registry.yml. Pre-fix, a steel
+  // ticker (EREGL) session could trigger sector-aviation/banking/retail
+  // just because an upstream agent output, a memory snippet, or a macro
+  // note mentioned "aviation" or "banka" in passing. Non-sector skills
+  // (IAS29, IFRS16, DCF, etc.) keep keyword-based triggering.
+  const ticker = typeof context.ticker === 'string' ? context.ticker : null;
+  const allowedSectorSkill = ticker
+    ? SECTOR_TO_SKILL_ID[(getSector(ticker) || '').toLowerCase()] || null
+    : null;
+
+  return agentSkills.filter(skill => {
+    const isSectorSkill = skill.id.startsWith('sector-');
+    if (isSectorSkill) {
+      // Only emit the sector skill that matches the ticker's registry sector.
+      if (!allowedSectorSkill) return false; // ticker unknown or unmapped → skip all sector skills
+      return skill.id === allowedSectorSkill;
+    }
+    // Non-sector: unchanged keyword-based trigger match.
+    return skill.triggers.some(trigger => contextText.includes(trigger.toLowerCase()));
+  });
 }
 
 export function readSkillContent(skillId: string, maxChars = 3000): string | null {

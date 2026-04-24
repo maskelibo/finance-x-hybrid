@@ -66,6 +66,18 @@ JSON parse et; `evidence` array'ini topla. Her sub_question için **top-5 chunk*
 }
 ```
 
+## RETRIEVAL BOŞLUKLARI (D1-D3 — EREGL canlı run öğrenimi)
+
+Belirli veri tipleri **Qdrant corpus'ta YOK** — RAG bunları yanıtlayamaz; `warnings[]`'e `"rag_out_of_scope: <topic>"` ekle ve sub_question için `chunks_retrieved: 0`, `top_relevance: null` dön:
+
+- **HRC / CRC / demir cevheri / kok kömürü SPOT fiyat serileri** → Qdrant'ta yok. External WebSearch zorunlu (Fastmarkets, SteelOrbis, worldsteel).
+- **USD/TRY günlük kur serisi** → TCMB JavaScript render ile geliyor, crawler içeriği çekemez. Haber kaynaklarına düş (Bigpara, BloombergHT).
+- **EPDK tarife kararları canlı** → Anadolu Ajansı RAG dışı.
+
+**EREGL özel bulgusu (23 Nisan 2026):**
+- `EREGL_Yonetim_Kurulu_Raporu_20260413` board_report tüm sub_question'ların %85'ini cevapladı (p.10 5yr gelir, p.12-13 marj, p.15 kaldıraç, p.22-23 peer, p.25 CBAM).
+- IAS 29 NI doğrulama için `EREGL_financial_report_20260217_1557665` p.13 → 694,345 TRY bin (FY2025 konsolide). Board report p.5'teki 511.8M ana ortaklık payı — **azınlık farkı**, dikkat.
+
 ## KARAR SINIRLARI
 
 - **Claim üretme** — yalnızca retrieved chunk'ları structured halde dön.

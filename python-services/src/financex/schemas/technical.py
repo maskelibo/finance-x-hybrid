@@ -18,6 +18,11 @@ class TechnicalIndicators(FinancexModel):
 
     as_of_date: str | None = None
 
+    # Fix #28 — actual last close price (last bar's close). Previously omitted,
+    # compose.ts had to fall back to bollinger_middle/ma_20 → "Son Kapanış"
+    # column in the report was actually MA20 (720.575) not the real close.
+    last_close: Decimal | None = None
+
     # Moving averages
     ma_20: Decimal | None = None
     ma_50: Decimal | None = None

@@ -235,7 +235,7 @@
         <li><span class="toc-num">VI.</span>Makroekonomik Bağlam</li>
         <li><span class="toc-num">VII.</span>Teknik Analiz</li>
         <li><span class="toc-num">VIII.</span>ESG Değerlendirmesi</li>
-        <li><span class="toc-num">IX.</span>Haber &amp; Sentiment</li>
+        {{#if sentiment_has}}<li><span class="toc-num">IX.</span>Haber &amp; Sentiment</li>{{/if}}
         <li><span class="toc-num">X.</span>KAP Olayları</li>
         <li><span class="toc-num">XI.</span>Risk Değerlendirmesi</li>
         <li><span class="toc-num">XII.</span>Sonuç &amp; Öneriler</li>
@@ -688,18 +688,21 @@
         <h4>Bear</h4>
         <div class="scn-price">{{scenarios.bear_price}}</div>
         <div class="scn-sub">{{scenarios.bear_upside}}</div>
+        {{#if scenarios.bear_derivation}}<div class="scn-derivation" style="font-size:8pt;color:#64748b;margin-top:6px;font-style:italic;">{{scenarios.bear_derivation}}</div>{{/if}}
         {{#if scenarios.bear_triggers}}<ul>{{#each scenarios.bear_triggers}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
       </div>
       <div class="scenario-box base">
         <h4>Base</h4>
         <div class="scn-price">{{scenarios.base_price}}</div>
         <div class="scn-sub">{{scenarios.base_upside}}</div>
+        {{#if scenarios.base_derivation}}<div class="scn-derivation" style="font-size:8pt;color:#64748b;margin-top:6px;font-style:italic;">{{scenarios.base_derivation}}</div>{{/if}}
         {{#if scenarios.base_triggers}}<ul>{{#each scenarios.base_triggers}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
       </div>
       <div class="scenario-box bull">
         <h4>Bull</h4>
         <div class="scn-price">{{scenarios.bull_price}}</div>
         <div class="scn-sub">{{scenarios.bull_upside}}</div>
+        {{#if scenarios.bull_derivation}}<div class="scn-derivation" style="font-size:8pt;color:#64748b;margin-top:6px;font-style:italic;">{{scenarios.bull_derivation}}</div>{{/if}}
         {{#if scenarios.bull_triggers}}<ul>{{#each scenarios.bull_triggers}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
       </div>
     </div>
@@ -852,10 +855,11 @@
         <tr><td class="label">USD/TRY</td><td class="num">{{macro.usd_try}}</td></tr>
         <tr><td class="label">EUR/TRY</td><td class="num">{{macro.eur_try}}</td></tr>
         <tr><td class="label">TCMB Politika Faizi</td><td class="num">{{macro.policy_rate}}</td></tr>
-        <tr><td class="label">TCMB 10Y Tahvil</td><td class="num">{{macro.tcmb_10y}}</td></tr>
+        {{#if macro.tcmb_10y_has}}<tr><td class="label">TCMB 10Y Tahvil</td><td class="num">{{macro.tcmb_10y}}</td></tr>{{/if}}
         <tr><td class="label">TÜFE (YoY)</td><td class="num">{{macro.cpi_yoy}}</td></tr>
         <tr><td class="label">GDP (YoY)</td><td class="num">{{macro.gdp_yoy}}</td></tr>
-        <tr><td class="label">BIST-100 YTD</td><td class="num">{{macro.bist100_ytd_return}}</td></tr>
+        {{#if macro.bist100_has}}<tr><td class="label">BIST-100 Seviye</td><td class="num">{{macro.bist100_level}}</td></tr>{{/if}}
+        {{#if macro.bist100_ytd_has}}<tr><td class="label">BIST-100 YTD Getiri</td><td class="num">{{macro.bist100_ytd_return}}</td></tr>{{/if}}
       </tbody>
     </table>
 
@@ -877,6 +881,7 @@
     <h1>VII. Teknik Analiz</h1>
 
     {{#if technical_has}}
+    {{#if technical.as_of_date}}<p style="font-size:9pt; color:#718096; margin:0 0 6px 0;">Veri itibariyle: {{technical.as_of_date}} (günlük bar kapanışı)</p>{{/if}}
     <div class="kpi-grid">
       <div class="kpi-card"><div class="kpi-label">Trend</div><div class="kpi-value" style="font-size:14pt;">{{technical.trend_label}}</div></div>
       <div class="kpi-card"><div class="kpi-label">RSI (14)</div><div class="kpi-value">{{technical.rsi}}</div><div class="kpi-sub">{{technical.rsi_zone}}</div></div>

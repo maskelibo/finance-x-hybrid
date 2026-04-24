@@ -1,5 +1,13 @@
 """data_collection runner — fetch KAP disclosures + pull the PDFs.
 
+IMPORTANT (bug fix 2026-04-23): All diagnostic prints go to STDERR.
+When `financex data collect` is invoked by the Node orchestrator, its
+STDOUT is JSON-parsed. Any print() that landed on stdout (local-cache
+scan progress, per-year fetch counts) used to corrupt that JSON and
+silently zero-out documents — EREGL session 0 PDF while 41 local
+cache PDFs existed. Prints on stderr are logged but never parsed.
+
+
 Hybrid layer (Python side): deterministic fetch/classify/download of
 the documents a ticker's analysis will need. The LLM layer downstream
 interprets them; we just get them on disk.
@@ -31,6 +39,7 @@ from __future__ import annotations
 import hashlib
 import os
 import re
+import sys
 import time
 from datetime import UTC, date, datetime
 from pathlib import Path
@@ -236,11 +245,12 @@ def run_data_collection(
         fr_coverage = len(local_fr & expected_years) / max(len(expected_years), 1)
 
         print(f"[data_collection] {ticker}: local cache has {len(local_docs)} PDFs "
-              f"({len(local_fr)} FR years, {len(local_ar)} AR years, {fr_coverage:.0%} coverage)")
+              f"({len(local_fr)} FR years, {len(local_ar)} AR years, {fr_coverage:.0%} coverage)",
+              file=sys.stderr)
 
         if fr_coverage >= 0.8:
             # Good enough — use local cache, skip KAP entirely
-            print(f"[data_collection] {ticker}: using local cache (skipping KAP)")
+            print(f"[data_collection] {ticker}: using local cache (skipping KAP)", file=sys.stderr)
             return DataCollectionManifest(
                 ticker=ticker.upper(),
                 collected_at=datetime.now(UTC),
@@ -293,10 +303,11 @@ def run_data_collection(
                     ticker, since=yr_since, until=yr_until
                 )
                 raw_list.extend(year_disclosures)
-                print(f"[data_collection] {ticker} {yr}: {len(year_disclosures)} disclosures")
+                print(f"[data_collection] {ticker} {yr}: {len(year_disclosures)} disclosures",
+                      file=sys.stderr)
             except Exception as exc:
                 errors.append(f"KAP fetch failed for {ticker} year {yr}: {exc}")
-                print(f"[data_collection] {ticker} {yr}: FAILED — {exc}")
+                print(f"[data_collection] {ticker} {yr}: FAILED — {exc}", file=sys.stderr)
 
         if not raw_list and not errors:
             raise RuntimeError(f"KAP fetch_disclosures returned 0 results for {ticker} ({since} → {ceiling})")
@@ -447,6 +458,24 @@ def run_data_collection(
         gap_years = sorted({g.year for g in coverage_gaps})
         warnings.append(f"Year coverage gaps remain: {gap_years}. Manual IR page fetch may be needed.")
 
+    # --- B5: market_cap pre-compute ----------------------------------
+    spot, shares, mkt_cap = _compute_market_cap(ticker.upper())
+    if mkt_cap is None:
+        if spot is None and shares is None:
+            warnings.append(
+                "market_cap unresolved: spot price and shares registry both missing "
+                f"(add {ticker.upper()} to canonical/tickers/shares_outstanding.yaml)"
+            )
+        elif spot is None:
+            warnings.append(
+                f"market_cap unresolved: {ticker.upper()} spot price fetch failed; "
+                "Altman Z + DCF will be null"
+            )
+        elif shares is None:
+            warnings.append(
+                f"market_cap unresolved: {ticker.upper()} not in shares_outstanding.yaml"
+            )
+
     return DataCollectionManifest(
         ticker=ticker.upper(),
         collected_at=datetime.now(UTC),
@@ -457,4 +486,84 @@ def run_data_collection(
         errors=errors,
         warnings=warnings,
         coverage_gaps=coverage_gaps,
+        spot_price_try=spot,
+        shares_outstanding_millions=shares,
+        market_cap_try_millions=mkt_cap,
     )
+
+
+# ---------- B5: market_cap helper --------------------------------------
+#
+# Altman Z + DCF in financial_engine.compute_for_period need market_cap.
+# Pre-fix, it was never emitted, so both returned None — THYAO session
+# showed "DCF_NULL: market_cap eksik" in final report.
+#
+# Compute deterministically from:
+#   shares_outstanding : canonical/tickers/shares_outstanding.yaml
+#   spot_price_try     : isyatirim spot fetch (same source technical_analysis uses)
+#
+# Both fallible; return (None, None, None) when either is missing and let
+# run_data_collection raise a warning so downstream agents know why DCF is null.
+_SHARES_YAML_PATH = (
+    Path(__file__).resolve().parents[4] / "canonical" / "tickers" / "shares_outstanding.yaml"
+)
+_SHARES_CACHE: dict[str, float] | None = None
+
+
+def _load_shares_registry() -> dict[str, float]:
+    global _SHARES_CACHE
+    if _SHARES_CACHE is not None:
+        return _SHARES_CACHE
+    try:
+        import yaml  # lazy — keep data_collection import cheap
+        with open(_SHARES_YAML_PATH, encoding="utf-8") as fh:
+            data = yaml.safe_load(fh) or {}
+    except FileNotFoundError:
+        _SHARES_CACHE = {}
+        return _SHARES_CACHE
+    except Exception as exc:  # malformed YAML
+        print(f"[data_collection] shares_outstanding.yaml parse failed: {exc}", file=sys.stderr)
+        _SHARES_CACHE = {}
+        return _SHARES_CACHE
+    cache: dict[str, float] = {}
+    for sym, entry in (data.get("tickers") or {}).items():
+        if isinstance(entry, dict) and isinstance(entry.get("shares"), (int, float)):
+            cache[sym.upper()] = float(entry["shares"])
+    _SHARES_CACHE = cache
+    return cache
+
+
+def _fetch_bist_spot_price(ticker: str) -> float | None:
+    """Best-effort spot price fetch from isyatirim. Mirrors the approach
+    technical_analysis uses; independent to avoid tight coupling."""
+    try:
+        import httpx
+        url = f"https://www.isyatirim.com.tr/_layouts/15/Isyatirim.Website/Common/ChartData.aspx/IndexHistoricalAll"
+        # isyatirim's simple spot endpoint has tended to be flaky; a robust
+        # fallback is technical_analysis's normal TradingView fetch, already
+        # used separately. Keep this narrow best-effort.
+        with httpx.Client(timeout=5.0) as client:
+            r = client.get(
+                "https://www.isyatirim.com.tr/_layouts/15/IsYatirim.Website/"
+                "Common/Data.aspx/MarketData",
+                params={"endeks": ticker.upper()},
+            )
+            if r.status_code != 200:
+                return None
+            body = r.json() if r.headers.get("content-type", "").startswith("application/json") else None
+            if not isinstance(body, dict):
+                return None
+            val = body.get("value")
+            return float(val) if val is not None else None
+    except Exception:
+        return None
+
+
+def _compute_market_cap(ticker: str) -> tuple[float | None, float | None, float | None]:
+    """Returns (spot_price_try, shares_outstanding_millions, market_cap_try_millions)."""
+    shares = _load_shares_registry().get(ticker.upper())
+    spot = _fetch_bist_spot_price(ticker)
+    if spot is None or shares is None:
+        return spot, shares, None
+    # market_cap_try_millions = spot (TRY/share) × shares (millions)
+    return spot, shares, round(spot * shares, 2)
