@@ -25,6 +25,7 @@ import { runPythonEventTimelineAlert } from './python/agent_runners/event_timeli
 import { runPythonTechnicalAnalysis } from './python/agent_runners/technical_analysis.js';
 import { runPythonKapWatch } from './python/agent_runners/kap_watch.js';
 import { runPythonDataCollection } from './python/agent_runners/data_collection.js';
+import { runDataCollectionSubagentAware } from './python/agent_runners/data_collection_with_subagents.js';
 import { runPythonParseStandardization } from './python/agent_runners/parse_standardization.js';
 import { runPythonReconciliation } from './python/agent_runners/reconciliation.js';
 import { runPythonFinancialAnalysis } from './python/agent_runners/financial_analysis.js';
@@ -598,14 +599,16 @@ Minimum 1500 karakter.`;
     return outcome === 'ok' ? 'ok' : 'failed';
   }
   if (PYTHON_DATA_COLLECTION_ENABLED && agentId === 'data_collection') {
-    let outcome = await runPythonDataCollection(sessionId, runId, ticker, accumulatedContext);
+    // Part 2 / Block S: route through sub-agent aware wrapper. When both
+    // sub-agent and shadow flags are off the wrapper is a thin pass-through.
+    let outcome = await runDataCollectionSubagentAware(sessionId, runId, ticker, accumulatedContext);
     // KAP API can return transient 500 errors — retry once after 5s
     if (outcome !== 'ok') {
       console.warn(`[PIPELINE] data_collection failed — retrying once after 5s`);
       await new Promise(r => setTimeout(r, 5000));
       db.prepare(`UPDATE agent_runs SET status = 'pending', started_at = NULL, completed_at = NULL, output_text = NULL, error_message = 'auto-retry after KAP API failure' WHERE id = ?`)
         .run(runId);
-      outcome = await runPythonDataCollection(sessionId, runId, ticker, accumulatedContext);
+      outcome = await runDataCollectionSubagentAware(sessionId, runId, ticker, accumulatedContext);
       if (outcome === 'ok') console.log(`[PIPELINE] data_collection retry succeeded`);
     }
     return outcome === 'ok' ? 'ok' : 'failed';

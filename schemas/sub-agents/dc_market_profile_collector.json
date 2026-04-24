@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DC Market Profile Collector Output",
+  "type": "object",
+  "required": ["ticker", "ohlcv_5y", "borsa_istanbul_index_membership"],
+  "properties": {
+    "ticker":   { "type": "string", "pattern": "^[A-Z]{3,6}$" },
+    "ohlcv_5y": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "open", "high", "low", "close", "volume"],
+        "properties": {
+          "date":   { "type": "string" },
+          "open":   { "type": "number" },
+          "high":   { "type": "number" },
+          "low":    { "type": "number" },
+          "close":  { "type": "number" },
+          "volume": { "type": "number" }
+        }
+      }
+    },
+    "market_cap_try_mn":     { "type": ["number", "null"] },
+    "shares_outstanding_mn": { "type": ["number", "null"] },
+    "free_float_pct":        { "type": ["number", "null"] },
+    "dividend_history":      {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ex_date", "amount_per_share", "type"],
+        "properties": {
+          "ex_date":          { "type": "string" },
+          "amount_per_share": { "type": "number" },
+          "type":             { "type": "string", "enum": ["cash", "stock", "special"] }
+        }
+      }
+    },
+    "borsa_istanbul_index_membership": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

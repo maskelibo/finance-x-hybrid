@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DC Financials Collector Output",
+  "type": "object",
+  "required": ["ticker", "statements", "missing_periods", "data_quality_flags"],
+  "properties": {
+    "ticker": { "type": "string", "pattern": "^[A-Z]{3,6}$" },
+    "statements": {
+      "type": "object",
+      "required": ["income_statement", "balance_sheet", "cash_flow", "shareholders_equity"],
+      "properties": {
+        "income_statement":    { "type": "array", "items": { "$ref": "#/definitions/StatementEntry" } },
+        "balance_sheet":       { "type": "array", "items": { "$ref": "#/definitions/StatementEntry" } },
+        "cash_flow":           { "type": "array", "items": { "$ref": "#/definitions/StatementEntry" } },
+        "shareholders_equity": { "type": "array", "items": { "$ref": "#/definitions/StatementEntry" } }
+      }
+    },
+    "missing_periods":     { "type": "array", "items": { "type": "string" } },
+    "data_quality_flags":  { "type": "array", "items": { "type": "string" } }
+  },
+  "definitions": {
+    "StatementEntry": {
+      "type": "object",
+      "required": ["fiscal_period", "doc_id", "source_url"],
+      "properties": {
+        "fiscal_period": { "type": "string" },
+        "doc_id":        { "type": "string" },
+        "source_url":    { "type": "string" },
+        "raw_path":      { "type": "string" }
+      }
+    }
+  }
+}

@@ -6,7 +6,55 @@ version: 1.0.0
 last_updated: "2026-04-24"
 
 sub_agents:
-  # S2  — data_collection       (4 sub-agents, parallel)
+  # ===== S2 — data_collection (4 sub-agents, parallel) =====
+  - id: dc_financials_collector
+    parent_agent_id: data_collection
+    display_name: "Financial Statements Collector"
+    description: "5 yıllık IS/BS/CF/SE tablolarını KAP ve faaliyet raporundan toplar."
+    tier: llm
+    model: sonnet
+    timeout_ms: 300000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/dc_financials_collector.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: dc_disclosure_collector
+    parent_agent_id: data_collection
+    display_name: "KAP Disclosure Collector"
+    description: "Son 5 yıl KAP bildirimlerini toplar, material flag'ler."
+    tier: llm
+    model: haiku
+    timeout_ms: 240000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/dc_disclosure_collector.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: dc_market_profile_collector
+    parent_agent_id: data_collection
+    display_name: "Market Profile Collector"
+    description: "OHLCV, market cap, shares outstanding, free float, dividend history."
+    tier: deterministic
+    python_module: financex.subagents.dc_market_profile
+    timeout_ms: 120000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/dc_market_profile_collector.json
+    parallelizable: true
+    retry_max: 3
+
+  - id: dc_reference_docs_collector
+    parent_agent_id: data_collection
+    display_name: "Reference Documents Collector"
+    description: "Annual report, IR presentation, sustainability report, ESG docs."
+    tier: llm
+    model: sonnet
+    timeout_ms: 360000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/dc_reference_docs_collector.json
+    parallelizable: true
+    retry_max: 2
+
   # S3  — parse_standardization (3 sub-agents, hybrid)
   # S4  — financial_analysis    (5 sub-agents, parallel) — EN BÜYÜK ETKİ
   # S5  — report_formatter      (4 deterministic workers, parallel)
