@@ -1,0 +1,18 @@
+# Sub-agent registry — populated incrementally by Part 2 / Block S phases.
+# Each phase (S2..S11) appends entries for a single parent agent.
+# Shape: see backend/src/sub-agents/types.ts (SubAgentDef).
+
+version: 1.0.0
+last_updated: "2026-04-24"
+
+sub_agents:
+  # S2  — data_collection       (4 sub-agents, parallel)
+  # S3  — parse_standardization (3 sub-agents, hybrid)
+  # S4  — financial_analysis    (5 sub-agents, parallel) — EN BÜYÜK ETKİ
+  # S5  — report_formatter      (4 deterministic workers, parallel)
+  # S6  — macro_analysis        (3 sub-agents, parallel)
+  # S7  — valuation_agent       (4 sub-agents, parallel)
+  # S8  — sector_competition    (3 sub-agents + holding dynamic)
+  # S9  — event_impact_mapper   (2 sub-agents, parallel)
+  # S10 — final_summary         (3 sub-agents, parallel)
+  # S11 — strategic_synthesis   (3 sub-agents, sequential)

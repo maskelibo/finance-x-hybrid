@@ -164,6 +164,25 @@ export const PYTHON_COO_ENABLED = (process.env.PYTHON_COO_ENABLED ?? 'true') ===
 export const PYTHON_REPORT_FORMATTER_ENABLED = (process.env.PYTHON_REPORT_FORMATTER_ENABLED ?? 'true') === 'true';
 export const PYTHON_SECTOR_COMPETITION_ENABLED = (process.env.PYTHON_SECTOR_COMPETITION_ENABLED ?? 'true') === 'true';
 
+// ---------------------------------------------------------------------
+// Sub-agent feature flags (Part 2 / Block S)
+//
+// All default OFF — sub-agents run in shadow mode until the corresponding
+// S-phase promotion gate clears. A session-level override can force shadow
+// comparison logging even when production is still on the legacy agent.
+// ---------------------------------------------------------------------
+export const SUBAGENT_DATA_COLLECTION_ENABLED = (process.env.SUBAGENT_DATA_COLLECTION_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_PARSE_STD_ENABLED = (process.env.SUBAGENT_PARSE_STD_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_FINANCIAL_ANALYSIS_ENABLED = (process.env.SUBAGENT_FINANCIAL_ANALYSIS_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_REPORT_FORMATTER_ENABLED = (process.env.SUBAGENT_REPORT_FORMATTER_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_MACRO_ANALYSIS_ENABLED = (process.env.SUBAGENT_MACRO_ANALYSIS_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_VALUATION_ENABLED = (process.env.SUBAGENT_VALUATION_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_SECTOR_COMPETITION_ENABLED = (process.env.SUBAGENT_SECTOR_COMPETITION_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_EVENT_IMPACT_ENABLED = (process.env.SUBAGENT_EVENT_IMPACT_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_FINAL_SUMMARY_ENABLED = (process.env.SUBAGENT_FINAL_SUMMARY_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_STRATEGIC_SYNTHESIS_ENABLED = (process.env.SUBAGENT_STRATEGIC_SYNTHESIS_ENABLED ?? 'false') === 'true';
+export const SUBAGENT_SHADOW_MODE = (process.env.SUBAGENT_SHADOW_MODE ?? 'false') === 'true';
+
 
 // ---------------------------------------------------------------------
 // Flag dependency validation

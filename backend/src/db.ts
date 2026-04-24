@@ -166,6 +166,28 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_watchdog_events_type ON watchdog_events(event_type);
   CREATE INDEX IF NOT EXISTS idx_watchdog_events_created ON watchdog_events(created_at);
+
+  -- Part 2 / Block S: sub-agent run persistence.
+  -- One row per sub-agent invocation; parent_run_id links back to agent_runs.
+  CREATE TABLE IF NOT EXISTS sub_agent_runs (
+    id TEXT PRIMARY KEY,
+    parent_run_id TEXT NOT NULL,
+    sub_agent_id TEXT NOT NULL,
+    parent_agent_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    output_text TEXT,
+    error_message TEXT,
+    duration_ms INTEGER,
+    tokens_used INTEGER,
+    cost_usd REAL,
+    started_at TEXT,
+    completed_at TEXT,
+    FOREIGN KEY (parent_run_id) REFERENCES agent_runs(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_subagent_parent ON sub_agent_runs(parent_run_id);
+  CREATE INDEX IF NOT EXISTS idx_subagent_status ON sub_agent_runs(status);
+  CREATE INDEX IF NOT EXISTS idx_subagent_parent_agent ON sub_agent_runs(parent_agent_id);
 `);
 
 export function ensureColumn(tableName: string, columnName: string, columnDefinition: string) {
