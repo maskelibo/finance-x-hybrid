@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FA Working Capital Output",
+  "type": "object",
+  "required": ["metrics", "interpretation", "data_gaps"],
+  "properties": {
+    "metrics": {
+      "type": "object",
+      "required": ["dso_5y", "dio_5y", "dpo_5y", "ccc_5y", "nwc_revenue_pct_5y"],
+      "properties": {
+        "dso_5y":              { "type": "array" },
+        "dio_5y":              { "type": "array" },
+        "dpo_5y":              { "type": "array" },
+        "ccc_5y":              { "type": "array" },
+        "nwc_revenue_pct_5y":  { "type": "array" },
+        "nwc_days_5y":         { "type": ["array", "null"] }
+      }
+    },
+    "interpretation": { "type": "object" },
+    "data_gaps":      { "type": "array" }
+  }
+}

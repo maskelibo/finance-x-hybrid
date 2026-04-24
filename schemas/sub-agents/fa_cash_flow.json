@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FA Cash Flow Output",
+  "type": "object",
+  "required": ["metrics", "cash_ebitda_bridge", "red_flags", "data_gaps"],
+  "properties": {
+    "metrics": {
+      "type": "object",
+      "required": ["ocf_5y_try_mn", "fcf_5y_try_mn", "capex_5y_try_mn", "capex_ebitda_5y_pct", "ocf_ebitda_5y"],
+      "properties": {
+        "ocf_5y_try_mn":             { "type": "array" },
+        "fcf_5y_try_mn":             { "type": "array" },
+        "capex_5y_try_mn":           { "type": "array" },
+        "capex_ebitda_5y_pct":       { "type": "array" },
+        "ocf_ebitda_5y":             { "type": "array" },
+        "fcf_interest_coverage_5y":  { "type": ["array", "null"] }
+      }
+    },
+    "cash_ebitda_bridge": { "type": "object" },
+    "red_flags":          { "type": "array" },
+    "data_gaps":          { "type": "array" }
+  }
+}

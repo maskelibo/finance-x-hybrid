@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FA Leverage & Liquidity Output",
+  "type": "object",
+  "required": ["metrics", "interpretation", "data_gaps"],
+  "properties": {
+    "metrics": {
+      "type": "object",
+      "required": ["net_debt_5y_try_mn", "net_debt_ebitda_5y", "current_ratio_5y", "acid_test_5y", "interest_coverage_5y"],
+      "properties": {
+        "net_debt_5y_try_mn":            { "type": "array" },
+        "net_debt_ebitda_5y":            { "type": "array" },
+        "current_ratio_5y":              { "type": "array" },
+        "acid_test_5y":                  { "type": "array" },
+        "interest_coverage_5y":          { "type": "array" },
+        "net_debt_ex_ifrs16_5y_try_mn":  { "type": ["array", "null"] }
+      }
+    },
+    "interpretation": { "type": "object" },
+    "data_gaps":      { "type": "array" }
+  }
+}

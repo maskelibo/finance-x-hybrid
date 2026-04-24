@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FA Profitability Output",
+  "type": "object",
+  "required": ["metrics", "interpretation", "data_gaps"],
+  "properties": {
+    "metrics": {
+      "type": "object",
+      "required": ["revenue_5y", "gross_margin_5y_pct", "ebitda_5y_try_mn", "ebitda_margin_5y_pct", "net_income_5y_try_mn"],
+      "properties": {
+        "revenue_5y":                     { "type": "array" },
+        "gross_margin_5y_pct":            { "type": "array" },
+        "ebitda_5y_try_mn":               { "type": "array" },
+        "ebitda_margin_5y_pct":           { "type": "array" },
+        "ebitdar_5y_try_mn":              { "type": ["array", "null"] },
+        "ebitdar_margin_5y_pct":          { "type": ["array", "null"] },
+        "net_income_5y_try_mn":           { "type": "array" },
+        "ias29_adjusted_ebitda_5y_try_mn":{ "type": ["array", "null"] },
+        "ias29_adjusted_ni_5y_try_mn":    { "type": ["array", "null"] },
+        "monetary_gain_loss_5y_try_mn":   { "type": ["array", "null"] }
+      }
+    },
+    "interpretation": { "type": "object" },
+    "data_gaps":      { "type": "array" }
+  }
+}

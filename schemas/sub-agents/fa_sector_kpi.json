@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FA Sector-Specific KPI Output",
+  "type": "object",
+  "required": ["sector", "kpis", "interpretation", "data_gaps"],
+  "properties": {
+    "sector":           { "type": "string" },
+    "kpis":             { "type": "object" },
+    "peer_comparison":  { "type": "object" },
+    "interpretation":   { "type": "object" },
+    "data_gaps":        { "type": "array" }
+  }
+}

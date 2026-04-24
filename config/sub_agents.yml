@@ -92,7 +92,67 @@ sub_agents:
     parallelizable: true
     retry_max: 2
 
-  # S4  — financial_analysis    (5 sub-agents, parallel) — EN BÜYÜK ETKİ
+  # ===== S4 — financial_analysis (5 sub-agents, parallel) — EN BÜYÜK ETKİ =====
+  - id: fa_profitability
+    parent_agent_id: financial_analysis
+    display_name: "Profitability Analyst"
+    description: "Revenue, gross margin, EBITDA, EBITDAR, net income, IAS 29 adjusted metrics."
+    tier: llm
+    model: sonnet
+    timeout_ms: 480000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/fa_profitability.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: fa_working_capital
+    parent_agent_id: financial_analysis
+    display_name: "Working Capital Analyst"
+    description: "DSO, DIO, DPO, CCC, NWC/Revenue."
+    tier: llm
+    model: sonnet
+    timeout_ms: 360000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/fa_working_capital.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: fa_leverage_liquidity
+    parent_agent_id: financial_analysis
+    display_name: "Leverage & Liquidity Analyst"
+    description: "Net debt, leverage ratios, current ratio, acid test, interest coverage."
+    tier: llm
+    model: sonnet
+    timeout_ms: 360000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/fa_leverage_liquidity.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: fa_cash_flow
+    parent_agent_id: financial_analysis
+    display_name: "Cash Flow Analyst"
+    description: "OCF, FCF, CAPEX/EBITDA, cash conversion, 7-bullet CF analysis, red flags."
+    tier: llm
+    model: sonnet
+    timeout_ms: 480000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/fa_cash_flow.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: fa_sector_kpi
+    parent_agent_id: financial_analysis
+    display_name: "Sector-Specific KPI Analyst"
+    description: "Sector-specific metrics: aviation EBITDAR/CASK/RASK, banking NIM/CET1, steel HRC, etc."
+    tier: llm
+    model: sonnet
+    timeout_ms: 360000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/fa_sector_kpi.json
+    parallelizable: true
+    retry_max: 2
+
   # S5  — report_formatter      (4 deterministic workers, parallel)
   # S6  — macro_analysis        (3 sub-agents, parallel)
   # S7  — valuation_agent       (4 sub-agents, parallel)
