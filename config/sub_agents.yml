@@ -202,7 +202,43 @@ sub_agents:
     parallelizable: false
     retry_max: 1
 
-  # S6  — macro_analysis        (3 sub-agents, parallel)
+  # ===== S6 — macro_analysis (3 sub-agents) =====
+  - id: ma_turkey_macro_snapshot
+    parent_agent_id: macro_analysis
+    display_name: "Turkey Macro Snapshot"
+    description: "TCMB, TÜFE, FX, GDP, BIST100, faiz koridoru — hybrid Python + LLM."
+    tier: llm
+    model: sonnet
+    timeout_ms: 240000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/ma_turkey_macro_snapshot.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: ma_geopolitical_risk
+    parent_agent_id: macro_analysis
+    display_name: "Geopolitical Risk Analyst"
+    description: "İran-ABD, Rusya-Ukrayna, Suriye, ticaret savaşları, AB ilişkileri."
+    tier: llm
+    model: sonnet
+    timeout_ms: 300000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/ma_geopolitical_risk.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: ma_company_transmission
+    parent_agent_id: macro_analysis
+    display_name: "Company Transmission Mechanism"
+    description: "Macro→şirket geçiş (FX exposure, fuel sensitivity, interest impact)."
+    tier: llm
+    model: sonnet
+    timeout_ms: 240000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/ma_company_transmission.json
+    parallelizable: false   # sequential after the first two
+    retry_max: 2
+
   # S7  — valuation_agent       (4 sub-agents, parallel)
   # S8  — sector_competition    (3 sub-agents + holding dynamic)
   # S9  — event_impact_mapper   (2 sub-agents, parallel)

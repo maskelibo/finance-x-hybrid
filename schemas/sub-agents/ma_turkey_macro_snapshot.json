@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MA Turkey Macro Snapshot Output",
+  "type": "object",
+  "required": ["as_of_date", "snapshot", "interpretation"],
+  "properties": {
+    "as_of_date":     { "type": "string" },
+    "snapshot": {
+      "type": "object",
+      "required": ["tcmb_policy_rate_pct", "cpi_yoy_pct", "usd_try", "bist100_level"],
+      "properties": {
+        "tcmb_policy_rate_pct":     { "type": ["number", "null"] },
+        "cpi_yoy_pct":              { "type": ["number", "null"] },
+        "ppi_yoy_pct":              { "type": ["number", "null"] },
+        "usd_try":                  { "type": ["number", "null"] },
+        "eur_try":                  { "type": ["number", "null"] },
+        "bist100_level":            { "type": ["number", "null"] },
+        "bist100_ytd_pct":          { "type": ["number", "null"] },
+        "bond_2y_pct":              { "type": ["number", "null"] },
+        "bond_10y_pct":             { "type": ["number", "null"] },
+        "gdp_growth_yoy_pct":       { "type": ["number", "null"] },
+        "current_account_pct_gdp":  { "type": ["number", "null"] }
+      }
+    },
+    "interpretation": { "type": "object" }
+  }
+}

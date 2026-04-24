@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MA Company Transmission Output",
+  "type": "object",
+  "required": ["ticker", "as_of_date", "transmission", "composite_score"],
+  "properties": {
+    "ticker":     { "type": "string" },
+    "as_of_date": { "type": "string" },
+    "transmission": {
+      "type": "object",
+      "required": ["fx_exposure", "commodity_sensitivity", "interest_rate_impact", "demand_elasticity"],
+      "properties": {
+        "fx_exposure":          { "$ref": "#/definitions/Axis" },
+        "commodity_sensitivity":{ "$ref": "#/definitions/Axis" },
+        "interest_rate_impact": { "$ref": "#/definitions/Axis" },
+        "demand_elasticity":    { "$ref": "#/definitions/Axis" }
+      }
+    },
+    "composite_score": { "type": "number", "minimum": -3, "maximum": 3 },
+    "narrative":       { "type": "string", "maxLength": 600 }
+  },
+  "definitions": {
+    "Axis": {
+      "type": "object",
+      "required": ["score", "rationale"],
+      "properties": {
+        "score":     { "type": "integer", "minimum": -3, "maximum": 3 },
+        "rationale": { "type": "string" },
+        "trend_12m": { "type": "string" }
+      }
+    }
+  }
+}

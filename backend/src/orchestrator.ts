@@ -28,6 +28,7 @@ import { runPythonDataCollection } from './python/agent_runners/data_collection.
 import { runDataCollectionSubagentAware } from './python/agent_runners/data_collection_with_subagents.js';
 import { runParseStandardizationSubagentAware } from './python/agent_runners/parse_standardization_with_subagents.js';
 import { fireFinancialAnalysisShadow } from './python/agent_runners/financial_analysis_subagent_shadow.js';
+import { fireMacroAnalysisShadow } from './python/agent_runners/macro_analysis_subagent_shadow.js';
 import { runPythonParseStandardization } from './python/agent_runners/parse_standardization.js';
 import { runPythonReconciliation } from './python/agent_runners/reconciliation.js';
 import { runPythonFinancialAnalysis } from './python/agent_runners/financial_analysis.js';
@@ -718,6 +719,9 @@ Sektör: ${sectorLabel}
     } catch (err: any) {
       console.warn(`[HYBRID] macro_analysis LLM enrichment error: ${err.message}`);
     }
+    // Part 2 / S6 — fire macro sub-agents in shadow mode (3 sub-agents).
+    // Fire-and-forget; no-op when flags are off.
+    fireMacroAnalysisShadow(sessionId, runId, ticker, accumulatedContext);
     return 'ok';
   }
   if (PYTHON_SENTIMENT_NEWS_ENABLED && agentId === 'sentiment_news_agent') {
