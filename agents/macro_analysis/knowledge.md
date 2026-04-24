@@ -11,7 +11,7 @@
 ### Faiz Politikası Dinamikleri
 - **Policy Reversal Pattern:** Forward guidance ani kriz durumunda terk edilebilir (ör: %37 → %46 tek seferde)
 - **Reel Politika Faizi:** Nominal − CPI. >+5% = çok sıkı
-- Nisan 2026: Reel faiz +%15.13 → son 15 yılın en yüksek reel kısıtlaması
+- Nisan 2026: Reel faiz +%6.13 (politika faizi %37, TÜFE %30.87) — WebSearch 22 Nisan 2026 doğrulandı
 - Sonraki MPC toplantısı takip edilmeli — Governör sinyalleri kritik
 
 ### Enflasyon Hedefleme
@@ -129,12 +129,15 @@ D) Jeopolitik riskler (ihracat lisansı, ödeme akışı, ambargo, yaptırım)
 
 ## 7. Güncel Veri Bankası (Son Güncelleme: Nisan 2026)
 
-- TCMB policy rate: %46 (acil artış)
+- TCMB policy rate: %37 (sabit, 22 Nisan 2026 PPK kararı) — gecelik borç verme %40, borçlanma %35.5
 - TÜFE YoY: %30.87 (Mart 2026)
 - Yİ-ÜFE YoY: %28.08 (Mart 2026)
 - USD/TRY: ~44.60
 - BDDK minimum CAR: %12
+- Turkey GDP FY2025 (TÜİK): %3.6; Q4 2025 YoY: %3.4
 - Turkey GDP 2026 IMF: %4.2
 - BOTAŞ endüstriyel gaz artışı: +%18.61 (Nisan 2026)
+- Brent crude: ~$95-96/varil (Nisan 2026), YoY +%42 — İran-ABD savaşı / Hürmüz krizi etkisi
+- Hürmüz Boğazı: Şubat 28 2026'dan itibaren fiilen kapalı; günlük ~13 mn varil kesinti
 
 ---

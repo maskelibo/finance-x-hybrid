@@ -186,3 +186,27 @@
 - **Truncation YASAK:** SWOT yarım bırakılamaz; bölümü iki mesajda gönder.
 
 ---
+
+### 2026-04-22 — THYAO
+Industrial peer EV/EBITDA medyanı ~6-7x, aviation peer EV/EBITDAR medyanı ~4-5x. Yanlış peer grubu hedef fiyatı %20-30 yukarı çeker ve analizi geçersiz kılar. THYAO'nun 2026-04-14 sessionında peer analizi doğruydu — bu sefer regresyon var.
+
+### 2026-04-22 — THYAO
+THYAO: sector=industrial yanlışlığı tüm peer benchmark'larını geçersiz kıldı. Havacılık ticker whitelist tutulmalı: THYAO, PGSUS → her zaman aviation.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: Peer_count=0 ile EV/EBITDA 4.40x'in ucuz mu pahalı mı olduğu değerlendirilemedi. IAG ve Lufthansa 2025 EV/EBITDA ~4.5-6x — bu bağlam olmadan valuation hedef fiyatı boşlukta kalıyor.
+
+### 2026-04-23 — THYAO
+THYAO 20260423: Net Debt/EBITDA 3.67x için benchmark 'median=3.67x' gösterdi (kendi değeri). Gerçek global aviation peer median ~2.8-3.0x — THYAO ortalamanın üzerinde borçlu ama bu tespit edilemedi. Peer eksikliği tüm rekabet analizini geçersiz kıldı.
+
+### 2026-04-23 — EREGL
+EREGL: 'industrial' klasifikasyonu tüm çelik benchmark'larını kaçırdı; HRC spread, EBITDA/ton peer kıyası yapılamadı. THYAO seansında da benzer ticker fallback hatası yaşandı. Ticker→sector sabit map orchestrator YAML'ına girilmeli.
+
+### 2026-04-23 — EREGL
+EREGL peer: KRDMD, IZDMC, ArcelorMittal, Nucor, POSCO. Bu liste strategic_synthesis LLM narrative'inde oluşturuldu — sector_competition'da olması gerekiyordu.
+
+### 2026-04-23 — ARCLK
+ARCLK: VESBE (Vestel Beyaz Eşya) BIST'te işlem gören en yakın yerli rakip. EBITDA marjı ~%8-10 ve Net Borç/EBITDA ~2-3x seviyesiyle ARCLK'nın 4.5% marjı ve 7.24x kaldıraç profilini contextualize eder. Sıfır peer çalışıldığında 'quartile 2' gibi yanıltıcı sıralamalar üretildi.
+
+### 2026-04-24 — BIMAS
+BIMAS sektör yanlış etiketlendiğinde peer grubu boş kaldı ve tüm benchmark istatistikleri (Q1/median/Q3) BIMAS'ın kendi değerine eşit oldu — anlamsız karşılaştırma. Bu hata sector misclassification'ın domino etkisi.

@@ -79,3 +79,21 @@
 - **Stil:** Font: Arial 11pt body, 14pt headings. Renk: Navy blue #003366 basliklar, #666 metin, #f9f9f9 alternating rows. White space %30-40.
 - **Layout Patternleri:** 60/40 asimetrik (en yaygin), 30/40/30 triple (kompleks), 50/50 mix (grafik+tablo ayni sayfa)
 - **PDF:** preferCSSPageSize: false, displayHeaderFooter: true
+
+### 2026-04-22 — THYAO
+THYAO raporu THY kırmızısı yerine mavi finansal kurumsal görünümüyle render edildi. Marka kimliği taklidi direktifi açıkça ihlal. Müşteri tesliminde güven kaybı potansiyeli yüksek.
+
+### 2026-04-22 — THYAO
+THYAO: Template'e tek kez eklenmesi tüm gelecek raporları çözer. Rapor formatter'ın legal/compliance section'ı ayrı bir sabit blok olarak tanımlanmalı, içerik üretiminden bağımsız.
+
+### 2026-04-23 — THYAO
+THYAO 20260423: report_formatter CSS snippet başında <!DOCTYPE html> ve <html lang='tr'> üretmesine rağmen COO HTML_ENVELOPE kontrolünden geçemedi. Encoding veya string slicing sorunu olabilir. SPK disclaimer final_summary'de kelime olarak mevcut ama COO'nun aradığı exact string match formatında değil.
+
+### 2026-04-23 — EREGL
+EREGL: doğru marka #D71920 kırmızı-siyah gradient. Çıkan rapor #1a365d kurumsal mavi. context_extraction veriyi üretiyor ama report_formatter okumuyordu.
+
+### 2026-04-23 — ARCLK
+ARCLK 2025 Faaliyet Raporu kapağı açıkça kırmızı-beyaz (#E30613 + #FFFFFF). context_extraction bu rengi kaydetti. Rapor kurumsal mavi çıktı — müşteriye iletilseydi şirketin kendi sunum standartlarına aykırı belge üretilmiş olurdu; compliance reddedilirdi.
+
+### 2026-04-24 — BIMAS
+BIM raporu lacivert-gri renk şemasıyla üretildi; gerçek BIM dokümanları turuncu-lacivert. Kurumsal müşteriye teslimde brand uyumsuzluğu profesyonellik sorunu yaratır.

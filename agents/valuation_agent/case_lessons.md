@@ -90,3 +90,18 @@
 ---
 
 *Dosya sahibi: Valuation Agent | Güncelleyen: CEO Feedback Loop*
+
+### 2026-04-22 — THYAO
+THYAO IFRS16 farkı FY2024 bazında ~40-60B TRY tahmin ediliyor. Bu fark EV'yi %8-12 değiştirir, hedef fiyatı 10-20 TRY etkiler. Mevcut base hedef 413 TRY — IFRS16 hariç net borçla 395 TRY, dahil versiyonla 430 TRY olabilir. Fark yatırım kararını etkileyecek büyüklükte.
+
+### 2026-04-22 — THYAO
+THYAO: Valuation LLM narrative eksiksiz ve kaynak doğrulamalı ancak COO/strategic_synthesis structured field okursa null görür. Engine nulls + LLM narrative çelişkisi raporun güvenilirliğini zedeliyor ve downstream confidence'ı düşürüyor.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: EV/EBITDA 6.10x vs 4.40x farkı 314B TRY'ye karşılık geliyor. Bu belirsizlik Bear/Baz/Bull senaryolarının tümünü etkiliyor. Hedef fiyat aralığı (235-877 TRY) bu yüzden çok geniş.
+
+### 2026-04-23 — EREGL
+EREGL: CEO mandate valuation timeout riskini açıkça uyarmıştı ('split into 3 parts on first attempt') — bu önlem alınmadı ve agent hiç çalışmadı. Uyarı → önlem dönüşümü orchestrator pre-run checklist'e girilmeli.
+
+### 2026-04-23 — EREGL
+EREGL: final_summary Bear=MA200 27.51, Bull=Bollinger_upper 34.11 kullandı. Bu veriler valuation_agent yok diye MA/BB seviyelerine dönüştü — yatırımcıya yanıltıcı.

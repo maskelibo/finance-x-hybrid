@@ -90,6 +90,19 @@
 
 **Veri Kaynaklari:** TCMB (evds2.tcmb.gov.tr) | TUIK (data.tuik.gov.tr) | BDDK (bddk.org.tr/BultenAylik) | KAP | Trading Economics | OSD (osd.org.tr)
 
+## THYAO Analiz Notu — 22 Nisan 2026
+
+**Güncel makro snapshot (WebSearch doğrulandı):**
+- TCMB: %37 (22 Nisan PPK — sabit); Brent: $95.75 (21 Nisan); USD/TRY: 44.89; TÜFE %30.87; Yİ-ÜFE %28.08; GDP FY2025 %3.6
+- Brent yıl içi peak: $111.69 (2 Nisan — İran krizi tırmanması); şimdiki seviye ateşkes sonrası geri çekilme
+
+**Havacılık sektörü için kalıcı duyarlılık parametresi:**
+- THYAO: $1/varil Brent → $50 mn yıllık yakıt maliyeti (kendi earnings call açıklaması, doğrulandı)
+- 2025 hedge oranı ~%50; 2026 hedge oranı doğrulanmadı — analiz başında kontrol edilmeli
+
+**knowledge.md düzeltmesi bu oturumda yapıldı:**
+- %46 → %37 (reel faiz hesabı da %15.13 → %6.13 düzeltildi)
+- Brent $95-96 ve Hürmüz kapalı notları eklendi
 
 ## Ek CEO Geri Bildirimleri (memory.md'den taşındı)
 
@@ -188,3 +201,21 @@
 - **Tüm segmentler için geçiş zinciri:** Makro değişken → ilgili SAHOL iştiraki → quantified EBITDA/Kar etkisi. Her segment ayrı satır.
 
 ---
+
+### 2026-04-22 — THYAO
+THYAO: TCMB politika faizi narrative'de %37 olarak teyit edildi ama rates.policy_rate=null kaldı. Bu tür sessiz tutarsızlıklar downstream ajanların silent null propagation'ına neden olur.
+
+### 2026-04-23 — THYAO
+THYAO 20260423: financial_analysis interest_coverage=4.42x hesapladı ama policy_rate=null olduğu için 'zayıf mı güçlü mü?' benchmark karşılaştırması yapılamadı. policy_rate=%37 bilinse interest_coverage 'sadece 4.42x' olduğu ve TCMB faizinin 8x üzerinde borç maliyeti ima ettiği görülürdü.
+
+### 2026-04-23 — EREGL
+EREGL: strategic_synthesis Python engine macro structured JSON'ı okuyunca policy_rate=null gördü ve TCMB faiz sinyal convergence'ı üretemeddi. Macro LLM-struct sync bu pipeline'ın kronik açığı — THYAO seansında da aynı sorun yaşandı.
+
+### 2026-04-23 — EREGL
+EREGL: strategic_synthesis Python engine policy_rate=null gördü, macro LLM 37.0 yazmıştı. Real rate hesabı ve faiz ortamı değerlendirmesi Python katmanında yapılamadı.
+
+### 2026-04-23 — ARCLK
+ARCLK pipeline: TCMB PPK Nisan 2026 politika faizi LLM bilgisiyle 37.0% verildi. Bu değer doğru olabilir ancak resmi kaynak URL olmadan kurumsal analist notu standartlarını karşılamıyor. Yanlış bir makro girdi (örn. faiz 37% yerine 42.5%) tüm faiz karşılama yorumunu çarpıtır.
+
+### 2026-04-24 — BIMAS
+TCMB politika faizi %37 ve TÜİK CPI %30.87 doğruysa IAS29 real_rate=+6.13pp doğru hesaplandı. Ancak kaynaksız LLM üretimi kontrol edilemez. Gelecek oturumda WebFetch doğrulaması zorunlu: tcmb.gov.tr/tcmb/tc/monetary-policy-rate.

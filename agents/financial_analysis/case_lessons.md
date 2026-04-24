@@ -79,3 +79,45 @@
 ---
 
 *Dosya sahibi: Financial Analysis Agent | Güncelleyen: CEO Feedback Loop*
+
+### 2026-04-22 — THYAO
+THYAO 2026-04-22: IS ve BS parse edildi ama financial_analysis'e geçiş olmadı. Büyük olasılıkla CF+SE eksikliği parse validasyonunu durdurdu. Kısmi modla EBITDA, ROCE, Net Borç/EBITDA üretilebilirdi — QA 0.757 yerine 0.68+ olurdu, rapor BLOCKED değil DEGRADED çıkardı.
+
+### 2026-04-22 — THYAO
+THYAO 2026-04-22: financial_analysis çalışmaması tek başına 4 downstream ajanı işlevsiz bıraktı ve QA score'u 0'a düşürdü. data_collection venv hatasının doğrudan yansıması; LLM fallback modu bu ajan için de aktif edilmeliydi.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: Industrial thresholdlarla değerlendirilen havacılık şirketi. EBITDAR, EV/EBITDAR ve kira-adjusted net borç hesaplanamadı. Peer benchmark tamamen geçersiz.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: EBITDAR eksik olunca EV/EBITDAR peer karşılaştırması yapılamadı. Önceki session'da 2.52x EV/EBITDA (kira dahil) tespiti vardı; bu session 4.40-6.10x aralığı IFRS16 muamelesine göre değişiyor — belirsizlik devam ediyor.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: IAS29 CEO hafızasında üç kez geçti ama financial_analysis'a ulaşmadı. FY2025 etkisi minimal (79M TRY), ancak 2022-2023 YoY karşılaştırmaları enflasyon düzeltmesi gerektiriyor.
+
+### 2026-04-23 — THYAO
+THYAO 20260423: ROE %12.96 industrial norma göre 'acceptable' görünürken aviation TRY CoE (~%45-55) bağlamında -32 puan değer imhası anlamına geliyordu. Sektör hatası bu kritik bulgunun otomatik flag'ini engelledi. final_summary sector_override_note koydu ama upstream agent'lar düzeltilmedi.
+
+### 2026-04-23 — THYAO
+THYAO 20260423: EBITDAR tahmin ~222B TRY (%23.2 marj), EBITDA'dan ~38B TRY yüksek. IAG/Lufthansa karşılaştırması EBITDAR bazlı — eksik olunca tüm peer benchmarking geçersiz. EV/EBITDAR çarpanı da hesaplanamadı.
+
+### 2026-04-23 — EREGL
+EREGL FY2025: tek agent eksikliği 5 downstream agent'ı null/score=0'a çökertti. THYAO seanalarında da benzer cascade yaşandı. Çözüm: pipeline orchestrator'da financial_analysis → [qa, sector, synthesis, reconciliation, valuation] bağımlılık grafiği strict enforce edilmeli.
+
+### 2026-04-23 — EREGL
+EREGL: financial_analysis eksikliği tek başına qa_review'i 0'a, strategic_synthesis'i override_confidence=low'a, sector_competition'ı peer_group=[]'a düşürdü. Pipeline'ın en kritik P0 bağımlılığı gözden kaçtı.
+
+### 2026-04-23 — ARCLK
+ARCLK Q1-2026: balance_sheet.trade_receivables=68,225,000 TRY parse edildi; ancak Q1 revenue=130,271,680,000 TRY. Bu oran (%0.05) beyaz eşya sektöründe fiziksel olarak imkânsız. Büyük ihtimalle yalnızca bir ticari alacak alt kalemi alındı, ana alacak kalemleri (milyarlarca TRY) atlandı.
+
+### 2026-04-23 — ARCLK
+ARCLK FY2025: IAS 29 parasal kazanç tutarı faaliyet raporunda Not 2.1'de açıklanıyor. Bu tutar corpus'ta mevcut değildi; WebFetch ile KAP XBRL veya PDF'den alınabilirdi. Türkiye'de IAS 29 etkisi EBITDA marjını ±10-15 puan değiştirebilir — düzeltmesiz EBITDA marj kıyaslaması yanıltıcıdır.
+
+### 2026-04-24 — BIMAS
+BIMAS: engine 'industrial' ataması nedeniyle SSSG, LFL büyüme, mağaza başı EBITDA hesaplanamadı. sector_competition peer_group=[] kaldı. QA da sektör-spesifik KPI kontrolü yapamadı. Tek bir yanlış etiket tüm downstream'i bozdu.
+
+### 2026-04-24 — BIMAS
+BIMAS FY2025: ROE 11.2% optical. Operasyonel temizlenmiş ROE tahmin edilemiyor çünkü parse_standardization monetary_gain_loss=null bıraktı. IAS29 enflasyonist ortamda (%30.87 CPI) ROE optik-operasyonel ayrımı yatırımcı için kritik — gizlenmesi yanıltıcıdır.
+
+### 2026-04-24 — BIMAS
+BIMAS FY2025 store_count 14473 (FY2025) vs 9365 (FY2020): +5108 net açılış. Revenue CAGR ≈ %50+ TRY nominal. SSSG proxy hesaplanabilirdi. Mağaza büyümesi mi yoksa mağaza verimliliği mi sorusu yanıtsız kaldı.

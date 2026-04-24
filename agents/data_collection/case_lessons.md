@@ -62,3 +62,12 @@
 - **Nakit bakiyesi doğrudan bilanço satırından:** BS satırında "Nakit ve Nakit Benzerleri" doğrudan okunacak; reverse-engineer YASAK.
 - **WC döngüsü için 5 alt satır ZORUNLU:** Trade Receivables, Inventory, Other Current Assets, Trade Payables, Other Current Liabilities — ayrı ayrı çekilmeli.
 - **IS zinciri %100 dolu olmadan canonical fact pack üretme:** COGS eksikse Gross Profit hesaplanamaz; D&A eksikse EBIT bridge kurulamaz. Eksik varsa CEO'ya escalate et.
+
+### 2026-04-23 — EREGL
+EREGL: KB muhtemelen git status'ta untracked olan EREGL_Yonetim_Kurulu_Raporu_20260423.html'i lokal kullandı ama bunu raporlamadı; ayrıca 20260413 versiyonunu referans gösterdi — tarih uyuşmazlığı. Kaynak audit başarısız.
+
+### 2026-04-23 — EREGL
+EREGL 20260423: data_collection output_id üretti ama content sıfır — başarısız görünmüyor ama hiçbir şey getirmiyor. Debug imkansız çünkü error log boş.
+
+### 2026-04-24 — BIMAS
+BIMAS FY2025: local cache FY2021 dosyalarını (20210308_916416) FY2025 analizi için kaynak olarak gösterdi. Bu tutarsızlık IS_NET_SPLIT ve CF_TOTAL_RECONCILE hatalarının kaynağı olabilir. Cache → KAP geçişi zorunlu.

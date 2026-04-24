@@ -107,3 +107,30 @@
 - **Delivery check her analizin sonunda ZORUNLU:** CEO gate kapısını geçmeden rapor teslim edilemez. COO bu gate'i yönetir.
 
 ---
+
+### 2026-04-22 — THYAO
+False negative: HTML hazır olmasına rağmen BLOCKED kararı çıktı. Rapor teslim edilip edilmediği belirsiz. Pipeline final durumu audit log olmadan izlenemiyor.
+
+### 2026-04-22 — THYAO
+Yarım disclaimer yasal koruma sağlamaz. THYAO raporu BIST yatırımcılarına dağıtılacaksa SPK Tebliğ II-15.1 uyumu zorunlu — tek satır eksikliği idari yaptırım riski taşır.
+
+### 2026-04-22 — THYAO
+THYAO: COO doğru bir uyarıyı (SPK) ve yanlış bir uyarıyı (HTML_ENVELOPE) birlikte blok olarak sundu. İki sorun tek 'blocked' kararına bindirilince root cause ayırt edilemiyor.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: HTML envelope mevcut ama `<html lang='tr'>` attribute COO regex'ini geçemedi, teslimat BLOCKED oldu. Bu pattern her HTML raporunda tekrarlanacak — regex güncellenmeden pipeline sürekli yanlış block üretir.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: Disclaimer agent'a bırakılırsa unutuluyor. Template'de zorunlu alan olarak tanımlanmalı; COO regex false positive olsa bile gerçek eksiklik riski ortadan kalkmaz.
+
+### 2026-04-23 — EREGL
+EREGL: formatter 8KB HTML gövdesi ürettiği halde envelope ve disclaimer atladı. Bu önceki seanslarda da raporlanan 'HTML body missing bug' ile aynı kök neden. repeat_count_hint=3 — hâlâ çözümsüz.
+
+### 2026-04-23 — EREGL
+EREGL: formatter <!DOCTYPE html> ile başladı ama COO bunu görmedi. İki bileşen arasındaki versiyon tutarsızlığı yanlış negatif üretti.
+
+### 2026-04-24 — BIMAS
+BIMAS FY2025 ve önceki BIMAS oturumu: her ikisinde de SPK disclaimer eksik çıktı. Formatter template'e statik olarak eklenmeden sorun tekrarlanacak. Pattern → formatter sistem tasarımı sorunu, ad-hoc düzeltme yetmez.
+
+### 2026-04-24 — BIMAS
+W-003 (önceki BIMAS): formatter HTML body boştu. Bu oturumda body dolu (8000 bytes) ancak kapanış tag'ı kayıp. Formatter'ın template engine'i string truncation'a karşı test edilmeli.

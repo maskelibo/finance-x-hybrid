@@ -169,3 +169,24 @@
 - **Tahmin vs gerçek ayrımı netleştirilecek:** Tüm tahmin değerleri "[TAHMİN]" tag'i taşımalı; gerçek piyasa verisi "[VERİ: kaynak]" formatında belirtilmeli.
 
 ---
+
+### 2026-04-22 — THYAO
+THYAO: MA20>MA50>MA200 bullish alignment güçlü sinyal; ancak hacim teyidi olmadan breakout doğrulaması eksik. Institutional rapor için relatif-to-index return zorunlu.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: BIST100 karşılaştırması eksik kaldı. Kurumsal raporlarda 1Y relative performance chart standart — bu eksiklik rapor formát kalitesini düşürüyor.
+
+### 2026-04-23 — THYAO
+THYAO 20260423: BIST100 +%27.65 YTD iken THYAO ~+%14.5 YTD tahmini — endeks altında ~13 puan. Bu rölatif zayıflık (alpha=-13%) teknik analiz raporunda görünmedi; trend 'bullish' olarak işaretlendi ama endeks bağlamı eksikti.
+
+### 2026-04-23 — EREGL
+EREGL: MA20>MA50>MA200 bullish alignment mevcut ama BIST-100 relative return null. Macro agent BIST100 YTD döndürseydı (şu an structured null) buraya mirror edilebilirdi. İki agent arasında veri paylaşımı koordinasyonu eksik.
+
+### 2026-04-23 — EREGL
+EREGL: EREGL 52 hafta düşüğü 20.10, yükseği 32.72 var; YTD +%50 civarı performans kuvvetli görünüyor ama BIST100 ile karşılaştırma olmadan alpha/beta analizi yapılamıyor.
+
+### 2026-04-23 — ARCLK
+ARCLK teknik: RSI=50.9 (nötr) + MACD histogram pozitif sinyaller verirken trend bearish. Hacim düşük bir yüksekte bearish sinyal, hacim yüksek bir yüksekte bullish reversal olabilir — hacim olmadan sinyal belirsiz ve raporda yanlı yoruma açık.
+
+### 2026-04-24 — BIMAS
+BIMAS oturumunda MIGROS adı geçti. Büyük olasılıkla LLM sliding window önceki oturumun bağlamını taşıdı. Otomatik şirket adı kontrolü (ticker → expected_name map) ile bu önlenebilir.

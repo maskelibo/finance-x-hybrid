@@ -99,19 +99,20 @@
 
 ---
 
-## Son Heartbeat — 2026-04-21 TSİ (Otonom Döngü #130)
-- Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar, takvim].
-- **KAP Erişim:** JS-render engeli devam. Bildirim listesi alınamadı (sistematik sorun).
-- **WTI:** $90.06 (+3.02%, Haz-26 kontr.) — Önceki döngü $82.59'dan ~+%9 artış. İran müzakere gerilimi Pazartesi petrolü yukarı taşıdı. TUPRS crack spread izlenmeli.
-- **BIST100:** 14,375 (-0.76%) — Pazartesi kapanışı, temkinli seyir. PPK öncesi bekle-gör modu.
-- **EREGL:** 33.72 (+1.26%) — 17 Nisan 32.04'ten +%5.2. 52H high 34.48'e yaklaşıyor. Q1 earnings 2 gün sonra (23 Nisan).
-- **TUPRS:** Fiyat alınamadı (404). WTI +%9 hareketi göz önünde bulundurularak izlenecek.
-- **Takvim (KRİTİK):** PPK **YARIN 22 Nisan** | EREGL Q1 earnings **23 Nisan**.
-- **Olağandışı:** WTI $82→$90 sıçraması (+%9) dikkat çekici. İran 2. tur müzakere reddi Pazartesi petrolü sertçe yukarı taşıdı. TUPRS'ta negatif maliyet baskısı riski var. EREGL 52H zirveye yakın, earnings beklentisi yüksek.
-- P0/P1 yok. **Chairman ALERT: HAYIR.**
+## Son Heartbeat — 2026-04-23 TSİ (Otonom Döngü #132)
+- Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar, takvim, EREGL kilitli fact base].
+- **KAP Erişim:** JS-render engeli devam. Bildirim listesi alınamadı (sistematik sorun devam ediyor).
+- **WTI: $95.55 (+2.79%)**, Brent: $104.82 (+2.86%). Önceki döngüden +$6.36 (+7.1%) — TEK GÜNDE BÜYÜK HAREKET. Sebep: ABD İran kargo gemisine el koydu + Hürmüz Boğazı kesinti riski artışı. Günlük aralık $92.33-$98.40. Geopolitik risk fiyatlaması devam ediyor.
+- **BIST100:** 14,335 (önceki kapanış, -0.28%) — Bugün için güncel veri alınamadı.
+- **EREGL: 32.60 TRY** (22 Nisan kapanışı). **TARİH DÜZELTME: Q1 2026 earnings 23 Nisan DEĞİL, 28 Nisan 2026.** #131'de hata vardı. Q4 2025 sonuçları EPS -0.203 (beklenti: +0.279) — kayıp vs kar beklentisi, büyük miss. Kilitli Fact Base Baz: 28.4 TRY, mevcut 32.60 TRY = Baz senaryonun %15 üzerinde. Analist konsensus hedef 32.70 TRY (nötr).
+- **TUPRS: 263.00 TRY (+3.75%)** (22 Nisan kapanışı) — WTI $89→$95 yükselişi kısa vadede inventory kazanımı sağladı. Ancak $95+ sustain edilirse ham madde maliyet baskısı dönecek. Takip gerekiyor.
+- **THYAO: 323.50 TRY (-1.07%)** (22 Nisan kapanışı) — yakıt maliyeti baskısı (WTI +%7).
+- **Takvim (KRİTİK):** EREGL Q1 2026 earnings **28 Nisan 2026** — 5 gün kaldı. Q4 2025 miss sonrası beklentiler düşük, sürpriz potansiyeli var.
+- **Olağandışı:** WTI tek günde +%7.1 (ABD-İran kargo krizi) — TUPRS için ikilik durum: kısa vade pozitif (inventory), orta vade negatif (maliyet). THYAO direkt maliyet baskısı.
+- P0/P1 yok. **Chairman ALERT: HAYIR** (watchlist boş, aktif hedef yok; geopolitik WTI hareketi izleniyor).
 
-## Önceki Heartbeat — 2026-04-19 TSİ (Döngü #129) [→ Archive]
-- Bkz. heartbeat_archive.md. WTI $82.59 (-11.45%), BIST pazar kapalı, PPK 22 Nisan / EREGL earnings 23 Nisan takvimi teyit edildi.
+## Önceki Heartbeat — 2026-04-22 TSİ (Döngü #131) [→ Archive]
+- Bkz. heartbeat_archive.md. WTI $89.19 (-0.54%), BIST 14,335 (-0.28%), EREGL 32.60 (-3.32%), PPK efektif faiz %40 kararı. Not: #131'deki "EREGL earnings 23 Nisan" tarihi hatalıydı — doğrusu 28 Nisan.
 
 ---
 

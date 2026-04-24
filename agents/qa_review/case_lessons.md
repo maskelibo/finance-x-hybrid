@@ -77,3 +77,24 @@
 
 - Rafineri: Her 1 $/bbl marj = ~5-6B TRY EBITDA. DCF WACC (TRY vs USD) kritik. Kapasite x Kullanim x Margin = FCF estimate (hizli mantik kontrolu).
 - IAS 29: Parasal kazanc muhasebe duzeltmesidir, operasyonel nakit akisi degildir. Net kar icindeki IAS 29 etkisi her zaman ayristirilmali.
+
+### 2026-04-22 — THYAO
+Önceki session qa_score: 0.757 BLOCKED, bu session qa_score: 0 — gerçekte iki session arasında kalite ölçülemedi çünkü metric üretilmedi. Trend analizi yapılamıyor.
+
+### 2026-04-22 — THYAO
+THYAO: QA'nın tek dependency financial_analysis varsayımı 6 tamamlanmış ajanı değersiz bıraktı. Partial skor hem CEO'nun karar kalitesini artırır hem de gereksiz tam yeniden çalıştırmayı önler.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: COO BLOCKED + SE boş + peer_count=0 iken QA 1.0 verdi. Matematiksel tutarlılığı doğrulayan QA, systemic kalite sorunlarını göremedi. Gerçek skor tahmin: ~0.62.
+
+### 2026-04-23 — THYAO
+THYAO 20260423: QA 'pass' dedi, COO blokladı, CEO escalate etti. QA CEO'dan önce çalışmasına rağmen CEO'nun yakaladığı hiçbir sorunu tespit etmedi. Bu durum QA gate'ini güvensiz hale getirir ve tüm pipeline güven hiyerarşisini bozar.
+
+### 2026-04-23 — EREGL
+EREGL: qa_review sıfıra düşünce CEO'nun hangi aşamanın tamamlandığına dair hiçbir bilgisi kalmadı. Partial scoring olsaydı macro+technical+final_summary ~0.72 skor üretebilirdi. Sonraki seanslarda qa_review 'gelen olmayan agent listesi' üretmeli.
+
+### 2026-04-23 — ARCLK
+ARCLK Q1-2026: QA score=1.0 (pass) iken aynı raporda DSO=0.08 gün anomalisi, boş peer benchmark, IAS 29 çözümsüz ve COO bloker bulunuyordu. QA 'pass' kararı, CEO onay gate'ini yanılttı ve hatalı rapor delivery aşamasına ulaştı.
+
+### 2026-04-24 — BIMAS
+Bu oturumda QA 0.94 skoru gerçek kalite durumunu yansıtmadı. Önceki BIMAS oturumu QA 0.80 ile BLOCKED olmuştu — daha dürüst bir değerlendirmeydi. QA'nın kendi kalite kontrolü yapılmalı.

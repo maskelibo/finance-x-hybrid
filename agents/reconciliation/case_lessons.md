@@ -75,3 +75,18 @@
 - Holding level DSO/DIO/DPO/CCC hesaplamak yanıltıcı
 - Finans sektörü alacakları (YKBNK kredi port.) ve borçları (mevduat) CCC'yi anlamsız kılar
 - Downstream: "[HOLDİNG — finans sektörü hariç segment bazlı yorumlayın]" etiketi zorunlu
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: BS_IDENTITY REDACTED değerlerle PASS döndü. Şans eseri internal değerler tutarlıydı, ama güven yanlış oluştu. Audit trail bu check'i kanıtlayamıyor.
+
+### 2026-04-23 — EREGL
+EREGL Tur-1: reconciliation approved incorrect data (Not 7/Not 8 cross-check atlandı). Bu seansta reconciliation hiç çalışmadı — final_summary 42,800mn net borç değerini doğrulanmamış olarak raporladı. repeat_count_hint 2 — kronik sorun.
+
+### 2026-04-23 — ARCLK
+ARCLK Q1-2026: reconciliation 7/7 pass verirken financial_analysis DSO=0.08 gün ile çalıştı. Sanity check'ler eklenseydi DSO anomalisi pipeline'ı erken durdurur, re-parse tetiklenirdi.
+
+### 2026-04-24 — BIMAS
+BIMAS FY2025: 1.87 Milyar TL azınlık payı uyuşmazlığı. Fas iştiraki (%65) ve Mısır (%100) konsolidasyon farkından kaynaklanıyor olabilir. Düzeltilmeden geçen ROE=%11.21 güvenilmez; gerçek parent ROE farklı olabilir.
+
+### 2026-04-24 — BIMAS
+BIMAS FY2025: FCF=19.62 Milyar TRY raporlandı ancak CF reconciliation %139.66 hata ile failed. FCF rakamı key_finding kf-01 ve strategic_synthesis'te 'güçlü FCF' argümanının temelini oluşturdu. Kirli CF ile yapılan sentez yanıltıcı.

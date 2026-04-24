@@ -5,6 +5,21 @@
 
 ---
 
+## THYAO Analiz Notu — 2026-04-22
+
+### Yeni Ders: KAP Faaliyet Raporu Wrapper vs. Gerçek PDF
+- KAP bildirim ID 1566094 (Faaliyet Raporu) yalnızca 5 sayfalık wrapper — bağımsız denetçi imzası + KAP bildirim sayfaları.
+- Gerçek "2025 Entegre Faaliyet Raporu ve TSRS Uyumlu Sürdürülebilirlik Raporu" ayrı büyük bir PDF olarak ek gönderilir.
+- **Çözüm:** THY IR sayfasından (investor.turkishairlines.com) veya KAP'ın ek dosya listesinden (BildirimId/ekler endpoint) gerçek rapor PDF'i çekilmeli.
+- **Her faaliyet raporu analizinde:** wrapper + ek attachment ikisi birlikte çekilmeli.
+
+### Q1-2025 Mevsimsellik
+- Q1-2025 net zarar: -1,818 mn TL parent — tam yıl 118,208 mn TL karla tezat
+- THY'nin Q1 düşük sezon yapısı doğrulandı; Q2-Q3 peak dönem
+- Downstream `financial_analysis`: çeyreklik karlılık normalleştirilmeli (TTM/annualized bazında değerlendirin)
+
+---
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:
@@ -168,3 +183,21 @@ Sektor ek cikarimlar:
 - **İştirak EBITDA katkısı tablosu ZORUNLU:** Segment → SAHOL payı → katkı TRY. Eksikse [PENDING] ile escalate et; tablonu boş bırakma.
 
 ---
+
+### 2026-04-22 — THYAO
+Yabancı yatırımcı oranı THYAO'da kritik: BIST'te yabancı çıkışı TRY kurunu ve hisse fiyatını eş zamanlı baskılar. Bu veri eksikliği risk bölümündeki 'TRY kur baskısı' değerlendirmesini eksik bıraktı.
+
+### 2026-04-22 — THYAO
+THYAO: Turkish Cargo 2025'te yaklaşık $3-4B gelir katkısı yapıyor — bu segmenti null bırakmak peer CASK/RASK karşılaştırmasını ve valuation'ı etkiler.
+
+### 2026-04-22 — THYAO
+THYAO: Yabancı yatırımcı oranı özellikle TVF-kontrollü şirkette kritik — %40+ yabancı oranında ani çıkış liquidity krizi yaratır. Bu veri risk scoring'de kullanılıyor.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis: Kargo geliri bilinmeden segment analizi yapılamadı. Faaliyet raporu yerel disktte mevcut — PDF okuma hatası varsa parse_standardization'ın kargo segmentini deneyen fallback'i tetiklenmiyor.
+
+### 2026-04-23 — THYAO
+THYAO 20260423: YK Raporu 20260422 CEO mandate'de 'birincil kaynak olarak tüm agent'lara ilet' notuydu ama context_extraction agent'ı bu dosyayı kullanmadı. CEO mektubu ve yönetim taahhütleri director görevlerinde bağlılık kararları içeriyor — tamamı kaçırıldı.
+
+### 2026-04-23 — EREGL
+EREGL: yabancı yatırımcı oranı eksikliği nedeniyle Nisan 2026 dolar güçlenmesi döneminde yabancı satış baskısı senaryo analizi yapılamadı. Bu veri boşluğu özellikle TRY volatil dönemlerde kritik.

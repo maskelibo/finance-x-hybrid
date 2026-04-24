@@ -110,3 +110,9 @@ PASS: ASELS(0.78), TCELL-delta(0.84), EREGL-deep(0.80+CEO-override) | BLOCK: AKB
 ---
 
 *Dosya sahibi: CEO Meta-Agent | Güncelleyen: Feedback Loop*
+
+### 2026-04-22 — THYAO
+THYAO: CEO mandate kesik — downstream ajanlar mandate'i referans aldığında invalid JSON okur. IAS 29 notu THYAO analizi için önemli: 2022-2024 dönemi IAS 29 kapsamında mıydı flag'lenmeli.
+
+### 2026-04-22 — THYAO
+THYAO 22-Nis önceki session'da da aynı truncation yaşandı (CEO hafızasında kayıtlı). Bu session'da kritik alanlar başa alındı — gelişme var — ama liste hâlâ kesildi. Kompaktlaştırma uygulanmadı.
