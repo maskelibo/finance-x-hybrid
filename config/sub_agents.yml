@@ -13,7 +13,10 @@ sub_agents:
     description: "5 yıllık IS/BS/CF/SE tablolarını KAP ve faaliyet raporundan toplar."
     tier: llm
     model: sonnet
-    timeout_ms: 300000
+    # 2026-04-24 benchmark: actual provider wall-clock 1082s despite 300s
+    # nominal timeout (Windows cmd.exe→claude.cmd kill-signal swallow).
+    # Bumped to 900s to leave realistic headroom for 5Y KAP multi-source hunt.
+    timeout_ms: 900000
     isolated_context: false
     output_schema_path: schemas/sub-agents/dc_financials_collector.json
     parallelizable: true
@@ -49,7 +52,9 @@ sub_agents:
     description: "Annual report, IR presentation, sustainability report, ESG docs."
     tier: llm
     model: sonnet
-    timeout_ms: 360000
+    # 2026-04-24 benchmark: 477s actual vs 360s nominal. Bumped to 900s
+    # (15 min) for realistic multi-doc crawling headroom.
+    timeout_ms: 900000
     isolated_context: false
     output_schema_path: schemas/sub-agents/dc_reference_docs_collector.json
     parallelizable: true

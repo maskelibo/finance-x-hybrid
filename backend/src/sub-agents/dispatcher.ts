@@ -180,11 +180,39 @@ async function runLlmSubAgent(
   ].join('\n');
 
   const modelKey = def.model ?? 'sonnet';
-  const providerResult = await providerRouter.run({
-    prompt: fullPrompt,
-    model: MODEL_IDS[modelKey],
-    timeoutMs: def.timeout_ms,
-  });
+  // Windows claude spawn path goes through `cmd.exe /d /s /c claude.cmd ...`.
+  // SIGTERM on the cmd.exe wrapper does not propagate to the real claude
+  // subprocess (seen 2026-04-24 KCHOL shadow benchmark: sub-agent timeout_ms
+  // 300s → actual wall-clock 1082s). The provider's own setTimeout-and-kill
+  // still fires, but Node's `close` event waits for stdout pipes to close
+  // which the grandchild keeps open. We add a dispatcher-level Promise.race
+  // deadline: provider's timeout_ms + 30s grace. After that, the sub-agent
+  // result is reported as timeout and the dispatcher moves on; the orphan
+  // claude.cmd process finishes at its own pace without blocking siblings.
+  const deadlineMs = def.timeout_ms + 30_000;
+  const providerResult = await Promise.race([
+    providerRouter.run({
+      prompt: fullPrompt,
+      model: MODEL_IDS[modelKey],
+      timeoutMs: def.timeout_ms,
+    }),
+    new Promise<import('../llm/types.js').ProviderRunResult>((resolve) =>
+      setTimeout(
+        () =>
+          resolve({
+            success: false,
+            output: '',
+            error: `dispatcher hard deadline ${deadlineMs}ms exceeded — provider did not return`,
+            errorType: 'timeout',
+            durationMs: deadlineMs,
+            tokensUsed: 0,
+            costUsd: 0,
+            provider: 'claude',
+          }),
+        deadlineMs,
+      ),
+    ),
+  ]);
 
   if (!providerResult.success) {
     return {
