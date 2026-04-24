@@ -224,6 +224,29 @@ async function runLlmSubAgent(
   };
 }
 
+/**
+ * Platform-aware Python binary path for deterministic sub-agents.
+ *
+ * Mirrors src/python/bridge.ts so we stay on the same venv that already
+ * hosts the financex CLI. Overridable via FINANCEX_PYTHON_BIN — useful
+ * when running outside the repo-local venv.
+ *
+ * We call python.exe / python directly (not `uv run`) because `uv` is not
+ * guaranteed to be on PATH (Windows dev boxes in particular), and Node's
+ * spawn() without a shell does not do PATH resolution the same way bash
+ * does. Spawn errors without an 'error' handler crash the whole backend
+ * (seen 2026-04-24 Block S benchmark). The runDeterministicSubAgent()
+ * below attaches an 'error' listener, so ENOENT returns a SubAgentResult
+ * instead of unwinding the process.
+ */
+function resolveSubagentPythonBin(): string {
+  const override = process.env.FINANCEX_PYTHON_BIN;
+  if (override && override.trim().length > 0) return override;
+  return process.platform === 'win32'
+    ? path.join(PROJECT_ROOT, 'python-services', '.venv', 'Scripts', 'python.exe')
+    : path.join(PROJECT_ROOT, 'python-services', '.venv', 'bin', 'python');
+}
+
 async function runDeterministicSubAgent(
   def: SubAgentDef,
   task: SubAgentTask,
@@ -232,21 +255,51 @@ async function runDeterministicSubAgent(
     throw new Error(`Deterministic sub-agent ${def.id} has no python_module`);
   }
 
+  const startedAt = Date.now();
+  const pythonBin = resolveSubagentPythonBin();
+  const args = ['-m', def.python_module, JSON.stringify(task.task_inputs)];
+  const cwd = path.join(PROJECT_ROOT, 'python-services');
+
   return new Promise((resolve) => {
-    const proc = spawn(
-      'uv',
-      ['run', 'python', '-m', def.python_module!, JSON.stringify(task.task_inputs)],
-      { cwd: path.join(PROJECT_ROOT, 'python-services') },
-    );
+    let resolved = false;
+    const settle = (result: SubAgentResult) => {
+      if (resolved) return;
+      resolved = true;
+      resolve(result);
+    };
+
+    let proc: ReturnType<typeof spawn>;
+    try {
+      proc = spawn(pythonBin, args, {
+        cwd,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        env: {
+          ...process.env,
+          PYTHONIOENCODING: 'utf-8',
+          PYTHONUTF8: '1',
+        },
+      });
+    } catch (err) {
+      return settle({
+        sub_agent_id: def.id,
+        status: 'failed',
+        output: '',
+        output_parsed: null,
+        duration_ms: Date.now() - startedAt,
+        tokens_used: 0,
+        cost_usd: 0,
+        error: `spawn threw: ${errMsg(err)} (bin=${pythonBin})`,
+      });
+    }
 
     let stdout = '';
     let stderr = '';
-    proc.stdout.on('data', (d) => (stdout += d.toString()));
-    proc.stderr.on('data', (d) => (stderr += d.toString()));
+    proc.stdout?.on('data', (d) => (stdout += d.toString('utf-8')));
+    proc.stderr?.on('data', (d) => (stderr += d.toString('utf-8')));
 
     const timer = setTimeout(() => {
-      proc.kill();
-      resolve({
+      try { proc.kill('SIGTERM'); } catch { /* ignore */ }
+      settle({
         sub_agent_id: def.id,
         status: 'timeout',
         output: stdout,
@@ -258,41 +311,59 @@ async function runDeterministicSubAgent(
       });
     }, def.timeout_ms);
 
+    // CRITICAL: handle 'error' event — without this, an ENOENT from spawn()
+    // becomes an unhandled ChildProcess error that kills the backend.
+    // Seen 2026-04-24 when `uv` was used on a Windows box.
+    proc.on('error', (err) => {
+      clearTimeout(timer);
+      settle({
+        sub_agent_id: def.id,
+        status: 'failed',
+        output: stdout,
+        output_parsed: null,
+        duration_ms: Date.now() - startedAt,
+        tokens_used: 0,
+        cost_usd: 0,
+        error: `spawn error: ${err.message} (bin=${pythonBin})`,
+      });
+    });
+
     proc.on('close', (code) => {
       clearTimeout(timer);
+      const durationMs = Date.now() - startedAt;
       if (code !== 0) {
-        return resolve({
+        return settle({
           sub_agent_id: def.id,
           status: 'failed',
           output: stdout,
           output_parsed: null,
-          duration_ms: 0,
+          duration_ms: durationMs,
           tokens_used: 0,
           cost_usd: 0,
-          error: stderr || `Python module exited with code ${code}`,
+          error: stderr.trim() || `Python module exited with code ${code}`,
         });
       }
       try {
         const parsed = JSON.parse(stdout);
-        resolve({
+        settle({
           sub_agent_id: def.id,
           status: 'completed',
           output: stdout,
           output_parsed: parsed,
-          duration_ms: 0,
+          duration_ms: durationMs,
           tokens_used: 0,
           cost_usd: 0,
         });
       } catch (err) {
-        resolve({
+        settle({
           sub_agent_id: def.id,
           status: 'failed',
           output: stdout,
           output_parsed: null,
-          duration_ms: 0,
+          duration_ms: durationMs,
           tokens_used: 0,
           cost_usd: 0,
-          error: `JSON parse failed: ${errMsg(err)}`,
+          error: `JSON parse failed: ${errMsg(err)} | stderr=${stderr.trim().substring(0, 300)}`,
         });
       }
     });
