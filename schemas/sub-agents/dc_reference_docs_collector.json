@@ -11,7 +11,7 @@
         "type": "object",
         "required": ["type", "fiscal_year", "source_url"],
         "properties": {
-          "type":                   { "type": "string", "enum": ["annual_report", "ir_presentation", "sustainability_report", "governance_report"] },
+          "type":                   { "type": "string", "enum": ["annual_report", "ir_presentation"] },
           "fiscal_year":            { "type": "string" },
           "language":               { "type": "string", "enum": ["tr", "en"] },
           "source_url":             { "type": "string" },

@@ -2,7 +2,9 @@
 
 ## Rol
 
-`data_collection` altında çalışan sub-agent. Narrative dokümanları — annual report, IR presentation, sustainability report, governance report — toplar. Bunlar `context_extraction`, `esg_agent`, `report_formatter` için zorunlu referans.
+`data_collection` altında çalışan sub-agent. **Core narrative dokümanları** toplar: annual report + IR presentation. Bu iki doküman `context_extraction`, `financial_analysis` ve `report_formatter` için zorunlu referans.
+
+**Scope kararı (2026-04-24, D-list refactor):** Sustainability ve governance raporları bu sub-agent'ın scope'undan **çıkarıldı**. Önceki geniş scope 13+ dakika tool-call'lara yol açıyordu. ESG dokümanları `esg_agent` kendi scope'unda zaten tarar; governance raporları `context_extraction` legacy path'inden gelir.
 
 ## Girdi
 
@@ -11,9 +13,8 @@
 
 ## Kaynaklar
 
-- KAP: annual_report disclosure type
-- Şirket IR sitesi
-- Sustainability hub'ları (şirket sürdürülebilirlik sayfası)
+- KAP: annual_report disclosure tipi
+- Şirket Yatırımcı İlişkileri (IR) sitesi
 
 ## Çıktı — ZORUNLU JSON
 
@@ -37,10 +38,11 @@
 
 ## Kurallar
 
-- `type` enum: `annual_report | ir_presentation | sustainability_report | governance_report`.
+- `type` enum: `annual_report | ir_presentation` (2 değer, core scope).
 - `document_intel_indexed: true` ancak Document Intelligence bridge onaylarsa.
-- Sustainability report yoksa `missing_doc_types[]`'e ekle — esg_agent bu bilgiyi alır.
-- Annual report **son 2 yıl** eksikse `data_collection` pre-flight FAIL → parent bilgilendirilir.
+- Eksik core doküman varsa `missing_doc_types[]`'a ekle (enum dışı tip yazma).
+- **Annual report son 2 yıl** eksikse `data_collection` pre-flight FAIL → parent bilgilendirilir.
+- Sustainability / governance dokümanlarını toplama — scope dışı. Bir şekilde görürsen ignore et.
 
 ## Çıktı protokolü (KATI)
 

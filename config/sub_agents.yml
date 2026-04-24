@@ -50,12 +50,15 @@ sub_agents:
   - id: dc_reference_docs_collector
     parent_agent_id: data_collection
     display_name: "Reference Documents Collector"
-    description: "Annual report, IR presentation, sustainability report, ESG docs."
+    description: "Annual report + IR presentation (core narrative docs)."
     tier: llm
     model: sonnet
-    # 2026-04-24 benchmark: 477s actual vs 360s nominal. Bumped to 900s
-    # (15 min) for realistic multi-doc crawling headroom.
-    timeout_ms: 900000
+    # 2026-04-24 D-list refactor: scope narrowed from 4 doc types to 2
+    # (annual_report + ir_presentation). Sustainability + governance moved
+    # out of scope (esg_agent / context_extraction own them). Cap bumped
+    # 900s → 1200s so 88% utilization drops to ~35-40% with the narrower
+    # scope — plenty of headroom, no hang risk.
+    timeout_ms: 1200000
     isolated_context: false
     output_schema_path: schemas/sub-agents/dc_reference_docs_collector.json
     parallelizable: true
