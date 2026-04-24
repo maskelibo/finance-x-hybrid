@@ -30,6 +30,6 @@ export const VALID_ANALYSIS_LAYERS = new Set<AnalysisLayer>(
 
 export const MODE_DEFAULT_LAYERS: Record<RuntimeMode, AnalysisLayer[]> = {
   fast_screening: ['fundamental', 'technical', 'events'],
-  standard_institutional: ['fundamental', 'technical', 'events', 'sector', 'macro', 'knowledge'],
+  standard_institutional: ['fundamental', 'technical', 'events', 'sector', 'macro', 'knowledge', 'valuation'],
   deep_dive: ANALYSIS_LAYERS.map((layer) => layer.id),
 };
