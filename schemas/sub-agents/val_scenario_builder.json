@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VAL Scenario Builder Output",
+  "type": "object",
+  "required": ["ticker", "current_price_try", "scenarios", "weighted_blended_target_try", "data_gaps"],
+  "properties": {
+    "ticker":                     { "type": "string" },
+    "current_price_try":          { "type": ["number", "null"] },
+    "scenarios": {
+      "type": "object",
+      "required": ["bear", "base", "bull"],
+      "properties": {
+        "bear": { "$ref": "#/definitions/Scenario" },
+        "base": { "$ref": "#/definitions/Scenario" },
+        "bull": { "$ref": "#/definitions/Scenario" }
+      }
+    },
+    "weighted_blended_target_try":{ "type": "number" },
+    "weights_rationale":          { "type": "string" },
+    "sensitivity":                { "type": "object" },
+    "investment_rationale":       { "type": "string", "maxLength": 800 },
+    "data_gaps":                  { "type": "array" }
+  },
+  "definitions": {
+    "Scenario": {
+      "type": "object",
+      "required": ["target_price_try", "key_assumptions"],
+      "properties": {
+        "target_price_try":     { "type": "number" },
+        "implied_upside_pct":   { "type": ["number", "null"] },
+        "key_assumptions":      { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    }
+  }
+}

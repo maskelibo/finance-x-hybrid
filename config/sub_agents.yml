@@ -248,7 +248,59 @@ sub_agents:
     parallelizable: false   # sequential after the first two
     retry_max: 2
 
-  # S7  — valuation_agent       (4 sub-agents, parallel)
+  # ===== S7 — valuation_agent (4 sub-agents) =====
+  - id: val_trading_comps
+    parent_agent_id: valuation_agent
+    display_name: "Trading Comparables"
+    description: "P/E, EV/EBITDA, P/B peer multiples + applied ranges."
+    tier: llm
+    model: sonnet
+    timeout_ms: 600000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/val_trading_comps.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: val_dcf
+    parent_agent_id: valuation_agent
+    display_name: "DCF Valuation"
+    description: "WACC, 5-10Y FCF projection, terminal value, sensitivity table."
+    tier: llm
+    model: sonnet
+    timeout_ms: 720000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/val_dcf.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: val_sotp
+    parent_agent_id: valuation_agent
+    display_name: "Sum-of-the-Parts"
+    description: "Holding için segment NAV + holding discount; non-holding'de applicable=false."
+    tier: llm
+    model: sonnet
+    timeout_ms: 720000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/val_sotp.json
+    parallelizable: true
+    retry_max: 2
+    # Plan'da conditional_trigger: "sector == 'holding'" önerilmiş. Dispatcher
+    # şu an koşulsuz çalıştırıyor — prompt non-holding case'i handle ediyor
+    # (applicable=false döner). Dispatcher-level conditional trigger S12
+    # cutover'da.
+
+  - id: val_scenario_builder
+    parent_agent_id: valuation_agent
+    display_name: "Scenario Builder"
+    description: "Bear/Base/Bull senaryolar + sensitivity matrix, önceki 3 valuation çıktısını aggregate eder."
+    tier: llm
+    model: sonnet
+    timeout_ms: 420000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/val_scenario_builder.json
+    parallelizable: false
+    retry_max: 2
+
   # S8  — sector_competition    (3 sub-agents + holding dynamic)
   # S9  — event_impact_mapper   (2 sub-agents, parallel)
   # S10 — final_summary         (3 sub-agents, parallel)

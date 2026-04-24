@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VAL DCF Output",
+  "type": "object",
+  "required": ["ticker", "wacc", "fcf_projection_try_mn", "terminal_value", "target_price_try", "data_gaps"],
+  "properties": {
+    "ticker":                 { "type": "string" },
+    "wacc":                   { "type": "object" },
+    "fcf_projection_try_mn":  { "type": "object" },
+    "terminal_value":         { "type": "object" },
+    "enterprise_value_try_mn":{ "type": ["number", "null"] },
+    "equity_value_try_mn":    { "type": ["number", "null"] },
+    "target_price_try":       { "type": "number" },
+    "current_price_try":      { "type": ["number", "null"] },
+    "implied_upside_pct":     { "type": ["number", "null"] },
+    "sensitivity":            { "type": "object" },
+    "assumptions_narrative":  { "type": "string" },
+    "data_gaps":              { "type": "array" }
+  }
+}

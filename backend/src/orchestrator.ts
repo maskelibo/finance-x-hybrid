@@ -29,6 +29,7 @@ import { runDataCollectionSubagentAware } from './python/agent_runners/data_coll
 import { runParseStandardizationSubagentAware } from './python/agent_runners/parse_standardization_with_subagents.js';
 import { fireFinancialAnalysisShadow } from './python/agent_runners/financial_analysis_subagent_shadow.js';
 import { fireMacroAnalysisShadow } from './python/agent_runners/macro_analysis_subagent_shadow.js';
+import { fireValuationShadow } from './python/agent_runners/valuation_subagent_shadow.js';
 import { runPythonParseStandardization } from './python/agent_runners/parse_standardization.js';
 import { runPythonReconciliation } from './python/agent_runners/reconciliation.js';
 import { runPythonFinancialAnalysis } from './python/agent_runners/financial_analysis.js';
@@ -928,6 +929,8 @@ ${faContext}
         console.warn(`[HYBRID] valuation_agent LLM enrichment error: ${err.message} — keeping Python-only`);
       }
     }
+    // Part 2 / S7 — fire valuation sub-agents in shadow mode.
+    fireValuationShadow(sessionId, runId, ticker, accumulatedContext);
     return 'ok';
   }
   if (PYTHON_ANALYST_CONSENSUS_ENABLED && agentId === 'analyst_consensus_agent') {

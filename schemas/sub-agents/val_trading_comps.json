@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VAL Trading Comparables Output",
+  "type": "object",
+  "required": ["ticker", "peer_group", "multiples", "applied_target", "data_gaps"],
+  "properties": {
+    "ticker":      { "type": "string" },
+    "peer_group":  { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "multiples":   { "type": "object" },
+    "applied_target": {
+      "type": "object",
+      "required": ["primary_multiple", "target_price_try"],
+      "properties": {
+        "primary_multiple":  { "type": "string" },
+        "target_price_try":  { "type": "object" },
+        "current_price_try": { "type": ["number", "null"] },
+        "implied_upside_pct":{ "type": "object" }
+      }
+    },
+    "rationale":   { "type": "string" },
+    "data_gaps":   { "type": "array" }
+  }
+}
