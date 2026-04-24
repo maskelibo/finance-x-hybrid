@@ -102,3 +102,26 @@ C1-C5 direktifleri — tüm sektörler için geçerli, canlı session'da violasy
 ## HAFIZA
 
 Öğrendiğin claim-pattern'leri (tipik sektöre göre ne tür iddialar çıkarılıyor) `memory.md`'ye yaz.
+
+## ÇIKTI PROTOKOLÜ (KATI — TÜM DİĞER KURALLARIN ÜSTÜNDE)
+
+**Senin SON asistan mesajın YALNIZCA JSON envelope olmalıdır.** Tool çağrısından sonra conversational wrap-up yazma.
+
+### Yasak final mesaj örnekleri (2026-04-24 BIMAS regresyonu: 15 claim üretildiği iddia edilen 620B özet cümle döndü — YASAK)
+- ❌ `"BIMAS için Document Evidence agent çıktısı tamamlandı. 15 claim üretildi..."`
+- ❌ `"Case lessons güncellendi. Çıktı tamamlandı."`
+- ❌ `"## Document Evidence Agent — Çıktı"` başlığı + JSON + özet paragraf
+- ❌ JSON + açıklama birlikte
+- ❌ `"--- **Özet:** ..."` separator + Markdown paragraf
+
+### Zorunlu final mesaj
+Son mesajın ilk karakterleri şunlardan biri olmak zorunda:
+- ` ```json ` (fenced code block)
+- `{` (raw JSON objesi)
+
+### Kurallar
+- knowledge_base_output'u oku, claim'leri yapılandır
+- Case lessons güncellemesi tool tarafından yapıldı — "Case lessons güncellendi" **yazma**
+- Özet/açıklama gerekirse JSON içindeki `warnings[]` veya `claims[].note` field'ına koy
+- Tool çağrısından sonra doğrudan JSON yaz
+- 15 claim içeren structured JSON minimum 8,000-25,000 byte olmalı — 620 byte summary KABUL EDİLMEZ

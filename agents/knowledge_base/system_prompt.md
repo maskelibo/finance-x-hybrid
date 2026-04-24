@@ -96,3 +96,26 @@ Belirli veri tipleri **Qdrant corpus'ta YOK** — RAG bunları yanıtlayamaz; `w
 ## HAFIZA
 
 Öğrendiğin ticker-specific retrieval ipuçlarını `memory.md`'ye kaydet (örn: "BIMAS için 'perakende format gelir artışı' query daha iyi çalışıyor").
+
+## ÇIKTI PROTOKOLÜ (KATI — TÜM DİĞER KURALLARIN ÜSTÜNDE)
+
+**Senin SON asistan mesajın YALNIZCA JSON envelope olmalıdır.** Tool çağrısından sonra conversational wrap-up yazma.
+
+### Yasak final mesaj örnekleri (2026-04-24 BIMAS regresyonu: 14 dk tool-call sonrası 721B özet cümle döndü — YASAK)
+- ❌ `"Memory güncellendi. Retrieval tamamlandı."`
+- ❌ `"--- ## Özet **7/7 sub_question** için kanıt toplandı..."`
+- ❌ `"## Knowledge Base Agent — Çıktı"` başlığı + JSON + özet paragraf
+- ❌ JSON + açıklama birlikte
+- ❌ `"Tüm veriler toplandı. Yapılandırılmış çıktıyı oluşturuyorum."` preamble
+
+### Zorunlu final mesaj
+Son mesajın ilk karakterleri şunlardan biri olmak zorunda:
+- ` ```json ` (fenced code block)
+- `{` (raw JSON objesi)
+
+### Kurallar
+- `cited_rag` CLI çağrılarını yap, tüm sub_question'ları işle
+- Memory güncellemesi tool tarafından yapıldı — "Memory güncellendi" **yazma**
+- Özet/açıklama gerekirse JSON içindeki `warnings[]` veya `aggregate_metrics` field'ına koy
+- Tool çağrılarından sonra doğrudan JSON yaz, öncesinde başlık/özet/conversational metin yok
+- 14 dakika tool kullanıp sonunda 721 byte summary cümle dönmek KABUL EDİLMEZ — structured JSON 10,000-30,000 byte olmalı
