@@ -10,13 +10,14 @@ sub_agents:
   - id: dc_financials_collector
     parent_agent_id: data_collection
     display_name: "Financial Statements Collector"
-    description: "5 yıllık IS/BS/CF/SE tablolarını KAP ve faaliyet raporundan toplar."
-    tier: llm
-    model: sonnet
-    # 2026-04-24 benchmark: actual provider wall-clock 1082s despite 300s
-    # nominal timeout (Windows cmd.exe→claude.cmd kill-signal swallow).
-    # Bumped to 900s to leave realistic headroom for 5Y KAP multi-source hunt.
-    timeout_ms: 900000
+    description: "Legacy data_collection manifest'inden financial_report dokümanlarını IS/BS/CF/SE tablolarına deterministik olarak dağıtır."
+    # D-listesi refactor (2026-04-24): LLM tier 18 dk tool-call loop'una
+    # giriyordu (930s deadline, 0 byte stdout). Legacy data_collection
+    # manifest'i zaten KAP'tan 5Y financial_report'ları fetch ediyor —
+    # sub-agent onu parse edip schema-compliant çıktıya çevirir. 0 LLM, <1s.
+    tier: deterministic
+    python_module: financex.subagents.dc_financials
+    timeout_ms: 60000
     isolated_context: false
     output_schema_path: schemas/sub-agents/dc_financials_collector.json
     parallelizable: true

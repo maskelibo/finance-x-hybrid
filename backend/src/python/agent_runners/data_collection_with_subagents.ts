@@ -53,7 +53,14 @@ async function runSubAgents(
     'data_collection',
     runId,
     sessionId,
-    { ticker, fact_pack: accumulatedContext['fact_pack'] ?? null },
+    {
+      ticker,
+      fact_pack: accumulatedContext['fact_pack'] ?? null,
+      // D-listesi fix (2026-04-24): dc_financials_collector is deterministic
+      // and parses the legacy manifest directly — pass it through task_inputs
+      // so the sub-agent doesn't need to re-crawl KAP.
+      data_collection_output: accumulatedContext['data_collection_output'] ?? null,
+    },
     accumulatedContext,
     compileDataCollectionOutput,
   );
