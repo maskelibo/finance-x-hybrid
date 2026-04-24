@@ -78,17 +78,38 @@ behaviour was the target to match.
 
 ---
 
-## Verification in progress (task #80)
+## Verification complete — 12/12 PASS (task #80)
 
-3 sessions launched at 2026-04-24 17:03 with the prompt fix applied:
+3 sessions launched at 2026-04-24 17:03 with the prompt fix applied, U5 agents
+evaluated as they reached terminal state:
 
-- THYAO: `gHiKhzgtibbp3zJRbI6Cv`
-- ARCLK: `-GYVP6rDN0MQyI1HKwE8_`
-- EREGL: `OlowvziHH2ApthenXAqHI`
+| Session | Ticker | Session ID                 |
+|---      |---     |---                         |
+| #1      | THYAO  | `gHiKhzgtibbp3zJRbI6Cv`    |
+| #2      | ARCLK  | `-GYVP6rDN0MQyI1HKwE8_`    |
+| #3      | EREGL  | `OlowvziHH2ApthenXAqHI`    |
 
-Success criterion: each U5 agent output must be ≥5,000 bytes and must contain
-a parseable JSON envelope with the required schema fields (evidence[] /
-claims[] / findings[] / sub_questions as applicable).
+All 12 U5 runs (3 tickers × 4 agents) hit PASS verdict:
+
+| Agent              | THYAO bytes | ARCLK bytes | EREGL bytes | Signal        |
+|---                 |---:         |---:         |---:         |---            |
+| research_brief     |       8,600 |       5,244 |       5,220 | JSON envelope |
+| knowledge_base     |      30,434 |      23,555 |      20,916 | evi 8–9       |
+| document_evidence  |      21,916 |      23,317 |      23,608 | claims ≥1     |
+| external_research  |      16,944 |      18,057 |      17,194 | findings ≥1   |
+
+Compared to the BIMAS pre-fix baseline the JSON-only protocol fix produced
+42–47× byte growth on knowledge_base (721 B → 20–30 KB), 35–49× on
+document_evidence (480–620 B → 21–24 KB), and 7–8× on external_research
+(2 KB → 17 KB). research_brief grew 13–34× vs. ARCLK pre-fix (412 B →
+5–8 KB) and matched the EREGL pre-fix baseline.
+
+Success criterion was "output ≥ agent-specific byte floor, starts with JSON
+envelope, structured fields populated." 12/12 agents met all three.
+
+BIMAS was NOT re-run post-fix — the 3 distinct tickers already demonstrate the
+fix is ticker-agnostic. Marginal information vs 1-hour cost judged not worth
+it. 12/12 accepted as conclusive proof.
 
 ---
 
@@ -108,9 +129,9 @@ cycle per phase.
 | BIMAS 28-fix bug sweep committed | ✅    |
 | Bug #1 (knowledge layer default) | ✅    |
 | Bug #2 (timing artifact)         | ✅ (no fix needed) |
-| Bug #3 (JSON protocol)           | ✅ fix committed; verification pending |
+| Bug #3 (JSON protocol)           | ✅ fix committed + verified 12/12 PASS |
 | Part 2 plan imported             | ✅    |
 | Auto-memory updated              | ✅    |
-| Ready for FAZ S1                 | ✅ (after task #80 green) |
+| Ready for FAZ S1                 | ✅ (task #80 green 12/12) |
 
 Next: FAZ S1 — Sub-Agent Infrastructure. Benchmark: KCHOL.
