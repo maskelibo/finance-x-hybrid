@@ -37,6 +37,7 @@ import { runPythonMacroAnalysis } from './python/agent_runners/macro_analysis.js
 import { runPythonSentimentNews } from './python/agent_runners/sentiment_news.js';
 import { runPythonEventClassification } from './python/agent_runners/event_classification.js';
 import { runPythonEventImpactMapper } from './python/agent_runners/event_impact_mapper.js';
+import { fireEventImpactShadow } from './python/agent_runners/event_impact_mapper_subagent_shadow.js';
 import { runPythonCoo } from './python/agent_runners/coo.js';
 import { runPythonQaReview } from './python/agent_runners/qa_review.js';
 import { runPythonSectorCompetition } from './python/agent_runners/sector_competition.js';
@@ -780,7 +781,10 @@ ${digestUpstream(snPythonOutput, 20000, { label: 'sentiment_news.python' }).dige
   }
   if (PYTHON_EVENT_IMPACT_MAPPER_ENABLED && agentId === 'event_impact_mapper') {
     const outcome = await runPythonEventImpactMapper(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // Part 2 / S9 — fire event_impact_mapper sub-agents in shadow mode.
+    fireEventImpactShadow(sessionId, runId, ticker, accumulatedContext);
+    return 'ok';
   }
   if (PYTHON_COO_ENABLED && agentId === 'coo') {
     const outcome = await runPythonCoo(sessionId, runId, ticker, accumulatedContext);

@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EIM Accounting Impact Mapper Output",
+  "type": "object",
+  "required": ["ticker", "event_accounting_impacts"],
+  "properties": {
+    "ticker": { "type": "string" },
+    "event_accounting_impacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "event_summary", "statement_impacts"],
+        "properties": {
+          "event_id":      { "type": "string" },
+          "event_summary": { "type": "string" },
+          "statement_impacts": {
+            "type": "object",
+            "properties": {
+              "income_statement":  { "type": "array", "items": { "$ref": "#/definitions/LineImpact" } },
+              "balance_sheet":     { "type": "array", "items": { "$ref": "#/definitions/LineImpact" } },
+              "cash_flow":         { "type": "array", "items": { "$ref": "#/definitions/LineImpact" } }
+            }
+          },
+          "ifrs_treatment":   { "type": ["string", "null"], "maxLength": 400 },
+          "disclosure_required": { "type": "boolean" },
+          "notes":            { "type": "string", "maxLength": 600 }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "events_analyzed":    { "type": "integer", "minimum": 0 },
+        "primary_statements_affected": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["income_statement", "balance_sheet", "cash_flow", "equity"] }
+        },
+        "narrative":          { "type": "string", "maxLength": 600 }
+      }
+    },
+    "data_gaps": { "type": "array", "items": { "type": "string" } }
+  },
+  "definitions": {
+    "LineImpact": {
+      "type": "object",
+      "required": ["line_item", "direction"],
+      "properties": {
+        "line_item":   { "type": "string" },
+        "direction":   { "type": "string", "enum": ["increase", "decrease", "neutral"] },
+        "magnitude":   { "type": ["string", "null"] },
+        "rationale":   { "type": ["string", "null"], "maxLength": 300 }
+      }
+    }
+  }
+}

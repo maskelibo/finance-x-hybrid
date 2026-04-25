@@ -3,7 +3,7 @@
 # Shape: see backend/src/sub-agents/types.ts (SubAgentDef).
 
 version: 1.0.0
-last_updated: "2026-04-25"
+last_updated: "2026-04-25"  # S9 added
 
 sub_agents:
   # ===== S2 — data_collection (4 sub-agents, parallel) =====
@@ -338,6 +338,30 @@ sub_agents:
     parallelizable: true
     retry_max: 2
 
-  # S9  — event_impact_mapper   (2 sub-agents, parallel)
+  # ===== S9 — event_impact_mapper (2 sub-agents, parallel) =====
+  - id: eim_quant_mapper
+    parent_agent_id: event_impact_mapper
+    display_name: "Quantitative Impact Mapper"
+    description: "Her event için sayısal etki (mn TL, %)."
+    tier: llm
+    model: sonnet
+    timeout_ms: 240000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/eim_quant_mapper.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: eim_accounting_mapper
+    parent_agent_id: event_impact_mapper
+    display_name: "Accounting Impact Mapper"
+    description: "Her event için IS/BS/CF kalem etkisi."
+    tier: llm
+    model: sonnet
+    timeout_ms: 240000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/eim_accounting_mapper.json
+    parallelizable: true
+    retry_max: 2
+
   # S10 — final_summary         (3 sub-agents, parallel)
   # S11 — strategic_synthesis   (3 sub-agents, sequential)

@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EIM Quantitative Impact Mapper Output",
+  "type": "object",
+  "required": ["ticker", "event_impacts", "summary"],
+  "properties": {
+    "ticker": { "type": "string" },
+    "event_impacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "event_summary", "estimated_impact"],
+        "properties": {
+          "event_id":      { "type": "string" },
+          "event_date":    { "type": ["string", "null"] },
+          "event_summary": { "type": "string" },
+          "estimated_impact": {
+            "type": "object",
+            "required": ["direction", "confidence"],
+            "properties": {
+              "direction":           { "type": "string", "enum": ["positive", "negative", "neutral", "mixed"] },
+              "magnitude_try_mn":    { "type": ["number", "null"] },
+              "magnitude_pct_revenue": { "type": ["number", "null"] },
+              "magnitude_pct_ebitda":  { "type": ["number", "null"] },
+              "confidence":          { "type": "string", "enum": ["low", "medium", "high"] },
+              "horizon":             { "type": ["string", "null"], "enum": ["one_off", "quarter", "year", "multi_year", null] },
+              "rationale":           { "type": "string", "maxLength": 500 }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["events_analyzed", "net_direction"],
+      "properties": {
+        "events_analyzed":    { "type": "integer", "minimum": 0 },
+        "net_direction":      { "type": "string", "enum": ["positive", "negative", "neutral", "mixed"] },
+        "aggregate_impact_try_mn":  { "type": ["number", "null"] },
+        "narrative":          { "type": "string", "maxLength": 800 }
+      }
+    },
+    "data_gaps": { "type": "array", "items": { "type": "string" } }
+  }
+}
