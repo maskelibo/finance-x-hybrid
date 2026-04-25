@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SC Industry Structure Analyst Output",
+  "type": "object",
+  "required": ["ticker", "porter_5", "swot", "positioning"],
+  "properties": {
+    "ticker": { "type": "string" },
+    "porter_5": {
+      "type": "object",
+      "required": [
+        "competitive_rivalry",
+        "supplier_power",
+        "buyer_power",
+        "threat_of_substitutes",
+        "threat_of_new_entrants"
+      ],
+      "properties": {
+        "competitive_rivalry":     { "$ref": "#/definitions/Force" },
+        "supplier_power":          { "$ref": "#/definitions/Force" },
+        "buyer_power":             { "$ref": "#/definitions/Force" },
+        "threat_of_substitutes":   { "$ref": "#/definitions/Force" },
+        "threat_of_new_entrants":  { "$ref": "#/definitions/Force" }
+      }
+    },
+    "swot": {
+      "type": "object",
+      "required": ["strengths", "weaknesses", "opportunities", "threats"],
+      "properties": {
+        "strengths":     { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "weaknesses":    { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "opportunities": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "threats":       { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    },
+    "positioning": {
+      "type": "object",
+      "required": ["market_share_estimate_pct", "competitive_moat", "narrative"],
+      "properties": {
+        "market_share_estimate_pct": { "type": ["number", "null"] },
+        "competitive_moat":          { "type": "string", "enum": ["wide", "narrow", "none", "unknown"] },
+        "moat_sources":              { "type": "array", "items": { "type": "string" } },
+        "narrative":                 { "type": "string", "maxLength": 800 }
+      }
+    },
+    "data_gaps": { "type": "array", "items": { "type": "string" } }
+  },
+  "definitions": {
+    "Force": {
+      "type": "object",
+      "required": ["intensity", "rationale"],
+      "properties": {
+        "intensity": { "type": "string", "enum": ["low", "moderate", "high"] },
+        "rationale": { "type": "string", "maxLength": 400 }
+      }
+    }
+  }
+}

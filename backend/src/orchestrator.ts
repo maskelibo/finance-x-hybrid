@@ -40,6 +40,7 @@ import { runPythonEventImpactMapper } from './python/agent_runners/event_impact_
 import { runPythonCoo } from './python/agent_runners/coo.js';
 import { runPythonQaReview } from './python/agent_runners/qa_review.js';
 import { runPythonSectorCompetition } from './python/agent_runners/sector_competition.js';
+import { fireSectorCompetitionShadow } from './python/agent_runners/sector_competition_subagent_shadow.js';
 import { runPythonStrategicSynthesis } from './python/agent_runners/strategic_synthesis.js';
 import { runPythonValuation } from './python/agent_runners/valuation.js';
 import { runPythonAnalystConsensus } from './python/agent_runners/analyst_consensus.js';
@@ -791,7 +792,11 @@ ${digestUpstream(snPythonOutput, 20000, { label: 'sentiment_news.python' }).dige
   }
   if (PYTHON_SECTOR_COMPETITION_ENABLED && agentId === 'sector_competition') {
     const outcome = await runPythonSectorCompetition(sessionId, runId, ticker, accumulatedContext);
-    return outcome === 'ok' ? 'ok' : 'failed';
+    if (outcome !== 'ok') return 'failed';
+    // Part 2 / S8 — fire sector_competition sub-agents in shadow mode
+    // (3 sub-agents + holding dynamic spawn driven by sc_peer_mapper output).
+    fireSectorCompetitionShadow(sessionId, runId, ticker, accumulatedContext);
+    return 'ok';
   }
   if (PYTHON_STRATEGIC_SYNTHESIS_ENABLED && agentId === 'strategic_synthesis') {
     const outcome = await runPythonStrategicSynthesis(sessionId, runId, ticker, accumulatedContext);

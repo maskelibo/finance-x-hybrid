@@ -3,7 +3,7 @@
 # Shape: see backend/src/sub-agents/types.ts (SubAgentDef).
 
 version: 1.0.0
-last_updated: "2026-04-24"
+last_updated: "2026-04-25"
 
 sub_agents:
   # ===== S2 — data_collection (4 sub-agents, parallel) =====
@@ -301,7 +301,43 @@ sub_agents:
     parallelizable: false
     retry_max: 2
 
-  # S8  — sector_competition    (3 sub-agents + holding dynamic)
+  # ===== S8 — sector_competition (3 sub-agents + holding dynamic spawn) =====
+  - id: sc_peer_mapper
+    parent_agent_id: sector_competition
+    display_name: "Peer Set Mapper"
+    description: "Doğru sektör ve peer seti tespiti (sector_registry kullanır)."
+    tier: llm
+    model: haiku
+    timeout_ms: 60000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/sc_peer_mapper.json
+    parallelizable: false   # Sequential first — peer set downstream'e input
+    retry_max: 1
+
+  - id: sc_benchmark_builder
+    parent_agent_id: sector_competition
+    display_name: "Benchmark Quartile Builder"
+    description: "Margin/ROE/EV-EBITDA quartile tables. Holding sector'da segment bazlı dinamik spawn edilir."
+    tier: llm
+    model: sonnet
+    timeout_ms: 240000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/sc_benchmark_builder.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: sc_structure_analyst
+    parent_agent_id: sector_competition
+    display_name: "Industry Structure Analyst"
+    description: "Porter 5 forces, SWOT, market positioning narrative."
+    tier: llm
+    model: sonnet
+    timeout_ms: 300000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/sc_structure_analyst.json
+    parallelizable: true
+    retry_max: 2
+
   # S9  — event_impact_mapper   (2 sub-agents, parallel)
   # S10 — final_summary         (3 sub-agents, parallel)
   # S11 — strategic_synthesis   (3 sub-agents, sequential)
