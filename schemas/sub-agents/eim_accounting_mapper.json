@@ -35,7 +35,26 @@
           "type": "array",
           "items": { "type": "string", "enum": ["income_statement", "balance_sheet", "cash_flow", "equity"] }
         },
-        "narrative":          { "type": "string", "maxLength": 600 }
+        "narrative":          { "type": "string", "maxLength": 600 },
+        "mode":               { "type": "string", "enum": ["FULL", "TRUNCATED_SUMMARY"] }
+      }
+    },
+    "grouped_summary": {
+      "type": "object",
+      "properties": {
+        "skipped_event_count": { "type": "integer", "minimum": 0 },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["category", "count", "narrative"],
+            "properties": {
+              "category":  { "type": "string" },
+              "count":     { "type": "integer", "minimum": 0 },
+              "narrative": { "type": "string", "maxLength": 300 }
+            }
+          }
+        }
       }
     },
     "data_gaps": { "type": "array", "items": { "type": "string" } }

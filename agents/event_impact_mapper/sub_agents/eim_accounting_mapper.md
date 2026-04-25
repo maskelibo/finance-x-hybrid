@@ -52,12 +52,58 @@
 }
 ```
 
-## Kurallar
+## Kurallar (basit)
 
 - `direction` sadece `increase`/`decrease`/`neutral` — başka değer yasak.
 - Magnitude bilinmiyorsa `null`, sayı uydurma. String formatta yaklaşık (`"~25mn TL"`) OK.
 - `disclosure_required` — yatırım/satış/dava/kapasite değişikliği gibi material olaylar `true`. Routine filings (AGM çağrısı, faaliyet raporu) `false`.
 - Event yoksa `event_accounting_impacts: []` + `data_gaps: ["no_classified_events"]`.
+
+## Output Volume Cap (ZORUNLU — çok event'li ticker'lar için)
+
+KCHOL 2026-04-25 vakası: 32 event × 3 statement × IFRS notes → 50KB+ output → 240s cap aşıldı (output_volume_timeout). Bu yüzden aşağıdaki katı kurallar geçerlidir:
+
+### Event seçimi
+- **İlk 8 material event** için tam derinlikte analiz.
+- **9. event'ten itibaren** `grouped_summary` bloğunda toplu özet (her grup için 1-2 cümle).
+- Materiality seçimi sırası:
+  1. SPK / KAP material flag'li (`material: true`)
+  2. `magnitude_try_mn` mutlak değeri yüksek olanlar
+  3. `disclosure_required` flag'li olanlar
+  4. Sonra kalanlar grouped_summary'ye
+
+### Per-event derinlik limiti
+- **Max 3 statement impact** entry'si per event (en kritik 3 kalem; gereksiz tablo çoğaltma yasak).
+- Her impact `rationale` **max 2 cümle**.
+- `ifrs_treatment`: yalnızca event material IFRS treatment gerektiriyorsa (örn. IFRS 16 lease, IAS 36 impairment, IFRS 9 hedge) yaz; rutin işlemler için `null`.
+- `notes` alanı: yalnızca SPK/KAP disclosure özel notu varsa yaz; aksi halde `""`.
+
+### Output size budget
+- **Target output ≤ 25KB.**
+- **Hard cap: 35KB.** 35KB'a yaklaşırken kalan tüm event'ler grouped_summary'ye düşer.
+- 35KB üstüne çıkma riski varsa **TRUNCATED_SUMMARY_MODE'a geç**:
+  - `event_accounting_impacts: []` (tüm tam-derinlik event'leri at)
+  - `summary.mode: "TRUNCATED_SUMMARY"` ekle
+  - `summary.narrative` içinde "Output budget exceeded; switched to TRUNCATED_SUMMARY_MODE. N event grouped." yaz
+  - `data_gaps`'a `"output_truncated_due_to_volume"` ekle
+
+### grouped_summary şeması (8. event sonrası)
+`event_accounting_impacts` array'inden sonra opsiyonel `grouped_summary` alanı:
+
+```json
+"grouped_summary": {
+  "skipped_event_count": 24,
+  "groups": [
+    { "category": "rutin_disclosure", "count": 12, "narrative": "AGM çağrıları + rutin faaliyet raporları, accounting impact yok." },
+    { "category": "minor_capex", "count": 8,  "narrative": "Tek tek <50mn TL yatırımlar, PP&E + CFI etkisi konsolide olarak ~120mn TL." },
+    { "category": "personnel_changes", "count": 4, "narrative": "Yönetim kurulu / üst yönetim değişiklikleri, doğrudan accounting impact yok." }
+  ]
+}
+```
+
+### Summary alanına özet
+- `summary.events_analyzed` — tam derinlik + grouped toplam.
+- `summary.narrative` içinde split'i belirt: örn. *"32 event'in 8'i tam derinlikte, 24'ü grouped_summary'de."*
 
 ## Çıktı protokolü (KATI)
 

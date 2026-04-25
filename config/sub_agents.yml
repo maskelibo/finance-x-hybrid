@@ -357,7 +357,11 @@ sub_agents:
     description: "Her event için IS/BS/CF kalem etkisi."
     tier: llm
     model: sonnet
-    timeout_ms: 240000
+    # Cap bump 240s → 360s (2026-04-25 KCHOL: 32 event × 3 statement × IFRS notes
+    # → 50KB output, 240s'de yetişmedi). Prompt'ta output volume cap kuralları
+    # da var (ilk 8 detay + grouped_summary, hard 35KB cap, TRUNCATED_SUMMARY_MODE
+    # fallback). Cap bump tek başına değil, prompt scope kontrolüyle birlikte.
+    timeout_ms: 360000
     isolated_context: false
     output_schema_path: schemas/sub-agents/eim_accounting_mapper.json
     parallelizable: true

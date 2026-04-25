@@ -139,11 +139,68 @@ async function runSubAgent(
   return result;
 }
 
-async function runLlmSubAgent(
-  def: SubAgentDef,
-  task: SubAgentTask,
-  parentContext: Record<string, unknown>,
-): Promise<SubAgentResult> {
+// =============================================================================
+// sanitizeTaskInputs — generic, dispatcher-level truncation
+//
+// Every shadow runner forwards upstream agent outputs into task_inputs. Some
+// of those outputs run 50-100KB of raw text, which inflates the per-sub-agent
+// prompt past the size at which Sonnet starts dropping into multi-minute
+// silent loops (the 2026-04-25 S9 incident: eim_quant_mapper +
+// eim_accounting_mapper, both 270s deadline, 0 byte stdout — same shape as
+// dc_financials pre-refactor and val_dcf S7 PM benchmark).
+//
+// This helper is the single source of truth for per-field caps. Shadow runners
+// don't need to handle truncation themselves — the dispatcher applies this
+// before building the prompt for ANY sub-agent. New parent agents added in
+// later phases (S10 final_summary, S11 strategic_synthesis, ...) inherit the
+// same protection automatically.
+//
+// The caps below are tuned per-key based on what each upstream output
+// actually carries; new keys not listed fall through to DEFAULT_FIELD_CAP.
+// =============================================================================
+
+const DEFAULT_FIELD_CAP = 6_000;
+
+const PER_KEY_FIELD_CAP: Record<string, number> = {
+  // Big synthesis outputs that often pile up
+  financial_analysis_output:   12_000,
+  strategic_synthesis_output:  12_000,
+  qa_review_output:            10_000,
+  // Event pipeline (S9 incident)
+  event_classification_output: 8_000,
+  event_impact_mapper_output:  8_000,
+  event_timeline_alert_output: 6_000,
+  // Macro / sector
+  macro_analysis_output:       8_000,
+  sector_competition_output:   8_000,
+  // Reconciliation, parse, raw collection — usually large but the consumer
+  // doesn't need every line
+  parse_standardization_output: 10_000,
+  reconciliation_output:        8_000,
+  // fact_pack is structured data; preserve more of it
+  fact_pack:                    14_000,
+};
+
+export function sanitizeTaskInputs(
+  inputs: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(inputs)) {
+    if (typeof value === 'string') {
+      const cap = PER_KEY_FIELD_CAP[key] ?? DEFAULT_FIELD_CAP;
+      if (value.length > cap) {
+        out[key] = value.slice(0, cap) + `... [truncated, original ${value.length} chars]`;
+      } else {
+        out[key] = value;
+      }
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
+function buildSubAgentPrompt(def: SubAgentDef, task: SubAgentTask, parentContext: Record<string, unknown>): { prompt: string; sizes: { context_bytes: number; inputs_bytes: number; total_bytes: number } } {
   const systemPrompt = loadSubAgentSystemPrompt(def.id);
 
   const context = def.isolated_context
@@ -159,6 +216,13 @@ async function runLlmSubAgent(
     2,
   ).slice(0, 20000);
 
+  // task_inputs go through the centralised sanitizer (per-key caps,
+  // DEFAULT_FIELD_CAP fallback). Shadow runners no longer need to handle
+  // upstream-output truncation themselves — they hand raw inputs in and the
+  // dispatcher applies the same budget for every sub-agent across every parent.
+  const sanitizedInputs = sanitizeTaskInputs(task.task_inputs);
+  const inputsStr = JSON.stringify(sanitizedInputs, null, 2);
+
   const fullPrompt = [
     `# Sub-Agent: ${def.display_name} (${def.id})`,
     `## Parent: ${def.parent_agent_id}`,
@@ -170,7 +234,7 @@ async function runLlmSubAgent(
     task.task_description,
     ``,
     `## Inputs`,
-    JSON.stringify(task.task_inputs, null, 2),
+    inputsStr,
     ``,
     `## Parent Context (read-only)`,
     contextStr,
@@ -178,6 +242,32 @@ async function runLlmSubAgent(
     `## Output`,
     `Respond with JSON matching the schema at ${def.output_schema_path}. No narration around the JSON.`,
   ].join('\n');
+
+  return {
+    prompt: fullPrompt,
+    sizes: {
+      context_bytes: contextStr.length,
+      inputs_bytes: inputsStr.length,
+      total_bytes: fullPrompt.length,
+    },
+  };
+}
+
+async function runLlmSubAgent(
+  def: SubAgentDef,
+  task: SubAgentTask,
+  parentContext: Record<string, unknown>,
+): Promise<SubAgentResult> {
+  const { prompt: fullPrompt, sizes } = buildSubAgentPrompt(def, task, parentContext);
+
+  // Prompt-size log — feeds the provider-hang root cause analysis. Three
+  // recorded incidents (dc_financials pre-refactor, val_dcf 2026-04-25 PM,
+  // eim_* 2026-04-25 EOD) all share "0 byte stdout, dispatcher deadline" but
+  // we do not yet know whether prompt size, tool-use loop, or provider variance
+  // is the common factor. Logging size on every run lets us correlate.
+  console.log(
+    `[sub-agent] ${def.id} prompt size: total=${Math.round(sizes.total_bytes/1024)}KB inputs=${Math.round(sizes.inputs_bytes/1024)}KB context=${Math.round(sizes.context_bytes/1024)}KB`,
+  );
 
   const modelKey = def.model ?? 'sonnet';
   // Windows claude spawn path goes through `cmd.exe /d /s /c claude.cmd ...`.
@@ -215,6 +305,23 @@ async function runLlmSubAgent(
   ]);
 
   if (!providerResult.success) {
+    // Failure-mode classification — not all timeouts share a root cause.
+    // Provider hang (3-vaka pattern, dc_financials/val_dcf/eim_*-pre-sanitizer):
+    //   timeout fires AND provider produced 0 byte stdout. Cause = unknown,
+    //   suspected prompt-size or tool-loop or provider variance.
+    // Output-volume timeout (KCHOL eim_accounting 2026-04-25):
+    //   timeout fires BUT provider was actively writing — partial output
+    //   (often near 50KB) lands in stdout before kill. Cause = sub-agent's
+    //   own output schema is too verbose for the cap, not the prompt.
+    // Tagging the error message lets the D-list / post-mortem script
+    //   distinguish without re-deriving from per-agent log inspection.
+    let errorMsg = providerResult.error ?? 'LLM call failed';
+    const wasTimeout = providerResult.errorType === 'timeout' || /timeout|deadline/i.test(errorMsg);
+    const outputBytes = (providerResult.output ?? '').length;
+    if (wasTimeout) {
+      const tag = outputBytes > 1000 ? 'output_volume_timeout' : 'provider_hang';
+      errorMsg = `[${tag}] output_bytes=${outputBytes} ${errorMsg}`;
+    }
     return {
       sub_agent_id: def.id,
       status: 'failed',
@@ -223,7 +330,7 @@ async function runLlmSubAgent(
       duration_ms: providerResult.durationMs,
       tokens_used: providerResult.tokensUsed ?? 0,
       cost_usd: providerResult.costUsd ?? 0,
-      error: providerResult.error ?? 'LLM call failed',
+      error: errorMsg,
     };
   }
 
