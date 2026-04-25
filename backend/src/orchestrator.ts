@@ -30,6 +30,7 @@ import { runParseStandardizationSubagentAware } from './python/agent_runners/par
 import { fireFinancialAnalysisShadow } from './python/agent_runners/financial_analysis_subagent_shadow.js';
 import { fireMacroAnalysisShadow } from './python/agent_runners/macro_analysis_subagent_shadow.js';
 import { fireValuationShadow } from './python/agent_runners/valuation_subagent_shadow.js';
+import { fireFinalSummaryShadow } from './python/agent_runners/final_summary_subagent_shadow.js';
 import { runPythonParseStandardization } from './python/agent_runners/parse_standardization.js';
 import { runPythonReconciliation } from './python/agent_runners/reconciliation.js';
 import { runPythonFinancialAnalysis } from './python/agent_runners/financial_analysis.js';
@@ -1185,6 +1186,10 @@ ${digestUpstream(esgPythonOutput, 10000, { label: 'esg.python' }).digest}
           db.prepare(`UPDATE analysis_sessions SET overall_score = ? WHERE id = ?`)
             .run(overallScore, sessionId);
         }
+        // Part 2 / S10 — fire final_summary sub-agents in shadow mode.
+        // Build compact_summary_pack from full upstream context, hand
+        // each sub-agent only its slice (raw upstreams excluded).
+        fireFinalSummaryShadow(sessionId, runId, ticker, accumulatedContext);
       }
 
       // Dependency-aware gap detection (observability for future retry logic)

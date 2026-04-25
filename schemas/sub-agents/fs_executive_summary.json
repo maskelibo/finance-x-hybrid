@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FS Executive Summary Output",
+  "type": "object",
+  "required": ["ticker", "executive_summary", "key_findings", "investment_view", "risk_summary"],
+  "properties": {
+    "ticker": { "type": "string" },
+
+    "executive_summary": {
+      "type": "string",
+      "description": "Tek paragraf üst düzey özet. Max ~7800 char (8KB cap, 200 char güvenlik payı).",
+      "maxLength": 7800
+    },
+
+    "key_findings": {
+      "type": "object",
+      "required": ["material_findings"],
+      "properties": {
+        "material_findings": {
+          "type": "array",
+          "description": "Material findings full depth (sayı limiti yok — materiality cut'tan geçenler tam derinlikte). Output budget aşılırsa düşük öncelikli olanlar grouped_summary'ye taşınır, material olanlar burada kısaltılmadan kalır.",
+          "items": {
+            "type": "object",
+            "required": ["title", "narrative", "source_agents"],
+            "properties": {
+              "title":         { "type": "string", "maxLength": 120 },
+              "narrative":     { "type": "string", "maxLength": 800 },
+              "source_agents": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+              "magnitude_try_mn": { "type": ["number", "null"] },
+              "direction":     { "type": "string", "enum": ["positive", "negative", "neutral", "mixed"] },
+              "confidence":    { "type": "string", "enum": ["low", "medium", "high"] }
+            }
+          }
+        },
+        "grouped_summary": {
+          "type": "object",
+          "description": "Düşük-öncelik findings buraya taşınır (material findings kısaltılmaz; sadece düşük-priority demote edilir).",
+          "properties": {
+            "skipped_count": { "type": "integer", "minimum": 0 },
+            "groups": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["category", "count", "narrative"],
+                "properties": {
+                  "category":  { "type": "string" },
+                  "count":     { "type": "integer", "minimum": 0 },
+                  "narrative": { "type": "string", "maxLength": 300 }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "investment_view": {
+      "type": "object",
+      "required": ["recommendation", "rationale", "horizon"],
+      "properties": {
+        "recommendation": { "type": "string", "enum": ["BUY", "HOLD", "SELL", "ACCUMULATE", "REDUCE"] },
+        "rationale":      { "type": "string", "maxLength": 2500, "description": "Tezi destekleyen argümanlar." },
+        "horizon":        { "type": "string", "enum": ["short", "medium", "long"] },
+        "target_price_try": {
+          "type": "object",
+          "properties": {
+            "bear": { "type": ["number", "null"] },
+            "base": { "type": ["number", "null"] },
+            "bull": { "type": ["number", "null"] }
+          }
+        },
+        "implied_upside_pct_base": { "type": ["number", "null"] },
+        "key_catalysts":   { "type": "array", "items": { "type": "string", "maxLength": 200 } },
+        "monitoring_kpis": { "type": "array", "items": { "type": "string", "maxLength": 150 } }
+      }
+    },
+
+    "risk_summary": {
+      "type": "object",
+      "required": ["material_risks"],
+      "properties": {
+        "material_risks": {
+          "type": "array",
+          "description": "Material riskler full depth (kademe demote uygulanır, material kısaltılmaz).",
+          "items": {
+            "type": "object",
+            "required": ["title", "severity", "narrative"],
+            "properties": {
+              "title":     { "type": "string", "maxLength": 120 },
+              "severity":  { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+              "category":  { "type": "string", "enum": ["financial", "operational", "regulatory", "geopolitical", "fx", "commodity", "esg", "governance", "other"] },
+              "narrative": { "type": "string", "maxLength": 600 },
+              "mitigation": { "type": ["string", "null"], "maxLength": 300 }
+            }
+          }
+        },
+        "grouped_summary": {
+          "type": "object",
+          "properties": {
+            "skipped_count": { "type": "integer", "minimum": 0 },
+            "groups": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["category", "count", "narrative"],
+                "properties": {
+                  "category":  { "type": "string" },
+                  "count":     { "type": "integer", "minimum": 0 },
+                  "narrative": { "type": "string", "maxLength": 300 }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "data_gaps":   { "type": "array", "items": { "type": "string" } },
+    "output_mode": { "type": "string", "enum": ["FULL", "TRUNCATED_SUMMARY"], "description": "TRUNCATED_SUMMARY = output budget'i material insight bile sığdıramadı, fallback özet." }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FS Scorecard Output",
+  "type": "object",
+  "required": ["ticker", "scorecard", "scenarios", "composite_score"],
+  "properties": {
+    "ticker": { "type": "string" },
+
+    "scorecard": {
+      "type": "object",
+      "description": "6-boyut skor kartı (1-10 ölçek; 1=en zayıf, 10=en güçlü).",
+      "required": ["financial_strength", "growth_quality", "valuation_attractiveness", "competitive_position", "macro_exposure", "governance_esg"],
+      "properties": {
+        "financial_strength":       { "$ref": "#/definitions/Dimension" },
+        "growth_quality":           { "$ref": "#/definitions/Dimension" },
+        "valuation_attractiveness": { "$ref": "#/definitions/Dimension" },
+        "competitive_position":     { "$ref": "#/definitions/Dimension" },
+        "macro_exposure":           { "$ref": "#/definitions/Dimension" },
+        "governance_esg":           { "$ref": "#/definitions/Dimension" }
+      }
+    },
+
+    "scenarios": {
+      "type": "object",
+      "required": ["bear", "base", "bull"],
+      "properties": {
+        "bear": { "$ref": "#/definitions/Scenario" },
+        "base": { "$ref": "#/definitions/Scenario" },
+        "bull": { "$ref": "#/definitions/Scenario" }
+      }
+    },
+
+    "composite_score": {
+      "type": "object",
+      "required": ["weighted_score", "rating"],
+      "properties": {
+        "weighted_score": { "type": "number", "minimum": 1, "maximum": 10 },
+        "rating":         { "type": "string", "enum": ["very_weak", "weak", "neutral", "strong", "very_strong"] },
+        "rationale":      { "type": "string", "maxLength": 400 }
+      }
+    },
+
+    "data_gaps": { "type": "array", "items": { "type": "string" } }
+  },
+  "definitions": {
+    "Dimension": {
+      "type": "object",
+      "required": ["score", "rationale"],
+      "properties": {
+        "score":     { "type": "integer", "minimum": 1, "maximum": 10 },
+        "rationale": { "type": "string", "maxLength": 300 },
+        "drivers":   { "type": "array", "items": { "type": "string", "maxLength": 150 } }
+      }
+    },
+    "Scenario": {
+      "type": "object",
+      "required": ["target_price_try", "probability_pct", "key_assumptions"],
+      "properties": {
+        "target_price_try": { "type": ["number", "null"] },
+        "probability_pct":  { "type": "number", "minimum": 0, "maximum": 100 },
+        "key_assumptions":  { "type": "array", "items": { "type": "string", "maxLength": 200 }, "minItems": 1 },
+        "trigger_events":   { "type": "array", "items": { "type": "string", "maxLength": 200 } }
+      }
+    }
+  }
+}

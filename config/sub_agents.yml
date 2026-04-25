@@ -367,5 +367,43 @@ sub_agents:
     parallelizable: true
     retry_max: 2
 
-  # S10 — final_summary         (3 sub-agents, parallel)
+  # ===== S10 — final_summary (3 sub-agents, parallel) =====
+  - id: fs_executive_summary_writer
+    parent_agent_id: final_summary
+    display_name: "Executive Summary Writer"
+    description: "Tek sayfa karar destek özeti + key findings + investment view + risk summary."
+    tier: llm
+    model: sonnet
+    timeout_ms: 240000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/fs_executive_summary.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: fs_scorecard_builder
+    parent_agent_id: final_summary
+    display_name: "Score Card Builder"
+    description: "6-boyut skor kartı (1-10) + Bear/Base/Bull hedef fiyat."
+    tier: llm
+    model: sonnet
+    # Plan'da hybrid (python_module: financex.subagents.fs_scorecard) idi.
+    # S10 scope'ta sadece LLM tier — Python pre-compute hybrid'i ileride.
+    timeout_ms: 180000
+    isolated_context: false
+    output_schema_path: schemas/sub-agents/fs_scorecard.json
+    parallelizable: true
+    retry_max: 2
+
+  - id: fs_disclosure_guard
+    parent_agent_id: final_summary
+    display_name: "Disclosure Guard"
+    description: "Zorunlu SPK bildirimleri, yasal disclaimer'lar, etik notlar — deterministic."
+    tier: deterministic
+    python_module: financex.subagents.fs_disclosure_guard
+    timeout_ms: 30000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/fs_disclosure_guard.json
+    parallelizable: true
+    retry_max: 1
+
   # S11 — strategic_synthesis   (3 sub-agents, sequential)
