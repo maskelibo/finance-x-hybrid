@@ -10,18 +10,34 @@ import type { LLMErrorType, ProviderAvailability, ProviderRunInput, ProviderRunR
 
 function detectClaudeErrorType(stderr: string, stdout: string): LLMErrorType {
   const combined = (stderr + ' ' + stdout).toLowerCase();
+  // S12 false-positive tightening (2026-04-26): pattern listesi artık yalnızca
+  // GERÇEK Anthropic / Claude CLI rate-limit imzalarına eşleşir. Eski liste
+  // 'rate limit' / 'quota' / '429' substring'lerini barındırıyordu — LLM
+  // enrichment yfinance/upstream hatalarını narrative'de açıklarken bu
+  // kelimeleri üretebiliyor ve session yanlışlıkla paused_rate_limit'e
+  // alınıyordu (memory: "infra_false_positive_rate_limit_classification").
+  //
+  // Yeni patternler "exceeded/reached/hit" gibi action-verb taşıyan veya
+  // kesin HTTP/header signature olan ifadelerdir — LLM narrative'inde
+  // doğal olarak çıkma olasılığı düşük.
   if (
-    combined.includes('usage limit') ||
-    combined.includes('rate limit') ||
-    combined.includes('5-hour limit') ||
-    combined.includes('weekly limit') ||
-    combined.includes('quota') ||
-    combined.includes('too many requests') ||
-    combined.includes('429') ||
+    combined.includes('rate limit exceeded') ||
+    combined.includes('rate_limit_exceeded') ||
+    combined.includes('usage limit reached') ||
+    combined.includes('usage_limit_reached') ||
+    combined.includes('quota exceeded') ||
+    combined.includes('quota_exceeded') ||
     combined.includes('hit your limit') ||
     combined.includes("you've hit your limit") ||
+    combined.includes('5-hour limit reached') ||
+    combined.includes('weekly limit reached') ||
+    combined.includes('http 429') ||
+    combined.includes('status 429') ||
+    combined.includes('status: 429') ||
+    combined.includes('429 too many requests') ||
+    /\bretry-after:\s*\d/i.test(combined) ||
     combined.includes('resets 2am') ||
-    combined.includes('resets at')
+    combined.includes('resets at ')
   ) {
     return 'rate_limit';
   }

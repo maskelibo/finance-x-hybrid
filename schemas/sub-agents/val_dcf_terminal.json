@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VAL DCF Terminal Output",
+  "description": "Deterministic Python output: terminal value + EV + equity + sensitivity matrix. ≤3KB target.",
+  "type": "object",
+  "required": ["ticker", "wacc_pct_used", "terminal_growth_pct_used", "pv_explicit_try_mn", "terminal_value_try_mn", "pv_terminal_try_mn", "enterprise_value_try_mn", "equity_value_try_mn", "sensitivity_matrix", "data_gaps"],
+  "properties": {
+    "ticker":                       { "type": "string" },
+    "wacc_pct_used":                { "type": "number" },
+    "terminal_growth_pct_used":     { "type": "number" },
+    "pv_explicit_try_mn":           { "type": "number" },
+    "terminal_value_try_mn":        { "type": "number" },
+    "pv_terminal_try_mn":           { "type": "number" },
+    "enterprise_value_try_mn":      { "type": "number" },
+    "net_debt_try_mn":              { "type": "number" },
+    "net_debt_source":              { "type": "string" },
+    "equity_value_try_mn":          { "type": "number" },
+    "shares_outstanding_mn":        { "type": ["number", "null"] },
+    "implied_share_price_try":      { "type": ["number", "null"] },
+    "sensitivity_matrix": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "type": "object",
+        "required": ["wacc_pct", "g_pct"],
+        "properties": {
+          "wacc_pct":      { "type": "number" },
+          "g_pct":         { "type": "number" },
+          "ev_try_mn":     { "type": ["number", "null"] },
+          "equity_try_mn": { "type": ["number", "null"] },
+          "target_try":    { "type": ["number", "null"] },
+          "note":          { "type": "string" }
+        }
+      }
+    },
+    "consistency_warnings": { "type": "array", "items": { "type": "string", "maxLength": 240 } },
+    "data_gaps":            { "type": "array", "items": { "type": "string" } }
+  }
+}

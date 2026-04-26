@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VAL DCF Synthesizer Output",
+  "description": "LLM Sonnet narrow scope output: narrative synthesis of 3 deterministic DCF chain outputs. ≤8KB hard cap.",
+  "type": "object",
+  "required": ["ticker", "valuation_confidence", "valuation_narrative", "assumptions_narrative", "sensitivity_narrative", "data_gaps"],
+  "properties": {
+    "ticker":                  { "type": "string" },
+    "valuation_confidence":    { "type": "string", "enum": ["high", "medium", "limited", "missing"] },
+    "final_target_try":        { "type": ["number", "null"] },
+    "current_price_try":       { "type": ["number", "null"] },
+    "implied_upside_pct":      { "type": ["number", "null"] },
+
+    "valuation_narrative":      { "type": "string", "maxLength": 1500 },
+    "assumptions_narrative":    { "type": "string", "maxLength": 800 },
+    "sensitivity_narrative":    { "type": "string", "maxLength": 800 },
+    "upside_downside_narrative":{ "type": "string", "maxLength": 600 },
+
+    "key_drivers": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 200 } },
+    "caveats":     { "type": "array", "maxItems": 6, "items": { "type": "string", "maxLength": 200 } },
+    "data_gaps":   { "type": "array", "items": { "type": "string" } }
+  }
+}

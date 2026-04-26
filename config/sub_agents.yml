@@ -3,7 +3,7 @@
 # Shape: see backend/src/sub-agents/types.ts (SubAgentDef).
 
 version: 1.0.0
-last_updated: "2026-04-26"  # S11 restructured — signal layer split to 4 deterministic sub-agents (financial/event/macro extractors + compiler) due to Sonnet variance %67 hang on monolithic ss_signal_merger
+last_updated: "2026-04-26"  # S12 — val_dcf split to 4 sub-agents (3 det + 1 narrow LLM) due to Sonnet variance %33 hang. Total registry 40.
 
 sub_agents:
   # ===== S2 — data_collection (4 sub-agents, parallel) =====
@@ -261,16 +261,72 @@ sub_agents:
     parallelizable: true
     retry_max: 2
 
-  - id: val_dcf
+  # ===== val_dcf STRUCTURAL FIX (S12, 2026-04-26) =====
+  # Monolithic ss_signal_merger pattern. Önceki monolithic val_dcf (LLM Sonnet)
+  # KCHOL 3-run protokolünde %33 hang oranına ulaştı (Run 1: 275s, Run 2: 686s,
+  # Run 3: 750s deadline). Sanitizer + cap 720s yetmedi → variance yapısal.
+  #
+  # Yeni 4-sub-agent chain:
+  #   Phase A (parallel deterministic Python):
+  #     val_dcf_assumptions   WACC components (rf, beta, ERP, ke, kd, structure) + terminal_g
+  #     val_dcf_projection    5Y revenue/EBITDA/EBIT/NOPAT/CAPEX/NWC/FCF
+  #   Phase B (sequential deterministic Python):
+  #     val_dcf_terminal      terminal value + PV + EV + equity + sensitivity matrix
+  #   Phase C (sequential LLM Sonnet, narrow scope):
+  #     val_dcf_synthesizer   narrative + sensitivity + upside/downside
+  #
+  # Benefits:
+  # - 3 deterministic modules eliminate provider variance for the math layer
+  # - LLM sub-agent is narrative-only — receives compact deterministic outputs
+  #   (no raw upstream agent narrative leak)
+  # - Per-sub-agent timeout isolation (det 30s, LLM 240s)
+  # - Aggregator (valuation shadow runner) validates wacc>g, ev=pv_e+pv_t consistency
+  - id: val_dcf_assumptions
     parent_agent_id: valuation_agent
-    display_name: "DCF Valuation"
-    description: "WACC, 5-10Y FCF projection, terminal value, sensitivity table."
+    display_name: "DCF Assumptions (Deterministic)"
+    description: "WACC components + terminal growth (deterministic Python, sector heuristics)."
+    tier: deterministic
+    python_module: financex.subagents.val_dcf_assumptions
+    timeout_ms: 30000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/val_dcf_assumptions.json
+    parallelizable: true     # Phase A parallel
+    retry_max: 2
+
+  - id: val_dcf_projection
+    parent_agent_id: valuation_agent
+    display_name: "DCF Projection (Deterministic)"
+    description: "5Y revenue/EBITDA/FCF projection (deterministic Python, sector heuristics)."
+    tier: deterministic
+    python_module: financex.subagents.val_dcf_projection
+    timeout_ms: 30000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/val_dcf_projection.json
+    parallelizable: true     # Phase A parallel
+    retry_max: 2
+
+  - id: val_dcf_terminal
+    parent_agent_id: valuation_agent
+    display_name: "DCF Terminal + Sensitivity (Deterministic)"
+    description: "Terminal value + PV discounting + EV + equity + 3×3 sensitivity (deterministic Python). Receives previous_assumptions + previous_projection."
+    tier: deterministic
+    python_module: financex.subagents.val_dcf_terminal
+    timeout_ms: 30000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/val_dcf_terminal.json
+    parallelizable: false    # Phase B sequential (needs assumptions+projection chain)
+    retry_max: 2
+
+  - id: val_dcf_synthesizer
+    parent_agent_id: valuation_agent
+    display_name: "DCF Synthesizer (Narrative LLM)"
+    description: "Narrative synthesis of 3 deterministic DCF outputs — sensitivity + upside/downside + valuation_narrative. Narrow scope LLM."
     tier: llm
     model: sonnet
-    timeout_ms: 720000
-    isolated_context: false
-    output_schema_path: schemas/sub-agents/val_dcf.json
-    parallelizable: true
+    timeout_ms: 240000
+    isolated_context: true   # ONLY chain inputs — no raw upstream narrative leak
+    output_schema_path: schemas/sub-agents/val_dcf_synthesizer.json
+    parallelizable: false    # Phase C last
     retry_max: 2
 
   - id: val_sotp

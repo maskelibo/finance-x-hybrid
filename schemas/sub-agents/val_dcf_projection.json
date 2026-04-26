@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VAL DCF Projection Output",
+  "description": "Deterministic Python output: 5Y revenue/EBITDA/FCF projection. ≤3KB target.",
+  "type": "object",
+  "required": ["ticker", "assumptions", "projection_5y", "data_gaps"],
+  "properties": {
+    "ticker": { "type": "string" },
+    "sector": { "type": ["string", "null"] },
+    "assumptions": {
+      "type": "object",
+      "required": ["revenue_base_try_mn", "ebitda_margin_pct", "growth_curve_pct"],
+      "properties": {
+        "revenue_base_try_mn":             { "type": "number" },
+        "revenue_source":                  { "type": "string" },
+        "ebitda_margin_pct":               { "type": "number" },
+        "ebitda_margin_source":            { "type": "string" },
+        "capex_pct_of_revenue":            { "type": "number" },
+        "da_pct_of_revenue":               { "type": "number" },
+        "nwc_delta_pct_of_delta_revenue":  { "type": "number" },
+        "tax_rate_pct":                    { "type": "number" },
+        "growth_curve_pct":                { "type": "array", "items": { "type": "number" } }
+      }
+    },
+    "projection_5y": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["year", "revenue_try_mn", "ebitda_try_mn", "fcf_try_mn"],
+        "properties": {
+          "year":              { "type": "integer", "minimum": 1, "maximum": 5 },
+          "revenue_try_mn":    { "type": "number" },
+          "growth_pct":        { "type": "number" },
+          "ebitda_try_mn":     { "type": "number" },
+          "ebitda_margin_pct": { "type": "number" },
+          "da_try_mn":         { "type": "number" },
+          "ebit_try_mn":       { "type": "number" },
+          "tax_try_mn":        { "type": "number" },
+          "nopat_try_mn":      { "type": "number" },
+          "capex_try_mn":      { "type": "number" },
+          "delta_nwc_try_mn":  { "type": "number" },
+          "fcf_try_mn":        { "type": "number" }
+        }
+      }
+    },
+    "data_quality": {
+      "type": "object",
+      "properties": {
+        "fa_available":             { "type": "boolean" },
+        "revenue_base_realistic":   { "type": "boolean" }
+      }
+    },
+    "data_gaps": { "type": "array", "items": { "type": "string" } }
+  }
+}

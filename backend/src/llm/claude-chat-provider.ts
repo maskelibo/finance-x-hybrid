@@ -5,18 +5,26 @@ import { ChatProviderError, type ChatErrorType, type ChatRunResult, type StreamC
 
 function detectClaudeChatErrorType(stderr: string, stdout: string): ChatErrorType {
   const combined = `${stderr}\n${stdout}`.toLowerCase();
+  // S12 false-positive tightening (2026-04-26): action-verb / explicit-signature
+  // patterns only. Bkz. claude-provider.ts üst yorum bloğu.
   if (
-    combined.includes('usage limit') ||
-    combined.includes('rate limit') ||
-    combined.includes('5-hour limit') ||
-    combined.includes('weekly limit') ||
-    combined.includes('quota') ||
-    combined.includes('too many requests') ||
-    combined.includes('429') ||
+    combined.includes('rate limit exceeded') ||
+    combined.includes('rate_limit_exceeded') ||
+    combined.includes('usage limit reached') ||
+    combined.includes('usage_limit_reached') ||
+    combined.includes('quota exceeded') ||
+    combined.includes('quota_exceeded') ||
     combined.includes('hit your limit') ||
     combined.includes("you've hit your limit") ||
+    combined.includes('5-hour limit reached') ||
+    combined.includes('weekly limit reached') ||
+    combined.includes('http 429') ||
+    combined.includes('status 429') ||
+    combined.includes('status: 429') ||
+    combined.includes('429 too many requests') ||
+    /\bretry-after:\s*\d/i.test(combined) ||
     combined.includes('resets 2am') ||
-    combined.includes('resets at')
+    combined.includes('resets at ')
   ) {
     return 'rate_limit';
   }
