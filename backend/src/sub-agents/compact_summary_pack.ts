@@ -70,12 +70,13 @@ export interface PackBuildOptions {
   topCitationsN?: number;       // default 8
 }
 
-// Sector override registry mirror (config/sector_registry.yml subset).
-// We keep it hard-coded for the holding-detection path because compact pack
-// is hot-path per-session — YAML re-parse adds overhead. New holding tickers
-// added to sector_registry.yml should be mirrored here.
-const HOLDING_TICKERS = new Set(['KCHOL', 'SAHOL', 'DOHOL', 'ENKAI', 'TKFEN']);
-const BANKING_TICKERS = new Set(['AKBNK', 'GARAN', 'ISCTR', 'YKBNK', 'HALKB', 'VAKBN']);
+// 2026-04-26 P1.alpha (Financial Truth Layer): the previous hard-coded
+// HOLDING_TICKERS / BANKING_TICKERS sets are replaced by the truth-layer
+// classifier, which reads config/sector_registry.yml as the single source
+// of truth and emits a CompanyClassification with confidence + reasoning.
+// Behavior for known tickers is unchanged; the migration simply removes a
+// duplicate registry mirror and gives the pack traceable classification.
+import { classifyCompany } from '../truth-layer/classifier.js';
 
 export function buildCompactSummaryPack(
   ctx: Record<string, unknown>,
@@ -274,9 +275,12 @@ function resolveSector(
   fa: ParsedJson,
   val: ParsedJson,
 ): string | null {
-  // 1) Registry override (hard-coded mirror) wins everything.
-  if (HOLDING_TICKERS.has(ticker)) return 'holding';
-  if (BANKING_TICKERS.has(ticker)) return 'banking';
+  // 1) Truth-layer classifier — authoritative on holdings/banking, registry-driven.
+  // Returns sector_canonical (e.g., 'holding', 'banking', 'industrial', 'aviation', ...)
+  const classification = classifyCompany(ticker);
+  if (classification.sources.includes('sector_registry')) {
+    return classification.sector_canonical;
+  }
 
   // 2) Explicit ctx field set by orchestrator
   const ctxSector = (ctx['sector_override'] as string) ?? (ctx['sector'] as string);
@@ -288,7 +292,8 @@ function resolveSector(
     if (obj && typeof obj['sector'] === 'string') return obj['sector'] as string;
   }
 
-  return null;
+  // 4) Fall back to classifier's default ('industrial' when no signals)
+  return classification.sector_canonical;
 }
 
 // -- Financial ----------------------------------------------------------------
