@@ -54,4 +54,45 @@ describe('truth-layer weighter', () => {
     expect(methodWeight(w, 'val_sotp')).toBe(w.weights.val_sotp);
     expect(methodWeight(w, 'val_dcf')).toBe(w.weights.val_dcf);
   });
+
+  // ===========================================================================
+  // P2.beta — confidence propagation
+  // ===========================================================================
+
+  it('P2.beta: confidence propagates from classification (KCHOL registry hit = 1.00)', () => {
+    const c = classifyCompany('KCHOL');
+    const w = recommendValuationWeights(c);
+    expect(w.confidence).toBe(c.confidence);
+    expect(w.confidence).toBe(1.0);
+  });
+
+  it('P2.beta: confidence=1.00 for AKBNK (registry banking)', () => {
+    const c = classifyCompany('AKBNK');
+    const w = recommendValuationWeights(c);
+    expect(w.confidence).toBe(1.0);
+  });
+
+  it('P2.beta: confidence=1.00 for ASELS (registry industrial hit)', () => {
+    const c = classifyCompany('ASELS');
+    const w = recommendValuationWeights(c);
+    expect(w.confidence).toBe(1.0);
+  });
+
+  it('P2.beta: confidence drops to 0.30 for unknown ticker (default_industrial fallback)', () => {
+    const c = classifyCompany('ZZZNONEXISTENT');
+    expect(c.sources).toContain('default_industrial');
+    expect(c.confidence).toBe(0.3);
+    const w = recommendValuationWeights(c);
+    expect(w.confidence).toBe(0.3);
+    expect(w.primary_method).toBe('val_dcf'); // regular template fallback
+  });
+
+  it('P2.beta: confidence is clamped to [0, 1]', () => {
+    const c = classifyCompany('KCHOL');
+    // Synthetic out-of-range to verify clamping
+    const overC = { ...c, confidence: 1.7 };
+    expect(recommendValuationWeights(overC).confidence).toBe(1);
+    const underC = { ...c, confidence: -0.5 };
+    expect(recommendValuationWeights(underC).confidence).toBe(0);
+  });
 });

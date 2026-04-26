@@ -139,6 +139,12 @@ export function recommendValuationWeights(
     }
   }
 
+  // P2.beta — propagate classification confidence as methodology confidence.
+  // Weighter is deterministic given classification flags (is_holding /
+  // is_banking / is_real_estate / is_insurance), so methodology certainty
+  // tracks classification certainty 1:1. Clamped to [0, 1] for safety.
+  const confidence = Math.max(0, Math.min(1, classification.confidence));
+
   return {
     ticker: classification.ticker,
     classification,
@@ -147,6 +153,7 @@ export function recommendValuationWeights(
     secondary_methods: secondary,
     inappropriate_methods: inappropriate,
     justification: `[${label}] ${justification}`,
+    confidence,
   };
 }
 

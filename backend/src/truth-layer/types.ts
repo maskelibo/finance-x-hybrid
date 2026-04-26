@@ -55,6 +55,14 @@ export type ValuationMethodologyWeights = {
   inappropriate_methods: ValuationMethod[];
   /** Justification narrative — why this mix. */
   justification: string;
+  /**
+   * Confidence 0..1 in the methodology recommendation.
+   * P2.beta: pure propagation of classification.confidence — weighter is
+   * deterministic given classification flags, so methodology certainty
+   * tracks classification certainty. Future iterations may factor in
+   * template specificity / sub-classification depth.
+   */
+  confidence: number;
 };
 
 export type ValuationMethod =

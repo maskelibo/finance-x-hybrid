@@ -260,14 +260,16 @@ export function logTruthLayerSummary(accumulatedContext: Record<string, unknown>
   const subFlags = c.sub_classifications.length > 0 ? ` sub=[${c.sub_classifications.join(',')}]` : '';
   console.log(
     `[truth-layer] ${c.ticker} sector=${c.sector_canonical}${subFlags} ` +
-    `holding=${c.is_holding} banking=${c.is_banking} confidence=${c.confidence}`,
+    `holding=${c.is_holding} banking=${c.is_banking} confidence=${c.confidence.toFixed(2)}`,
   );
+  // P2.beta — surface weighter confidence (propagated from classification)
   console.log(
-    `[truth-layer]   methodology primary=${w.primary_method}, weights=${JSON.stringify(w.weights)}`,
+    `[truth-layer]   methodology primary=${w.primary_method}, weights=${JSON.stringify(w.weights)}, confidence=${w.confidence.toFixed(2)}`,
   );
   if (filing?.selected) {
+    // P2.beta — surface filing-selector confidence (margin-based; pre-existing field)
     console.log(
-      `[truth-layer]   filing_hint=${filing.selected.filing_id} (type=${filing.selected.document_type}, score=${filing.selected_score})`,
+      `[truth-layer]   filing_hint=${filing.selected.filing_id} (type=${filing.selected.document_type}, score=${filing.selected_score}), confidence=${filing.confidence.toFixed(2)}`,
     );
   } else if (filing) {
     console.log(`[truth-layer]   filing_hint: none (${filing.reasoning})`);
