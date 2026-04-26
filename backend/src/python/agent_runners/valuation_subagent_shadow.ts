@@ -36,7 +36,12 @@ import {
 import { dispatchSubAgents } from '../../sub-agents/dispatcher.js';
 import type { SubAgentResult, SubAgentTask } from '../../sub-agents/types.js';
 // P1.beta — truth-layer methodology hint for val_scenario_builder (advisory)
-import { readTruthAssertions, populateTruthAssertions } from '../../truth-layer/preflight.js';
+// P2.alpha — methodology mismatch guard imported from same module
+import {
+  readTruthAssertions,
+  populateTruthAssertions,
+  assertMethodologyAlignment,
+} from '../../truth-layer/preflight.js';
 import type { TruthAssertions } from '../../truth-layer/types.js';
 
 type PhaseAStep = 'val_trading_comps' | 'val_sotp' | 'val_dcf_assumptions' | 'val_dcf_projection';
@@ -239,19 +244,30 @@ async function runShadow(
     );
   }
 
-  // P1.beta — log val_scenario_builder methodology divergence vs truth-layer.
-  // Advisory only: we do NOT override the LLM's output. Mismatch is captured
-  // for audit, future enforcement decisions, and observability.
+  // P2.alpha — methodology mismatch guard (advisory observation; no override).
+  // Always logs aligned=true|false plus severity tier so silent FTL→consumer
+  // divergence is observable. Replaces the simpler P1.beta divergence-only
+  // warning. The LLM output is NOT mutated — guard is read-only.
   const scenarioOutput = stepParsed['val_scenario_builder'] as Record<string, unknown> | undefined;
-  if (truthAssertions && scenarioOutput) {
-    const llmPrimary = (scenarioOutput['primary_method']
-      ?? scenarioOutput['recommended_method']
-      ?? null) as string | null;
-    const truthPrimary = truthAssertions.valuation_methodology.primary_method;
-    if (llmPrimary && llmPrimary !== truthPrimary) {
+  const llmPrimary = scenarioOutput
+    ? ((scenarioOutput['primary_method'] ?? scenarioOutput['recommended_method'] ?? null) as
+        | string
+        | null)
+    : null;
+  const alignment = assertMethodologyAlignment(accumulatedContext, llmPrimary);
+  if (alignment) {
+    if (alignment.aligned) {
+      console.log(
+        `[truth-layer:methodology-guard] ticker=${alignment.ticker} aligned=true ` +
+          `expected=${alignment.expected_method} chosen=${alignment.chosen_method} ` +
+          `class=${alignment.classification_label}`,
+      );
+    } else {
       console.warn(
-        `[shadow:valuation_agent] methodology divergence — LLM picked '${llmPrimary}', ` +
-        `truth-layer recommends '${truthPrimary}' (advisory; not enforced).`,
+        `[truth-layer:methodology-guard] ticker=${alignment.ticker} aligned=false ` +
+          `severity=${alignment.severity} expected=${alignment.expected_method} ` +
+          `chosen=${alignment.chosen_method ?? '<unknown>'} class=${alignment.classification_label} — ` +
+          `${alignment.reasoning}`,
       );
     }
   }

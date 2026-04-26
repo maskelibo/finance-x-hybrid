@@ -22,6 +22,7 @@ import type {
   FilingRecord,
   TruthAssertions,
   FilingSelection,
+  ValuationMethod,
 } from './types.js';
 
 // =============================================================================
@@ -87,6 +88,155 @@ export function populateFaFilingHint(
 
   return sel ?? null;
 }
+
+// =============================================================================
+// P2.alpha — methodology mismatch guard (advisory / observation only)
+// =============================================================================
+
+export type MethodologyAlignmentSeverity = 'none' | 'low' | 'medium' | 'high';
+
+export interface MethodologyAlignment {
+  ticker: string;
+  aligned: boolean;
+  expected_method: ValuationMethod;
+  chosen_method: string | null;
+  severity: MethodologyAlignmentSeverity;
+  reasoning: string;
+  classification_label: string;
+}
+
+/**
+ * P2.alpha — compare a downstream consumer's chosen valuation methodology
+ * to the FTL primary_method recommendation. Pure observation — never mutates
+ * accumulatedContext, never overrides agent output.
+ *
+ * Returns null when truth assertions have not been populated for the session
+ * (e.g., legacy run, FTL-disabled path) — caller should treat that as no-op.
+ *
+ * Severity tiers:
+ *   none   — chosen === FTL primary_method
+ *   high   — chosen='val_dcf' AND classification is_holding|is_banking (structural)
+ *   high   — chosen ∈ inappropriate_methods (weight=0 in FTL template)
+ *   medium — chosen has weight ≥ 0.15 in FTL template but is not primary
+ *   low    — chosen ∈ secondary_methods (FTL weight ∈ (0, 0.15))
+ *   low    — chosen unknown/unparseable (advisory; cannot fully assess)
+ */
+export function assertMethodologyAlignment(
+  accumulatedContext: Record<string, unknown>,
+  chosenMethod: string | null | undefined,
+): MethodologyAlignment | null {
+  const truth = readTruthAssertions(accumulatedContext);
+  if (!truth) return null;
+
+  const expected = truth.valuation_methodology.primary_method;
+  const ticker = truth.classification.ticker;
+  const weights = truth.valuation_methodology.weights as Record<string, number>;
+  const inappropriate = truth.valuation_methodology.inappropriate_methods as string[];
+  const secondary = truth.valuation_methodology.secondary_methods as string[];
+  const isHolding = truth.classification.is_holding;
+  const isBanking = truth.classification.is_banking;
+
+  // weighter prepends "[label] " to the justification — extract label for log.
+  const labelMatch = truth.valuation_methodology.justification.match(/^\[([^\]]+)\]/);
+  const classificationLabel = labelMatch ? labelMatch[1] : 'unknown';
+
+  const chosen =
+    typeof chosenMethod === 'string' && chosenMethod.trim() ? chosenMethod.trim() : null;
+
+  if (chosen === expected) {
+    return {
+      ticker,
+      aligned: true,
+      expected_method: expected,
+      chosen_method: chosen,
+      severity: 'none',
+      reasoning: `chosen matches FTL primary (${expected})`,
+      classification_label: classificationLabel,
+    };
+  }
+
+  if (!chosen) {
+    return {
+      ticker,
+      aligned: false,
+      expected_method: expected,
+      chosen_method: null,
+      severity: 'low',
+      reasoning: 'chosen methodology not detectable in scenario builder output (advisory)',
+      classification_label: classificationLabel,
+    };
+  }
+
+  // Structural mismatch — checked first because val_dcf for holding/banking
+  // is wrong regardless of any non-zero weight in the FTL template.
+  if (chosen === 'val_dcf' && (isHolding || isBanking)) {
+    return {
+      ticker,
+      aligned: false,
+      expected_method: expected,
+      chosen_method: chosen,
+      severity: 'high',
+      reasoning:
+        `structural mismatch: val_dcf chosen for ${classificationLabel} ticker — ` +
+        `consolidated bank P&L / segment-mismatched holding distorts FCF (FTL primary=${expected})`,
+      classification_label: classificationLabel,
+    };
+  }
+
+  if (inappropriate.includes(chosen)) {
+    return {
+      ticker,
+      aligned: false,
+      expected_method: expected,
+      chosen_method: chosen,
+      severity: 'high',
+      reasoning:
+        `chosen '${chosen}' is in inappropriate_methods (weight=0) for ${classificationLabel}; ` +
+        `FTL primary=${expected}`,
+      classification_label: classificationLabel,
+    };
+  }
+
+  if (secondary.includes(chosen)) {
+    return {
+      ticker,
+      aligned: false,
+      expected_method: expected,
+      chosen_method: chosen,
+      severity: 'low',
+      reasoning:
+        `chosen '${chosen}' is a secondary (FTL weight<0.15) for ${classificationLabel}; ` +
+        `FTL primary=${expected}`,
+      classification_label: classificationLabel,
+    };
+  }
+
+  const w = weights[chosen] ?? 0;
+  if (w >= 0.15) {
+    return {
+      ticker,
+      aligned: false,
+      expected_method: expected,
+      chosen_method: chosen,
+      severity: 'medium',
+      reasoning:
+        `chosen '${chosen}' weight=${w.toFixed(2)} (significant alternative) but FTL primary=${expected}`,
+      classification_label: classificationLabel,
+    };
+  }
+
+  return {
+    ticker,
+    aligned: false,
+    expected_method: expected,
+    chosen_method: chosen,
+    severity: 'low',
+    reasoning:
+      `chosen '${chosen}' unrecognised in FTL weights for ${classificationLabel}; FTL primary=${expected}`,
+    classification_label: classificationLabel,
+  };
+}
+
 
 /** Typed getter — returns null when truth assertions are not populated. */
 export function readTruthAssertions(

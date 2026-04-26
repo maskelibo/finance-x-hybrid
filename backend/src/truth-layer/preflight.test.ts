@@ -4,6 +4,7 @@ import {
   populateFaFilingHint,
   readTruthAssertions,
   kapDisclosuresToFilings,
+  assertMethodologyAlignment,
   TRUTH_CONTEXT_KEYS,
 } from './preflight.js';
 
@@ -132,5 +133,86 @@ describe('truth-layer preflight', () => {
     const sel = populateFaFilingHint('KCHOL', ctx);
     expect(sel).toBeNull();
     expect(ctx[TRUTH_CONTEXT_KEYS.FA_FILING_HINT]).toBeUndefined();
+  });
+});
+
+
+describe('truth-layer methodology mismatch guard (P2.alpha)', () => {
+  it('returns null when truth assertions are not populated', () => {
+    expect(assertMethodologyAlignment({}, 'val_dcf')).toBeNull();
+  });
+
+  it('KCHOL aligned=true when chosen matches FTL primary (val_sotp)', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_sotp');
+    expect(r).not.toBeNull();
+    expect(r!.aligned).toBe(true);
+    expect(r!.severity).toBe('none');
+    expect(r!.expected_method).toBe('val_sotp');
+    expect(r!.chosen_method).toBe('val_sotp');
+    expect(r!.classification_label).toBe('holding_banking_heavy');
+  });
+
+  it('KCHOL DCF-only triggers HIGH severity (structural rule for holdings)', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_dcf');
+    expect(r!.aligned).toBe(false);
+    expect(r!.severity).toBe('high');
+    expect(r!.reasoning).toMatch(/structural mismatch/i);
+    expect(r!.expected_method).toBe('val_sotp');
+  });
+
+  it('AKBNK DCF triggers HIGH severity (banking — DCF inappropriate AND structural)', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('AKBNK', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_dcf');
+    expect(r!.aligned).toBe(false);
+    expect(r!.severity).toBe('high');
+    expect(r!.expected_method).toBe('val_p_b');
+  });
+
+  it('KCHOL val_p_b → MEDIUM severity (significant alternative, weight=0.20)', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_p_b');
+    expect(r!.aligned).toBe(false);
+    expect(r!.severity).toBe('medium');
+    expect(r!.reasoning).toMatch(/weight=0\.20/);
+  });
+
+  it('KCHOL val_trading_comps → LOW severity (secondary, weight=0.05)', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_trading_comps');
+    expect(r!.aligned).toBe(false);
+    expect(r!.severity).toBe('low');
+    expect(r!.reasoning).toMatch(/secondary/);
+  });
+
+  it('null/empty chosen → LOW severity, aligned=false, reasoning advisory', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    expect(assertMethodologyAlignment(ctx, null)!.severity).toBe('low');
+    expect(assertMethodologyAlignment(ctx, '')!.severity).toBe('low');
+    expect(assertMethodologyAlignment(ctx, undefined)!.severity).toBe('low');
+  });
+
+  it('regular industrial DCF → aligned=true (DCF is primary for non-holding/non-bank)', () => {
+    const ctx: Record<string, unknown> = {};
+    // ASELS = regular industrial in TEMPLATE_REGULAR (val_dcf=0.55 primary)
+    populateTruthAssertions('ASELS', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_dcf');
+    expect(r!.aligned).toBe(true);
+    expect(r!.severity).toBe('none');
+  });
+
+  it('guard does not mutate accumulatedContext', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    const before = JSON.stringify(ctx);
+    assertMethodologyAlignment(ctx, 'val_dcf');
+    expect(JSON.stringify(ctx)).toBe(before);
   });
 });
