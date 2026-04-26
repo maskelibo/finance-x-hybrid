@@ -33,6 +33,46 @@ function latestFinancialReportPath(upstream: unknown): string | null {
 }
 
 
+/**
+ * P1.gamma — resolve fa_filing_hint to a local PDF path by walking the
+ * upstream data_collection manifest. Only matches inside
+ * `data_manifest.financial_reports[]` to avoid landing on
+ * faaliyet_raporu / ozel_durum filings the FA engine cannot parse.
+ *
+ * Returns null when:
+ *   - hint is empty / not a string
+ *   - manifest cannot be parsed
+ *   - no financial_reports entry has disclosure_id === hint
+ */
+export function resolvePdfByFilingHint(upstream: unknown, filingHint: string): string | null {
+  const hint = String(filingHint ?? '').trim();
+  if (!hint) return null;
+
+  let parsed: unknown = upstream;
+  if (typeof upstream === 'string') {
+    try { parsed = JSON.parse(upstream); } catch { return null; }
+  }
+  if (!parsed || typeof parsed !== 'object') return null;
+
+  const manifest = (parsed as Record<string, unknown>)['data_manifest'];
+  if (!manifest || typeof manifest !== 'object') return null;
+  const financialReports = (manifest as Record<string, unknown>)['financial_reports'];
+  if (!Array.isArray(financialReports)) return null;
+
+  for (const raw of financialReports) {
+    if (!raw || typeof raw !== 'object') continue;
+    const rec = raw as Record<string, unknown>;
+    const did = String(rec['disclosure_id'] ?? '').trim();
+    if (did !== hint) continue;
+    const local = rec['local_path'];
+    if (typeof local === 'string' && local.toLowerCase().endsWith('.pdf')) {
+      return local;
+    }
+  }
+  return null;
+}
+
+
 export async function runPythonFinancialAnalysis(
   sessionId: string,
   runId: string,
@@ -47,7 +87,15 @@ export async function runPythonFinancialAnalysis(
 
   const upstream = accumulatedContext['data_collection_output'] ??
                    accumulatedContext['parse_standardization_output'];
-  const pdfPath = latestFinancialReportPath(upstream);
+
+  // P1.gamma — fa_filing_hint authoritative when it resolves to a PDF inside
+  // data_manifest.financial_reports[]. Otherwise fall back to the legacy
+  // latest-financial-report selection (P1.beta semantics preserved exactly).
+  const filingHintRaw = accumulatedContext['fa_filing_hint'];
+  const filingHint = typeof filingHintRaw === 'string' ? filingHintRaw : null;
+  const hintedPath = filingHint ? resolvePdfByFilingHint(upstream, filingHint) : null;
+  const pdfPath = hintedPath ?? latestFinancialReportPath(upstream);
+  const pdfSource: 'hint' | 'fallback' = hintedPath ? 'hint' : 'fallback';
 
   if (!pdfPath) {
     const completedAt = new Date().toISOString();
@@ -62,6 +110,14 @@ export async function runPythonFinancialAnalysis(
     );
     console.warn('[PYTHON:financial_analysis] no PDF path');
     return 'failed';
+  }
+
+  if (filingHint && pdfSource === 'fallback') {
+    console.log(
+      `[PYTHON:financial_analysis] pdf=${pdfPath} source=fallback (hint=${filingHint} unresolved in financial_reports[])`,
+    );
+  } else {
+    console.log(`[PYTHON:financial_analysis] pdf=${pdfPath} source=${pdfSource}`);
   }
 
   const marketCap = process.env.PYTHON_FA_MARKET_CAP;
