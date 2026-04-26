@@ -97,3 +97,30 @@ ARCLK 2025 Faaliyet Raporu kapağı açıkça kırmızı-beyaz (#E30613 + #FFFFF
 
 ### 2026-04-24 — BIMAS
 BIM raporu lacivert-gri renk şemasıyla üretildi; gerçek BIM dokümanları turuncu-lacivert. Kurumsal müşteriye teslimde brand uyumsuzluğu profesyonellik sorunu yaratır.
+
+### 2026-04-24 — BIMAS
+SPK disclaimer eksikliği yasal yaptırım riski taşır. THYAO run'da COO blocked → formatter re-run → 2. geçişte passed. BIMAS'ta aynı döngü kurulmadı, manuel müdahale gerekti.
+
+### 2026-04-24 — BIMAS
+CEO direktifi: 'sirket brand identity taklit et'. Kırmızı BIM raporu mavi tonlarla çıktı. Kurul sunumunda müşteri güveni kaybı riski — brand uyumu zorunlu.
+
+### 2026-04-24 — KCHOL
+KCHOL 2026-04-24: Koç kırmızısı (#CC0000) context_extraction'da mevcuttu, formatter kurumsal mavi tema kullandı. Kapak sayfası KCHOL markasını yansıtmadı — '100. YIL altın badge' ve kırmızı-siyah kimlik kayıp.
+
+### 2026-04-24 — KCHOL
+KCHOL: SPK yasal uyarısı eksik HTML teslim edildi. COO bunu tespit edip blocked etti ama formatter bağımsız çalıştı. İki ayrı güvenlik mekanizması (COO gate + formatter hardcode) birden devre dışıydı.
+
+### 2026-04-24 — KCHOL
+Koç Holding kurumsal kırmızısı (#CC0000) yerine lacivert rapor teslim edilmesi müşteri gözünde ciddi profesyonellik sorunu yaratır. KCHOL raporunun brand identity'si holding.yaml sektör varsayılanından otomatik alınabilirdi.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: report_formatter kapsamlı HTML üretti (cover page, CSS, tablolar) ancak SPK metni ve <html> wrapper eksikti. COO tüm delivery'yi blokladı. Sorun içerik kalitesi değil — template'in zorunlu başlık/footer alanlarının render edilmemesi.
+
+### 2026-04-25 — KCHOL
+KCHOL: ABORT + COO BLOCKED + 8KB HTML üretimi. Üç aşamalı bariyer çalıştı ama formatter gereksiz iş yaptı; COO bloklama yükü arttı.
+
+### 2026-04-25 — KCHOL
+CEO hafızasında 'Sirket brand identity taklit et (renkler, tipografi, layout)' kalıcı kural. KCHOL için kırmızı-siyah palet kullanılmaması hem görsel profesyonelliği hem kurumsal kimlik uyumunu bozuyor.
+
+### 2026-04-25 — KCHOL
+final_summary JSON'unda mandatory_disclosures array'inde metin var ama HTML formatter bu array'i yasal uyarı bloğuna dönüştürmedi. JSON→HTML mapping gap'i.

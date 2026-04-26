@@ -38,22 +38,6 @@
 4. Twitter/X — #BIST30 etiketleri, retail investor sentiment
 5. Bloomberg/Reuters — uluslararasi kurumsal sentiment
 
-## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
-
-### Eksikler:
-- **Sayısal sentiment skoru (-5/+5) verilmedi** — Haber listesi verildi ✓ ama her kategori (analist, insider, makro, sektör) için sayısal skor tablosu eksik. Sezgisel "Pozitif/Neutral/Negatif" yetmez.
-- **Haber → fiyat etki ölçümü tablosu yok** — AGM sonuçları (26 Mart), temettü açıklaması (3 Mart) için haber tarihi + 1/3/5 gün kapanış fiyatı + hacim değişimi tablosu oluşturulmadı.
-- **EPDK gaz tarifesi kararına medya tepkisi eksik** — Çelik sektörü zorunlu 1. ek madde; 4 Nisan 2026 EPDK kararına EREGL özelinde yerel basın haberi araması yapılmadı.
-- **AB Safeguard kota kararına medya tepkisi eksik** — TRK −%47 kota kesintisi için EREGL/sektör haberi araması yapılmadı. Çelik sektörü zorunlu 2. ek madde.
-- **OYAK kurumsal yapısının yabancı yatırımcı algısı** — OYAK sahipliğinin kurumsal yatırımcı algısına etkisi (governance discount, şeffaflık, bağımsız YK) analiz edilmedi. Çelik sektörü zorunlu 4. ek madde.
-- **0 SELL durumu crowded long riski olarak analiz edilmedi** — 6 BUY / 5 HOLD / 0 SELL; neden SELL yok? Bu asimetrik risk sinyali değerlendirilmedi.
-- **Uluslararası basın coverage "minimal" kategorisi** — Bloomberg/Reuters EREGL coverage'ı var mı/yok mu "minimal" olarak kayıt altına alınmadı.
-
-### Bundan Sonra:
-- **EPDK ve AB Safeguard kararları → medya tepkisi çelik analizlerinde zorunlu** — Her iki olay için en az 3 haber kaynağı (Bigpara, Reuters, Bloomberg) + yerel vs uluslararası tepki karşılaştırması.
-- **Sayısal sentiment tablosu 4 kategori** — Analist (+/-5) / Insider (+/-5) / Makro haber (+/-5) / Sektör haberi (+/-5) → ağırlıklı genel sentiment skoru. Format: tablo, her kategori satır.
-- **0 SELL durumunda zorunlu analiz** — "Neden SELL yok?" sorusunu her raporda yönelt: CBAM/EPDK riski fiyatlanmadı mı? Çin dumping baskısı hafife mi alındı? Bu analiz raporun bir paragrafı.
-
 ## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
 
 ### Eksikler:
@@ -67,6 +51,14 @@
 - **Sayısal sentiment tablosu 4 satır zorunlu** — [Analist | Insider | Makro | Sektör] her biri -5/+5 arası puan + ağırlıklı genel skor. Bu tablo olmadan sentiment çıktısı eksik sayılır.
 - **0 SELL → zorunlu analiz** — "Sıfır SELL durumu neden anomali?" bölümü: (1) mevcut riskler fiyatlandı mı?, (2) downgrade tetikleyicileri neler?, (3) yabancı pay düşerse çıkış riski? Holding analizlerinde bu analiz zorunlu.
 - **Fitch haberi → fiyat etkisi** — 10 Nisan Fitch sovereign indirimi + 15 Nisan bankacılık outlook indirimi → 10/11/12/13/14/15 Nisan KCHOL kapanış fiyatları tablosu. Abnormal return hesabı zorunlu.
+
+## Guncel Kaynaklar ve Piyasa Verisi (Nisan 2026)
+
+- **BorsaMatik:** borsamatik.com.tr — yabanci yatirimci radar hisseler, gunluk net alim/satim; retail sentiment icin güçlü sinyal
+- **HisseOnerileri.com:** gunluk teknik ve temel analist onerileri
+- **Yabanci yatirimci (Nisan 2026):** Net +579M dolar akim; en ilgi gören: ARCLK, bankalar, enerji. Surekli alimda 10+ gun: Armada, BIST, Invesco.
+- **BIST 100 analist kapsami:** THYAO (24), TCELL (23), AKBNK (22), MIGROS (21) — en genis coverage
+- **Materyal sektoru:** +%54 kazanc buyumesi beklentisi (2026) — analist en iyimser sektor
 
 ---
 

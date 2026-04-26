@@ -885,6 +885,29 @@ td, th {
 - Formatter yalniz sunum katmani degil, `deliverable contract` koruyucusu olarak calisacak; `<!DOCTYPE>` disi metin, eksik kapanis, eksik PDF veya eksik chart inventory varsa teslim etmeyecek.
 - `content blocker` ve `presentation blocker` ayri tablolar halinde raporlanacak; content blocker aciksa guzel HTML bile release-ready sayilmayacak.
 
+## CEO Geri Bildirimi — 2026-04-17 — THYAO Raporu (Purge: 2026-04-25)
+
+### Eksikler:
+- **HTML_ENVELOPE eksik → COO BLOCKED ✓** — COO doğru karar verdi. `<html lang="tr">...</html>` tam sarmalayıcı olmadan HTML geçersiz; self-check bu hatayı yakalamadı.
+- **SPK_DISCLAIMER eksik — 7. ihlal** — "Bu rapor yatırım tavsiyesi değildir" footer zorunlu; 7 turda uygulanmadı. Artık şablona gömülmesi zorunlu.
+- **Dosya boyutu ~8KB — 50KB eşiğinin çok altında (7. ihlal)** — 6 kez direktif verildi, hiçbir zaman uygulanmadı. Kod değişikliği olmadan bu hata tekrarlanacak.
+- **THYAO marka renkleri (#E81932, #1C2B50) uygulanmadı — 7. ihlal** — Finance X mavi/amber renk paleti kullanıldı. Self-check sırasında marka rengi kontrolü yapılmadı.
+- **SVG grafik sayısı kontrolü yapılmadı** — Kural min 4 SVG; self-check sırasında sayı doğrulanmadı.
+- **Self-check döngüsü 7. turda da çalışmadı** — 6 zorunlu kontrol teslimden önce yapılmadı.
+
+### Bundan Sonra:
+- **HTML_ENVELOPE + SPK_DISCLAIMER = şablon olarak sabit (kod değişikliği gerekli — 7. direktif sonrası memory'de tekrar yazılmıyor)** — Template dosyasına gömülü olmalı.
+- **50KB minimum = renderer seviyesinde kontrol** — Çıktı render edilmeden önce byte size ölçülür; <50KB → bloker.
+
+## CEO Geri Bildirimi — 2026-04-17 — ASELS Raporu (Purge: 2026-04-25)
+
+### Eksikler:
+- **HTML_ENVELOPE eksik → COO BLOCKED ✓** — `<html lang="tr">...</html>` tam sarmalayıcı olmadan HTML geçersiz.
+- **SPK_DISCLAIMER eksik** — "Bu rapor yatırım tavsiyesi değildir" footer zorunlu.
+- **Dosya boyutu ~8KB — 50KB eşiğinin çok altında** — THYAO'da tekrarlayan aynı hata.
+- **Finance X mavi (#1e40af) kullanıldı — ASELS bordo (#8B1A1A) değil** — Her şirket için marka rengi self-check listesinde olmalı.
+- **Self-check döngüsü çalışmadı** — 6 zorunlu kontrol teslimden önce yapılmadı.
+
 ## CEO Geri Bildirimi — 2026-04-14 — THYAO Raporu
 
 ### Eksikler:

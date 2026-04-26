@@ -173,3 +173,14 @@
 - Doğrulanmamış analist notu, rating veya fiyat verisini tabloya alma ya da `unverified` etiketiyle ver.
 - Sentiment skoru ile finansal etki tahminini ayrı yönet.
 - Nicel etki veriyorsan kısa dayanak mantığı veya formülü not et.
+
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu (Purge: 2026-04-25)
+
+### Eksikler:
+- Sayısal sentiment skoru (-5/+5) verilmedi — kategori bazlı tablo yok
+- Haber → fiyat etki ölçümü tablosu yok (AGM, temettü açıklaması için 1/3/5 gün)
+- EPDK gaz tarifesi kararına medya tepkisi eksik (4 Nisan 2026)
+- AB Safeguard kota kararına medya tepkisi eksik (-47% kota kesintisi)
+- OYAK kurumsal yapısının yabancı yatırımcı algısı analiz edilmedi
+- 0 SELL durumu (6 BUY/5 HOLD/0 SELL) crowded long riski olarak değerlendirilmedi
+- Uluslararası basın coverage kayıt altına alınmadı

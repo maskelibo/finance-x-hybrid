@@ -27,3 +27,36 @@ BIMAS FY2025: monetary_gain_loss null → downstream tüm IAS29 ayrımları (ROE
 
 ### 2026-04-24 — BIMAS
 Önceki BIMAS oturumu (2026-04-14) da SE eksikti ve QA blocked. Bu oturumda da equity_change={} — data_collection local cache'den okuma yaptığı için (file:// paths) eksik tablo atlandı.
+
+### 2026-04-24 — BIMAS
+EBITDA kaynak farkı (%2.2) downstream EV/EBITDA hedef fiyatını kaydırır. Valuation agent hangi EBITDA'yı kullandığını açıklamamış — audit trail yok.
+
+### 2026-04-24 — KCHOL
+KCHOL 2026-04-24: disclosure 1555903 (FY2025 annuals) 'FY-2026' etiketiyle geçirildi → financial_analysis'e revenue=0, assets=0 geçti → 28 oran null → QA 0.46 → downstream cascade çöküşü.
+
+### 2026-04-24 — KCHOL
+KCHOL: 3 ardışık analizde IFRS 8 segment extraction %0 başarı. TUPRS/FROTO/YKBNK/ARCLK segment EBITDA katkısı hiç elde edilemedi (CEO P0-002 ihlali).
+
+### 2026-04-24 — KCHOL
+KCHOL FY2025: CF parse başarısız → FCF null → Piotroski F-score CF kriteri hesaplanamadı → Chairman zorunlu metrikleri (FCF, OCF/EBITDA, CAPEX/EBITDA) eksik — QA COMPLETENESS=0.
+
+### 2026-04-24 — KCHOL
+1555903 (Finansal Rapor, 367KB, FY2025 konsolide) yerine 1555915 (Özel Durum, 81KB) işlendi. Dosya boyutu bile ayırt edici sinyaldi — 81KB finansal tablo taşıyamaz.
+
+### 2026-04-24 — KCHOL
+KCHOL: 1555915 (Özel Durum, 81KB) FY-2026 interim — tam yıl tablo yok. 1555903 (Finansal Rapor, 368KB) FY-2025 birincil kaynak. Boyut farkı (81KB vs 368KB) bile dönem boşluğunu ima ediyor.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: parse_standardization FY-2025 BS (total_assets=5.32T) ve IS (revenue=2.76T) doldurdu ancak cash_flow={}. financial_analysis sonucunda FCF=null, OCF/EBITDA=null, CAPEX/EBITDA=null. Valuation SOTP'ta holding-only net borç da doğrulanamadı.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260211: 1555903 (FY-2025 bilanço kapanışı 31.12.2025) → FY-2025. Yayın tarihi = 2026 değil, kapanış tarihi = 2025.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260211: 1555903 (Finansal Rapor, 367KB) birincil. 1555915 (Özel Durum, 81KB) ODA track'i. İki track ayrı tutulmadan tüm sezon veri kaybı oluştu.
+
+### 2026-04-25 — KCHOL
+KCHOL her çeyrekte iki eş zamanlı bildirim yayımlıyor: (a) kısa özel durum özeti ve (b) tam finansal rapor. Agent boyut filtresi uygulamadığı için küçük özeti seçti.
+
+### 2026-04-25 — KCHOL
+Holdinglerde nakit akış tablosu ayrı sayfalarda (genellikle p.6-8) yer alır ve tablo başlığı 'Nakit Akış Tablosu' / 'Consolidated Statement of Cash Flows' olarak geliyor. Regex pattern bu başlığı kapsıyor mu doğrulanmalı.

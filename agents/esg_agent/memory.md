@@ -44,24 +44,6 @@
 4. YK bagimsizlik -> MSCI ESG etkisi (~%15-20 agirlik)
 5. ETS maliyet riski
 
-## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu
-
-### Eksikler:
-- **CDP kaydı aranmadı** — Zorunlu 1. madde; cdp.net'ten EREGL/Erdemir kaydı kontrol edilmedi. "CDP kayıt yok" veya "CDP public score bulunamadı" şeklinde teyit edilmedi.
-- **BIST Sürdürülebilirlik Endeksi üyeliği teyidi** — BIST'te EREGL'in BIST Sürdürülebilirlik Endeksi'nde olup olmadığı resmi kaynak ile doğrulanmadı.
-- **TSRS uyum beyanı (TFRS-S1/S2) kontrol edilmedi** — FY2024+ zorunlu TSRS kontrolü; KAP'ta bu kapsam aranmadı.
-- **Türkiye ETS kapsam durumu ve tahmini maliyet yükü hesaplanmadı** — Çelik sektörü zorunlu 2. madde. Türkiye ETS pilot kapsamında çelik var mı/yok mu? ETS maliyeti = Scope 1 emisyon × karbonun TRY karşılığı formülü eksik.
-- **CBAM sayısal hesabı tamamlanamadı** — AB ihracat payı eksik olduğundan hesap yapılamadı; ancak sektör proxy (%15-20 Türk çelik ihracatı AB'ye) ile üst sınır tahmini yapılabilirdi.
-- **OYAK sahipliğinin yönetişim etkisi eksik** — OYAK %81.49 dominant hissedar; bağımsız YK oranı %33.3 (kural minimum) üzerinde değil; ilişkili taraf işlem yoğunluğu ve azınlık hakları koruması analizi eksik. Çelik sektörü zorunlu 5. madde.
-- **Yenilenebilir enerji % "[VERİ YOK]"** — Erdemir Enerji A.Ş. kurulumu biliniyor; somut enerji karışımı oranı KAP veya faaliyet raporundan çekilemedi.
-- **LTIR (Lost Time Injury Rate) verildi mi belirsiz** — Zorunlu 3. madde; çıktıda faaliyet raporu HSE bölümünden sayısal LTIR görünmüyor.
-
-### Bundan Sonra:
-- **CDP araması zorunlu ilk adım** — cdp.net'te "Erdemir" veya "Ereğli" ara; bulamazsan "CDP kayıt tespit edilemedi [conf: MEDIUM — basın açıklaması/KAP aranabilir]" yaz.
-- **ETS hesabı çelik için zorunlu** — Scope 1 (2.2 tCO2/ton × üretim miktarı) × karbonun fiyatı (Türkiye pilot ETS veya EU ETS proxy) = yıllık maliyet yükü TRY. Pilot ETS yoksa EU ETS benzer hesabı "[sektör proxy, conf: LOW]" etiketle.
-- **CBAM proxy hesabı** — AB ihracat payı kesin bilinmiyorsa "%15-20 Türk çelik ihracatı" proxy ile CBAM üst sınır maliyet = Scope 1 × ihracat payı × CBAM ücreti €/ton. Low confidence etiketle ama ver.
-- **OYAK ilişkili taraf analizi derinlemesine** — YK bağımsızlık oranı (%33.3), OYAK-EREGL enerji/hammadde ilişkili taraf işlem tutarları ve arm's length metodolojisi. G puanı bu analize göre kalibre et.
-
 ## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu
 
 ### Eksikler:

@@ -15,3 +15,24 @@ EREGL: OGK tescili (1595638) ve BIST temettü endeks değişikliği (1594977) i�
 
 ### 2026-04-23 — EREGL
 EREGL: 1594977 BIST Temettü Endeksi KAP bildirimi temettü tutarı içerebilirdi; LLM okusaydı quantify ederdi. Tüm eventlara aynı null etiketi yapıştırıldı.
+
+### 2026-04-24 — BIMAS
+Geri alım olayı (1576224) için EPS seyreltme etkisi ve float azalması hesaplanmadı. Bu bilgi BUY sinyal gücünü artırırdı; strategic_synthesis'e geçmedi.
+
+### 2026-04-24 — KCHOL
+KCHOL: ARCLK Hitachi çıkışı ($261M ≈ 11.7B TRY) external_research'te 3 kaynak ve fiyatla belgelendi, event_impact_mapper'da quantification_possible=false çıktı. Cross-agent veri akışı köprüsü eksik.
+
+### 2026-04-24 — KCHOL
+KCHOL için 1582005 (Özel Durumlar Tebliği 12/4 — yüksek güven), 1577703 (Olağan Genel Kurul kararları tescili) gibi yüksek güvenlikli olaylar dahi sayısal etki olmaksızın 'uncertain' kaldı. strategic_synthesis 'net +12/-3' sayacı gerçek analiz değil, ham sayım.
+
+### 2026-04-24 — KCHOL
+KCHOL: ARCLK-Hitachi satışı (Nisan 2026) hem KCHOL değerlemesini hem ARCLK SOTP hesabını etkiliyor. İki ajan (event_impact_mapper, valuation_agent) bağımsız olarak bu olayı işlemeliydi; ikisi de ihmal etti.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: 1582005 nolu bildirim (Özel Durumlar Tebliği 12-4, yüksek güven, material_event) pipeline'da derinlemesine analiz edilmedi. Bu tip bildirimin içeriği (pay geri alım programı, yönetim değişikliği vb.) fiyata doğrudan etki edebilir.
+
+### 2026-04-25 — KCHOL
+KCHOL 1582005: Özel Durumlar Tebliği 12-(4) — büyük olasılıkla pay geri alımı veya varlık hareketi. LLM refinement 30 saniyede içeriği çekebilirdi.
+
+### 2026-04-25 — KCHOL
+1582005 KAP duyurusunun içeriği hiçbir agent tarafından fetch edilmedi. High-confidence material_event olarak sınıflandırıldı ama ne olduğu bilinmiyor. LLM'in minimum görevi bu URL'yi açıp özet üretmekti.

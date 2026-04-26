@@ -219,3 +219,24 @@ ARCLK pipeline: TCMB PPK Nisan 2026 politika faizi LLM bilgisiyle 37.0% verildi.
 
 ### 2026-04-24 — BIMAS
 TCMB politika faizi %37 ve TÜİK CPI %30.87 doğruysa IAS29 real_rate=+6.13pp doğru hesaplandı. Ancak kaynaksız LLM üretimi kontrol edilemez. Gelecek oturumda WebFetch doğrulaması zorunlu: tcmb.gov.tr/tcmb/tc/monetary-policy-rate.
+
+### 2026-04-24 — BIMAS
+Policy rate %37.0 doğru geldi ama audit edilemiyor. Kurumsal raporda her makro rakamın traceable kaynağı olmalı; LLM override tek başına kaynak sayılamaz.
+
+### 2026-04-24 — KCHOL
+KCHOL: macro_analysis.policy_rate=null (top-level) iken llm_narrative'de 37.0%. strategic_synthesis makro verileri llm_narrative'den manuel referans aldı — otomasyon güvenilirliği sıfır. financial_analysis real rate hesaplayamadı.
+
+### 2026-04-24 — KCHOL
+TCMB %37 politika faizi ve %30.87 TÜFE, KCHOL net borç/EBITDA yorumu için kritik; strategic_synthesis bunları 'manually' buldu. Eğer sistematik bir analiz olsaydı interest_coverage ve real_rate hesaplamaları otomatik tetiklenirdi.
+
+### 2026-04-24 — KCHOL
+KCHOL: policy_rate python=null, LLM=37.0. strategic_synthesis 'DATA_VOID macro' flag attı; gerçekte TCMB verisi mevcuttu ama struct'ta gözükmüyordu.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: macro_analysis PPI=28.08% knowledge.md'den UNVERIFIED olarak aldı; strategic_synthesis risk skorlamasında (BOTAŞ +18.61% sanayi gazı baskısı) kullandı. Doğrulamasız verinin downstream etki zinciri oluştu.
+
+### 2026-04-25 — KCHOL
+KCHOL: Brent $105.33 Hürmüz bağlamıyla kritik TUPRS marjı etkisi — bu veri LLM tarafından bulundu, ancak otomasyon güvenilirliği düşük. Policy rate senaryo analizine giriyor; kaynak Python'dan gelmeli.
+
+### 2026-04-25 — KCHOL
+37.0% politika faizi 22 Nisan 2026 PPK kararıyla sabit kalmıştı; kamuya açık bilgi. EVDS key eksikliği nedeniyle 3 seansı etkileyen null değer üretilmesi önlenebilir bir teknik borç.

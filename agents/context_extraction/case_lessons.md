@@ -201,3 +201,9 @@ THYAO 20260423: YK Raporu 20260422 CEO mandate'de 'birincil kaynak olarak tüm a
 
 ### 2026-04-23 — EREGL
 EREGL: yabancı yatırımcı oranı eksikliği nedeniyle Nisan 2026 dolar güçlenmesi döneminde yabancı satış baskısı senaryo analizi yapılamadı. Bu veri boşluğu özellikle TRY volatil dönemlerde kritik.
+
+### 2026-04-24 — BIMAS
+Rev/Store (CEO mandatory metrik) hangi store_count kullanıldığına göre değişir: 721 milyar / 13,800 = 52.2 mn vs 721 milyar / 14,473 = 49.8 mn TRY/mağaza. %4.9 fark peer karşılaştırmasında anlamlı.
+
+### 2026-04-25 — KCHOL
+KCHOL 1555903 ana muhasebe belgesi; faaliyet raporu içeriği ayrı attachment. Bu iki-katmanlı yapı TUPRS, THYAO, ARCLK'ta da tekrarlıyor — attachment fetch genel kural olmalı.

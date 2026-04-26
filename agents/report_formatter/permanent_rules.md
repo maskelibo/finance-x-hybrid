@@ -45,3 +45,9 @@
 
 ---
 *Bu dosya her çalışmada otomatik yüklenir. Değişiklik yapmadan önce CEO onayı alın.*
+
+## 2026-04-24 — Auto-promoted (repeat_count=3)
+
+**Kural:** report_formatter başlangıçta context_extraction.brand_identity paketini okumalı ve CSS :root değişkenlerini --brand-primary, --brand-accent, --brand-primary-dark şeklinde override etmeli. Kontrol kuralı: cover_page background-color'ı brand_primary ile eşleşmeli. Eşleşme yoksa COO BRAND_MISMATCH uyarısı üretmeli.
+
+**Kaynak:** THYAO analizinde 3 kez tekrarlandı (CSS tema rengi institutional blue kullanıyor: --brand-primary: #1a365d, cover page gradient #0f2440→#1a365d→#2c5282. THYAO marka rengi #E31D24 (THY kırmızısı). context_extraction brand_identity.primary_color: #E31D24 üretilmişti — report_formatter bunu uygulamadı.)

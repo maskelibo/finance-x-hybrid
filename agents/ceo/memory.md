@@ -99,20 +99,22 @@
 
 ---
 
-## Son Heartbeat — 2026-04-23 TSİ (Otonom Döngü #132)
-- Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, kalıcı kurallar, takvim, EREGL kilitli fact base].
-- **KAP Erişim:** JS-render engeli devam. Bildirim listesi alınamadı (sistematik sorun devam ediyor).
-- **WTI: $95.55 (+2.79%)**, Brent: $104.82 (+2.86%). Önceki döngüden +$6.36 (+7.1%) — TEK GÜNDE BÜYÜK HAREKET. Sebep: ABD İran kargo gemisine el koydu + Hürmüz Boğazı kesinti riski artışı. Günlük aralık $92.33-$98.40. Geopolitik risk fiyatlaması devam ediyor.
-- **BIST100:** 14,335 (önceki kapanış, -0.28%) — Bugün için güncel veri alınamadı.
-- **EREGL: 32.60 TRY** (22 Nisan kapanışı). **TARİH DÜZELTME: Q1 2026 earnings 23 Nisan DEĞİL, 28 Nisan 2026.** #131'de hata vardı. Q4 2025 sonuçları EPS -0.203 (beklenti: +0.279) — kayıp vs kar beklentisi, büyük miss. Kilitli Fact Base Baz: 28.4 TRY, mevcut 32.60 TRY = Baz senaryonun %15 üzerinde. Analist konsensus hedef 32.70 TRY (nötr).
-- **TUPRS: 263.00 TRY (+3.75%)** (22 Nisan kapanışı) — WTI $89→$95 yükselişi kısa vadede inventory kazanımı sağladı. Ancak $95+ sustain edilirse ham madde maliyet baskısı dönecek. Takip gerekiyor.
-- **THYAO: 323.50 TRY (-1.07%)** (22 Nisan kapanışı) — yakıt maliyeti baskısı (WTI +%7).
-- **Takvim (KRİTİK):** EREGL Q1 2026 earnings **28 Nisan 2026** — 5 gün kaldı. Q4 2025 miss sonrası beklentiler düşük, sürpriz potansiyeli var.
-- **Olağandışı:** WTI tek günde +%7.1 (ABD-İran kargo krizi) — TUPRS için ikilik durum: kısa vade pozitif (inventory), orta vade negatif (maliyet). THYAO direkt maliyet baskısı.
-- P0/P1 yok. **Chairman ALERT: HAYIR** (watchlist boş, aktif hedef yok; geopolitik WTI hareketi izleniyor).
+## Son Heartbeat — 2026-04-25 TSİ (Otonom Döngü #134)
+- Checked memory: [veri kaynağı kuralları, heartbeat özet limiti, EREGL kilitli fact base, takvim, kalıcı kurallar].
+- **KAP Erişim:** JS-render engeli sistematik devam (döngü #134'te de alınamadı). KAP doğrudan bildirim sorgusu başarısız.
+- **[KRİTİK POLİTİKA] Erdoğan Vergi İndirimi:** Kurumlar vergisi — imalatçı-ihracatçıya **%9**, diğer ihracatçıya **%14** (önceki %25). EREGL (çelik imalatçı-ihracatçı) doğrudan kapsama giriyor. Vergi yükü yaklaşık %64 düşer. Sonraki EREGL analizinde vergi oranı varsayımı %9 olarak güncellenecek.
+- **EREGL: 33.00 TRY (+1.23%)** — Kilitli Baz 28.4 TRY'nin %16 üstünde. **Earnings 28 Nisan → 3 gün kaldı.** P/E 428x (IAS29 düşük NI etkisi). Vergi indirimi + düşük beklentiler = upside surprise riski yüksek.
+- **BIST100: 14,409.07 (+0.51%)** — Piyasa kapalı (kapanış). Haftalık +1.22%, aylık +10.59%.
+- **WTI: $94.40 (-1.51%)** — Önceki $95.94'ten geri çekildi. Brent $105.33 (+0.25%). WTI-Brent spread genişliyor (petrol kargosunda bölgesel baskı).
+- **ARCLK: 117.20 TRY (+1.74%)** — Önceki 119.00'dan hafif gerileme. Net zarar 8.36B TRY (FY). Hitachi corporate event normalize oluyor.
+- **TUPRS: 269.00 TRY (+2.28%)** — Toparlanma güçlü. 
+- **THYAO: 325.00 TRY (+0.46%)** — May 4 earnings yaklaşıyor. Konsensus Strong Buy, hedef ~454 TRY.
+- **Makro:** USD/TRY 45.01, EUR/TRY 52.76, gram altın 6,815 TRY. TCMB faiz %37 (değişmedi). TL yatay.
+- **Olağandışı:** Vergi indirimi duyurusu EREGL için material; KAP bildirimi bekleniyor (uygulamanın tarihi belirsiz). Watchlist boş, aktif hedef yok.
+- P0/P1 yok. **Chairman ALERT: HAYIR** (watchlist boş; vergi haberi kaydedildi, gelecek analiz için flag).
 
-## Önceki Heartbeat — 2026-04-22 TSİ (Döngü #131) [→ Archive]
-- Bkz. heartbeat_archive.md. WTI $89.19 (-0.54%), BIST 14,335 (-0.28%), EREGL 32.60 (-3.32%), PPK efektif faiz %40 kararı. Not: #131'deki "EREGL earnings 23 Nisan" tarihi hatalıydı — doğrusu 28 Nisan.
+## Önceki Heartbeat — 2026-04-24 TSİ (Döngü #133) [→ Archive]
+- Bkz. heartbeat_archive.md. WTI $95.94, BIST 14,346, EREGL 32.94, ARCLK 119.00 (Hitachi/JPMorgan downgrade), TUPRS 263.00, THYAO 323.50. EREGL earnings 4 gün kaldı notu verildi.
 
 ---
 

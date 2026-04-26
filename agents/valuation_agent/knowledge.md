@@ -54,8 +54,11 @@ Kd (Borç Maliyeti) = Ağırlıklı borçlanma maliyeti (finansal tablolardan)
 ## 2. Peer Multiple Aralıkları
 
 ### BIST Değerleme Seviyeleri (Nisan 2026)
-- P/E: yaklaşık 8-10x (tarihsel ortalamanın altında)
+- P/E: ~18.5x (Nisan 2026; Mart: 19.6x) — tarihsel ortalamanın altında
+- EV/EBITDA: Telekom 2.7-3.5x; geniş piyasa 4-8x band (sektöre göre değişir)
 - Piyasa kap./GDP oranı: orta düzey → cazip ama kur riski
+- BIST 100: 14,335 (22 Nisan 2026); yıl sonu analist hedefi 15,250-16,680 puan
+- Türkiye CRP (Damodaran, tahmini): %4-6 band (kesin değer için pages.stern.nyu.edu/~adamodar)
 
 ### Peer Tablosu Formatı
 Her peer şirketinin EV/EBITDA değeri kaynakla birlikte tabloda — medyan hesabı şeffaf olmalı

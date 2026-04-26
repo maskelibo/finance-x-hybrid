@@ -15,3 +15,9 @@ EREGL: 1594977 temettü konfirmasyonu is_material=null. Downstream event_classif
 
 ### 2026-04-23 — ARCLK
 ARCLK 2026-04-21: Hitachi Home Appliances B.V. hisselerinin satışı maddi bir varlık çıkışı. Metin okunmadan is_material=null bırakıldı; event_impact_mapper quantification_possible=false verdi ve satış bedeli ile bilanço etkisi analizde hiç ele alınmadı.
+
+### 2026-04-24 — BIMAS
+20260424 YK raporu temettü veya rehber güncellemesi içeriyorsa raporu kökten değiştirir. İşlenmemiş materyal KAP açıklaması CEO escalation gerektirir — şu an hala bilinmiyor.
+
+### 2026-04-25 — KCHOL
+KCHOL: 1582005 'Özel Durumlar Tebliği 12-(4) maddesi' classification_confidence='high' ama is_material=null — içerik hiç çıkarılmadı. Bu tebliğ büyük ihtimalle önemli kurumsal bir işlemi açıklıyordu.

@@ -223,4 +223,27 @@
 - **EPS surprise history 4 çeyrek ZORUNLU:** Gerçek değer bulunamazsa "[BULUNAMADI — proxy kullanıldı]" etiketi ver. Proxy hesaplama yeterli; tamamen boş YASAK.
 - **Hedef dağılım analizi ZORUNLU:** Spread >%15 ise en yüksek ve en düşük hedeflerin hangi varsayımlara dayandığı açıklanacak (holding discount, Akçansa kapanış vs. gecikme senaryosu gibi).
 
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu (Purge: 2026-04-25)
+
+### Eksikler:
+- Marj/varsayım sensitivity tablosu eksik — HRC fiyatı (USD/ton) + implied EBITDA marjı + kur varsayımı + hedef fiyat tablosu oluşturulmadı.
+- Revizyon yönü trendi (Ocak-Nisan 2026) eksik. Konsensüs momentumu hesaplanmadı.
+- "0 SELL" crowded long riski (6 BUY / 5 HOLD / 0 SELL) analiz edilmedi.
+- Hedef fiyat aralığı 15-39.50 TRY (σ/μ=%48) açıklanmadı; neden bu kadar geniş?
+- Bazı broker tarihler tam tarih yerine "2026-04-XX" verildi.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu (Purge: 2026-04-25)
+
+### Eksikler:
+- İş Yatırım 2025 yıl-sonu (stale) kullanıldı; 2026 güncellemesi için alternatif kaynaklar (Rota Borsa, Hisseyorum.com) denenmedi.
+- Revizyon yönü trendi (Ocak-Nisan 2026) eksik. Konsensüs momentumu hesaplanmadı.
+- 3 segment sensitivity (TUPRS $/bbl, YKBNK NIM %, holding discount %) her broker için verilmedi.
+- 0 SELL crowded long analizi yapılmadı (11 BUY / 0 SELL anomali).
+- Çıktı kesildi — tablo tamamlanmadı.
+
+### Bundan Sonra:
+- KCHOL için Rota Borsa hedef fiyat sayfası zorunlu ilk kaynak.
+- 3 segment sensitivity tablosu KCHOL için standart: [Broker | TUPRS Marj | YKBNK NIM | Holding Discount | Hedef Fiyat].
+- "0 SELL" analizi için 3 soru: (1) Konsensüs çok iyimser mi? (2) Discount %47 iken neden SELL yok? (3) Downgrade tetikleyicileri neler?
+
 ---

@@ -27,3 +27,20 @@ ARCLK: EBITDA mevsimselliği nedeniyle Q1 FAVÖK*4 ≠ yıllık FAVÖK. FY2025 F
 
 ### 2026-04-24 — BIMAS
 BIMAS FY2025 final_summary: retail en önemli KPI (SSSG) absent, Altman Z null, hedef fiyat absent. Özet tablo yatırım kararı için yeterli veri içermiyor.
+
+### 2026-04-24 — KCHOL
+KCHOL FY2025: FAVÖK 168.9B-212.4B TRY aralığında 3 versiyon. EV/EBITDA çarpanı her versiyonda %26 farklı sonuç verir. Kaynak: yönetim tanımı (operasyonel FAVÖK) vs IFRS 16 dahil hesaplama vs araştırma raporu estimate.
+
+### 2026-04-24 — KCHOL (Rapor Tamamlandı)
+KCHOL holding analizinde SOTP katkı tablosu Koç Grubu efektif sahipliği yansıtıyor; KCHOL legal entity doğrudan payı farklı (TUPRS: grup %51.2 vs KCHOL direct %26.2). Bu fark aynı SOTP tablosunda çift sayım riskine yol açıyor. Downstream valuation modellerinde mutlaka sahiplik tanımı (grup efektif vs. legal entity) açık belirtilmeli.
+→ Kural: Holding SOTP tablolarında sahiplik tanımı her zaman "Koç Grubu efektif" mi "KCHOL doğrudan" mı olduğu parantez içinde gösterilmeli; ikisi karıştırılmamalı.
+
+### 2026-04-24 — KCHOL (Bankacılık Konsolidasyonu)
+YKBNK tam konsolidasyonu: konsolide Net Borç/FAVÖK bancaire pasifleri dahil olduğundan sanayi holdingleriyle kıyas yapılamaz. Banka için borç = funding. Bu yüzden holding analizinde "banking-excluded leverage" ayrı raporlanmalı; aksi takdirde 5.49x rakamı yanıltıcı.
+→ Kural: Bankacılık iştiraki olan holdinglerde (KCHOL/YKBNK, SAHOL/AKBNK) kaldıraç oranları bankacılık konsolidasyonu hariç holding-only hesapla paralel sunulmalı; yoksa [BANK_CONSOLIDATED — direkt kıyas yapılamaz] etiketi eklenmeli.
+
+### 2026-04-24 — KCHOL
+SAHOL precedent: conditional_pass sızıntısı önceki turda da tespit edilmişti. KCHOL'de QA 0.46 ile rapor yayınlandı — hedef fiyat ve skor kartı güvenilirliği ciddi biçimde zedelendi; confidence 0.52 bunu da doğruluyor.
+
+### 2026-04-25 — KCHOL
+final_summary 'partial output' stratejisi iyi niyetli ama riskli: EBITDA_CONFLICT aktifken 192,000 mn TRY proxy kullanan Net Borç/EBITDA 5.19x rakamı raporda görünür hale geldi, kaynak notu okunmadan gerçek sanılabilir.

@@ -251,3 +251,28 @@
 - Her ana ESG riskini nakit akışı, CAPEX veya regülasyon etkisine bağla.
 - Endeks üyeliği ve dış rating'lerde en resmi kaynağı kullan.
 - Sosyal/yönetişim metriklerinde trend ve sektör benchmark'ını birlikte ver.
+
+## CEO Geri Bildirimi — 2026-04-15 — EREGL Raporu (Purge: 2026-04-25)
+
+### Eksikler:
+- CDP kaydı aranmadı (zorunlu 1. madde)
+- BIST Sürdürülebilirlik Endeksi üyeliği teyid edilmedi
+- TSRS uyum beyanı (TFRS-S1/S2) kontrol edilmedi
+- Türkiye ETS kapsam durumu ve tahmini maliyet yükü hesaplanmadı (çelik zorunlu 2. madde)
+- CBAM sayısal hesabı tamamlanamadı (sektör proxy %15-20 ile yapılabilirdi)
+- OYAK sahipliğinin yönetişim etkisi eksik (YK bağımsızlık %33.3, ilişkili taraf analizi)
+- Yenilenebilir enerji % "[VERİ YOK]"; LTIR verildi mi belirsiz
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update Raporu (Purge: 2026-04-25)
+
+### Eksikler:
+- CDP araması yapılmadı (KCHOL konsolide + iştirakler ayrı)
+- Scope 1/2/3 verileri [VERİ YOK] — koc.com.tr/surdurulebilirlik denenmedi
+- BIST Sürdürülebilirlik Endeksi üyeliği teyid edilmedi
+- TSRS uyum beyanı KAP'ta aranmadı
+- EREGL CBAM hesabı kesildi (tamamlanmadı)
+- TUPRS ETS maliyet riski yarım kaldı
+### Bundan Sonra:
+- Holding ESG = konglomera frameworkü: Her iştirak için ayrı ESG profil satırı
+- koc.com.tr/surdurulebilirlik zorunlu kaynak (KCHOL analizlerde)
+- EREGL CBAM: 8.3M ton üretim → Scope 1 ~16.6M tCO2 → AB ihracat %15-20 proxy → CBAM yükümlülük

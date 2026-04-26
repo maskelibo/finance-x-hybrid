@@ -24,3 +24,15 @@ ARCLK Q1-2026: FCF=-19.7 milyar TRY 'positive signal' olarak sunuldu. Raporu oku
 
 ### 2026-04-24 — BIMAS
 BIMAS FY2025: FCF=19.62 Milyar TL, EBITDA=42.58 Milyar TL, Net Debt/EBITDA=1.16x mevcut olmasına rağmen EV/EBITDA bazlı hedef fiyat hesaplanamadı çünkü valuation_agent çalışmadı. Peer P/E (MGROS, SOKM) da yoktu. Rapor yatırımcı kararı için kritik çıktıdan yoksun.
+
+### 2026-04-24 — BIMAS
+Valuation_agent MISSING olmasına rağmen proxy üretildi ama confidence=0.45 ile sayı vermek doğru karar. Sorun: proxy değerleme yapıldığına dair açık uyarı raporda görünmüyor; okuyucu sanki kesin hedef fiyat gibi algılar.
+
+### 2026-04-24 — KCHOL
+KCHOL: strategic_synthesis boş finansal veriyle sinyal üretti. signal_convergence_map yalnızca makro+teknik sinyaller üzerinden yapıldı, temel finansal doğrulama yoktu. Sonuç: spekülasyon ağırlıklı sentez.
+
+### 2026-04-24 — KCHOL
+GCM SOTP değerleme: 1,027.18 B TRY toplam holding değeri, NAD/hisse 406.07 TRY, %43 iskonto uygulanarak 229.75 TRY. Finance X bu hesaplamayı bağımsız üretmeden external_research verisine proxy yaptı — kalite farkı ciddi.
+
+### 2026-04-25 — KCHOL
+Python template yalnızca mevcut sinyalleri saydı; eksik sinyalleri (data gaps, block'lar) negatif sinyal olarak değerlendirmedi. Confidence='low' ile convergence_score=1 tutarsızlığı strategic_synthesis'in kalite algısını bozuyor.

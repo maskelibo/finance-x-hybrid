@@ -15,6 +15,8 @@
 | 3 | Mynet Finans | mynet.com/finans | ORTA | Geniş kapsamlı Türkçe haber akışı |
 | 4 | Twitter/X | #BIST30 #[TICKER] | DÜŞÜK | Retail investor sentiment |
 | 5 | Bloomberg/Reuters | — | YÜKSEK | Uluslararası kurumsal sentiment (İngilizce) |
+| 6 | BorsaMatik | borsamatik.com.tr | ORTA | Yabancı yatırımcı radar hisseler, günlük net alım/satım |
+| 7 | HisseOnerileri | hisseonerileri.com | ORTA | Günlük teknik ve temel analist önerileri |
 
 ### Kaynak Standardı
 - Her haber maddesine spesifik kaynak linki + yayın tarihi koy

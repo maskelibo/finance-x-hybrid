@@ -121,3 +121,39 @@ BIMAS FY2025: ROE 11.2% optical. Operasyonel temizlenmiş ROE tahmin edilemiyor 
 
 ### 2026-04-24 — BIMAS
 BIMAS FY2025 store_count 14473 (FY2025) vs 9365 (FY2020): +5108 net açılış. Revenue CAGR ≈ %50+ TRY nominal. SSSG proxy hesaplanabilirdi. Mağaza büyümesi mi yoksa mağaza verimliliği mi sorusu yanıtsız kaldı.
+
+### 2026-04-24 — BIMAS
+BIMAS EBITDA_MARGIN=%5.9 'pressured' göründü; oysa hard-discount retail'de %6 normaldir. Yanlış sektör → yanlış sinyal → yanlış yatırım kararı riski.
+
+### 2026-04-24 — BIMAS
+BIMAS'ın -%2.3 mağaza trafiği (FY2025) SSSG hesabıyla yakalanırdı. Bu metrik olmadan operasyonel bozulma sinyal vermedi; strategic_synthesis'e pozitif sinyal olarak geçti.
+
+### 2026-04-24 — KCHOL
+KCHOL 2026-04-24: financial_analysis sıfır input alıp 28 null metrik üretti ve QA'ya geçirdi. Tüm pipeline geçersiz finansal temelde çalıştı.
+
+### 2026-04-24 — KCHOL
+KCHOL: sector='industrial' etiketiyle holding playbook hiç çalışmadı. final_summary'deki %41.3 holding iskontosu (anormal yüksek) peer benchmark olmadan not edildi, quantify edilemedi.
+
+### 2026-04-24 — KCHOL
+KCHOL FY-2025 gerçek değerleri: Gelir 2,757,295 mn TRY, FAVÖK 181.5 B TRY, Net Kâr 22,000 mn TRY. FY-2026 belgesi finansal rapor değil, özel durum bildirimidir — parse_standardization bu ayrımı yapmadığı için financial_analysis da kaymadı.
+
+### 2026-04-24 — KCHOL
+KCHOL 4. seans: sector='industrial' → 22 metrik null → qa COMPLETENESS=0.00. Sektör etiketi pipeline manifest'e CEO manifest'ten yazılmalı, her agent kendi sektör tespiti yapmamalı.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: data_collection manifest'inde FY-2026 için iki ayrı PDF vardı (1555915=özel durum, 1555903=finansal rapor). financial_analysis özel durum PDF'ini seçti; gerçek 309KB finansal raporu atladı. Bu tek hata cascade: sector_competition=null, qa=0.46, final_summary=DEGRADED.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: strategic_synthesis ve final_summary ikisi de 'sector=industrial HATALI — holding_conglomerate' diye flagledi; ancak financial_analysis engine override almadan çalıştı. sector_competition çıktısının %100'ü geçersizdi (8/8 benchmark null, 0 peer).
+
+### 2026-04-25 — KCHOL
+KCHOL FY-2026: sıfır veri → 33 null oran → QA COMPLETENESS=0.00 → ABORT. 1 guard satırı tüm downstream zinciri kurtarırdı.
+
+### 2026-04-25 — KCHOL
+KCHOL: YKBNK 924B TRY dahilinde Net Borç/EBITDA anlamsız. Sanayi-only oran holding kredi riskini gerçekçi yansıtır.
+
+### 2026-04-25 — KCHOL
+KCHOL 2026-02-11 KAP bildirimlerinde 1555915 (81KB özel durum) yanlış dönem etiketiyle FY-2026 sayıldı; 1555903 (367KB finansal rapor) ise FY-2025 asıl raporudur. Period etiketini döküman içeriği değil, KAP disclosure başlığından almak gerekir.
+
+### 2026-04-25 — KCHOL
+Aynı hata valuation_agent Python engine'de de tekrarladı (holding_sotp_required=false). Tek kök neden: sector enum'unda 'holding' tipi eksik — banka + sanayi holdinglerde yanlış analysis path seçiliyor.

@@ -71,3 +71,6 @@ EREGL 20260423: data_collection output_id üretti ama content sıfır — başar
 
 ### 2026-04-24 — BIMAS
 BIMAS FY2025: local cache FY2021 dosyalarını (20210308_916416) FY2025 analizi için kaynak olarak gösterdi. Bu tutarsızlık IS_NET_SPLIT ve CF_TOTAL_RECONCILE hatalarının kaynağı olabilir. Cache → KAP geçişi zorunlu.
+
+### 2026-04-24 — BIMAS
+20260423-24 tarihli yeni raporlar local cache'de yoktu ve kap_watch da almadı. İki katmanlı eksiklik — doğrulama mekanizması her ikisini de yakalayabilirdi.

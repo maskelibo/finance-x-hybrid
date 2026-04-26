@@ -105,3 +105,21 @@ EREGL: CEO mandate valuation timeout riskini açıkça uyarmıştı ('split into
 
 ### 2026-04-23 — EREGL
 EREGL: final_summary Bear=MA200 27.51, Bull=Bollinger_upper 34.11 kullandı. Bu veriler valuation_agent yok diye MA/BB seviyelerine dönüştü — yatırımcıya yanıltıcı.
+
+### 2026-04-24 — KCHOL
+KCHOL TUPRS: legal entity pay %40.5 vs board_report proxy %51.2 → NAV farkı ~66 Mly TRY. YKBNK legal entity pay (UniCredit devir sonrası ~%49.9) board_report %68.0 ile çelişiyor — devir sonrası yapısal değişim izlenmiyor.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: YKBNK legal entity stake belirsizliği (%41 vs %61.17 Koç Grubu) baz senaryo hedef fiyatı 222 TL'nin ~±10-13 TL sapma riski taşıyor. KAP pay bildirimleri data_collection'da mevcut (1580840: pay alım satım bildirimi) ancak valuation_agent kullanmadı.
+
+### 2026-04-25 — KCHOL
+KCHOL: 31 Mrd TRY EBITDA farkı. Doğru değer IAS29 adjusted (212,360) büyük olasılıkla; ancak peer karşılaştırması için reported (181,500) kullanılmalı. İki ayrı SOTP satırı gerekir.
+
+### 2026-04-25 — KCHOL
+KCHOL: TUPRS Koç Group %51.2 vs KCHOL legal entity %40.5 (GCM kaynaklı). 10.7pp fark yüksek NAV etkisi; legal entity payı KAP'tan doğrulanmadan raporlanamaz.
+
+### 2026-04-25 — KCHOL
+FY2024 EBITDA farkı (181,500 vs 212,360 = %17 sapma) IAS 29 monetary gain muamelesinden kaynaklanıyor — kısmen EBITDA'ya dahil eden ve etmeyen kaynaklar var. KCHOL özelinde IAS 29 adjusted EBITDA tanımı standartlaştırılmalı.
+
+### 2026-04-25 — KCHOL
+TUPRS için context_extraction STAKE_MISMATCH zaten 25pp delta tespit etti (26.2% legal vs 51.2% group). Bu delta GCM raporunda holding company perspective'ten yazıldığını gösteriyor. KCHOL hissedarı için legal entity NAD doğru ölçüttür.

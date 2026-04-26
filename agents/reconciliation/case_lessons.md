@@ -90,3 +90,24 @@ BIMAS FY2025: 1.87 Milyar TL azınlık payı uyuşmazlığı. Fas iştiraki (%65
 
 ### 2026-04-24 — BIMAS
 BIMAS FY2025: FCF=19.62 Milyar TRY raporlandı ancak CF reconciliation %139.66 hata ile failed. FCF rakamı key_finding kf-01 ve strategic_synthesis'te 'güçlü FCF' argümanının temelini oluşturdu. Kirli CF ile yapılan sentez yanıltıcı.
+
+### 2026-04-24 — BIMAS
+CF_TOTAL_RECONCILE %139 hata ile geçildi; FCF=19.6 milyar TRY ve OCF/FAVÖK metrikleri kirli kaynak üzerine hesaplandı. Tüm nakit bazlı yorumlar geçersiz.
+
+### 2026-04-24 — KCHOL
+KCHOL: reconciliation 7/7 skip → 'pass' döndürdü → qa_review MATH_CONSISTENCY=1.0 aldı. Gerçek BS identity, equity split, CF reconcile hiçbiri test edilmedi. QA toplam skoru yanıltıcı biçimde şişti.
+
+### 2026-04-24 — KCHOL
+KCHOL FY-2026 dönemi sıfır veri içerdiği için 7/7 kontrol 'skipped' oldu. financial_analysis aşağıya sıfır veri taşırken reconciliation 'pass' sinyali verdi — kalite kontrol zinciri kırıldı.
+
+### 2026-04-24 — KCHOL
+KCHOL FY-2026: 7 skip → false pass_rate=1.0 → downstream pipeline veriyi onaylı sanıp ilerlemesi. Gerçek: sıfır veri üzerinde hiçbir şey doğrulanamaz.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: reconciliation FY-2026 sıfır veri üzerinde 7/7 skipped → pass_rate=1.0 bildirdi. qa_review bu sonucu MATH_CONSISTENCY=1.0 olarak değerlendirdi. Gerçek matematiksel tutarlılık FY-2025 verisi üzerinde hiç test edilmedi.
+
+### 2026-04-25 — KCHOL
+KCHOL FY-2026: 7/7 skip + pass_rate=1.0. QA skor hesabında MATH_CONSISTENCY=1.0 overall skoru 0.46'ya taşıdı; gerçek skor ~0.20 olmalıydı.
+
+### 2026-04-25 — KCHOL
+QA raporunda 'MATH_CONSISTENCY: 1.00 — 7/7 reconciliation checks passed. All clean.' ifadesi tamamen yanıltıcı; gerçekte hiçbir check çalışmadı. Downstream tüketiciler (strategic_synthesis, final_summary) bunu gerçek doğrulama zannedebilir.

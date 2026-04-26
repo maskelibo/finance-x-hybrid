@@ -31,8 +31,10 @@
 - Her BIST raporunda TSRS uyumu sorulmalı
 
 ### Türkiye ETS (Emisyon Ticaret Sistemi)
-- Yasa çıktı; 2025-2026 ön uyum aşaması
-- Kapsam: çimento, çelik, kimya, enerji, petrokimya, rafineriler (~300-400 kuruluş)
+- İklim Kanunu 2 Temmuz 2025'te kabul edildi; **pilot faz 2026-2027**
+- Kapsam: yıllık 50,000 ton CO2+ emiteden (çelik, çimento, elektrik, kimya, alüminyum, gübre, seramik, rafineri ~300-400 kuruluş)
+- **Pilot fazda %100 ücretsiz tahsis** (fiyat baskısı sınırlı; maliyet riski gelecekte artacak)
+- Karbon Market Kurulu milli tahsis planlarını belirliyor
 - ETS maliyet riski → ESG analizine ve değerlemeye dahil edilmeli
 
 ### BIST Sürdürülebilirlik Endeksi
@@ -61,8 +63,10 @@
 ### CBAM — ESG Bağlantısı
 - CBAM default rate: ~€100.55/ton CO2
 - Doğrulanmış rate: ~€40-50/ton
+- **2026 Q1 fiili CBAM oranı (Türk çeliği): €36.37/ton** — EAF (elektrikli ark fırını) kullanan Türk çelik üreticileri Çin blast furnace rakiplerine göre avantajlı
 - Yıllık CBAM tasarrufu = (default − doğrulanmış) × toplam export emisyonu → ESG raporuna dahil
 - AB içi rakipler CBAM muaf — yapısal rekabet dezavantajı
+- Türkiye 2022'de ~€19B CBAM kapsamı ürün ihraç etti (çelik, alüminyum, çimento, gübre)
 
 ### Greenwashing Tespiti
 - Taahhüt / kapasite orantısızlık testi uygula

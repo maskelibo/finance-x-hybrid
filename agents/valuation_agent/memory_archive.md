@@ -395,3 +395,29 @@
 - Peer çarpanlarını doğrulanmış peer setine bağlamadan kullanma.
 - Forward EBITDA ve CAPEX varsayımlarını makro/operasyonel driver listesine bağla.
 - Dışarıda bıraktığın opsiyonel varlıklar için `excluded value` notu ekle.
+
+## CEO Geri Bildirimi — 2026-04-16 — KCHOL Delta-Update (Purge: 2026-04-25)
+### Eksikler:
+- Resmi SOTP output teslim edilmedi — case_lessons.md'ye yazılan Bear/Baz/Bull (182/250/322 TL) downstream için yeterli değil.
+- Conf: 0.40 → hedef fiyat güvensizliği downstream'e yeterince aktarılmadı.
+- FY2025 negatif FCF (-204,862 mn TL) → SOTP doğrulandı ✓ ama "Neden DCF geçersiz?" formal çıktıda yok.
+- Sensitivity matrix (WACC × terminal growth) holding için de yapılmadı.
+### Bundan Sonra:
+- SOTP formal output: İştirak | Sahiplik % | Market Cap | Yöntem | NAV Katkısı mn TL | NAV TL/hisse
+- Conf <0.60 → downstream: "Bu hedef fiyat formal SOTP olmadan; İZLE."
+- Holding discount sensitivity: %35/%49/%60 × GCM NAV 406 TL = 263/207/162 TL
+
+## CEO Geri Bildirimi — 2026-04-15 — EREGL (Purge: 2026-04-25)
+### Eksikler:
+- EV/ton analizi (%10 ağırlık) yapılmadı — EREGL kapasitesi 8.3 mt × peer EV/ton karşılaştırması eksik
+- Peer grubu kaynak tablosu eksik — ArcelorMittal, POSCO, Nippon Steel değerleri kaynaksız
+- Sensitivity matrix yapılmadı — WACC (%24/%28/%32) × g (%1/%2.5/%4) = 9 senaryo
+- Forward EBITDA varsayımları makro driver'lara bağlanmadı (HRC fiyatı, kapasite kullanımı, enerji)
+
+## CEO Geri Bildirimi — 2026-04-14 — TCELL (Purge: 2026-04-25)
+### Eksikler:
+- Değerleme girdileri ikincil kaynaklardan toplandı; birincil kaynak disiplini bozuldu.
+- Hisse sayısı, EBITDA ve net borç çatışmalıyken hedef fiyat verildi.
+- WACC, peer çarpanları ve metod ağırlıkları şeffaf tablo halinde görünmedi.
+### Bundan Sonra:
+- Değerleme, reconciliation tarafından kilitlenmiş set (EBITDA + net borç + hisse sayısı) ile başlar; conflict varsa dur.

@@ -45,3 +45,9 @@
 
 ---
 *Bu dosya her çalışmada otomatik yüklenir. Değişiklik yapmadan önce CEO onayı alın.*
+
+## 2026-04-25 — Auto-promoted (repeat_count=3)
+
+**Kural:** Pipeline üst düzey config'de ticker→sector mapping tutulmalı: THYAO→aviation, PGSUS→aviation. financial_analysis ve sector_competition bu map'i override olarak okumalı; engine'in sektör tahminine güvenmemeli. Conflict varsa config kazanır.
+
+**Kaynak:** THYAO analizinde 3 kez tekrarlandı (sector='industrial' — THYAO havacılık şirketi. Sonuçları: (1) EBITDAR hesaplanmadı, (2) EBITDA eşiği yanlış (%10 industrial vs %15 aviation), (3) ROE benchmark yanlış, (4) Piotroski F skoru havacılık normlarıyla yorumlanamadı. sector_competition de aynı hatayı devraldı.)

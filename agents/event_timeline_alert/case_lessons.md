@@ -18,3 +18,24 @@ ARCLK pipeline: Hitachi satışı geçmiş olay olarak timing_days=0 ve urgency=
 
 ### 2026-04-24 — BIMAS
 Temettü bildirimi (1587323) yatırımcı kararı açısından en yakın vadeli etki; denetçi seçimi en uzun vadeli. Hepsi 135 gün = anlamsız önceliklendirme. Timeline chart raporda kullanılamaz durumda.
+
+### 2026-04-24 — BIMAS
+Genel Kurul çağrısı (1587322) Nisan 2026'da yapıldı; yatırımcıya 135 gün beklemesi söylenmesi yanıltıcı. Temettü ex-date yakın vadede fiyat etkileyecek.
+
+### 2026-04-24 — KCHOL
+KCHOL: Özel Durum Tebliği 12-(4) (maddi) ile Finansal Takvim (rutin) aynı timing=135 gün, urgency=low aldı. Yatırımcı aksiyon önceliği belirlenemedi.
+
+### 2026-04-24 — KCHOL
+KCHOL için 1577703 (Olağan Genel Kurul kararları tescili — 27 Mart 2026) ile 1592323 (Q1 2026 Finansal Takvim — 13 Nisan 2026) aynı 135 günlük etkiyle sınıflandırıldı. Genel kurul kararları zaten tamamlanmış, takvim ise gelecek tetikleyici — bunların aynı urgency'si olamaz.
+
+### 2026-04-24 — KCHOL
+KCHOL 1592323 (Q1 Finansal Takvim): yakında açıklanacak çeyrek veri en kritik near_term sinyal — 135 gün atandı, near_term işaretlenmedi. Yatırımcı bu olayı zamanında göremedi.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: 1592323 (Q1 Finansal Takvim — yatırımcıya Q1 sonuç tarihini bildirir) 135 gün medium_term olarak kodlandı; oysa near_term (7-14 gün içinde aksiyon gerektirebilir). Kritik takvim bilgisi okuyucuya iletilmedi.
+
+### 2026-04-25 — KCHOL
+KCHOL 1577703 GK tescili 27 Mart — Nisan başında etkisi bitmiş. 135 gün timing bozuk olay sıralaması üretiyor; yatırımcı takvimi yanlış.
+
+### 2026-04-25 — KCHOL
+Python template tüm event'lere tek bir default atadı; LLM layer announcement_date - as_of_date delta hesabı yapmadı. 1582005 'Kamuyu Aydınlatma Platformu' (1 Nisan, 24 gün önce) near_term + high urgency olmalıydı.

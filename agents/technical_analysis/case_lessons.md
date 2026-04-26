@@ -190,3 +190,9 @@ ARCLK teknik: RSI=50.9 (nötr) + MACD histogram pozitif sinyaller verirken trend
 
 ### 2026-04-24 — BIMAS
 BIMAS oturumunda MIGROS adı geçti. Büyük olasılıkla LLM sliding window önceki oturumun bağlamını taşıdı. Otomatik şirket adı kontrolü (ticker → expected_name map) ile bu önlenebilir.
+
+### 2026-04-24 — BIMAS
+Şirket adı raporda yanlış geçseydi kurumsal güvenilirlik sıfırlanırdı. Cross-session hafıza kirliliği sistematik risk — memory isolation mekanizması gerekiyor.
+
+### 2026-04-24 — KCHOL
+KCHOL: BIST100 relatif performans hesaplanamadı çünkü macro_analysis top-level bist100_ytd_return=null (LLM narrative'de veriydi). Self-peer listing RSI karşılaştırmasını self-referential yapardı.

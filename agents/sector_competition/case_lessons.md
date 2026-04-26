@@ -210,3 +210,24 @@ ARCLK: VESBE (Vestel Beyaz Eşya) BIST'te işlem gören en yakın yerli rakip. E
 
 ### 2026-04-24 — BIMAS
 BIMAS sektör yanlış etiketlendiğinde peer grubu boş kaldı ve tüm benchmark istatistikleri (Q1/median/Q3) BIMAS'ın kendi değerine eşit oldu — anlamsız karşılaştırma. Bu hata sector misclassification'ın domino etkisi.
+
+### 2026-04-24 — BIMAS
+BIMAS brüt marjı %19.3 tek başına anlamsız; MGROS ~%26-28, SOKM ~%16-18 bağlamında değerlendirilmeliydi. Peer eksikliği strategic_synthesis ve valuation sinyallerini bütünüyle bozdu.
+
+### 2026-04-24 — KCHOL
+KCHOL: holding iskontosu %41.3 hesaplandı ama peer context yoktu. Tarihsel bant %20-30, fark 'anormal yüksek' olarak notlandı ama quantify edilemedi — yatırımcı aksiyonu belirlenemedi.
+
+### 2026-04-24 — KCHOL
+KCHOL analizi için NAV iskontosu Türkiye ortalaması %15-35; GCM %43 ölçtü. Bu peer context sektör=industrial filtresiyle hiç üretilemedi. Holding sektörüne özgü playbook (holding.yaml) doğrudan bağlanmalıydı.
+
+### 2026-04-24 — KCHOL
+KCHOL %39.5 NAV iskontosu: SAHOL güncel iskontosu bilinmeden 'yüksek mi, normal mi?' sorusu yanıtsız kaldı. Broker konsensüsü 282.54 TL (13 aracı) sector_competition çıktısına taşınmadı.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: holding iskonto %30-40 tarihsel, FY2025 %21-39.5 (iki ayrı kaynak) — bu bilgi sector_competition yerine final_summary ve valuation_agent tarafından manuel olarak eklendi. Peer benchmark otomatize edilmeli.
+
+### 2026-04-25 — KCHOL
+KCHOL holding iskontosu %19-50 arasında tartışmalı. Peer benchmark olmadan valuation_agent iskonto varsayımı (%37 baz) doğrulanamaz.
+
+### 2026-04-25 — KCHOL
+Python engine peer discovery için sector='industrial' kullandı → holding peer'larını bulamadı. sector hiyerarşisi sorunu (financial_analysis ile ortak root cause): tüm agent'lar sector enum override'ını aynı yerden almalı.

@@ -98,3 +98,21 @@ ARCLK Q1-2026: QA score=1.0 (pass) iken aynı raporda DSO=0.08 gün anomalisi, b
 
 ### 2026-04-24 — BIMAS
 Bu oturumda QA 0.94 skoru gerçek kalite durumunu yansıtmadı. Önceki BIMAS oturumu QA 0.80 ile BLOCKED olmuştu — daha dürüst bir değerlendirmeydi. QA'nın kendi kalite kontrolü yapılmalı.
+
+### 2026-04-24 — BIMAS
+QA 'pass' kararı CEO onay kapısını yanlış tetikledi. Gerçek durum: math bozuk + peer yok + değerleme yok → rapor BLOCK olmalıydı. Yanlış gate kararı tüm pipeline güvenilirliğini sarsıyor.
+
+### 2026-04-24 — KCHOL
+KCHOL 2026-04-24: QA score 0.46 = FAIL. strategic_synthesis ve report_formatter çalıştı, nihai HTML CEO'ya sunuldu. QA gate tamamen devre dışı kaldı.
+
+### 2026-04-24 — KCHOL
+QA skoru 0.46 gerçek FY-2025 analizinin kalitesini temsil etmiyor; FY-2026 boş verisini inceledi. Gerçek FY-2025 QA skoru bilinmiyor — bu da gated karar için bağımsız güvenilirlik riski.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: qa_review overall_score=0.46 üretti; MATH_CONSISTENCY=1.0 bu skoru 0.46'ya tuttu. Gerçekte MATH_CONSISTENCY=0 olsaydı overall_score ≈0.25 olacak ve daha agresif escalation tetiklenecekti.
+
+### 2026-04-25 — KCHOL
+KCHOL FY-2026: 7 skip → MATH_CONSISTENCY=0.0 yerine 1.0. Sahte skor ABORT kararını geciktirmedi ama QA skalamasını bozuyor.
+
+### 2026-04-25 — KCHOL
+QA agent yalnızca financial_analysis.red_flags array'ini kontrol etti (empty); knowledge_base escalation objelerini okumadı. Sistemik P0 hataları kalite kapısını geçti.

@@ -134,3 +134,27 @@ BIMAS FY2025 ve önceki BIMAS oturumu: her ikisinde de SPK disclaimer eksik çı
 
 ### 2026-04-24 — BIMAS
 W-003 (önceki BIMAS): formatter HTML body boştu. Bu oturumda body dolu (8000 bytes) ancak kapanış tag'ı kayıp. Formatter'ın template engine'i string truncation'a karşı test edilmeli.
+
+### 2026-04-24 — BIMAS
+THYAO run'da COO blocked → formatter re-run → 2. geçişte passed. BIMAS'ta directives boş olduğu için remediation loop kurulmadı — aynı pattern uygulanabilirdi.
+
+### 2026-04-24 — KCHOL
+KCHOL 2026-04-24: COO blocked (HTML_ENVELOPE + SPK_DISCLAIMER). research_brief 'coo_decision_verified: go' üretti, pipeline devam etti. Nihai HTML SPK yasal uyarısız teslim edildi.
+
+### 2026-04-24 — KCHOL
+KCHOL report_formatter çıktısı formatted_html alanında tam HTML ürettiği görülüyor (CSS styles dahil). Eğer COO 8KB eşiğini 200KB'a çekmiş olsaydı bu kontrol gerçek truncation tespiti yapabilirdi — önceki turlardaki truncation sorunu için erken uyarı mekanizması olurdu.
+
+### 2026-04-24 — KCHOL
+KCHOL: COO 8000 byte payload gördü (MIN_PAYLOAD_SIZE pass) ama HTML_ENVELOPE fail — çelişki. report_formatter final HTML 8000+ byte ve <html> etiketli. COO artifact sıralaması pipeline'da düzeltilmeli.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: COO blocked → research_brief 'go' override → pipeline devam etti → delivery'de aynı HTML/SPK hataları tekrar blokladı. İki aşamalı aynı hata: COO'nun bloğu circumvent edildi, sorun çözülmedi, delivery'de tekrar ödendi.
+
+### 2026-04-25 — KCHOL
+KCHOL 20260425: COO decision='blocked' iken research_brief go sinyali verdi. Olası neden: research_brief aynı seansın önceki COO taslak çıktısını okudu.
+
+### 2026-04-25 — KCHOL
+KCHOL: disclaimer JSON'da vardı, HTML'e geçmedi. COO'nun bu kontrolü yapması gereksiz döngü yaratıyor; formatter'a eklenecek 3 satır template bu tekrarı ortadan kaldırır.
+
+### 2026-04-25 — KCHOL
+Bu seans SPK yasal disclaimer'ı olmayan bir rapor teslim edildi. HTML_ENVELOPE eksikliği ayrıca browser render sorununa yol açar. İki hata da önceki Delta seansında da görülmüştü — COO gate'in bağlayıcı olmaması kalıcı pattern.
