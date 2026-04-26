@@ -35,6 +35,9 @@ import {
 } from '../../config.js';
 import { dispatchSubAgents } from '../../sub-agents/dispatcher.js';
 import type { SubAgentResult, SubAgentTask } from '../../sub-agents/types.js';
+// P1.beta — truth-layer methodology hint for val_scenario_builder (advisory)
+import { readTruthAssertions, populateTruthAssertions } from '../../truth-layer/preflight.js';
+import type { TruthAssertions } from '../../truth-layer/types.js';
 
 type PhaseAStep = 'val_trading_comps' | 'val_sotp' | 'val_dcf_assumptions' | 'val_dcf_projection';
 const PHASE_A: PhaseAStep[] = ['val_trading_comps', 'val_sotp', 'val_dcf_assumptions', 'val_dcf_projection'];
@@ -179,6 +182,30 @@ async function runShadow(
   // ---------- Phase D: val_scenario_builder ----------
   // Receives compiled valuation context (all prior outputs) so it can blend
   // DCF / comps / SOTP into Bull/Base/Bear weighted target.
+  // P1.beta: also receives truth-layer methodology hint (advisory — LLM may
+  // or may not consume; sub-agent prompt/schema are unchanged). The hint
+  // surfaces FTL-recommended weights so the LLM can prefer the right method
+  // mix for holding/banking/regular tickers.
+  let truthAssertions: TruthAssertions | null = readTruthAssertions(accumulatedContext);
+  if (!truthAssertions) {
+    try { truthAssertions = populateTruthAssertions(ticker, accumulatedContext); } catch { /* ignore */ }
+  }
+  const truthHint = truthAssertions ? {
+    classification: {
+      sector_canonical: truthAssertions.classification.sector_canonical,
+      is_holding: truthAssertions.classification.is_holding,
+      is_banking: truthAssertions.classification.is_banking,
+      sub_classifications: truthAssertions.classification.sub_classifications,
+      confidence: truthAssertions.classification.confidence,
+    },
+    primary_method: truthAssertions.valuation_methodology.primary_method,
+    recommended_weights: truthAssertions.valuation_methodology.weights,
+    secondary_methods: truthAssertions.valuation_methodology.secondary_methods,
+    inappropriate_methods: truthAssertions.valuation_methodology.inappropriate_methods,
+    justification: truthAssertions.valuation_methodology.justification,
+    advisory_only: true,
+  } : null;
+
   const scenarioInputs: Record<string, unknown> = {
     ...llmBaseInputs,
     val_trading_comps: stepParsed['val_trading_comps'] ?? null,
@@ -187,6 +214,7 @@ async function runShadow(
     val_dcf_projection: stepParsed['val_dcf_projection'] ?? null,
     val_dcf_terminal: stepParsed['val_dcf_terminal'] ?? null,
     val_dcf_synthesizer: stepParsed['val_dcf_synthesizer'] ?? null,
+    truth_layer_methodology_hint: truthHint,
   };
   console.log(`[shadow:valuation_agent] phase D — val_scenario_builder`);
   const scenarioTask: SubAgentTask = {
@@ -209,6 +237,23 @@ async function runShadow(
     console.warn(
       `[shadow:valuation_agent] aggregator warnings: ${validation.warnings.join('; ')}`,
     );
+  }
+
+  // P1.beta — log val_scenario_builder methodology divergence vs truth-layer.
+  // Advisory only: we do NOT override the LLM's output. Mismatch is captured
+  // for audit, future enforcement decisions, and observability.
+  const scenarioOutput = stepParsed['val_scenario_builder'] as Record<string, unknown> | undefined;
+  if (truthAssertions && scenarioOutput) {
+    const llmPrimary = (scenarioOutput['primary_method']
+      ?? scenarioOutput['recommended_method']
+      ?? null) as string | null;
+    const truthPrimary = truthAssertions.valuation_methodology.primary_method;
+    if (llmPrimary && llmPrimary !== truthPrimary) {
+      console.warn(
+        `[shadow:valuation_agent] methodology divergence — LLM picked '${llmPrimary}', ` +
+        `truth-layer recommends '${truthPrimary}' (advisory; not enforced).`,
+      );
+    }
   }
 
   const totalMs = Date.now() - startedAt;

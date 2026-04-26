@@ -28,6 +28,12 @@ import { runPythonDataCollection } from './python/agent_runners/data_collection.
 import { runDataCollectionSubagentAware } from './python/agent_runners/data_collection_with_subagents.js';
 import { runParseStandardizationSubagentAware } from './python/agent_runners/parse_standardization_with_subagents.js';
 import { fireFinancialAnalysisShadow } from './python/agent_runners/financial_analysis_subagent_shadow.js';
+// P1.beta truth-layer pre-flight (advisory; no sub-agent contract changes)
+import {
+  populateTruthAssertions,
+  populateFaFilingHint,
+  logTruthLayerSummary,
+} from './truth-layer/preflight.js';
 import { fireMacroAnalysisShadow } from './python/agent_runners/macro_analysis_subagent_shadow.js';
 import { fireValuationShadow } from './python/agent_runners/valuation_subagent_shadow.js';
 import { fireFinalSummaryShadow } from './python/agent_runners/final_summary_subagent_shadow.js';
@@ -630,6 +636,18 @@ Minimum 1500 karakter.`;
     return outcome === 'ok' ? 'ok' : 'failed';
   }
   if (PYTHON_FINANCIAL_ANALYSIS_ENABLED && agentId === 'financial_analysis') {
+    // P1.beta FA pre-flight (advisory): pick authoritative filing from
+    // kap_watch disclosure inventory and store as `fa_filing_hint`.
+    // Python adapter behavior is unchanged — hint is captured for
+    // traceability + future structured-pipeline consumption.
+    try {
+      const sel = populateFaFilingHint(ticker, accumulatedContext);
+      if (sel?.selected) {
+        console.log(`[truth-layer:fa-preflight] hint=${sel.selected.filing_id} type=${sel.selected.document_type} score=${sel.selected_score}`);
+      }
+    } catch (err) {
+      console.warn(`[truth-layer:fa-preflight] non-fatal: ${err instanceof Error ? err.message : err}`);
+    }
     const outcome = await runPythonFinancialAnalysis(sessionId, runId, ticker, accumulatedContext);
     if (outcome !== 'ok') return 'failed';
     // HYBRID: Python hesapladı, şimdi LLM yorumlasın
@@ -1303,6 +1321,16 @@ async function executeSession(
   };
   for (const r of completedRuns) {
     if (r.output_text) accumulatedContext[`${r.agent_id}_output`] = String(r.output_text).slice(0, 1000000);
+  }
+
+  // P1.beta truth-layer pre-flight (advisory): classification + valuation
+  // weighting populated immediately; filing_hint populated below right
+  // before financial_analysis dispatches (KAP filings need kap_watch first).
+  try {
+    populateTruthAssertions(ticker, accumulatedContext);
+    logTruthLayerSummary(accumulatedContext);
+  } catch (err) {
+    console.warn(`[truth-layer] preflight failed (non-fatal): ${err instanceof Error ? err.message : err}`);
   }
 
     // Price snapshot lock — tek referans fiyat tüm agent'larda kullanılır
