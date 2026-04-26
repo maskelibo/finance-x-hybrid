@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SS Signal Compiler Output",
+  "description": "Canonical signal_map (compiler aggregates 3 extractor outputs + pack base). Output ≤8KB target. Same downstream contract as the legacy ss_signal_merger output (signals[] + holding_signals[] + data_quality + data_gaps) so ss_contradiction_flag and ss_thesis_writer consume it transparently via previous_signal_map injection.",
+  "type": "object",
+  "required": ["ticker", "signals", "data_quality"],
+  "properties": {
+    "ticker": { "type": "string" },
+    "sector": { "type": ["string", "null"] },
+    "is_holding": { "type": "boolean" },
+
+    "signals": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "required": ["id", "source_agent", "category", "signal_text", "polarity", "confidence", "weight"],
+        "properties": {
+          "id":            { "type": "string", "pattern": "^sig_[a-z0-9_]+$" },
+          "source_agent":  { "type": "string" },
+          "category":      { "type": "string", "enum": ["financial", "valuation", "sector", "macro", "event", "risk_flag", "governance", "data_quality", "portfolio_mix", "citation"] },
+          "signal_text":   { "type": "string", "maxLength": 240 },
+          "polarity":      { "type": "string", "enum": ["positive", "negative", "neutral", "mixed"] },
+          "magnitude_try_mn": { "type": ["number", "null"] },
+          "magnitude_pct":    { "type": ["number", "null"] },
+          "confidence":    { "type": "string", "enum": ["low", "medium", "high"] },
+          "weight":        { "type": "integer", "minimum": 1, "maximum": 10 },
+          "reference":     { "type": ["string", "null"] }
+        }
+      }
+    },
+
+    "holding_signals": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["id", "category", "signal_text", "polarity", "weight"],
+        "properties": {
+          "id":          { "type": "string" },
+          "category":    { "type": "string", "enum": ["portfolio_mix", "holding_discount", "subsidiary_exposure", "nav_signal"] },
+          "signal_text": { "type": "string", "maxLength": 240 },
+          "polarity":    { "type": "string", "enum": ["positive", "negative", "neutral", "mixed"] },
+          "weight":      { "type": "integer", "minimum": 1, "maximum": 10 },
+          "reference":   { "type": ["string", "null"] }
+        }
+      }
+    },
+
+    "grouped_summary": {
+      "type": "object",
+      "properties": {
+        "skipped_count": { "type": "integer", "minimum": 0 },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["category", "count", "narrative"],
+            "properties": {
+              "category":  { "type": "string" },
+              "count":     { "type": "integer", "minimum": 0 },
+              "narrative": { "type": "string", "maxLength": 240 }
+            }
+          }
+        }
+      }
+    },
+
+    "data_quality": {
+      "type": "object",
+      "required": ["used_pack_sections", "missing_pack_sections"],
+      "properties": {
+        "used_pack_sections":    { "type": "array", "items": { "type": "string" } },
+        "missing_pack_sections": { "type": "array", "items": { "type": "string" } },
+        "signal_count_by_source": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "extractor_status": {
+          "type": "object",
+          "description": "Phase 1 extractor başına outcome — failed extractor, compiler tarafından graceful handle edilir.",
+          "additionalProperties": { "type": "string", "enum": ["completed", "failed", "missing"] }
+        },
+        "holding_override_applied": { "type": "boolean" },
+        "annotations":           { "type": "array", "items": { "type": "string", "maxLength": 240 } }
+      }
+    },
+
+    "data_gaps":   { "type": "array", "items": { "type": "string" } },
+    "output_mode": { "type": "string", "enum": ["FULL", "TRUNCATED_SUMMARY"] }
+  }
+}

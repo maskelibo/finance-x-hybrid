@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SS Financial Signal Extractor Output",
+  "description": "Deterministic signal partition from top_financial_insights. ≤4KB target.",
+  "type": "object",
+  "required": ["ticker", "signals", "data_quality"],
+  "properties": {
+    "ticker": { "type": "string" },
+    "signals": {
+      "type": "array",
+      "maxItems": 12,
+      "items": { "$ref": "#/definitions/signal" }
+    },
+    "data_quality": {
+      "type": "object",
+      "required": ["source_count"],
+      "properties": {
+        "source_count":  { "type": "integer", "minimum": 0 },
+        "pack_section_empty": { "type": "boolean" },
+        "annotations":   { "type": "array", "items": { "type": "string", "maxLength": 240 } }
+      }
+    }
+  },
+
+  "definitions": {
+    "signal": {
+      "type": "object",
+      "required": ["id", "source_agent", "category", "signal_text", "polarity", "confidence", "weight"],
+      "properties": {
+        "id":            { "type": "string", "pattern": "^sig_fin_[a-z0-9_]+$" },
+        "source_agent":  { "type": "string" },
+        "category":      { "type": "string", "enum": ["financial"] },
+        "signal_text":   { "type": "string", "maxLength": 240 },
+        "polarity":      { "type": "string", "enum": ["positive", "negative", "neutral", "mixed"] },
+        "magnitude_try_mn": { "type": ["number", "null"] },
+        "magnitude_pct":    { "type": ["number", "null"] },
+        "confidence":    { "type": "string", "enum": ["low", "medium", "high"] },
+        "weight":        { "type": "integer", "minimum": 1, "maximum": 10 },
+        "reference":     { "type": ["string", "null"] }
+      }
+    }
+  }
+}

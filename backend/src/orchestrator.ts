@@ -31,6 +31,7 @@ import { fireFinancialAnalysisShadow } from './python/agent_runners/financial_an
 import { fireMacroAnalysisShadow } from './python/agent_runners/macro_analysis_subagent_shadow.js';
 import { fireValuationShadow } from './python/agent_runners/valuation_subagent_shadow.js';
 import { fireFinalSummaryShadow } from './python/agent_runners/final_summary_subagent_shadow.js';
+import { fireStrategicSynthesisShadow } from './python/agent_runners/strategic_synthesis_subagent_shadow.js';
 import { runPythonParseStandardization } from './python/agent_runners/parse_standardization.js';
 import { runPythonReconciliation } from './python/agent_runners/reconciliation.js';
 import { runPythonFinancialAnalysis } from './python/agent_runners/financial_analysis.js';
@@ -887,6 +888,9 @@ ${scOutput}
         console.warn(`[HYBRID] strategic_synthesis LLM error: ${err.message}`);
       }
     }
+    // Part 2 / S11 — fire strategic_synthesis sub-agents in shadow mode
+    // (3 sequential, output chain).
+    fireStrategicSynthesisShadow(sessionId, runId, ticker, accumulatedContext);
     return 'ok';
   }
   if (PYTHON_VALUATION_ENABLED && agentId === 'valuation_agent') {

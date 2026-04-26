@@ -1,0 +1,184 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SS Thesis Writer Output",
+  "type": "object",
+  "required": ["ticker", "thesis_summary", "thesis_pillars", "recommendation", "valuation_anchor", "scenarios", "material_risks", "data_quality"],
+  "properties": {
+    "ticker":          { "type": "string" },
+    "thesis_summary":  { "type": "string", "maxLength": 2000, "description": "Tek paragraf üst düzey tez. Material seçim zorunlu — fazla detay yasak." },
+
+    "thesis_pillars": {
+      "type": "object",
+      "required": ["material_pillars"],
+      "properties": {
+        "material_pillars": {
+          "type": "array",
+          "description": "Material pillar'lar full depth (300-700 char narrative). Hard cap maxItems 5 — 5+ pillar grouped_summary'ye demote.",
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": ["title", "narrative", "category", "confidence"],
+            "properties": {
+              "title":     { "type": "string", "maxLength": 120 },
+              "narrative": { "type": "string", "maxLength": 800 },
+              "supporting_signals": { "type": "array", "items": { "type": "string" }, "description": "ss_signal_merger sig_* id'leri" },
+              "category":  { "type": "string", "enum": ["financial", "valuation", "sector", "macro", "event", "qualitative", "governance", "esg"] },
+              "confidence": { "type": "string", "enum": ["low", "medium", "high"] }
+            }
+          }
+        },
+        "grouped_summary": {
+          "type": "object",
+          "properties": {
+            "skipped_count": { "type": "integer", "minimum": 0 },
+            "groups": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["category", "count", "narrative"],
+                "properties": {
+                  "category":  { "type": "string" },
+                  "count":     { "type": "integer", "minimum": 0 },
+                  "narrative": { "type": "string", "maxLength": 240 }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "recommendation": {
+      "type": "object",
+      "required": ["action", "conviction", "rationale", "horizon"],
+      "properties": {
+        "action":     { "type": "string", "enum": ["BUY", "HOLD", "SELL", "ACCUMULATE", "REDUCE"] },
+        "conviction": { "type": "string", "enum": ["low", "medium", "high"] },
+        "rationale":  { "type": "string", "maxLength": 1500 },
+        "horizon":    { "type": "string", "enum": ["short", "medium", "long"] }
+      }
+    },
+
+    "valuation_anchor": {
+      "type": "object",
+      "required": ["valuation_confidence", "approach"],
+      "properties": {
+        "valuation_confidence": { "type": "string", "enum": ["high", "medium", "limited", "missing"] },
+        "approach":             { "type": "string", "enum": ["dcf_primary", "comps_primary", "blended", "comps_only", "qualitative_only"] },
+        "target_band_try": {
+          "type": "object",
+          "properties": {
+            "low":  { "type": ["number", "null"] },
+            "mid":  { "type": ["number", "null"] },
+            "high": { "type": ["number", "null"] }
+          }
+        },
+        "rationale": { "type": "string", "maxLength": 800 },
+        "caveats":   { "type": "array", "items": { "type": "string", "maxLength": 120 } }
+      }
+    },
+
+    "scenarios": {
+      "type": "object",
+      "required": ["bear", "base", "bull"],
+      "properties": {
+        "bear": { "$ref": "#/definitions/scenario" },
+        "base": { "$ref": "#/definitions/scenario" },
+        "bull": { "$ref": "#/definitions/scenario" }
+      }
+    },
+
+    "material_risks": {
+      "type": "array",
+      "description": "Material risks full depth; düşük-priority → grouped_summary. Hard cap maxItems 5.",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["title", "category", "severity", "narrative"],
+        "properties": {
+          "title":     { "type": "string", "maxLength": 120 },
+          "category":  { "type": "string", "enum": ["financial", "operational", "regulatory", "geopolitical", "fx", "commodity", "esg", "governance", "data_quality", "valuation_uncertainty", "other"] },
+          "severity":  { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "narrative": { "type": "string", "maxLength": 600 },
+          "supporting_signals": { "type": "array", "items": { "type": "string" } },
+          "mitigation": { "type": ["string", "null"], "maxLength": 300 }
+        }
+      }
+    },
+
+    "key_catalysts": {
+      "type": "array",
+      "description": "3-5 catalyst (max 5).",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["title", "expected_window", "impact"],
+        "properties": {
+          "title":           { "type": "string", "maxLength": 200 },
+          "expected_window": { "type": "string", "maxLength": 80 },
+          "impact":          { "type": "string", "enum": ["positive", "negative", "binary"] },
+          "narrative":       { "type": "string", "maxLength": 300 }
+        }
+      }
+    },
+
+    "monitoring_kpis": {
+      "type": "array",
+      "description": "3-5 measurable KPI (max 5).",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["kpi", "frequency"],
+        "properties": {
+          "kpi":       { "type": "string", "maxLength": 200 },
+          "frequency": { "type": "string", "enum": ["weekly", "monthly", "quarterly", "annual", "event_driven"] },
+          "threshold": { "type": "string", "maxLength": 200 }
+        }
+      }
+    },
+
+    "data_quality": {
+      "type": "object",
+      "required": ["used_pack_sections", "missing_pack_sections", "synthesis_inputs_used"],
+      "properties": {
+        "used_pack_sections":    { "type": "array", "items": { "type": "string" } },
+        "missing_pack_sections": { "type": "array", "items": { "type": "string" } },
+        "synthesis_inputs_used": {
+          "type": "object",
+          "properties": {
+            "signal_merger":             { "type": "boolean" },
+            "signals_referenced_count":  { "type": "integer", "minimum": 0 },
+            "contradiction_flag":        { "type": "boolean" },
+            "contradictions_referenced_count": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "valuation_status":        { "type": "string", "enum": ["full_dcf_available", "comps_only", "limited", "missing"] },
+        "conviction_capped_reason": { "type": ["string", "null"], "maxLength": 240 },
+        "annotations":             { "type": "array", "items": { "type": "string", "maxLength": 240 } }
+      }
+    },
+
+    "data_gaps":   { "type": "array", "items": { "type": "string" } },
+    "output_mode": { "type": "string", "enum": ["FULL", "TRUNCATED_SUMMARY"] }
+  },
+
+  "definitions": {
+    "scenario": {
+      "type": "object",
+      "required": ["probability_pct", "key_drivers", "narrative"],
+      "properties": {
+        "target_band_try": {
+          "type": "object",
+          "properties": {
+            "low":  { "type": ["number", "null"] },
+            "high": { "type": ["number", "null"] }
+          }
+        },
+        "probability_pct": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "key_drivers":     { "type": "array", "maxItems": 3, "items": { "type": "string", "maxLength": 200 }, "description": "Hard cap maxItems 3 per scenario." },
+        "narrative":       { "type": "string", "maxLength": 600 },
+        "expected_return_pct": { "type": ["number", "null"] }
+      }
+    }
+  }
+}

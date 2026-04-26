@@ -154,6 +154,69 @@ export function packForSubAgent(
         top_event_conclusions:    pack.top_event_conclusions,
         citation_sensitive_facts: pack.citation_sensitive_facts,
       };
+    // S11 strategic_synthesis chain — 4-phase signal-first hybrid:
+    //   Phase 1 (parallel deterministic): 3 extractors, each gets ONLY their
+    //     pack slice (financial / event / macro). Tight inputs minimize spawn
+    //     overhead; no LLM, no provider variance.
+    //   Phase 2 (sequential deterministic): compiler merges Phase 1 outputs +
+    //     residual pack sections (valuation / sector / contradictions /
+    //     citations) and emits a canonical signal_map. Shadow runner chain-
+    //     injects previous_*_signals; this slice carries pack-level context.
+    //   Phase 3 (LLM): contradiction_flag — pack subset + previous_signal_map
+    //     (chain-injected). Schema/budget unchanged from prior S11 build.
+    //   Phase 4 (LLM): thesis_writer — pack subset + previous_signal_map +
+    //     previous_contradictions (chain-injected). Schema/budget unchanged.
+    case 'ss_financial_signal_extractor':
+      return {
+        ticker: pack.ticker,
+        top_financial_insights: pack.top_financial_insights,
+      };
+    case 'ss_event_signal_extractor':
+      return {
+        ticker: pack.ticker,
+        top_event_conclusions: pack.top_event_conclusions,
+      };
+    case 'ss_macro_signal_extractor':
+      return {
+        ticker: pack.ticker,
+        sector: pack.sector,
+        top_macro_impacts: pack.top_macro_impacts,
+      };
+    case 'ss_signal_compiler':
+      // Compiler needs pack base + residual sections (valuation, sector,
+      // contradictions, citations) for data_quality signal emission. It also
+      // needs the financial / event / macro pack arrays for the data_quality
+      // used_pack_sections accounting (so compiler can tell whether the pack
+      // section was empty vs the extractor failed). previous_*_signals are
+      // injected by the shadow runner.
+      return {
+        ...base,
+        top_financial_insights:    pack.top_financial_insights,
+        top_valuation_outputs:     pack.top_valuation_outputs,
+        top_sector_findings:       pack.top_sector_findings,
+        top_macro_impacts:         pack.top_macro_impacts,
+        top_event_conclusions:     pack.top_event_conclusions,
+        unresolved_contradictions: pack.unresolved_contradictions,
+        citation_sensitive_facts:  pack.citation_sensitive_facts,
+      };
+    case 'ss_contradiction_flag':
+      return {
+        ...base,
+        top_financial_insights:    pack.top_financial_insights,
+        top_valuation_outputs:     pack.top_valuation_outputs,
+        top_macro_impacts:         pack.top_macro_impacts,
+        top_event_conclusions:     pack.top_event_conclusions,
+        unresolved_contradictions: pack.unresolved_contradictions,
+      };
+    case 'ss_thesis_writer':
+      return {
+        ...base,
+        top_financial_insights:    pack.top_financial_insights,
+        top_valuation_outputs:     pack.top_valuation_outputs,
+        top_macro_impacts:         pack.top_macro_impacts,
+        top_event_conclusions:     pack.top_event_conclusions,
+        citation_sensitive_facts:  pack.citation_sensitive_facts,
+      };
     default:
       return pack;
   }

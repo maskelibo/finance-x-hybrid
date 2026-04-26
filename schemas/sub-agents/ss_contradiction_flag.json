@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SS Contradiction Flag Output",
+  "type": "object",
+  "required": ["ticker", "contradictions", "weak_evidence_flags", "data_quality"],
+  "properties": {
+    "ticker":  { "type": "string" },
+    "summary": { "type": "string", "maxLength": 800, "description": "1-2 cümle: kaç contradiction + kaç weak evidence flag, üst düzey değerlendirme. Boş senaryo geçerli." },
+
+    "contradictions": {
+      "type": "array",
+      "description": "Cross-agent çelişkiler. Annotate-only — narrative silinmez, advisory resolution önerilir. Boş array geçerli.",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "conflicting_signals", "narrative", "severity"],
+        "properties": {
+          "id":   { "type": "string", "pattern": "^contra_[a-z0-9_]+$" },
+          "type": { "type": "string", "enum": ["direction_conflict", "magnitude_mismatch", "confidence_asymmetry", "data_quality_conflict", "temporal_inconsistency"] },
+          "conflicting_signals": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "description": "ss_signal_merger output'undaki signal id'leri (sig_*). Tek-sinyal contradiction (örn. data_quality_conflict) durumunda 1 item olabilir."
+          },
+          "narrative":             { "type": "string", "maxLength": 600 },
+          "severity":              { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "recommended_resolution": { "type": "string", "maxLength": 400 },
+          "annotation_target":      { "type": "string", "maxLength": 240, "description": "Thesis_writer için kısa annotation guidance — sinyali silme/koru talimatı." }
+        }
+      }
+    },
+
+    "weak_evidence_flags": {
+      "type": "array",
+      "description": "Tek-sinyal teziye dayanan veya destekleyen sinyali olmayan thesis dimension'ları.",
+      "items": {
+        "type": "object",
+        "required": ["id", "thesis_dimension", "narrative", "severity"],
+        "properties": {
+          "id":               { "type": "string", "pattern": "^weak_[a-z0-9_]+$" },
+          "supporting_signals": { "type": "array", "items": { "type": "string" }, "description": "Eğer bu dimension için signal varsa id'leri; boş olabilir." },
+          "thesis_dimension": { "type": "string", "enum": ["valuation", "financial", "sector_competition", "macro", "event", "esg", "governance", "qualitative"] },
+          "narrative":        { "type": "string", "maxLength": 500 },
+          "severity":         { "type": "string", "enum": ["low", "medium", "high"] },
+          "recommended_resolution": { "type": "string", "maxLength": 300 }
+        }
+      }
+    },
+
+    "grouped_summary": {
+      "type": "object",
+      "description": "Düşük-severity contradiction/weak_flag'ler.",
+      "properties": {
+        "skipped_count": { "type": "integer", "minimum": 0 },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["category", "count", "narrative"],
+            "properties": {
+              "category":  { "type": "string" },
+              "count":     { "type": "integer", "minimum": 0 },
+              "narrative": { "type": "string", "maxLength": 240 }
+            }
+          }
+        }
+      }
+    },
+
+    "data_quality": {
+      "type": "object",
+      "required": ["signal_map_used"],
+      "properties": {
+        "signal_map_used":         { "type": "boolean" },
+        "signal_count_seen":       { "type": "integer", "minimum": 0 },
+        "contradiction_count":     { "type": "integer", "minimum": 0 },
+        "weak_evidence_count":     { "type": "integer", "minimum": 0 },
+        "annotations":             { "type": "array", "items": { "type": "string", "maxLength": 240 } }
+      }
+    },
+
+    "data_gaps": { "type": "array", "items": { "type": "string" } }
+  }
+}

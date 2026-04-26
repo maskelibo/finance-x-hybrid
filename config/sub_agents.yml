@@ -3,7 +3,7 @@
 # Shape: see backend/src/sub-agents/types.ts (SubAgentDef).
 
 version: 1.0.0
-last_updated: "2026-04-25"  # S9 added
+last_updated: "2026-04-26"  # S11 restructured — signal layer split to 4 deterministic sub-agents (financial/event/macro extractors + compiler) due to Sonnet variance %67 hang on monolithic ss_signal_merger
 
 sub_agents:
   # ===== S2 — data_collection (4 sub-agents, parallel) =====
@@ -406,4 +406,117 @@ sub_agents:
     parallelizable: true
     retry_max: 1
 
-  # S11 — strategic_synthesis   (3 sub-agents, sequential)
+  # ===== S11 — strategic_synthesis (6 sub-agents, hybrid pipeline) =====
+  # 2026-04-26 STRUCTURAL REWRITE: ss_signal_merger (single LLM Sonnet) Sonnet API
+  # variance ile %67 hang oranına ulaştı (3 KCHOL run istatistiği: 1 PASS / 2 hang,
+  # cap bump 180→240s yetmedi). Üretim için kabul edilemez.
+  #
+  # Yeni mimari — signal layer DETERMINISTIC, sentez layer LLM:
+  #
+  #   Phase 1 (parallel, deterministic Python — saniye altı):
+  #     ss_financial_signal_extractor    pack.top_financial_insights → signals
+  #     ss_event_signal_extractor        pack.top_event_conclusions → signals
+  #     ss_macro_signal_extractor        pack.top_macro_impacts → signals
+  #
+  #   Phase 2 (sequential, deterministic Python):
+  #     ss_signal_compiler  3 extractor + pack base → canonical signal map +
+  #                         holding_signals + valuation/sector data_quality signals
+  #
+  #   Phase 3 (sequential, LLM):
+  #     ss_contradiction_flag (signal_map → contradictions + weak_evidence)
+  #
+  #   Phase 4 (sequential, LLM):
+  #     ss_thesis_writer (pack + signals + contradictions → thesis)
+  #
+  # Variance dayanıklılığı: Phase 1+2 deterministic Python — provider yok, hang yok.
+  # Phase 3+4 fix-pack sonrası 2/2 PASS (Run 2 + Run 3 KCHOL benchmark).
+  #
+  # Output budget per user spec:
+  #   each extractor ≤ 4KB, compiler ≤ 8KB, signal layer ≤ 16KB total
+  #   contradiction_flag ≤ 8KB, thesis_writer ≤ 12KB
+  - id: ss_financial_signal_extractor
+    parent_agent_id: strategic_synthesis
+    display_name: "Financial Signal Extractor"
+    description: "top_financial_insights → canonical financial signals (deterministic, no LLM)."
+    tier: deterministic
+    python_module: financex.subagents.ss_financial_signal_extractor
+    timeout_ms: 30000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/ss_financial_signal_extractor.json
+    parallelizable: true    # Phase 1 parallel
+    retry_max: 2
+
+  - id: ss_event_signal_extractor
+    parent_agent_id: strategic_synthesis
+    display_name: "Event Signal Extractor"
+    description: "top_event_conclusions → canonical event signals (deterministic)."
+    tier: deterministic
+    python_module: financex.subagents.ss_event_signal_extractor
+    timeout_ms: 30000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/ss_event_signal_extractor.json
+    parallelizable: true    # Phase 1 parallel
+    retry_max: 2
+
+  - id: ss_macro_signal_extractor
+    parent_agent_id: strategic_synthesis
+    display_name: "Macro Signal Extractor"
+    description: "top_macro_impacts → canonical macro signals (deterministic)."
+    tier: deterministic
+    python_module: financex.subagents.ss_macro_signal_extractor
+    timeout_ms: 30000
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/ss_macro_signal_extractor.json
+    parallelizable: true    # Phase 1 parallel
+    retry_max: 2
+
+  - id: ss_signal_compiler
+    parent_agent_id: strategic_synthesis
+    display_name: "Signal Compiler"
+    description: "3 extractor + pack base → canonical signal_map + holding_signals + valuation/sector data_quality signals (deterministic)."
+    tier: deterministic
+    python_module: financex.subagents.ss_signal_compiler
+    timeout_ms: 30000
+    isolated_context: false  # needs pack base + chain inputs
+    output_schema_path: schemas/sub-agents/ss_signal_compiler.json
+    parallelizable: false   # Phase 2 sequential after extractors
+    retry_max: 2
+
+  - id: ss_contradiction_flag
+    parent_agent_id: strategic_synthesis
+    display_name: "Contradiction Flagger"
+    description: "Signal map'teki cross-agent contradiction ve weak evidence'ları annotate eder (silmez). thesis_writer'a yönlendirici."
+    tier: llm
+    model: sonnet
+    timeout_ms: 240000
+    # 2026-04-26 KCHOL run 4 fix: isolated_context=true.
+    # Source-of-truth kuralı: structured compact pack + chain-injected
+    # previous_signal_map sub-agent'ın TEK gerçek-kaynak girdisidir.
+    # Parent narrative (strategic_synthesis_output 27KB vb.) prompt context'ine
+    # sızmasın — Sub-agent kararlarını narrative'den ödünç alıp pack'i
+    # bypass etmesin. (Run 4'te thesis_writer narrative'deki SOTP'yi pack=0
+    # olmasına rağmen kullandı, fake-DCF-criterion fail.)
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/ss_contradiction_flag.json
+    parallelizable: false   # Sequential after compiler
+    retry_max: 2
+
+  - id: ss_thesis_writer
+    parent_agent_id: strategic_synthesis
+    display_name: "Investment Thesis Writer"
+    description: "Pack + signals + contradictions sentezi: thesis + BUY/HOLD/SELL recommendation + Bull/Base/Bear scenarios. Valuation gap → conviction max medium, fake DCF YASAK."
+    tier: llm
+    model: sonnet
+    # Cap bump 360s → 480s (2026-04-26 KCHOL S11 benchmark fix-pack):
+    # primary fix scope tightening (schema maxItems caps, prompt slim
+    # example, binding TRUNCATED_SUMMARY_MODE eşik=8KB). Cap bump tek başına
+    # değil — güvenlik payı olarak.
+    timeout_ms: 480000
+    # 2026-04-26 KCHOL run 4 fix: isolated_context=true (aynı gerekçe — bkz.
+    # ss_contradiction_flag yorum). Pack + previous_signal_map +
+    # previous_contradictions thesis_writer'ın TEK fact source'u olacak;
+    # parent narrative (raw upstream output'lar) prompt context'inden filtrelenir.
+    isolated_context: true
+    output_schema_path: schemas/sub-agents/ss_thesis_writer.json
+    parallelizable: false   # Sequential last
+    retry_max: 2
