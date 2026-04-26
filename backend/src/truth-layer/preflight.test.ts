@@ -216,3 +216,104 @@ describe('truth-layer methodology mismatch guard (P2.alpha)', () => {
     expect(JSON.stringify(ctx)).toBe(before);
   });
 });
+
+
+describe('truth-layer methodology guard — confidence calibration (P2.gamma)', () => {
+  it('KCHOL high-confidence (1.00): severity not downgraded for val_dcf structural HIGH', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_dcf')!;
+    expect(r.severity).toBe('high');
+    expect(r.ftl_confidence).toBe(1.0);
+    expect(r.severity_downgraded).toBe(false);
+    expect(r.reasoning).not.toMatch(/downgraded/i);
+  });
+
+  it('KCHOL high-confidence: severity not downgraded for medium tier (val_p_b)', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_p_b')!;
+    expect(r.severity).toBe('medium');
+    expect(r.ftl_confidence).toBe(1.0);
+    expect(r.severity_downgraded).toBe(false);
+  });
+
+  it('KCHOL aligned=true: confidence fields populated, no downgrade flag', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_sotp')!;
+    expect(r.aligned).toBe(true);
+    expect(r.severity).toBe('none');
+    expect(r.ftl_confidence).toBe(1.0);
+    expect(r.severity_downgraded).toBe(false);
+  });
+
+  it('default-industrial low-confidence (0.30): val_nav HIGH downgraded to MEDIUM', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('ZZZNONEXISTENT', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_nav')!;
+    expect(r.ftl_confidence).toBe(0.3);
+    expect(r.severity).toBe('medium');
+    expect(r.severity_downgraded).toBe(true);
+    expect(r.reasoning).toMatch(/downgraded from high/);
+    expect(r.reasoning).toMatch(/FTL confidence=0\.30/);
+  });
+
+  it('default-industrial low-confidence: val_trading_comps MEDIUM downgraded to LOW', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('ZZZNONEXISTENT', ctx);
+    // val_trading_comps weight=0.35 in TEMPLATE_REGULAR → base severity=medium
+    const r = assertMethodologyAlignment(ctx, 'val_trading_comps')!;
+    expect(r.ftl_confidence).toBe(0.3);
+    expect(r.severity).toBe('low');
+    expect(r.severity_downgraded).toBe(true);
+    expect(r.reasoning).toMatch(/downgraded from medium/);
+  });
+
+  it('default-industrial low-confidence: secondary tier (val_sotp) stays LOW (already minimum)', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('ZZZNONEXISTENT', ctx);
+    // val_sotp weight=0.10 < 0.15 in TEMPLATE_REGULAR → base severity=low
+    const r = assertMethodologyAlignment(ctx, 'val_sotp')!;
+    expect(r.severity).toBe('low');
+    expect(r.severity_downgraded).toBe(false);
+    expect(r.reasoning).not.toMatch(/downgraded/i);
+  });
+
+  it('default-industrial low-confidence: aligned=true (val_dcf) is NOT downgraded', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('ZZZNONEXISTENT', ctx);
+    const r = assertMethodologyAlignment(ctx, 'val_dcf')!;
+    expect(r.aligned).toBe(true);
+    expect(r.severity).toBe('none');
+    expect(r.ftl_confidence).toBe(0.3);
+    expect(r.severity_downgraded).toBe(false);
+  });
+
+  it('boundary: confidence exactly 0.50 → no downgrade (≥ threshold)', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    // Synthetically pin confidence to threshold
+    const truth = ctx[TRUTH_CONTEXT_KEYS.ASSERTIONS] as {
+      valuation_methodology: { confidence: number };
+    };
+    truth.valuation_methodology.confidence = 0.5;
+    const r = assertMethodologyAlignment(ctx, 'val_dcf')!;
+    expect(r.severity).toBe('high');           // structural rule still fires
+    expect(r.ftl_confidence).toBe(0.5);
+    expect(r.severity_downgraded).toBe(false);
+  });
+
+  it('boundary: confidence 0.49 → downgrade fires', () => {
+    const ctx: Record<string, unknown> = {};
+    populateTruthAssertions('KCHOL', ctx);
+    const truth = ctx[TRUTH_CONTEXT_KEYS.ASSERTIONS] as {
+      valuation_methodology: { confidence: number };
+    };
+    truth.valuation_methodology.confidence = 0.49;
+    const r = assertMethodologyAlignment(ctx, 'val_dcf')!;
+    expect(r.severity).toBe('medium');         // structural HIGH downgraded
+    expect(r.ftl_confidence).toBe(0.49);
+    expect(r.severity_downgraded).toBe(true);
+  });
+});

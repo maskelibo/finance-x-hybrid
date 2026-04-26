@@ -103,6 +103,51 @@ export interface MethodologyAlignment {
   severity: MethodologyAlignmentSeverity;
   reasoning: string;
   classification_label: string;
+  /** P2.gamma — FTL valuation_methodology.confidence used for severity calibration. */
+  ftl_confidence: number;
+  /** P2.gamma — true when severity was lowered one tier due to FTL confidence < threshold. */
+  severity_downgraded: boolean;
+}
+
+/**
+ * P2.gamma — FTL confidence threshold below which methodology mismatches
+ * are downgraded one severity tier. Single threshold (0.50) chosen to
+ * isolate the default_industrial fallback case (confidence=0.30) from
+ * registry-hit (1.00) and narrative-derived (0.70-0.80) classifications.
+ */
+const LOW_FTL_CONFIDENCE_THRESHOLD = 0.5;
+
+/** Internal — alignment shape before P2.gamma confidence calibration. */
+type AlignmentBase = Omit<MethodologyAlignment, 'ftl_confidence' | 'severity_downgraded'>;
+
+/**
+ * P2.gamma — apply confidence-based severity downgrade to a P2.alpha
+ * base alignment. When FTL methodology confidence is below
+ * LOW_FTL_CONFIDENCE_THRESHOLD, mismatches are softened by one tier
+ * (high → medium, medium → low). 'none' and 'low' are unaffected.
+ * The reasoning is suffixed only when an actual downgrade occurs.
+ */
+function applyConfidenceCalibration(
+  base: AlignmentBase,
+  ftlConfidence: number,
+): MethodologyAlignment {
+  const lowConfidence = ftlConfidence < LOW_FTL_CONFIDENCE_THRESHOLD;
+  const downgradeable = base.severity === 'high' || base.severity === 'medium';
+
+  if (!lowConfidence || !downgradeable) {
+    return { ...base, ftl_confidence: ftlConfidence, severity_downgraded: false };
+  }
+
+  const newSeverity: MethodologyAlignmentSeverity = base.severity === 'high' ? 'medium' : 'low';
+  return {
+    ...base,
+    severity: newSeverity,
+    ftl_confidence: ftlConfidence,
+    severity_downgraded: true,
+    reasoning:
+      `${base.reasoning} (severity downgraded from ${base.severity} due to FTL confidence=` +
+      `${ftlConfidence.toFixed(2)} < ${LOW_FTL_CONFIDENCE_THRESHOLD.toFixed(2)})`,
+  };
 }
 
 /**
@@ -113,13 +158,18 @@ export interface MethodologyAlignment {
  * Returns null when truth assertions have not been populated for the session
  * (e.g., legacy run, FTL-disabled path) — caller should treat that as no-op.
  *
- * Severity tiers:
+ * Severity tiers (P2.alpha base, before P2.gamma calibration):
  *   none   — chosen === FTL primary_method
  *   high   — chosen='val_dcf' AND classification is_holding|is_banking (structural)
  *   high   — chosen ∈ inappropriate_methods (weight=0 in FTL template)
  *   medium — chosen has weight ≥ 0.15 in FTL template but is not primary
  *   low    — chosen ∈ secondary_methods (FTL weight ∈ (0, 0.15))
  *   low    — chosen unknown/unparseable (advisory; cannot fully assess)
+ *
+ * P2.gamma — base severity is then calibrated against
+ * truth.valuation_methodology.confidence: when confidence is below the
+ * threshold (default 0.50), high→medium and medium→low. This avoids
+ * confidently flagging the LLM as "wrong" against an unsure FTL ground.
  */
 export function assertMethodologyAlignment(
   accumulatedContext: Record<string, unknown>,
@@ -135,6 +185,7 @@ export function assertMethodologyAlignment(
   const secondary = truth.valuation_methodology.secondary_methods as string[];
   const isHolding = truth.classification.is_holding;
   const isBanking = truth.classification.is_banking;
+  const ftlConfidence = truth.valuation_methodology.confidence;
 
   // weighter prepends "[label] " to the justification — extract label for log.
   const labelMatch = truth.valuation_methodology.justification.match(/^\[([^\]]+)\]/);
@@ -143,8 +194,10 @@ export function assertMethodologyAlignment(
   const chosen =
     typeof chosenMethod === 'string' && chosenMethod.trim() ? chosenMethod.trim() : null;
 
+  let base: AlignmentBase;
+
   if (chosen === expected) {
-    return {
+    base = {
       ticker,
       aligned: true,
       expected_method: expected,
@@ -153,10 +206,8 @@ export function assertMethodologyAlignment(
       reasoning: `chosen matches FTL primary (${expected})`,
       classification_label: classificationLabel,
     };
-  }
-
-  if (!chosen) {
-    return {
+  } else if (!chosen) {
+    base = {
       ticker,
       aligned: false,
       expected_method: expected,
@@ -165,12 +216,10 @@ export function assertMethodologyAlignment(
       reasoning: 'chosen methodology not detectable in scenario builder output (advisory)',
       classification_label: classificationLabel,
     };
-  }
-
-  // Structural mismatch — checked first because val_dcf for holding/banking
-  // is wrong regardless of any non-zero weight in the FTL template.
-  if (chosen === 'val_dcf' && (isHolding || isBanking)) {
-    return {
+  } else if (chosen === 'val_dcf' && (isHolding || isBanking)) {
+    // Structural mismatch — checked first because val_dcf for holding/banking
+    // is wrong regardless of any non-zero weight in the FTL template.
+    base = {
       ticker,
       aligned: false,
       expected_method: expected,
@@ -181,10 +230,8 @@ export function assertMethodologyAlignment(
         `consolidated bank P&L / segment-mismatched holding distorts FCF (FTL primary=${expected})`,
       classification_label: classificationLabel,
     };
-  }
-
-  if (inappropriate.includes(chosen)) {
-    return {
+  } else if (inappropriate.includes(chosen)) {
+    base = {
       ticker,
       aligned: false,
       expected_method: expected,
@@ -195,10 +242,8 @@ export function assertMethodologyAlignment(
         `FTL primary=${expected}`,
       classification_label: classificationLabel,
     };
-  }
-
-  if (secondary.includes(chosen)) {
-    return {
+  } else if (secondary.includes(chosen)) {
+    base = {
       ticker,
       aligned: false,
       expected_method: expected,
@@ -209,32 +254,34 @@ export function assertMethodologyAlignment(
         `FTL primary=${expected}`,
       classification_label: classificationLabel,
     };
+  } else {
+    const w = weights[chosen] ?? 0;
+    if (w >= 0.15) {
+      base = {
+        ticker,
+        aligned: false,
+        expected_method: expected,
+        chosen_method: chosen,
+        severity: 'medium',
+        reasoning:
+          `chosen '${chosen}' weight=${w.toFixed(2)} (significant alternative) but FTL primary=${expected}`,
+        classification_label: classificationLabel,
+      };
+    } else {
+      base = {
+        ticker,
+        aligned: false,
+        expected_method: expected,
+        chosen_method: chosen,
+        severity: 'low',
+        reasoning:
+          `chosen '${chosen}' unrecognised in FTL weights for ${classificationLabel}; FTL primary=${expected}`,
+        classification_label: classificationLabel,
+      };
+    }
   }
 
-  const w = weights[chosen] ?? 0;
-  if (w >= 0.15) {
-    return {
-      ticker,
-      aligned: false,
-      expected_method: expected,
-      chosen_method: chosen,
-      severity: 'medium',
-      reasoning:
-        `chosen '${chosen}' weight=${w.toFixed(2)} (significant alternative) but FTL primary=${expected}`,
-      classification_label: classificationLabel,
-    };
-  }
-
-  return {
-    ticker,
-    aligned: false,
-    expected_method: expected,
-    chosen_method: chosen,
-    severity: 'low',
-    reasoning:
-      `chosen '${chosen}' unrecognised in FTL weights for ${classificationLabel}; FTL primary=${expected}`,
-    classification_label: classificationLabel,
-  };
+  return applyConfidenceCalibration(base, ftlConfidence);
 }
 
 
