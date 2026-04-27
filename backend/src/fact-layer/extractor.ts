@@ -21,7 +21,9 @@
  *     escalates to 'material' / 'critical' (those require P1D arbitration)
  */
 
+import { nanoid } from 'nanoid';
 import { upsertFact, getFact, type FactSource, type FactValue } from './store.js';
+import { tryRecordLineageNode } from './lineage.js';
 import type { FactConfidenceInputs } from './confidence.js';
 
 // =============================================================================
@@ -234,16 +236,19 @@ function toFiniteNumber(v: unknown): number | null {
  * the storage transform per declared rule unit so the extractor's contract
  * is stable regardless of which fact_key heuristics the downstream
  * normaliser happens to recognise.
+ *
+ * Wave 1 of P1B also uses this transform's verbal label as the lineage
+ * `unit_conversion` audit string (e.g. "TRY → TRY_mn /1e6").
  */
-function normalizeForStorage(rawValue: number, ruleUnit: string): { value: number; unit: string } {
+function normalizeForStorage(rawValue: number, ruleUnit: string): { value: number; unit: string; conversion: string | null } {
   switch (ruleUnit) {
-    case 'TRY':    return { value: rawValue / 1_000_000, unit: 'TRY_mn' };
-    case 'TRY_bn': return { value: rawValue * 1000,      unit: 'TRY_mn' };
-    case 'TRY_mn': return { value: rawValue,             unit: 'TRY_mn' };
-    case 'pct':    return { value: rawValue / 100,       unit: 'decimal' };
-    case 'decimal':return { value: rawValue,             unit: 'decimal' };
-    case 'x':      return { value: rawValue,             unit: 'x' };
-    default:       return { value: rawValue,             unit: ruleUnit };
+    case 'TRY':    return { value: rawValue / 1_000_000, unit: 'TRY_mn', conversion: 'TRY → TRY_mn /1e6' };
+    case 'TRY_bn': return { value: rawValue * 1000,      unit: 'TRY_mn', conversion: 'TRY_bn → TRY_mn ×1000' };
+    case 'TRY_mn': return { value: rawValue,             unit: 'TRY_mn', conversion: null };
+    case 'pct':    return { value: rawValue / 100,       unit: 'decimal', conversion: 'pct → decimal /100' };
+    case 'decimal':return { value: rawValue,             unit: 'decimal', conversion: null };
+    case 'x':      return { value: rawValue,             unit: 'x',       conversion: null };
+    default:       return { value: rawValue,             unit: ruleUnit,  conversion: null };
   }
 }
 
@@ -402,8 +407,10 @@ export function extractFactsFromAgentOutput(
 
     // Pre-normalise to storage form (TRY → TRY_mn /1e6, pct → decimal /100,
     // x/decimal/TRY_mn pass-through). Decoupled from unit-normalizer's
-    // fact_key heuristics so the extractor's contract is stable.
-    const { value: storedValue, unit: storedUnit } = normalizeForStorage(numeric, rule.unit);
+    // fact_key heuristics so the extractor's contract is stable. The
+    // verbal `conversion` label is also persisted into lineage for audit.
+    const { value: storedValue, unit: storedUnit, conversion: unitConversion } =
+      normalizeForStorage(numeric, rule.unit);
 
     const source: FactSource = {
       type: 'agent',
@@ -432,6 +439,29 @@ export function extractFactsFromAgentOutput(
       result.extracted++;
       result.fact_keys.push(keyForStore);
       seenKeys.add(keyForStore);
+
+      // P1B Wave 1 — record one raw_extracted lineage node per persisted
+      // extracted fact. Best-effort; failure logs warn and never blocks
+      // the extractor. source_doc_id is null per Wave 1 honesty (option a):
+      // the agent-source FactSource does not carry a doc_id, and we do NOT
+      // synthesise one. Doc-level provenance comes with Python integration
+      // in P1B Wave 2.
+      tryRecordLineageNode({
+        session_id: sessionId,
+        fact_key: keyForStore,
+        node_id: `ln-${nanoid(10)}`,
+        node_type: 'raw_extracted',
+        formula: null,
+        computed_by: agentId,
+        computed_at: extractedAt,
+        source_doc_id: null,
+        source_page: null,
+        source_snippet: null,
+        raw_value: numeric,
+        normalized_value: storedValue,
+        unit_conversion: unitConversion,
+        input_node_ids: [],
+      });
     } catch (err) {
       // Per-rule persistence failure should not abort the whole extraction.
       result.skipped++;

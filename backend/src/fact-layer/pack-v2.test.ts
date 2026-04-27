@@ -193,3 +193,59 @@ describe('pack-v2 — conflict summary', () => {
     expect(pack.conflict_summary.by_severity.critical).toBe(1);
   });
 });
+
+// =============================================================================
+// P1B Wave 1 — lineage_summary
+// =============================================================================
+
+describe('pack-v2 — lineage_summary (P1B Wave 1)', () => {
+  it('legacy session with no lineage rows — traced=0, untraced lists every fact_key', () => {
+    const sid = makeSession();
+    upsertFact({
+      session_id: sid, fact_key: 'untraced_a', value: 1, unit: 'decimal',
+      sources: [docSrc()],
+    });
+    upsertFact({
+      session_id: sid, fact_key: 'untraced_b', value: 2, unit: 'decimal',
+      sources: [docSrc()],
+    });
+    const pack = getCanonicalFactPackV2(sid);
+    expect(pack.lineage_summary.traced_fact_count).toBe(0);
+    expect(pack.lineage_summary.untraced_fact_keys).toEqual(['untraced_a', 'untraced_b']);
+    expect(pack.lineage_summary.avg_computation_depth).toBe(0);
+    expect(pack.lineage_summary.distinct_root_doc_ids).toEqual([]);
+  });
+
+  it('traced session counts traced_fact_count and excludes them from untraced_fact_keys', () => {
+    const sid = makeSession();
+    upsertFact({
+      session_id: sid, fact_key: 'traced_x', value: 1, unit: 'decimal',
+      sources: [docSrc()],
+    });
+    upsertFact({
+      session_id: sid, fact_key: 'untraced_y', value: 2, unit: 'decimal',
+      sources: [docSrc()],
+    });
+    db.prepare(
+      `INSERT INTO lineage_nodes (session_id, fact_key, node_id, node_type, computed_by, computed_at)
+       VALUES (?, 'traced_x', ?, 'raw_extracted', 'test', ?)`,
+    ).run(sid, `ln-${nanoid(10)}`, new Date().toISOString());
+    const pack = getCanonicalFactPackV2(sid);
+    expect(pack.lineage_summary.traced_fact_count).toBe(1);
+    expect(pack.lineage_summary.untraced_fact_keys).toEqual(['untraced_y']);
+  });
+
+  it('surfaces distinct_root_doc_ids when lineage rows carry source_doc_id', () => {
+    const sid = makeSession();
+    upsertFact({
+      session_id: sid, fact_key: 'doc_traced', value: 1, unit: 'decimal',
+      sources: [docSrc()],
+    });
+    db.prepare(
+      `INSERT INTO lineage_nodes (session_id, fact_key, node_id, node_type, computed_by, computed_at, source_doc_id)
+       VALUES (?, 'doc_traced', ?, 'raw_extracted', 'test', ?, 'KCHOL_FY2025')`,
+    ).run(sid, `ln-${nanoid(10)}`, new Date().toISOString());
+    const pack = getCanonicalFactPackV2(sid);
+    expect(pack.lineage_summary.distinct_root_doc_ids).toEqual(['KCHOL_FY2025']);
+  });
+});

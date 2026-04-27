@@ -351,3 +351,83 @@ describe('extractor — non-mutation', () => {
     expect(persistedKeys).toEqual(r.fact_keys.slice().sort());
   });
 });
+
+// =============================================================================
+// P1B Wave 1 — lineage integration
+// =============================================================================
+
+describe('extractor — P1B lineage integration', () => {
+  it('records exactly one raw_extracted lineage node per persisted fact', () => {
+    const sid = makeSession();
+    const output = JSON.stringify({
+      period_label: 'FY-2025',
+      canonical_numbers: { revenue: 100, net_income: 10 },
+    });
+    extractFactsFromAgentOutput('financial_analysis', sid, output);
+    const rows = db.prepare(
+      `SELECT fact_key, node_type FROM lineage_nodes WHERE session_id = ?`,
+    ).all(sid) as Array<{ fact_key: string; node_type: string }>;
+    expect(rows.length).toBe(2);
+    for (const r of rows) expect(r.node_type).toBe('raw_extracted');
+    expect(rows.map((r) => r.fact_key).sort()).toEqual([
+      'net_income_fy2025',
+      'revenue_fy2025',
+    ]);
+  });
+
+  it('captures raw_value ≠ normalized_value for TRY currency rules', () => {
+    const sid = makeSession();
+    const output = JSON.stringify({
+      period_label: 'FY-2025',
+      canonical_numbers: { revenue: 2_757_295_000_000 },
+    });
+    extractFactsFromAgentOutput('financial_analysis', sid, output);
+    const row = db.prepare(
+      `SELECT raw_value, normalized_value, unit_conversion FROM lineage_nodes WHERE session_id = ? AND fact_key = ?`,
+    ).get(sid, 'revenue_fy2025') as { raw_value: string; normalized_value: string; unit_conversion: string };
+    expect(JSON.parse(row.raw_value)).toBe(2_757_295_000_000);
+    expect(JSON.parse(row.normalized_value)).toBe(2_757_295);
+    expect(row.unit_conversion).toBe('TRY → TRY_mn /1e6');
+  });
+
+  it('persists null source_doc_id (Wave 1 honesty — no synthetic doc ids)', () => {
+    const sid = makeSession();
+    const output = JSON.stringify({
+      period_label: 'FY-2025',
+      canonical_numbers: { revenue: 100 },
+    });
+    extractFactsFromAgentOutput('financial_analysis', sid, output);
+    const row = db.prepare(
+      `SELECT source_doc_id FROM lineage_nodes WHERE session_id = ? AND fact_key = ?`,
+    ).get(sid, 'revenue_fy2025') as { source_doc_id: string | null };
+    expect(row.source_doc_id).toBeNull();
+  });
+
+  it('records computed_by = agent_id', () => {
+    const sid = makeSession();
+    const output = JSON.stringify({
+      standardized_statements: [{
+        period_label: 'FY-2025',
+        income_statement: { revenue: 100 },
+      }],
+    });
+    extractFactsFromAgentOutput('parse_standardization', sid, output);
+    const row = db.prepare(
+      `SELECT computed_by FROM lineage_nodes WHERE session_id = ? AND fact_key = ?`,
+    ).get(sid, 'revenue_fy2025') as { computed_by: string };
+    expect(row.computed_by).toBe('parse_standardization');
+  });
+
+  it('lineage write does not throw when called against an invalid session id (best-effort)', () => {
+    // Direct call to extractor with a session that does not exist. The
+    // upsertFact will FAIL on FK, the extractor's per-rule try/catch will
+    // mark it skipped, and the lineage hook is never reached. Importantly,
+    // the wrapper-level call itself does not throw.
+    const r = extractFactsFromAgentOutput('financial_analysis', 'no-such-session', JSON.stringify({
+      period_label: 'FY-2025',
+      canonical_numbers: { revenue: 100 },
+    }));
+    expect(r.extracted).toBe(0);
+    expect(r.skipped).toBeGreaterThan(0);
+  });
+});

@@ -18,6 +18,7 @@
 import { db } from '../db.js';
 import { listFacts, type CanonicalFact } from './store.js';
 import type { FactConfidence, FactConfidenceTier } from './confidence.js';
+import { computeSessionLineageStats } from './lineage.js';
 
 // =============================================================================
 // Types
@@ -46,6 +47,18 @@ export interface ConflictSummary {
   by_severity: { minor: number; material: number; critical: number };
 }
 
+/** P1B Wave 1 — optional lineage roll-up. Legacy sessions (no lineage rows)
+ *  yield traced_fact_count=0 + untraced_fact_keys=all_facts. Never throws. */
+export interface LineageSummary {
+  traced_fact_count: number;
+  /** Sorted alphabetically — fact_keys present in canonical_facts but with
+   *  no lineage_nodes row in the session. */
+  untraced_fact_keys: string[];
+  avg_computation_depth: number;
+  /** Sorted alphabetically. Empty until P1B Wave 2 adds doc-level provenance. */
+  distinct_root_doc_ids: string[];
+}
+
 export interface CanonicalFactPackV2 {
   session_id: string;
   ticker: string | null;
@@ -53,6 +66,9 @@ export interface CanonicalFactPackV2 {
   facts: Record<string, CanonicalFact>;
   confidence_summary: ConfidenceSummary;
   conflict_summary: ConflictSummary;
+  /** P1B Wave 1 — optional lineage roll-up. Always present (additive
+   *  shape); empty fields when no lineage has been recorded. */
+  lineage_summary: LineageSummary;
   /** Composer wall-clock timestamp. */
   composed_at: string;
 }
@@ -109,6 +125,12 @@ export function getCanonicalFactPackV2(sessionId: string): CanonicalFactPackV2 {
 
   const avgScore = scoredCount > 0 ? round3(scoreSum / scoredCount) : 0;
 
+  // P1B Wave 1 — lineage roll-up. Cheap when tables are empty (legacy
+  // sessions): traced_fact_count = 0 → untraced lists every fact_key.
+  const lineageStats = computeSessionLineageStats(sessionId);
+  const tracedSet = readTracedFactKeys(sessionId);
+  const untracedFactKeys = Object.keys(facts).filter((k) => !tracedSet.has(k)).sort();
+
   return {
     session_id: sessionId,
     ticker: readTickerForSession(sessionId),
@@ -124,6 +146,12 @@ export function getCanonicalFactPackV2(sessionId: string): CanonicalFactPackV2 {
     conflict_summary: {
       disputed_keys: disputedKeys.sort(),
       by_severity: bySeverity,
+    },
+    lineage_summary: {
+      traced_fact_count: lineageStats.traced_fact_count,
+      untraced_fact_keys: untracedFactKeys,
+      avg_computation_depth: lineageStats.avg_computation_depth,
+      distinct_root_doc_ids: lineageStats.distinct_root_doc_ids,
     },
     composed_at: new Date().toISOString(),
   };
@@ -162,4 +190,11 @@ function round3(n: number): number {
 function readTickerForSession(sessionId: string): string | null {
   const row = db.prepare(`SELECT ticker FROM analysis_sessions WHERE id = ?`).get(sessionId) as { ticker?: string } | undefined;
   return row?.ticker ?? null;
+}
+
+function readTracedFactKeys(sessionId: string): Set<string> {
+  const rows = db.prepare(
+    `SELECT DISTINCT fact_key FROM lineage_nodes WHERE session_id = ?`,
+  ).all(sessionId) as Array<{ fact_key: string }>;
+  return new Set(rows.map((r) => r.fact_key));
 }

@@ -189,6 +189,40 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_subagent_parent ON sub_agent_runs(parent_run_id);
   CREATE INDEX IF NOT EXISTS idx_subagent_status ON sub_agent_runs(status);
   CREATE INDEX IF NOT EXISTS idx_subagent_parent_agent ON sub_agent_runs(parent_agent_id);
+
+  -- Block P / Plan P1B Wave 1 — Data Lineage Tracking.
+  -- Per-fact derivation nodes + DAG edges. Wave 1 emits raw_extracted only;
+  -- computed / aggregated / transformed nodes are reserved for Wave 2.
+  -- canonical_facts is UNTOUCHED; lineage is opt-in via fact-layer/lineage.ts.
+  CREATE TABLE IF NOT EXISTS lineage_nodes (
+    session_id        TEXT NOT NULL,
+    fact_key          TEXT NOT NULL,
+    node_id           TEXT PRIMARY KEY,
+    node_type         TEXT NOT NULL,
+    formula           TEXT,
+    computed_by       TEXT NOT NULL,
+    computed_at       TEXT NOT NULL,
+    source_doc_id     TEXT,
+    source_page       INTEGER,
+    source_snippet    TEXT,
+    raw_value         TEXT,
+    normalized_value  TEXT,
+    unit_conversion   TEXT,
+    FOREIGN KEY (session_id) REFERENCES analysis_sessions(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS lineage_edges (
+    session_id        TEXT NOT NULL,
+    input_node_id     TEXT NOT NULL,
+    output_node_id    TEXT NOT NULL,
+    PRIMARY KEY (session_id, input_node_id, output_node_id),
+    FOREIGN KEY (session_id) REFERENCES analysis_sessions(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_lineage_nodes_session ON lineage_nodes(session_id);
+  CREATE INDEX IF NOT EXISTS idx_lineage_nodes_fact ON lineage_nodes(session_id, fact_key);
+  CREATE INDEX IF NOT EXISTS idx_lineage_edges_input ON lineage_edges(session_id, input_node_id);
+  CREATE INDEX IF NOT EXISTS idx_lineage_edges_output ON lineage_edges(session_id, output_node_id);
 `);
 
 export function ensureColumn(tableName: string, columnName: string, columnDefinition: string) {
