@@ -94,6 +94,11 @@ const KRITIK_BULGU_RE = /(\d+)\s*kritik\s*(?:finansal\s*)?bulgu/gi;
 export function clarifyKritikBulgu(
   html: string,
   canonicalCount: number | null,
+  /** P4.beta.3 — paragraph-start indices already actively rewritten by
+   *  critical_finding_resolver. Disclaimer injection skips these to avoid
+   *  duplicate "1 kritik bulgu ve 3 izleme uyarısı" + "(Kanonik finansal
+   *  analiz sonucu: 1 kritik bulgu)" on the same paragraph. */
+  alreadyRewrittenAnchors: ReadonlySet<number> = new Set<number>(),
 ): { html: string; result: KritikBulguClarifyResult } {
   if (canonicalCount == null || !Number.isFinite(canonicalCount)) {
     return { html, result: { disclaimers_injected: 0, conflicts_explained: 0, narrative_values: [] } };
@@ -122,8 +127,11 @@ export function clarifyKritikBulgu(
     // Inject back-to-front so earlier indexes stay valid
     matches.sort((a, b) => b.idx - a.idx);
     for (const match of matches) {
-      // Dedup per-paragraph: find the start of containing <p> / block to dedup
       const paraStart = findContainingBlockStart(working, match.idx);
+      // (P4.beta.3) Skip paragraph if critical_finding_resolver already
+      // actively rewrote it; avoids duplicate disclaimer
+      if (alreadyRewrittenAnchors.has(paraStart)) continue;
+      // Dedup per-paragraph
       if (injectedAtPara.has(paraStart)) continue;
       injectedAtPara.add(paraStart);
 

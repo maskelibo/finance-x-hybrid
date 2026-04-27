@@ -30,6 +30,7 @@ import {
   sanitizeBoardroomReport,
   logHygieneSummary,
   HYGIENE_CONTEXT_KEYS,
+  type SanitizeOptions,
 } from './hygiene_sanitizer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -164,10 +165,15 @@ export async function runPythonReportFormatter(
 // causing the sanitizer to skip the corresponding template clause without
 // fabricating values.
 
-function buildSanitizeOptions(
+/**
+ * P4.beta.3 — exported for runner extraction verification test.
+ * Pure function: pulls structured fields from accumulatedContext into
+ * SanitizeOptions. Read-only; never mutates ctx.
+ */
+export function buildSanitizeOptions(
   ticker: string,
   ctx: Record<string, unknown>,
-): Parameters<typeof sanitizeBoardroomReport>[1] {
+): SanitizeOptions {
   const truth = readTruthIfAny(ctx);
   const fa = parseLooseJson(ctx['financial_analysis_output']);
   const macro = parseLooseJson(ctx['macro_analysis_output']);
@@ -190,6 +196,9 @@ function buildSanitizeOptions(
       : null,
     fa_critical_flag_count: pickNumber(fa, ['critical_flag_count']),
     fa_prior_period_loaded: Boolean(ctx['fa_prior_period_loaded']),
+    // P4.beta.3 — pass full red_flags array to critical_finding_resolver for
+    // active rewrite. Sanitizer guards null/missing/empty cases internally.
+    fa_red_flags: fa && Array.isArray(fa['red_flags']) ? fa['red_flags'] : null,
     macro: macro ? {
       tcmb_policy_rate: pickNumber(macro['rates'], ['tcmb_policy_rate'])
         ?? pickNumber(macro, ['tcmb_policy_rate']),

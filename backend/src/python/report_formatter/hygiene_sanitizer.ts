@@ -44,6 +44,18 @@ import {
   clarifyKritikBulgu,
   clarifyPiotroski,
 } from './metric_clarifier.js';
+// P4.beta.3 — active rewrite + narrative sanitizer + macro consistency guard
+import {
+  resolveCriticalFinding,
+  type RedFlagInput,
+} from './critical_finding_resolver.js';
+import {
+  sanitizeNarrative,
+  countPostSanitizeRawAgent,
+} from './narrative_sanitizer.js';
+import {
+  guardMacroConsistency,
+} from './macro_consistency_guard.js';
 
 // =============================================================================
 // Output shape
@@ -90,6 +102,19 @@ export interface HygieneReport {
   piotroski_clarifiers_inject: number;
   /** Number of metric_conflicts that received an explanatory disclaimer. */
   explained_canonical_conflicts: number;
+  // P4.beta.3 additions — active rewrite + narrative sanitizer + macro guard
+  critical_finding_active_rewrites: number;
+  critical_finding_skip_reason: string | null;
+  raw_agent_phrases_removed: number;
+  raw_agent_phrases_remaining: number;
+  english_residue_remaining: number;
+  english_residue_samples: string[];
+  raw_flag_token_remaining: number;
+  raw_flag_token_samples: string[];
+  internal_token_remaining: number;
+  macro_contradictions_resolved: number;
+  macro_table_narrative_contradiction: number;
+  critical_finding_visible_conflict: number;
   // SCAN-ONLY (P4.beta.1)
   metric_conflicts: number;
   metric_conflict_details: MetricConflict[];
@@ -130,6 +155,8 @@ export interface SanitizeOptions {
   fa_prior_period_loaded?: boolean;
   macro?: SectionFillerInputs['macro'];
   technical?: SectionFillerInputs['technical'];
+  // P4.beta.3 — full red_flags array for critical_finding_resolver active rewrite
+  fa_red_flags?: RedFlagInput[] | null;
 }
 
 export function sanitizeBoardroomReport(
@@ -165,36 +192,72 @@ export function sanitizeBoardroomReport(
   };
   const fillResult = fillEmptySections(trResult.html, fillerInputs);
 
-  // 5) (P4.beta.2) Inject canonical disclaimer near narrative kritik_bulgu mismatches
+  // 5) (P4.beta.3) Active rewrite of "M kritik..." narrative → safe canonical
+  //    wording when fa_red_flags array is safely derivable. MUST run BEFORE
+  //    metric_clarifier so that (mandatory addition #1):
+  //      - successful active rewrite paragraphs are tracked via anchors
+  //      - metric_clarifier disclaimer pass skips those paragraphs to avoid
+  //        producing both "1 kritik bulgu ve 3 izleme uyarısı" AND the old
+  //        "(Kanonik finansal analiz sonucu: 1 kritik bulgu...)" disclaimer
+  const cfResult = resolveCriticalFinding(fillResult.html, options.fa_red_flags ?? null);
+  const cfAnchors = new Set(cfResult.result.rewritten_paragraph_anchors);
+
+  // 6) (P4.beta.2) Inject canonical disclaimer near narrative kritik_bulgu
+  //    mismatches — but ONLY where critical_finding_resolver did NOT already
+  //    rewrite the paragraph. We pass the anchor set as a skip-list.
   const kritikResult = clarifyKritikBulgu(
-    fillResult.html,
+    cfResult.html,
     typeof options.fa_critical_flag_count === 'number' ? options.fa_critical_flag_count : null,
+    cfAnchors,  // P4.beta.3 — skip paragraphs already actively rewritten
   );
 
-  // 6) (P4.beta.2) Inject Piotroski limited-data clarifier
+  // 7) (P4.beta.2) Inject Piotroski limited-data clarifier
   const piotroskiResult = clarifyPiotroski(
     kritikResult.html,
     Boolean(options.fa_prior_period_loaded),
   );
 
-  // 7) Re-detect remaining banned phrases (post-sanitize, post-fill, post-clarify)
-  const remaining = countRemainingBanned(piotroskiResult.html);
+  // 8) (P4.beta.3) Narrative sanitizer — raw agent monologue removal +
+  //    English residue counting + raw flag token counting
+  const narResult = sanitizeNarrative(piotroskiResult.html);
+  for (const w of narResult.result.warnings) warnings.push(w);
 
-  // 8) Restore protected blocks
-  const finalHtml = restoreProtectedBlocks(piotroskiResult.html, protectedSegments);
+  // 9) (P4.beta.3) Macro consistency guard — table "Raporlanmadı" vs narrative
+  //    specific value contradiction → narrative numeric replaced with disclaimer
+  const macroResult = guardMacroConsistency(narResult.html);
 
-  // 9) Scan-only: metric consistency + weak sections (post all transformations)
+  // 10) Re-detect remaining banned phrases (post-all-passes)
+  const remaining = countRemainingBanned(macroResult.html);
+
+  // 11) Restore protected blocks
+  const finalHtml = restoreProtectedBlocks(macroResult.html, protectedSegments);
+
+  // 12) Scan-only: metric consistency + weak sections (post all transformations)
   const metricConflicts = scanMetricConsistency(finalHtml);
   const weakSections = scanWeakSections(finalHtml);
 
-  // 10) Delivery status — explained_canonical_conflicts informs reasoning;
-  //     PASS is never forced when conflicts remain
+  // 13) (P4.beta.3) Re-count post-pass narrative metrics for HOLD gate
+  const rawAgentRemaining = countPostSanitizeRawAgent(finalHtml);
+  const internalTokenRemaining = countInternalTokens(finalHtml);
+  const criticalFindingVisibleConflict = countCriticalFindingVisibleConflict(
+    finalHtml,
+    options.fa_red_flags ?? null,
+  );
+
+  // 14) Delivery status — P4.beta.3 HOLD gate evaluates raw agent / internal /
+  //     residue / critical / macro / raw flag triggers; PASS never forced
   const { status, reasoning } = computeDeliveryStatus({
     bannedRemaining: remaining,
     metricConflicts: metricConflicts.length,
     weakSections: weakSections.length,
     warnings: warnings.length,
     explainedCanonicalConflicts: kritikResult.result.conflicts_explained,
+    rawAgentPhrasesRemaining: rawAgentRemaining,
+    englishResidueRemaining: narResult.result.english_residue_remaining,
+    rawFlagTokenRemaining: narResult.result.raw_flag_token_remaining,
+    internalTokenRemaining,
+    criticalFindingVisibleConflict,
+    macroTableNarrativeContradiction: macroResult.result.contradictions_remaining,
   });
 
   const report: HygieneReport = {
@@ -210,6 +273,20 @@ export function sanitizeBoardroomReport(
     kritik_bulgu_disclaimers_inject: kritikResult.result.disclaimers_injected,
     piotroski_clarifiers_inject: piotroskiResult.result.clarifiers_injected,
     explained_canonical_conflicts: kritikResult.result.conflicts_explained,
+    // P4.beta.3
+    critical_finding_active_rewrites: cfResult.result.active_rewrites,
+    critical_finding_skip_reason: cfResult.result.skip_reason,
+    raw_agent_phrases_removed: narResult.result.raw_agent_phrases_removed,
+    raw_agent_phrases_remaining: rawAgentRemaining,
+    english_residue_remaining: narResult.result.english_residue_remaining,
+    english_residue_samples: narResult.result.english_residue_samples,
+    raw_flag_token_remaining: narResult.result.raw_flag_token_remaining,
+    raw_flag_token_samples: narResult.result.raw_flag_token_samples,
+    internal_token_remaining: internalTokenRemaining,
+    macro_contradictions_resolved: macroResult.result.contradictions_resolved,
+    macro_table_narrative_contradiction: macroResult.result.contradictions_remaining,
+    critical_finding_visible_conflict: criticalFindingVisibleConflict,
+    // SCAN-ONLY
     metric_conflicts: metricConflicts.length,
     metric_conflict_details: metricConflicts,
     weak_sections: weakSections.length,
@@ -222,6 +299,58 @@ export function sanitizeBoardroomReport(
   };
 
   return { html: finalHtml, report };
+}
+
+// =============================================================================
+// P4.beta.3 — HOLD-gate helper counters
+// =============================================================================
+//
+// These counters scan the FINAL HTML (post-all-passes) for any trigger that
+// indicates a P4.beta.3 sanitizer pass was incomplete. They drive the new
+// HOLD branches in computeDeliveryStatus.
+
+const INTERNAL_TOKEN_PATTERNS: RegExp[] = [
+  /\bengine_snapshot\b/g,
+  /\bsector_override\b/g,
+  /\bcase_lesson\b/g,
+  /\bcase\s+lesson\b/gi,
+  /fetch\s+yapılmadı/gi,
+  /\.yaml\b/g,
+  /\bagent_runs\b/g,
+  /önceki\s+adım\s+context/gi,
+  /previous\s+step\s+context/gi,
+  /FA\.[a-zA-Z_]+/g,
+  /contradiction:cf-[a-f0-9]+/gi,
+  /\bsynth_score\b/g,
+];
+
+function countInternalTokens(html: string): number {
+  let total = 0;
+  for (const re of INTERNAL_TOKEN_PATTERNS) {
+    const m = html.match(re);
+    if (m) total += m.length;
+  }
+  return total;
+}
+
+const VISIBLE_KRITIK_RE = /(\d+)\s*kritik\s*(?:kırmızı\s*bayrak|finansal\s*bulgu|bulgu)/gi;
+
+/** Counts narrative "M kritik..." occurrences whose M differs from canonical
+ *  critical count (post-rewrite). 0 = HOLD gate clear. */
+function countCriticalFindingVisibleConflict(
+  html: string,
+  redFlags: RedFlagInput[] | null | undefined,
+): number {
+  if (!Array.isArray(redFlags) || redFlags.length === 0) return 0;
+  const N = redFlags.filter((f) => String(f?.severity ?? '').toLowerCase() === 'critical').length;
+  let conflicts = 0;
+  VISIBLE_KRITIK_RE.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = VISIBLE_KRITIK_RE.exec(html)) !== null) {
+    const M = Number(m[1]);
+    if (Number.isFinite(M) && M !== N) conflicts++;
+  }
+  return conflicts;
 }
 
 // =============================================================================
@@ -242,14 +371,17 @@ function extractProtectedBlocks(html: string): {
 } {
   const segments: ProtectedSegment[] = [];
   let idx = 0;
+  // Placeholder uses leading/trailing underscores + lowercase so downstream
+  // detectors (narrative_sanitizer raw flag token regex; banned_phrases
+  // raw flag warn-only) cannot mistake it for a real UPPER_SNAKE_CASE flag.
   let scaffold = html.replace(PROTECTED_TAG_RE, (match) => {
-    const placeholder = `HYGIENE_PROTECTED_${idx}`;
+    const placeholder = `__hygiene_protected_${idx}__`;
     segments.push({ placeholder, original: match });
     idx++;
     return placeholder;
   });
   scaffold = scaffold.replace(HTML_COMMENT_RE, (match) => {
-    const placeholder = `HYGIENE_PROTECTED_${idx}`;
+    const placeholder = `__hygiene_protected_${idx}__`;
     segments.push({ placeholder, original: match });
     idx++;
     return placeholder;
@@ -541,17 +673,55 @@ interface StatusInputs {
   warnings: number;
   /** P4.beta.2 — count of metric_conflicts that already received a canonical disclaimer. */
   explainedCanonicalConflicts: number;
+  // P4.beta.3 HOLD-gate triggers
+  rawAgentPhrasesRemaining: number;
+  englishResidueRemaining: number;
+  rawFlagTokenRemaining: number;
+  internalTokenRemaining: number;
+  criticalFindingVisibleConflict: number;
+  macroTableNarrativeContradiction: number;
 }
 
+/** P4.beta.3 — HOLD-gate thresholds (exact). */
+const HOLD_GATE = {
+  raw_agent_phrases_remaining: 0,
+  english_residue_remaining: 5,
+  internal_token_remaining: 0,
+  critical_finding_visible_conflict: 0,
+  macro_table_narrative_contradiction: 0,
+  raw_flag_token_remaining: 0,
+} as const;
+
 function computeDeliveryStatus(s: StatusInputs): { status: DeliveryStatus; reasoning: string } {
+  // P4.beta.1 baseline check
   if (s.bannedRemaining > 0) {
     return {
       status: 'HOLD',
       reasoning: `${s.bannedRemaining} yasaklı ifade sanitize sonrası görünür metinde kaldı`,
     };
   }
-  // metric conflicts → CONDITIONAL; P4.beta.2: surface explained_canonical_conflicts in reasoning
-  // (PASS is NEVER forced even when all conflicts are explained — disclaimer injection is advisory)
+
+  // P4.beta.3 HOLD triggers — strict
+  if (s.rawAgentPhrasesRemaining > HOLD_GATE.raw_agent_phrases_remaining) {
+    return { status: 'HOLD', reasoning: `${s.rawAgentPhrasesRemaining} ham agent monolog cümlesi temizlenemedi` };
+  }
+  if (s.internalTokenRemaining > HOLD_GATE.internal_token_remaining) {
+    return { status: 'HOLD', reasoning: `${s.internalTokenRemaining} iç sistem ifadesi (engine_snapshot, sector_override, vb.) görünür metinde kaldı` };
+  }
+  if (s.rawFlagTokenRemaining > HOLD_GATE.raw_flag_token_remaining) {
+    return { status: 'HOLD', reasoning: `${s.rawFlagTokenRemaining} ham bayrak kodu (UPPER_SNAKE_CASE) Türkçeleştirilemedi` };
+  }
+  if (s.criticalFindingVisibleConflict > HOLD_GATE.critical_finding_visible_conflict) {
+    return { status: 'HOLD', reasoning: `${s.criticalFindingVisibleConflict} kritik bulgu sayısı çelişkisi raporda hâlâ görünür` };
+  }
+  if (s.macroTableNarrativeContradiction > HOLD_GATE.macro_table_narrative_contradiction) {
+    return { status: 'HOLD', reasoning: `${s.macroTableNarrativeContradiction} makro tablo / narrative tutarsızlığı çözülemedi` };
+  }
+  if (s.englishResidueRemaining > HOLD_GATE.english_residue_remaining) {
+    return { status: 'HOLD', reasoning: `${s.englishResidueRemaining} İngilizce kalıntı (eşik ${HOLD_GATE.english_residue_remaining}) aşıldı` };
+  }
+
+  // P4.beta.2 baseline (CONDITIONAL)
   if (s.metricConflicts > 0) {
     const explained = Math.min(s.explainedCanonicalConflicts, s.metricConflicts);
     const explainedSuffix = explained > 0 ? `; bunların ${explained} tanesi kanonik disclaimer ile açıklanmıştır` : '';
@@ -564,6 +734,12 @@ function computeDeliveryStatus(s: StatusInputs): { status: DeliveryStatus; reaso
     return {
       status: 'CONDITIONAL',
       reasoning: `${s.weakSections} bölümde içerik yetersiz veya placeholder yoğun (advisory)`,
+    };
+  }
+  if (s.englishResidueRemaining > 0) {
+    return {
+      status: 'CONDITIONAL',
+      reasoning: `${s.englishResidueRemaining} İngilizce kalıntı eşik içinde (warning)`,
     };
   }
   if (s.warnings > 0) {
@@ -588,8 +764,16 @@ export function logHygieneSummary(report: HygieneReport): void {
       `sections_filled=${report.sections_filled} ` +
       `kritik_disclaimers=${report.kritik_bulgu_disclaimers_inject} ` +
       `piotroski_clarifiers=${report.piotroski_clarifiers_inject} ` +
+      `cf_active_rewrites=${report.critical_finding_active_rewrites} ` +
+      `raw_agent_removed=${report.raw_agent_phrases_removed} ` +
+      `raw_agent_remaining=${report.raw_agent_phrases_remaining} ` +
+      `english_residue=${report.english_residue_remaining} ` +
+      `raw_flag_remaining=${report.raw_flag_token_remaining} ` +
+      `internal_token_remaining=${report.internal_token_remaining} ` +
+      `cf_visible_conflict=${report.critical_finding_visible_conflict} ` +
+      `macro_resolved=${report.macro_contradictions_resolved} ` +
+      `macro_remaining=${report.macro_table_narrative_contradiction} ` +
       `metric_conflicts=${report.metric_conflicts} ` +
-      `explained_canonical=${report.explained_canonical_conflicts} ` +
       `weak_sections=${report.weak_sections} ` +
       `warnings=${report.warnings.length} ` +
       `bytes=${report.bytes_in}→${report.bytes_out} ` +

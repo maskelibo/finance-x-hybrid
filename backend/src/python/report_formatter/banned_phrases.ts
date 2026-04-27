@@ -18,7 +18,12 @@ export type BannedCategory =
   | 'module_name'
   | 'ml_internal'
   | 'pipeline_state'
-  | 'severity_tag';
+  | 'severity_tag'
+  // P4.beta.3 additions
+  | 'configuration_leak'
+  | 'agent_meta_ref'
+  | 'internal_field_ref'
+  | 'raw_flag_token';
 
 export interface BannedPhrase {
   /** Source pattern (literal phrase, regex-escaped automatically). */
@@ -153,6 +158,85 @@ const SEVERITY_TAGS: BannedPhrase[] = [
 ];
 
 // =============================================================================
+// Category 6 — Configuration / state leaks (P4.beta.3, strict ban)
+// =============================================================================
+
+const CONFIGURATION_LEAKS: BannedPhrase[] = [
+  { pattern: "sector_override\\s*=\\s*'[^']+'", category: 'configuration_leak', isRegex: true, replacement: '' },
+  { pattern: 'sector_override\\s*=\\s*"[^"]+"', category: 'configuration_leak', isRegex: true, replacement: '' },
+  { pattern: '\\bsector_override\\b', category: 'configuration_leak', isRegex: true, replacement: '' },
+  { pattern: '\\bengine_snapshot\\b', category: 'configuration_leak', isRegex: true, replacement: '' },
+  { pattern: '\\bcase_lesson\\b', category: 'configuration_leak', isRegex: true, replacement: '' },
+  { pattern: '\\bcase\\s+lesson\\b', category: 'configuration_leak', isRegex: true, caseInsensitive: true, replacement: '' },
+  { pattern: 'fetch\\s+yapılmadı', category: 'configuration_leak', isRegex: true, caseInsensitive: true, replacement: 'veri henüz teyit edilmemiştir' },
+  { pattern: '\\.yaml\\b', category: 'configuration_leak', isRegex: true, replacement: '' },
+  { pattern: 'yaml\\s+(dosyası|path)', category: 'configuration_leak', isRegex: true, caseInsensitive: true, replacement: '' },
+  { pattern: '\\bagent_runs\\b', category: 'configuration_leak', isRegex: true, replacement: '' },
+];
+
+// =============================================================================
+// Category 7 — Agent meta-references (P4.beta.3, strict ban / rewrite)
+// =============================================================================
+
+const AGENT_META_REFS: BannedPhrase[] = [
+  { pattern: '\\d+\\s+(?:özel\\s+)?ajan(?!\\w)', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: 'kademeli analiz hattı' },
+  { pattern: 'narrative\\s+blok(?:lar(?:ı(?:nın)?)?)?', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: 'metin blokları' },
+  { pattern: 'önceki\\s+adım\\s+context', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: '' },
+  { pattern: 'önceki\\s+adım(?!\\w)', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: 'yukarıdaki bölüm' },
+  { pattern: 'previous\\s+step\\s+context', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: '' },
+  { pattern: 'previous\\s+step(?!\\w)', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: 'önceki bölüm' },
+  { pattern: '\\bagent\\s+output\\b', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: 'modül çıktısı' },
+  { pattern: '\\bpipeline\\s+output\\b', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: 'analiz çıktısı' },
+  { pattern: '\\bpipeline\\s+(state|context)\\b', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: '' },
+  { pattern: '\\bupstream\\s+(agent|context|input)\\b', category: 'agent_meta_ref', isRegex: true, caseInsensitive: true, replacement: 'yukarıdaki analiz' },
+];
+
+// =============================================================================
+// Category 8 — Internal field references (P4.beta.3, rewrite)
+// =============================================================================
+
+const INTERNAL_FIELD_REFS: BannedPhrase[] = [
+  { pattern: 'FA\\.critical_flag_count', category: 'internal_field_ref', isRegex: true, replacement: 'kritik bulgu sayısı' },
+  { pattern: 'FA\\.confidence', category: 'internal_field_ref', isRegex: true, replacement: 'finansal analiz güven düzeyi' },
+  { pattern: 'FA\\.red_flags', category: 'internal_field_ref', isRegex: true, replacement: 'finansal risk bayrakları' },
+  { pattern: 'FA\\.metrics', category: 'internal_field_ref', isRegex: true, replacement: 'finansal metrikler' },
+  // Catch-all: any FA.field_name → generic Turkish; specific maps above take precedence
+  { pattern: 'FA\\.[a-zA-Z_]+', category: 'internal_field_ref', isRegex: true, replacement: 'finansal analiz alanı' },
+  { pattern: 'fa_red_flag:[A-Z][A-Z0-9_]*', category: 'internal_field_ref', isRegex: true, replacement: 'finansal risk bayrağı' },
+  { pattern: 'ftl:[a-z_]+(?::[a-z_]+)?', category: 'internal_field_ref', isRegex: true, replacement: 'metodoloji tespiti' },
+  { pattern: 'contradiction:cf-[a-f0-9]+', category: 'internal_field_ref', isRegex: true, replacement: 'iç tutarlılık bulgusu' },
+  { pattern: 'synth_div:\\d+', category: 'internal_field_ref', isRegex: true, replacement: 'sentez tutarsızlığı' },
+  { pattern: '\\bsynth_score\\b', category: 'internal_field_ref', isRegex: true, replacement: 'sentez hassasiyet skoru' },
+];
+
+// =============================================================================
+// Category 9 — Raw flag tokens (P4.beta.3, humanize via RED_FLAG_TR)
+// =============================================================================
+//
+// Catch-all pattern that matches uppercase tokens like YKBNK_DISTORTED,
+// HOLDING_BANKING_HEAVY, etc. The translation pass in hygiene_sanitizer
+// maps these via RED_FLAG_TR; this banned_phrases entry exists so any
+// LEFTOVER raw flag token (mapping yoksa) is removed and counted in
+// raw_flag_token_remaining for the HOLD gate.
+//
+// Note: replacement is null = warn-only; the actual humanization happens
+// in the translation pass (red flag → TR). This banned_phrases entry is
+// the SAFETY NET that catches anything missed.
+
+const RAW_FLAG_TOKENS: BannedPhrase[] = [
+  // Catch-all for raw flag-style identifiers; only fires if translation pass
+  // didn't map the token. Strict UPPER_SNAKE_CASE with at least one underscore.
+  {
+    pattern: '\\b[A-Z][A-Z0-9]{2,}_[A-Z][A-Z0-9_]*\\b',
+    category: 'raw_flag_token',
+    isRegex: true,
+    caseInsensitive: false,
+    replacement: null,  // warn-only; counted in raw_flag_token_remaining
+    note: 'catch-all for unhandled raw flag tokens; humanization is via RED_FLAG_TR',
+  },
+];
+
+// =============================================================================
 // Master list (export for sanitizer)
 // =============================================================================
 
@@ -162,6 +246,11 @@ export const BANNED_PHRASES: BannedPhrase[] = [
   ...ML_INTERNAL,
   ...PIPELINE_STATE,
   ...SEVERITY_TAGS,
+  // P4.beta.3 additions
+  ...CONFIGURATION_LEAKS,
+  ...AGENT_META_REFS,
+  ...INTERNAL_FIELD_REFS,
+  ...RAW_FLAG_TOKENS,
 ];
 
 /**

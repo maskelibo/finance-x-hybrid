@@ -44,6 +44,18 @@ export const RED_FLAG_TR: Record<string, string> = {
   ROE_NEGATIVE: 'Negatif Özsermaye Karlılığı',
   FCF_NEGATIVE: 'Negatif Serbest Nakit Akışı',
   EBITDA_CONFLICT: 'FAVÖK Mutabakat Tutarsızlığı',
+  // P4.beta.3 — humanize raw flag tokens
+  YKBNK_DISTORTED: 'YKBNK iştiraki konsolidasyonu sinyali',
+  YKBNK_ISOLATION: 'YKBNK iştiraki ayrıştırması',
+  AKBNK_DISTORTED: 'AKBNK iştiraki konsolidasyonu sinyali',
+  AKBNK_ISOLATION: 'AKBNK iştiraki ayrıştırması',
+  HOLDING_BANKING_HEAVY: 'Bankacılık ağırlıklı holding yapısı',
+  HOLDING_INSURANCE_HEAVY: 'Sigorta ağırlıklı holding yapısı',
+  HOLDING_REAL_ESTATE_HEAVY: 'Gayrimenkul ağırlıklı holding yapısı',
+  CONSOLIDATED_BANK_DISTORTION: 'Konsolide banka P&L bozulması',
+  SEGMENT_MISMATCH: 'Segment uyumsuzluğu sinyali',
+  CASH_FLOW_VOLATILE: 'Nakit akışı oynaklığı',
+  TAX_EFFECTIVE_HIGH: 'Yüksek efektif vergi oranı',
 };
 
 // =============================================================================
@@ -215,7 +227,137 @@ export const SENTENCE_PATTERNS: SentencePattern[] = [
     pattern: 'methodology not detectable in scenario builder output',
     replacement: 'değerleme metodolojisi senaryo çıktısında ayırt edilememiştir',
   },
+  // =========================================================================
+  // P4.beta.3 — English residue from FA Python red_flag.message strings
+  // (these come straight from the Python engine's English-text messages and
+  // were leaking into Turkish boardroom narrative)
+  // =========================================================================
+  // Note: HTML-encoded `&lt;` and literal `<` both supported via (?:<|&lt;).
+  {
+    pattern: 'Current ratio (\\d+(?:\\.\\d+)?) (?:<|&lt;) 1\\s*[—–-]\\s*short-term obligations exceed current assets',
+    replacement: 'Cari oran $1, 1,0x altında — kısa vadeli yükümlülükler dönen varlıkları aşmaktadır',
+  },
+  {
+    pattern: 'Net Debt\\/EBITDA (\\d+(?:\\.\\d+)?) (?:>|&gt;) 5x\\s*[—–-]\\s*elevated distress risk',
+    replacement: 'Net Borç / FAVÖK çarpanı $1, 5,0x sınırını aşıyor — yüksek finansal sıkıntı sinyali',
+  },
+  {
+    pattern: 'Net Debt\\/EBITDA (\\d+(?:\\.\\d+)?) (?:>|&gt;) 3x\\s*[—–-]\\s*elevated leverage',
+    replacement: 'Net Borç / FAVÖK çarpanı $1, 3,0x sınırını aşıyor — yüksek kaldıraç sinyali',
+  },
+  {
+    pattern: 'Interest coverage (\\d+(?:\\.\\d+)?) (?:<|&lt;) 2x\\s*[—–-]\\s*earnings barely cover financing cost',
+    replacement: 'Faiz karşılama oranı $1, 2,0x altında — kazançlar finansman maliyetini güçlükle karşılamaktadır',
+  },
+  {
+    pattern: 'Piotroski F (\\d+)\\/9\\s*[—–-]\\s*low quality fundamentals',
+    replacement: 'Piotroski F skoru $1/9 — temel finansal kalite zayıf',
+  },
+  {
+    pattern: 'Holding dual-stream P&L present\\s*\\(finans segment\\)\\.?',
+    replacement: 'Holding iki-akımlı gelir tablosu mevcut (finansman segmenti).',
+  },
+  {
+    pattern: 'Industrial gross-margin chain checked on non-financial stream only\\.?',
+    replacement: 'Sanayi brüt marj zinciri yalnızca finansman dışı segment üzerinden kontrol edilmiştir.',
+  },
+  {
+    pattern: 'Z=(\\d+(?:\\.\\d+)?) distress zone',
+    replacement: 'Altman Z = $1 distress bölgesinde',
+  },
+  // Common English finance fragments → Turkish
+  { pattern: '\\bcurrent assets\\b', replacement: 'dönen varlıklar' },
+  { pattern: '\\bshort-term obligations\\b', replacement: 'kısa vadeli yükümlülükler' },
+  { pattern: '\\blong-term obligations\\b', replacement: 'uzun vadeli yükümlülükler' },
+  { pattern: '\\bdistress risk\\b', replacement: 'finansal sıkıntı riski' },
+  { pattern: '\\bquality fundamentals\\b', replacement: 'temel finansal kalite' },
+  { pattern: '\\bfinancing cost\\b', replacement: 'finansman maliyeti' },
+  { pattern: '\\bworking capital\\b', replacement: 'işletme sermayesi' },
+  { pattern: '\\bbook value\\b', replacement: 'defter değeri' },
+  { pattern: '\\bmarket cap\\b', replacement: 'piyasa değeri' },
+  { pattern: '\\bcash conversion cycle\\b', replacement: 'nakit dönüş süresi' },
+  { pattern: '\\bauditor opinion\\b', replacement: 'denetçi görüşü' },
+  { pattern: '\\bfree cash flow\\b', replacement: 'serbest nakit akışı' },
+  { pattern: '\\boperating cash flow\\b', replacement: 'faaliyetlerden nakit akışı' },
+  { pattern: '\\bnet income\\b', replacement: 'net kâr' },
+  { pattern: '\\bgross margin\\b', replacement: 'brüt marj' },
+  { pattern: '\\bnet margin\\b', replacement: 'net marj' },
+  // P4.beta.3 cleanup — additional English residue → Turkish.
+  // Order: longest / most-specific first so partial overlaps don't strand the
+  // remainder in English. (Standalone "cash flow" runs AFTER "free cash flow"
+  // and "operating cash flow" above, so the longer matches translate first.)
+  { pattern: '\\bnet\\s+debt\\s+to\\s+ebitda\\b', replacement: 'Net Borç / FAVÖK' },
+  { pattern: '\\bdebt\\s+to\\s+equity\\b', replacement: 'borç / özkaynak' },
+  { pattern: '\\babove\\s+the\\s+threshold\\b', replacement: 'eşik üzerinde' },
+  { pattern: '\\bbelow\\s+the\\s+threshold\\b', replacement: 'eşik altında' },
+  { pattern: '\\bmargins\\s+are\\s+improving\\b', replacement: 'marjlar iyileşmektedir' },
+  { pattern: '\\bmargins\\s+are\\s+deteriorating\\b', replacement: 'marjlar zayıflamaktadır' },
+  { pattern: '\\bmargins\\s+are\\s+stable\\b', replacement: 'marjlar yatay seyretmektedir' },
+  { pattern: '\\bmargin\\s+is\\s+improving\\b', replacement: 'marj iyileşmektedir' },
+  { pattern: '\\bnon[- ]financial\\s+stream\\b', replacement: 'finansman dışı segment' },
+  { pattern: '\\bgross[- ]margin\\s+chain\\b', replacement: 'brüt marj zinciri' },
+  { pattern: '\\bquality\\s+fundamentals?\\b', replacement: 'temel finansal kalite' },
+  { pattern: '\\blow\\s+quality\\s+fundamentals?\\b', replacement: 'zayıf temel finansal kalite' },
+  { pattern: '\\belevated\\s+distress\\s+risk\\b', replacement: 'yüksek finansal sıkıntı sinyali' },
+  { pattern: '\\belevated\\s+leverage\\b', replacement: 'yüksek kaldıraç sinyali' },
+  { pattern: '\\bearnings\\s+barely\\s+cover(?:\\s+financing\\s+cost)?\\b', replacement: 'kazançlar finansman maliyetini güçlükle karşılamaktadır' },
+  { pattern: '\\bearnings\\s+barely\\b', replacement: 'kazançlar yetersiz' },
+  { pattern: '\\bdual[- ]stream(?:\\s+P&L)?\\b', replacement: 'iki-akımlı' },
+  { pattern: '\\bcash\\s+flow\\b', replacement: 'nakit akışı' },
+  { pattern: '\\bpositive\\s+(?:and\\s+)?negative\\s+signals?\\b', replacement: 'pozitif ve negatif sinyaller' },
+  { pattern: '\\bcheck(?:ed)?\\s+on\\s+non-financial\\s+stream\\s+only\\b', replacement: 'yalnızca finansman dışı segment üzerinden kontrol edilmiştir' },
+  // Calculation breakdown labels (in formula display rows)
+  { pattern: '\\bInterest\\s+Coverage\\s*:', replacement: 'Faiz Karşılama:' },
+  { pattern: '\\binterest\\s+coverage\\b', replacement: 'faiz karşılama' },
+  { pattern: '\\bCurrent\\s+ratio\\b', replacement: 'Cari oran' },
+  // Citation references with date-suffixed filing IDs:
+  // [TICKER]_YK_YYYYMMDD → "[TICKER] Yönetim Kurulu raporu (YYYY-MM-DD)"
+  {
+    pattern: '\\b([A-Z]{4,6})_YK_(\\d{4})(\\d{2})(\\d{2})\\b',
+    replacement: '$1 Yönetim Kurulu raporu ($2-$3-$4)',
+  },
 ];
+
+// =============================================================================
+// 8. Acceptable finance abbreviations (English residue whitelist)
+// =============================================================================
+//
+// These tokens may legitimately appear in a Turkish boardroom report and
+// must be EXCLUDED when counting english_residue_remaining.
+
+export const ACCEPTED_FINANCE_TOKENS: ReadonlySet<string> = new Set([
+  // Core financial metrics
+  'EBITDA', 'FAVÖK', 'EBIT', 'EBT', 'FCF', 'OCF', 'CAPEX', 'OPEX',
+  // Valuation methodologies
+  'SOTP', 'NAV', 'NAD', 'DCF', 'WACC', 'NPV', 'IRR',
+  // Profitability / efficiency ratios
+  'ROE', 'ROA', 'ROIC', 'ROCE', 'NIM',
+  // Time periods
+  'Q1', 'Q2', 'Q3', 'Q4', 'H1', 'H2', 'FY', 'YTD', 'YoY', 'QoQ',
+  // Accounting standards
+  'IFRS', 'IAS', 'GAAP', 'TFRS', 'TMS',
+  // Corporate roles
+  'KPI', 'CFO', 'CEO', 'COO', 'CIO', 'CTO',
+  // Capital markets
+  'IPO', 'M&A', 'LBO', 'SPAC',
+  // Compliance / governance / regulators
+  'ESG', 'AML', 'KYC', 'SPK', 'KAP', 'BDDK', 'SEC',
+  // Common ratio prefixes
+  'P/E', 'P/B', 'EV', 'P&L',
+  // P4.beta.3 cleanup — canonical UPPER_SNAKE_CASE metric column labels.
+  // These are deterministic METRIC_TR keys (Brüt Marj, FAVÖK Marjı, vb.).
+  // They are NOT raw LLM monologue artefacts and must not be flagged as raw
+  // flag tokens. Translation pass already maps them to Turkish in narrative
+  // contexts; this whitelist only suppresses the diagnostic counter when
+  // they survive (e.g., as table column headers).
+  'GROSS_MARGIN', 'EBITDA_MARGIN', 'NET_MARGIN',
+  'NET_DEBT', 'NET_DEBT_TO_EBITDA',
+  'CURRENT_RATIO', 'INTEREST_COVERAGE',
+  'PIOTROSKI_F', 'ALTMAN_Z_SCORE',
+  'TOTAL_ASSETS', 'TOTAL_EQUITY',
+  'NET_INCOME', 'BANK_ROE', 'BANK_ROA',
+]);
+
 
 // =============================================================================
 // Lookup helpers
