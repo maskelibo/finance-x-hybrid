@@ -34,6 +34,11 @@ import {
   populateFaFilingHint,
   logTruthLayerSummary,
 } from './truth-layer/preflight.js';
+// P3.alpha — contradiction hunter (deterministic; observation-only)
+import {
+  runContradictionHunter,
+  logContradictionSummary,
+} from './truth-layer/contradiction_hunter.js';
 import { fireMacroAnalysisShadow } from './python/agent_runners/macro_analysis_subagent_shadow.js';
 import { fireValuationShadow } from './python/agent_runners/valuation_subagent_shadow.js';
 import { fireFinalSummaryShadow } from './python/agent_runners/final_summary_subagent_shadow.js';
@@ -2016,6 +2021,17 @@ async function executeSession(
   } else {
     db.prepare(`INSERT INTO reports (id, session_id, report_type, title, content, created_at) VALUES (?, ?, 'executive', ?, ?, ?)`)
       .run(nanoid(), sessionId, `${ticker} — Yonetici Ozeti`, finalSummaryOutput, completedAt);
+  }
+
+  // P3.alpha — Contradiction Hunter (deterministic; observation-only).
+  // Reads structured upstream agent outputs and writes a contradiction report
+  // to accumulatedContext. report_formatter does NOT consume this in v1; the
+  // report is captured for orchestrator log + future report-layer iterations.
+  try {
+    const contradictionReport = runContradictionHunter(ticker, accumulatedContext);
+    logContradictionSummary(contradictionReport);
+  } catch (err) {
+    console.warn(`[contradiction-hunter] non-fatal: ${err instanceof Error ? err.message : err}`);
   }
 
   if (activeAgentIds.has('report_formatter')) {
