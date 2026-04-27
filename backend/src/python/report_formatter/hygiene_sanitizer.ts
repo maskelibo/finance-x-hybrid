@@ -1,19 +1,27 @@
 /**
- * Hygiene sanitizer (P4.beta.1).
+ * Hygiene sanitizer (P4.beta.1 + P4.beta.2 additions).
  *
  * Post-render text-only pass that:
- *   1. Removes / replaces banned internal phrases in visible text
- *   2. Translates English red flag codes / sentence patterns to TR
- *   3. SCANS (does NOT modify) metric value mismatches → log only
- *   4. SCANS (does NOT modify) weak/empty section heuristics → log only
- *   5. Computes delivery_status = PASS / CONDITIONAL / HOLD
+ *   1. Removes / replaces banned internal phrases in visible text  [P4.beta.1]
+ *   2. Translates English red flag codes / sentence patterns to TR [P4.beta.1]
+ *   3. (P4.beta.2) Fills empty/weak sections with deterministic kapsam notu
+ *      built from accumulatedContext-derived structured fields. No fabrication.
+ *   4. (P4.beta.2) Adds canonical disclaimer for kritik_bulgu narrative ≠
+ *      financial_analysis_output.critical_flag_count. Numbers unchanged.
+ *   5. (P4.beta.2) Adds limited-data clarifier near Piotroski X/9 patterns
+ *      when prior period FA is not loaded. Score unchanged.
+ *   6. SCANS (does NOT modify) metric value mismatches → log only
+ *   7. SCANS (does NOT modify) weak/empty section heuristics → log only
+ *   8. Computes delivery_status = PASS / CONDITIONAL / HOLD
+ *      (P4.beta.2: explained_canonical_conflicts surface as advisory note;
+ *       PASS is never forced when conflicts remain.)
  *
  * Strict rules:
  *   - operates only on text between tags (>...<)
  *   - never touches <style>, <script>, tag attributes, or class names
- *   - if a pattern's safety is uncertain, leaves text alone + logs warning
- *   - does NOT modify HTML structure; section silme YOK
- *   - does NOT correct metric values; auto-fix YOK
+ *   - section_filler/metric_clarifier inject only conservative content;
+ *     no fabrication when structured fields are missing
+ *   - HTML structure preserved; balanced tag invariant
  */
 
 import {
@@ -26,6 +34,16 @@ import {
   RED_FLAG_TR,
   SENTENCE_PATTERNS,
 } from './translation_dict.js';
+// P4.beta.2 — section completeness + metric clarification (additive passes)
+import {
+  fillEmptySections,
+  type SectionFillerInputs,
+  type FilledSection,
+} from './section_filler.js';
+import {
+  clarifyKritikBulgu,
+  clarifyPiotroski,
+} from './metric_clarifier.js';
 
 // =============================================================================
 // Output shape
@@ -65,9 +83,17 @@ export interface HygieneReport {
   banned_remaining: number;               // matches still present after sanitize
   translations_applied: number;
   translation_hits: TranslationHit[];
-  metric_conflicts: number;               // SCAN-ONLY count
+  // P4.beta.2 additions
+  sections_filled: number;
+  section_fill_details: FilledSection[];
+  kritik_bulgu_disclaimers_inject: number;
+  piotroski_clarifiers_inject: number;
+  /** Number of metric_conflicts that received an explanatory disclaimer. */
+  explained_canonical_conflicts: number;
+  // SCAN-ONLY (P4.beta.1)
+  metric_conflicts: number;
   metric_conflict_details: MetricConflict[];
-  weak_sections: number;                  // SCAN-ONLY count
+  weak_sections: number;
   weak_section_details: WeakSection[];
   warnings: string[];
   delivery_status: DeliveryStatus;
@@ -89,6 +115,21 @@ const WEAK_SECTION_MIN_CHARS = 200;
 
 export interface SanitizeOptions {
   ticker?: string | null;
+  // P4.beta.2 — structured fields for section_filler + metric_clarifier
+  // (all optional; missing fields cause clauses to be omitted, never faked)
+  period_label?: string | null;
+  sector_canonical?: string | null;
+  is_holding?: boolean;
+  is_banking?: boolean;
+  primary_method?: string | null;
+  recommendation?: string | null;
+  current_price_try?: number | null;
+  current_price_as_of?: string | null;
+  fa_canonical?: SectionFillerInputs['fa_canonical'];
+  fa_critical_flag_count?: number | null;
+  fa_prior_period_loaded?: boolean;
+  macro?: SectionFillerInputs['macro'];
+  technical?: SectionFillerInputs['technical'];
 }
 
 export function sanitizeBoardroomReport(
@@ -107,22 +148,53 @@ export function sanitizeBoardroomReport(
   // 3) Apply translation pass (red flags + sentence patterns)
   const trResult = applyTranslations(banResult.html, warnings);
 
-  // 4) Re-detect remaining banned phrases (post-sanitize)
-  const remaining = countRemainingBanned(trResult.html);
+  // 4) (P4.beta.2) Fill empty/weak sections with structured kapsam notu
+  const fillerInputs: SectionFillerInputs = {
+    ticker: options.ticker ?? null,
+    period_label: options.period_label ?? null,
+    sector_canonical: options.sector_canonical ?? null,
+    is_holding: options.is_holding,
+    is_banking: options.is_banking,
+    primary_method: options.primary_method ?? null,
+    recommendation: options.recommendation ?? null,
+    current_price_try: options.current_price_try ?? null,
+    current_price_as_of: options.current_price_as_of ?? null,
+    fa_canonical: options.fa_canonical ?? null,
+    macro: options.macro ?? null,
+    technical: options.technical ?? null,
+  };
+  const fillResult = fillEmptySections(trResult.html, fillerInputs);
 
-  // 5) Restore protected blocks
-  const finalHtml = restoreProtectedBlocks(trResult.html, protectedSegments);
+  // 5) (P4.beta.2) Inject canonical disclaimer near narrative kritik_bulgu mismatches
+  const kritikResult = clarifyKritikBulgu(
+    fillResult.html,
+    typeof options.fa_critical_flag_count === 'number' ? options.fa_critical_flag_count : null,
+  );
 
-  // 6) Scan-only: metric consistency + weak sections
+  // 6) (P4.beta.2) Inject Piotroski limited-data clarifier
+  const piotroskiResult = clarifyPiotroski(
+    kritikResult.html,
+    Boolean(options.fa_prior_period_loaded),
+  );
+
+  // 7) Re-detect remaining banned phrases (post-sanitize, post-fill, post-clarify)
+  const remaining = countRemainingBanned(piotroskiResult.html);
+
+  // 8) Restore protected blocks
+  const finalHtml = restoreProtectedBlocks(piotroskiResult.html, protectedSegments);
+
+  // 9) Scan-only: metric consistency + weak sections (post all transformations)
   const metricConflicts = scanMetricConsistency(finalHtml);
   const weakSections = scanWeakSections(finalHtml);
 
-  // 7) Delivery status
+  // 10) Delivery status — explained_canonical_conflicts informs reasoning;
+  //     PASS is never forced when conflicts remain
   const { status, reasoning } = computeDeliveryStatus({
     bannedRemaining: remaining,
     metricConflicts: metricConflicts.length,
     weakSections: weakSections.length,
     warnings: warnings.length,
+    explainedCanonicalConflicts: kritikResult.result.conflicts_explained,
   });
 
   const report: HygieneReport = {
@@ -133,6 +205,11 @@ export function sanitizeBoardroomReport(
     banned_remaining: remaining,
     translations_applied: trResult.totalReplacements,
     translation_hits: trResult.hits,
+    sections_filled: fillResult.result.sections_filled,
+    section_fill_details: fillResult.result.details,
+    kritik_bulgu_disclaimers_inject: kritikResult.result.disclaimers_injected,
+    piotroski_clarifiers_inject: piotroskiResult.result.clarifiers_injected,
+    explained_canonical_conflicts: kritikResult.result.conflicts_explained,
     metric_conflicts: metricConflicts.length,
     metric_conflict_details: metricConflicts,
     weak_sections: weakSections.length,
@@ -462,6 +539,8 @@ interface StatusInputs {
   metricConflicts: number;
   weakSections: number;
   warnings: number;
+  /** P4.beta.2 — count of metric_conflicts that already received a canonical disclaimer. */
+  explainedCanonicalConflicts: number;
 }
 
 function computeDeliveryStatus(s: StatusInputs): { status: DeliveryStatus; reasoning: string } {
@@ -471,11 +550,14 @@ function computeDeliveryStatus(s: StatusInputs): { status: DeliveryStatus; reaso
       reasoning: `${s.bannedRemaining} yasaklı ifade sanitize sonrası görünür metinde kaldı`,
     };
   }
-  // metric conflicts → CONDITIONAL (HOLD'a çıkmıyor çünkü auto-fix yapmadık)
+  // metric conflicts → CONDITIONAL; P4.beta.2: surface explained_canonical_conflicts in reasoning
+  // (PASS is NEVER forced even when all conflicts are explained — disclaimer injection is advisory)
   if (s.metricConflicts > 0) {
+    const explained = Math.min(s.explainedCanonicalConflicts, s.metricConflicts);
+    const explainedSuffix = explained > 0 ? `; bunların ${explained} tanesi kanonik disclaimer ile açıklanmıştır` : '';
     return {
       status: 'CONDITIONAL',
-      reasoning: `${s.metricConflicts} metric tutarsızlığı tespit edildi (advisory; otomatik düzeltme yok)`,
+      reasoning: `${s.metricConflicts} metric tutarsızlığı tespit edildi (advisory; otomatik düzeltme yok)${explainedSuffix}`,
     };
   }
   if (s.weakSections > 0) {
@@ -503,7 +585,11 @@ export function logHygieneSummary(report: HygieneReport): void {
       `banned_filtered=${report.banned_phrases_filtered} ` +
       `banned_remaining=${report.banned_remaining} ` +
       `translations=${report.translations_applied} ` +
+      `sections_filled=${report.sections_filled} ` +
+      `kritik_disclaimers=${report.kritik_bulgu_disclaimers_inject} ` +
+      `piotroski_clarifiers=${report.piotroski_clarifiers_inject} ` +
       `metric_conflicts=${report.metric_conflicts} ` +
+      `explained_canonical=${report.explained_canonical_conflicts} ` +
       `weak_sections=${report.weak_sections} ` +
       `warnings=${report.warnings.length} ` +
       `bytes=${report.bytes_in}→${report.bytes_out} ` +

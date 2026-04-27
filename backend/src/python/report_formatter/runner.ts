@@ -110,10 +110,12 @@ export async function runPythonReportFormatter(
 
     const renderedHtml = renderTemplate(themedTemplate, ctx);
 
-    // P4.beta.1 — post-render hygiene pass (text-only). Removes/translates
-    // internal phrases, scans (no auto-fix) metric conflicts + weak sections,
-    // computes delivery_status. HTML structure is preserved.
-    const { html, report: hygieneReport } = sanitizeBoardroomReport(renderedHtml, { ticker });
+    // P4.beta.1 + P4.beta.2 — post-render hygiene + section completeness +
+    // metric clarification (text-only). All read-only consumes from
+    // accumulatedContext; structured fields drive deterministic kapsam notu
+    // and canonical disclaimer injection. HTML structure preserved.
+    const sanitizeOptions = buildSanitizeOptions(ticker, accumulatedContext);
+    const { html, report: hygieneReport } = sanitizeBoardroomReport(renderedHtml, sanitizeOptions);
     accumulatedContext[HYGIENE_CONTEXT_KEYS.REPORT] = hygieneReport;
     accumulatedContext[HYGIENE_CONTEXT_KEYS.REPORT_JSON] = JSON.stringify(hygieneReport);
     logHygieneSummary(hygieneReport);
@@ -150,4 +152,104 @@ export async function runPythonReportFormatter(
     console.error(`[PYTHON:report_formatter] ${msg}`);
     return 'failed';
   }
+}
+
+
+// =============================================================================
+// P4.beta.2 — read-only accumulatedContext extraction for sanitizer
+// =============================================================================
+//
+// Pulls structured fields needed by section_filler + metric_clarifier.
+// All extractions are best-effort: missing fields collapse to null/undefined,
+// causing the sanitizer to skip the corresponding template clause without
+// fabricating values.
+
+function buildSanitizeOptions(
+  ticker: string,
+  ctx: Record<string, unknown>,
+): Parameters<typeof sanitizeBoardroomReport>[1] {
+  const truth = readTruthIfAny(ctx);
+  const fa = parseLooseJson(ctx['financial_analysis_output']);
+  const macro = parseLooseJson(ctx['macro_analysis_output']);
+  const tech = parseLooseJson(ctx['technical_analysis_output']);
+  const valuation = parseLooseJson(ctx['valuation_agent_output']);
+
+  return {
+    ticker,
+    period_label: pickString(truth?.classification, ['period_label'])
+      ?? pickString(fa, ['period_label']),
+    sector_canonical: pickString(truth?.classification, ['sector_canonical']),
+    is_holding: truth?.classification?.is_holding,
+    is_banking: truth?.classification?.is_banking,
+    primary_method: pickString(truth?.valuation_methodology, ['primary_method']),
+    recommendation: pickString(valuation, ['recommendation', 'rating', 'investment_recommendation']),
+    current_price_try: pickNumber(ctx as Record<string, unknown>, ['current_price', 'current_price_try']),
+    current_price_as_of: pickString(ctx as Record<string, unknown>, ['current_price_as_of', 'price_snapshot_as_of']),
+    fa_canonical: fa && typeof fa['canonical_numbers'] === 'object'
+      ? fa['canonical_numbers'] as { net_debt?: number; net_debt_to_ebitda?: number; current_ratio?: number }
+      : null,
+    fa_critical_flag_count: pickNumber(fa, ['critical_flag_count']),
+    fa_prior_period_loaded: Boolean(ctx['fa_prior_period_loaded']),
+    macro: macro ? {
+      tcmb_policy_rate: pickNumber(macro['rates'], ['tcmb_policy_rate'])
+        ?? pickNumber(macro, ['tcmb_policy_rate']),
+      cpi_yoy: pickNumber(macro['inflation'], ['cpi_yoy'])
+        ?? pickNumber(macro, ['cpi_yoy']),
+      usd_try: pickNumber(macro['rates'], ['usd_try'])
+        ?? pickNumber(macro, ['usd_try']),
+      eur_try: pickNumber(macro['rates'], ['eur_try'])
+        ?? pickNumber(macro, ['eur_try']),
+      as_of: pickString(macro, ['as_of', 'fetched_at']),
+    } : null,
+    technical: tech ? {
+      trend: pickString(tech, ['trend']),
+      rsi: pickNumber(tech, ['rsi', 'rsi_14']),
+      volume_data_available: typeof tech['volume_data_available'] === 'boolean'
+        ? tech['volume_data_available']
+        : undefined,
+      as_of: pickString(tech, ['as_of', 'snapshot_at']),
+    } : null,
+  };
+}
+
+function parseLooseJson(raw: unknown): Record<string, any> | null {
+  if (raw == null) return null;
+  if (typeof raw === 'object') return raw as Record<string, any>;
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  try { return JSON.parse(trimmed); } catch { return null; }
+}
+
+function pickString(o: unknown, keys: string[]): string | null {
+  if (!o || typeof o !== 'object') return null;
+  const r = o as Record<string, unknown>;
+  for (const k of keys) {
+    const v = r[k];
+    if (typeof v === 'string' && v.trim().length > 0) return v;
+  }
+  return null;
+}
+
+function pickNumber(o: unknown, keys: string[]): number | null {
+  if (!o || typeof o !== 'object') return null;
+  const r = o as Record<string, unknown>;
+  for (const k of keys) {
+    const v = r[k];
+    if (typeof v === 'number' && Number.isFinite(v)) return v;
+    if (typeof v === 'string') {
+      const n = Number(v.replace(/[, ]/g, ''));
+      if (Number.isFinite(n)) return n;
+    }
+  }
+  return null;
+}
+
+function readTruthIfAny(ctx: Record<string, unknown>): {
+  classification?: { sector_canonical?: string; is_holding?: boolean; is_banking?: boolean; period_label?: string };
+  valuation_methodology?: { primary_method?: string };
+} | null {
+  const v = ctx['truth_assertions'];
+  if (!v || typeof v !== 'object') return null;
+  return v as ReturnType<typeof readTruthIfAny>;
 }
