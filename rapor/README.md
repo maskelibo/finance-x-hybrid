@@ -8,8 +8,14 @@ Pipeline milestone'ları için live validation raporları ve örnek rendered HTM
 |---|---|
 | [`p4-validation-report-20260427.md`](./p4-validation-report-20260427.md) | P3 + P4.alpha live KCHOL validation özet raporu (10/10 PASS) |
 | [`KCHOL_Yonetim_Kurulu_Raporu_20260427.html`](./KCHOL_Yonetim_Kurulu_Raporu_20260427.html) | Canlı render edilmiş KCHOL FY2025 raporu (297 KB, 16 sayfa, 9 SVG) — P3+P4 boardroom intelligence sections görünür: İç Tutarlılık Kontrolü + Yönetim Kurulu Beklenen Soruları + Kanıt İndeksi |
+| [`KCHOL_Yonetim_Kurulu_Raporu_20260427.pdf`](./KCHOL_Yonetim_Kurulu_Raporu_20260427.pdf) | Aynı raporun PDF render'ı (9.6 MB) |
 
-**Not:** PDF dosyası (9.6 MB) git history şişmesini önlemek için repo'ya alınmadı; lokal disk'te `KCHOL_Yonetim_Kurulu_Raporu_20260427.pdf` olarak mevcut.
+### HTML/PDF görüntüleme linkleri
+
+GitHub web UI HTML'i kaynak kod olarak gösterir. Direkt render için:
+
+- **HTML rendered preview:** https://htmlpreview.github.io/?https://github.com/maskelibo/finance-x-hybrid/blob/finance-x-execution/rapor/KCHOL_Yonetim_Kurulu_Raporu_20260427.html
+- **PDF raw download:** https://github.com/maskelibo/finance-x-hybrid/raw/finance-x-execution/rapor/KCHOL_Yonetim_Kurulu_Raporu_20260427.pdf
 
 ### Özet metrikler
 
