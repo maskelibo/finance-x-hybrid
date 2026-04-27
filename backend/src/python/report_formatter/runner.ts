@@ -25,6 +25,12 @@ import { composeReportContext } from './compose.js';
 import { applyTheme, getTheme, mergeBrandOverride, type BrandOverride, type ThemeName } from './themes.js';
 // P4.alpha — boardroom intelligence sections (additive; reads P3 truth-layer outputs)
 import { buildBoardroomIntelligenceContext } from './boardroom_intelligence.js';
+// P4.beta.1 — post-render hygiene sanitizer (banned phrase + translation + scan-only)
+import {
+  sanitizeBoardroomReport,
+  logHygieneSummary,
+  HYGIENE_CONTEXT_KEYS,
+} from './hygiene_sanitizer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE_PATH = path.join(__dirname, 'template.html');
@@ -102,7 +108,15 @@ export async function runPythonReportFormatter(
     const theme = mergeBrandOverride(getTheme(themeName), brandOverride);
     const themedTemplate = applyTheme(TEMPLATE, theme);
 
-    const html = renderTemplate(themedTemplate, ctx);
+    const renderedHtml = renderTemplate(themedTemplate, ctx);
+
+    // P4.beta.1 — post-render hygiene pass (text-only). Removes/translates
+    // internal phrases, scans (no auto-fix) metric conflicts + weak sections,
+    // computes delivery_status. HTML structure is preserved.
+    const { html, report: hygieneReport } = sanitizeBoardroomReport(renderedHtml, { ticker });
+    accumulatedContext[HYGIENE_CONTEXT_KEYS.REPORT] = hygieneReport;
+    accumulatedContext[HYGIENE_CONTEXT_KEYS.REPORT_JSON] = JSON.stringify(hygieneReport);
+    logHygieneSummary(hygieneReport);
 
     // Formatter output is historically a JSON envelope {formatted_html: "..."}.
     // Preserve that contract so downstream (PDF gen, COO delivery check) still works.

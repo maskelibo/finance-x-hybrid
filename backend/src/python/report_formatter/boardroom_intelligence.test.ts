@@ -150,8 +150,9 @@ describe('boardroom intelligence — populated', () => {
     expect(html).toContain('İç Tutarlılık Kontrolü');
     expect(html).toContain('fx-pill-low');
     expect(html).toContain('fx-pill-medium');
-    expect(html).toContain('financial_red_flag_vs_narrative');
-    expect(html).toContain('synthesis_divergence');
+    // Type labels are now Turkish (via translation_dict)
+    expect(html).toContain('Finansal Riskler ile Yatırım Tezi Arasında Uyum Kontrolü');
+    expect(html).toContain('Sentez Katmanı Tutarsızlık Uyarısı');
     expect(html).toContain('Öneri:'); // suggested_resolution rendered
     expect(html).toContain('class="page fx-no-break"');
   });
@@ -159,22 +160,23 @@ describe('boardroom intelligence — populated', () => {
   it('renders boardroom_questions with category labels + Q&A cards', () => {
     const html = renderBoardroomQuestions(ctxWithAll());
     expect(html).toContain('Yönetim Kurulu Beklenen Soruları');
-    expect(html).toContain('Değerleme Sorgusu');           // category Turkish label
-    expect(html).toContain('Finansal Risk Sorgusu');
-    expect(html).toContain('conviction: high');
-    expect(html).toContain('conviction: medium');
+    // Category labels now from translation_dict (canonical TR)
+    expect(html).toContain('Değerleme Sorgulaması');
+    expect(html).toContain('Finansal Risk Sorgulaması');
+    expect(html).toContain('güven: yüksek');
+    expect(html).toContain('güven: orta');
     expect(html).toContain('YKBNK için sektör P/B 0.8x'); // proactive answer
     expect(html).toContain('Kanıt:');                      // evidence_refs section
     expect(html).toContain('fx-subtle-surface');
-    expect(html).toContain('LLM (Sonnet 4.6)');           // source label
   });
 
   it('renders citation_index with grouped sources + counts', () => {
     const html = renderCitationIndex(ctxWithAll());
     expect(html).toContain('Kanıt İndeksi');
     expect(html).toContain('KAP Bildirimleri');
-    expect(html).toContain('Finansal Kırmızı Bayraklar');
-    expect(html).toContain('FTL Truth Assertions');
+    // Source-type labels now from translation_dict
+    expect(html).toContain('Finansal Risk Bayrakları');
+    expect(html).toContain('Şirket Yapı ve Metodoloji Tespitleri');
     expect(html).toContain('kap:1555903');
     expect(html).toContain('fa_red_flag:ALTMAN_Z');
     expect(html).toContain('ftl:methodology:primary_method');
@@ -206,13 +208,13 @@ describe('boardroom intelligence — uncited_must alarm', () => {
       },
     };
     const html = renderCitationIndex(ctx);
-    expect(html).toContain('Boardroom-grade citation gap');
-    expect(html).toContain('2 must-cite claim');
+    expect(html).toContain('Yapısal kaynak boşluğu');
+    expect(html).toContain('2 kritik iddia');
   });
 
   it('omits alarm banner when uncited_must_count === 0', () => {
     const html = renderCitationIndex(ctxWithAll());
-    expect(html).not.toContain('Boardroom-grade citation gap');
+    expect(html).not.toContain('Yapısal kaynak boşluğu');
   });
 });
 
