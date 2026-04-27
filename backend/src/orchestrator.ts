@@ -44,6 +44,11 @@ import {
   runChairmanAnticipator,
   logChairmanAnticipatorSummary,
 } from './truth-layer/chairman_anticipator.js';
+// P3.delta — citation backfill (deterministic; observation-only)
+import {
+  runCitationBackfill,
+  logCitationBackfillSummary,
+} from './truth-layer/citation_backfill.js';
 import { fireMacroAnalysisShadow } from './python/agent_runners/macro_analysis_subagent_shadow.js';
 import { fireValuationShadow } from './python/agent_runners/valuation_subagent_shadow.js';
 import { fireFinalSummaryShadow } from './python/agent_runners/final_summary_subagent_shadow.js';
@@ -2048,6 +2053,18 @@ async function executeSession(
     logChairmanAnticipatorSummary(chairmanReport);
   } catch (err) {
     console.warn(`[chairman-anticipator] non-fatal: ${err instanceof Error ? err.message : err}`);
+  }
+
+  // P3.delta — Citation Backfill (deterministic; observation-only).
+  // Normalizes structured upstream signals into canonical Citation records and
+  // annotates contradiction findings + chairman questions with citation refs.
+  // Pure deterministic — no LLM, no PDF parsing, no narrative parsing.
+  // report_formatter does NOT consume this in v1.
+  try {
+    const citationReport = runCitationBackfill(ticker, accumulatedContext);
+    logCitationBackfillSummary(citationReport);
+  } catch (err) {
+    console.warn(`[citation-backfill] non-fatal: ${err instanceof Error ? err.message : err}`);
   }
 
   if (activeAgentIds.has('report_formatter')) {
