@@ -225,6 +225,44 @@ export function getLineageTrail(sessionId: string, factKey: string): LineageTrai
 export const buildLineageTrail = getLineageTrail;
 
 // =============================================================================
+// P1B Wave 2 helpers — doc inheritance + DAG construction
+// =============================================================================
+
+/** Returns all node_ids recorded for a fact_key in this session, in
+ *  computed_at order (oldest first). Empty array when no rows. */
+export function getLineageNodeIdsForFact(sessionId: string, factKey: string): string[] {
+  const rows = db.prepare(`
+    SELECT node_id FROM lineage_nodes
+    WHERE session_id = ? AND fact_key = ?
+    ORDER BY computed_at ASC, node_id ASC
+  `).all(sessionId, factKey) as Array<{ node_id: string }>;
+  return rows.map((r) => r.node_id);
+}
+
+/** Returns the first non-null source_doc_id among lineage rows for a
+ *  fact_key in this session, or null when none exists. Used by the
+ *  computed-lineage emitter to inherit doc anchors from raw inputs. */
+export function findSourceDocIdForFact(sessionId: string, factKey: string): string | null {
+  const row = db.prepare(`
+    SELECT source_doc_id FROM lineage_nodes
+    WHERE session_id = ? AND fact_key = ? AND source_doc_id IS NOT NULL AND source_doc_id != ''
+    ORDER BY computed_at ASC LIMIT 1
+  `).get(sessionId, factKey) as { source_doc_id: string } | undefined;
+  return row?.source_doc_id ?? null;
+}
+
+/** True when at least one `computed` node for this fact_key already
+ *  exists in the session — used to keep the computed-pass idempotent. */
+export function computedNodeExistsForFact(sessionId: string, factKey: string): boolean {
+  const row = db.prepare(`
+    SELECT 1 FROM lineage_nodes
+    WHERE session_id = ? AND fact_key = ? AND node_type = 'computed'
+    LIMIT 1
+  `).get(sessionId, factKey) as { 1?: number } | undefined;
+  return row !== undefined;
+}
+
+// =============================================================================
 // Pack-v2 helpers (cheap aggregation queries used by lineage_summary)
 // =============================================================================
 

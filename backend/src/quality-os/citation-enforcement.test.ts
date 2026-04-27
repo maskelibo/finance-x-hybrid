@@ -150,3 +150,43 @@ describe('citation — detectCitationGaps', () => {
     expect(keys).toEqual(keys.slice().sort());
   });
 });
+
+// =============================================================================
+// P1B Wave 2 — provenance-driven gap reduction
+// =============================================================================
+
+describe('citation — Wave 2 provenance reduces gaps', () => {
+  it('mixed lineage: any single node with doc_id satisfies the gate', () => {
+    const sid = makeSession();
+    insertNode(sid, 'revenue_fy2025', 'parse_standardization', 'KCHOL_AR.pdf');
+    insertNode(sid, 'revenue_fy2025', 'financial_analysis', null);
+    const r = detectCitationGaps(sid);
+    expect(r.critical_gaps).toEqual([]);
+    expect(r.facts_with_citation).toBe(1);
+  });
+
+  it('coverage_ratio rises as more facts gain citations', () => {
+    const sid = makeSession();
+    insertNode(sid, 'revenue_fy2025', 'a', 'X.pdf');
+    insertNode(sid, 'ebitda_fy2025', 'a', null);
+    const r1 = detectCitationGaps(sid);
+    expect(r1.coverage_ratio).toBeCloseTo(0.5, 2);
+    insertNode(sid, 'ebitda_fy2025', 'b', 'X.pdf');
+    const r2 = detectCitationGaps(sid);
+    expect(r2.coverage_ratio).toBe(1);
+    expect(r2.critical_gaps).toEqual([]);
+  });
+
+  it('aggregation totals shift correctly with mixed coverage', () => {
+    const sid = makeSession();
+    insertNode(sid, 'revenue_fy2025',  'a', 'X.pdf');         // critical, cited
+    insertNode(sid, 'gross_margin_fy2025', 'a', 'X.pdf');     // non-critical, cited
+    insertNode(sid, 'fcf_fy2025',      'a', null);            // critical, missing
+    insertNode(sid, 'roa_fy2025',      'a', null);            // non-critical, missing
+    const r = detectCitationGaps(sid);
+    expect(r.facts_with_citation).toBe(2);
+    expect(r.facts_missing_citation).toBe(2);
+    expect(r.critical_gaps.map((g) => g.fact_key)).toEqual(['fcf_fy2025']);
+    expect(r.non_critical_gaps.map((g) => g.fact_key)).toEqual(['roa_fy2025']);
+  });
+});

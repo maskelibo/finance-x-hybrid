@@ -158,3 +158,39 @@ describe('quality-budget — determinism', () => {
     expect(a.warnings).toEqual(b.warnings);
   });
 });
+
+// =============================================================================
+// P1B Wave 2 — citation-driven lifecycle improvement
+// =============================================================================
+
+describe('quality-budget — Wave 2 citation provenance lifts lifecycle', () => {
+  it('all critical facts cited → no citation blocker; lifecycle not capped at degraded by citation', () => {
+    const sid = makeSession();
+    // Persist a critical fact and ensure its lineage carries source_doc_id
+    upsertFact({ session_id: sid, fact_key: 'revenue_fy2025', value: 100, unit: 'TRY_mn', sources: [docSrc] });
+    db.prepare(
+      `INSERT INTO lineage_nodes (session_id, fact_key, node_id, node_type, computed_by, computed_at, source_doc_id)
+       VALUES (?, 'revenue_fy2025', ?, 'raw_extracted', 'parse_standardization', '2026-04-29T10:00:00Z', 'KCHOL_AR.pdf')`,
+    ).run(sid, `ln-${nanoid(10)}`);
+    const r = computeQualityBudget(sid);
+    expect(r.blockers.filter((b) => b.includes('citation'))).toEqual([]);
+    expect(r.lifecycle_status).not.toBe('degraded');
+  });
+
+  it('mixed: some critical cited, some missing → still degraded', () => {
+    const sid = makeSession();
+    upsertFact({ session_id: sid, fact_key: 'revenue_fy2025', value: 100, unit: 'TRY_mn', sources: [docSrc] });
+    upsertFact({ session_id: sid, fact_key: 'fcf_fy2025', value: 50, unit: 'TRY_mn', sources: [docSrc] });
+    db.prepare(
+      `INSERT INTO lineage_nodes (session_id, fact_key, node_id, node_type, computed_by, computed_at, source_doc_id)
+       VALUES (?, 'revenue_fy2025', ?, 'raw_extracted', 'parse_standardization', '2026-04-29T10:00:00Z', 'KCHOL_AR.pdf')`,
+    ).run(sid, `ln-${nanoid(10)}`);
+    db.prepare(
+      `INSERT INTO lineage_nodes (session_id, fact_key, node_id, node_type, computed_by, computed_at, source_doc_id)
+       VALUES (?, 'fcf_fy2025', ?, 'raw_extracted', 'financial_analysis', '2026-04-29T10:00:00Z', NULL)`,
+    ).run(sid, `ln-${nanoid(10)}`);
+    const r = computeQualityBudget(sid);
+    expect(r.blockers.some((b) => b.includes('critical citation'))).toBe(true);
+    expect(r.lifecycle_status).toBe('degraded');
+  });
+});

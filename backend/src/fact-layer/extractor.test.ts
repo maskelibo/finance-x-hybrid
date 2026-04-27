@@ -364,12 +364,13 @@ describe('extractor — P1B lineage integration', () => {
       canonical_numbers: { revenue: 100, net_income: 10 },
     });
     extractFactsFromAgentOutput('financial_analysis', sid, output);
-    const rows = db.prepare(
-      `SELECT fact_key, node_type FROM lineage_nodes WHERE session_id = ?`,
+    // Filter for raw_extracted only — Wave 2 may additionally emit a
+    // `computed` node (e.g. net_margin) when input stems are present.
+    const rawRows = db.prepare(
+      `SELECT fact_key, node_type FROM lineage_nodes WHERE session_id = ? AND node_type = 'raw_extracted'`,
     ).all(sid) as Array<{ fact_key: string; node_type: string }>;
-    expect(rows.length).toBe(2);
-    for (const r of rows) expect(r.node_type).toBe('raw_extracted');
-    expect(rows.map((r) => r.fact_key).sort()).toEqual([
+    expect(rawRows.length).toBe(2);
+    expect(rawRows.map((r) => r.fact_key).sort()).toEqual([
       'net_income_fy2025',
       'revenue_fy2025',
     ]);
@@ -472,5 +473,228 @@ describe('extractor — P1C methodology snapshot integration', () => {
     expect(() => extractFactsFromAgentOutput('financial_analysis', 'no-session', JSON.stringify({
       period_label: 'FY-2025', canonical_numbers: { revenue: 100 },
     }))).not.toThrow();
+  });
+});
+
+// =============================================================================
+// P1B Wave 2 — doc-level provenance + inheritance
+// =============================================================================
+
+describe('extractor — P1B Wave 2 doc provenance', () => {
+  it('parse_std rule attaches source_doc_id from standardized_statements[0].source_pdf', () => {
+    const sid = makeSession();
+    const output = JSON.stringify({
+      standardized_statements: [{
+        period_label: 'FY-2025',
+        source_pdf: 'KCHOL_AR_FY2025.pdf',
+        income_statement: { revenue: 1_000_000_000_000 },
+      }],
+    });
+    extractFactsFromAgentOutput('parse_standardization', sid, output);
+    const row = db.prepare(
+      `SELECT source_doc_id FROM lineage_nodes WHERE session_id = ? AND fact_key = 'revenue_fy2025'`,
+    ).get(sid) as { source_doc_id: string | null };
+    expect(row.source_doc_id).toBe('KCHOL_AR_FY2025.pdf');
+  });
+
+  it('parse_std rule with missing source_pdf records null source_doc_id (no fabrication)', () => {
+    const sid = makeSession();
+    const output = JSON.stringify({
+      standardized_statements: [{
+        period_label: 'FY-2025',
+        income_statement: { revenue: 1_000_000_000_000 },
+      }],
+    });
+    extractFactsFromAgentOutput('parse_standardization', sid, output);
+    const row = db.prepare(
+      `SELECT source_doc_id FROM lineage_nodes WHERE session_id = ? AND fact_key = 'revenue_fy2025'`,
+    ).get(sid) as { source_doc_id: string | null };
+    expect(row.source_doc_id).toBeNull();
+  });
+
+  it('FA rule inherits source_doc_id from prior parse_std node for same period', () => {
+    const sid = makeSession();
+    extractFactsFromAgentOutput('parse_standardization', sid, JSON.stringify({
+      standardized_statements: [{
+        period_label: 'FY-2025',
+        source_pdf: 'KCHOL_AR_FY2025.pdf',
+        income_statement: { revenue: 1_000_000_000_000 },
+      }],
+    }));
+    extractFactsFromAgentOutput('financial_analysis', sid, JSON.stringify({
+      period_label: 'FY-2025',
+      canonical_numbers: { net_income: 100_000_000_000, total_equity: 500_000_000_000 },
+    }));
+    const niDoc = db.prepare(
+      `SELECT source_doc_id FROM lineage_nodes WHERE session_id = ? AND fact_key = 'net_income_fy2025' AND computed_by = 'financial_analysis'`,
+    ).get(sid) as { source_doc_id: string | null };
+    expect(niDoc.source_doc_id).toBe('KCHOL_AR_FY2025.pdf');
+  });
+
+  it('FA rule with no matching parse_std period leaves source_doc_id null', () => {
+    const sid = makeSession();
+    // parse_std emits FY-2025; FA emits FY-2026 — no match
+    extractFactsFromAgentOutput('parse_standardization', sid, JSON.stringify({
+      standardized_statements: [{
+        period_label: 'FY-2025',
+        source_pdf: 'KCHOL_AR_FY2025.pdf',
+        income_statement: { revenue: 1_000_000_000_000 },
+      }],
+    }));
+    extractFactsFromAgentOutput('financial_analysis', sid, JSON.stringify({
+      period_label: 'FY-2026',
+      canonical_numbers: { revenue: 0 },
+    }));
+    const row = db.prepare(
+      `SELECT source_doc_id FROM lineage_nodes WHERE session_id = ? AND fact_key = 'revenue_fy2026' AND computed_by = 'financial_analysis'`,
+    ).get(sid) as { source_doc_id: string | null };
+    expect(row.source_doc_id).toBeNull();
+  });
+});
+
+// =============================================================================
+// P1B Wave 2 — computed lineage post-pass
+// =============================================================================
+
+describe('extractor — P1B Wave 2 computed lineage', () => {
+  function setupKchol(sid: string): void {
+    extractFactsFromAgentOutput('parse_standardization', sid, JSON.stringify({
+      standardized_statements: [{
+        period_label: 'FY-2025',
+        source_pdf: 'KCHOL_AR_FY2025.pdf',
+        income_statement: {
+          revenue: 2_757_295_000_000,
+          gross_profit: 469_354_000_000,
+          ebitda: 192_000_000_000,
+          net_income: 34_628_000_000,
+        },
+        balance_sheet: {
+          total_assets: 5_317_600_000_000,
+          total_equity: 1_092_573_000_000,
+          current_liabilities: 800_000_000_000,
+        },
+      }],
+    }));
+    extractFactsFromAgentOutput('financial_analysis', sid, JSON.stringify({
+      period_label: 'FY-2025',
+      canonical_numbers: {
+        revenue: 2_757_295_000_000,
+        net_income: 34_628_000_000,
+        total_assets: 5_317_600_000_000,
+        total_equity: 1_092_573_000_000,
+        gross_margin: 17.02,
+        ebitda_margin: 6.96,
+        net_margin: 1.26,
+        roe: 3.17,
+        roa: 0.65,
+        net_debt: 996_438_000_000,
+        net_debt_to_ebitda: 5.19,
+      },
+    }));
+  }
+
+  it('emits computed lineage nodes for all 7 derivations when inputs are present', () => {
+    const sid = makeSession();
+    setupKchol(sid);
+    const computed = db.prepare(
+      `SELECT fact_key, formula FROM lineage_nodes WHERE session_id = ? AND node_type = 'computed' ORDER BY fact_key`,
+    ).all(sid) as Array<{ fact_key: string; formula: string }>;
+    const computedKeys = computed.map((c) => c.fact_key);
+    // current_ratio is skipped because current_assets isn't in registry
+    expect(computedKeys).toContain('net_debt_to_ebitda_fy2025');
+    expect(computedKeys).toContain('gross_margin_fy2025');
+    expect(computedKeys).toContain('ebitda_margin_fy2025');
+    expect(computedKeys).toContain('net_margin_fy2025');
+    expect(computedKeys).toContain('roe_fy2025');
+    expect(computedKeys).toContain('roa_fy2025');
+    expect(computedKeys).not.toContain('current_ratio_fy2025'); // current_assets missing
+  });
+
+  it('skips computed pass when an input fact is missing (no fabrication)', () => {
+    const sid = makeSession();
+    extractFactsFromAgentOutput('financial_analysis', sid, JSON.stringify({
+      period_label: 'FY-2025',
+      canonical_numbers: { revenue: 100_000_000_000 }, // only revenue, no net_income / total_assets etc.
+    }));
+    const computed = db.prepare(
+      `SELECT fact_key FROM lineage_nodes WHERE session_id = ? AND node_type = 'computed'`,
+    ).all(sid) as Array<{ fact_key: string }>;
+    expect(computed.length).toBe(0);
+  });
+
+  it('computed node carries formula + input_node_ids via lineage_edges', () => {
+    const sid = makeSession();
+    setupKchol(sid);
+    const computedNode = db.prepare(
+      `SELECT node_id, formula FROM lineage_nodes WHERE session_id = ? AND fact_key = 'net_debt_to_ebitda_fy2025' AND node_type = 'computed'`,
+    ).get(sid) as { node_id: string; formula: string };
+    expect(computedNode.formula).toBe('net_debt / ebitda');
+    const edges = db.prepare(
+      `SELECT input_node_id FROM lineage_edges WHERE session_id = ? AND output_node_id = ?`,
+    ).all(sid, computedNode.node_id) as Array<{ input_node_id: string }>;
+    expect(edges.length).toBe(2);
+  });
+
+  it('computed node inherits source_doc_id from input lineage', () => {
+    const sid = makeSession();
+    setupKchol(sid);
+    const row = db.prepare(
+      `SELECT source_doc_id FROM lineage_nodes WHERE session_id = ? AND fact_key = 'net_debt_to_ebitda_fy2025' AND node_type = 'computed'`,
+    ).get(sid) as { source_doc_id: string };
+    expect(row.source_doc_id).toBe('KCHOL_AR_FY2025.pdf');
+  });
+
+  it('emits no computed pass when all inputs lack values (no fabrication)', () => {
+    const sid = makeSession();
+    extractFactsFromAgentOutput('parse_standardization', sid, JSON.stringify({
+      standardized_statements: [{
+        period_label: 'FY-2025',
+        source_pdf: 'X.pdf',
+        income_statement: {},  // no income items
+        balance_sheet: {},     // no balance items
+      }],
+    }));
+    const computed = db.prepare(
+      `SELECT fact_key FROM lineage_nodes WHERE session_id = ? AND node_type = 'computed'`,
+    ).all(sid) as Array<{ fact_key: string }>;
+    expect(computed.length).toBe(0);
+  });
+
+  it('idempotent: re-running extraction does not duplicate computed nodes', () => {
+    const sid = makeSession();
+    setupKchol(sid);
+    const beforeCount = db.prepare(
+      `SELECT COUNT(*) AS c FROM lineage_nodes WHERE session_id = ? AND node_type = 'computed'`,
+    ).get(sid) as { c: number };
+    setupKchol(sid);  // re-run
+    const afterCount = db.prepare(
+      `SELECT COUNT(*) AS c FROM lineage_nodes WHERE session_id = ? AND node_type = 'computed'`,
+    ).get(sid) as { c: number };
+    expect(afterCount.c).toBe(beforeCount.c);
+  });
+
+  it('formula_divergence annotation appears when computed differs from FA-emitted by >1%', () => {
+    const sid = makeSession();
+    extractFactsFromAgentOutput('parse_standardization', sid, JSON.stringify({
+      standardized_statements: [{
+        period_label: 'FY-2025',
+        source_pdf: 'X.pdf',
+        income_statement: { revenue: 1000_000_000, ebitda: 200_000_000, net_income: 50_000_000 },
+        balance_sheet: { total_assets: 5000_000_000, total_equity: 1000_000_000 },
+      }],
+    }));
+    extractFactsFromAgentOutput('financial_analysis', sid, JSON.stringify({
+      period_label: 'FY-2025',
+      canonical_numbers: {
+        revenue: 1000_000_000, ebitda: 200_000_000, net_income: 50_000_000,
+        total_assets: 5000_000_000, total_equity: 1000_000_000,
+        net_debt: 100_000_000,
+        net_debt_to_ebitda: 99.99,  // wildly diverges from 100m/200m=0.5
+      },
+    }));
+    const row = db.prepare(
+      `SELECT unit_conversion FROM lineage_nodes WHERE session_id = ? AND fact_key = 'net_debt_to_ebitda_fy2025' AND node_type = 'computed'`,
+    ).get(sid) as { unit_conversion: string };
+    expect(row.unit_conversion).toContain('formula_divergence');
   });
 });

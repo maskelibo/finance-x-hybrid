@@ -290,3 +290,48 @@ describe('lineage — defensive serialisation', () => {
     expect(trail.nodes[0].source_snippet!.length).toBe(240);
   });
 });
+
+// =============================================================================
+// P1B Wave 2 — DAG with computed nodes
+// =============================================================================
+
+describe('lineage — Wave 2 computed-DAG construction', () => {
+  it('getLineageTrail walks 2-level DAG when a computed node references raw inputs', async () => {
+    const sid = makeSession();
+    const inputA = `ln-${nanoid(10)}`;
+    const inputB = `ln-${nanoid(10)}`;
+    const computed = `ln-${nanoid(10)}`;
+    recordLineageNode(baseNode({ session_id: sid, fact_key: 'net_debt_fy2025', node_id: inputA, source_doc_id: 'X.pdf' }));
+    recordLineageNode(baseNode({ session_id: sid, fact_key: 'ebitda_fy2025',   node_id: inputB, source_doc_id: 'X.pdf' }));
+    recordLineageNode(baseNode({
+      session_id: sid,
+      fact_key: 'net_debt_to_ebitda_fy2025',
+      node_id: computed,
+      node_type: 'computed',
+      formula: 'net_debt / ebitda',
+      input_node_ids: [inputA, inputB],
+    }));
+    const trail = getLineageTrail(sid, 'net_debt_to_ebitda_fy2025')!;
+    expect(trail.nodes.length).toBe(3);
+    expect(trail.computation_depth).toBeGreaterThanOrEqual(1);
+    expect(trail.is_fully_traced).toBe(true);
+    // root_sources de-duped to one (both inputs have the same doc)
+    expect(trail.root_sources.length).toBe(1);
+    expect(trail.root_sources[0].doc_id).toBe('X.pdf');
+  });
+
+  it('formula_divergence annotation round-trips through unit_conversion field', () => {
+    const sid = makeSession();
+    const nid = `ln-${nanoid(10)}`;
+    recordLineageNode(baseNode({
+      session_id: sid,
+      fact_key: 'roe_fy2025',
+      node_id: nid,
+      node_type: 'computed',
+      formula: '(net_income / total_equity) * 100',
+      unit_conversion: 'formula:(net_income / total_equity) * 100; formula_divergence: computed=3.17 vs FA-emitted=99.99 (96.83%)',
+    }));
+    const trail = getLineageTrail(sid, 'roe_fy2025')!;
+    expect(trail.nodes[0].unit_conversion).toContain('formula_divergence');
+  });
+});
