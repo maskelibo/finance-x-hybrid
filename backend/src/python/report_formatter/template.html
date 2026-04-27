@@ -197,6 +197,64 @@
       .page { box-shadow: none; }
       table tr:hover { background: inherit; }
     }
+
+    /* ─── P3.beta — Executive Formatting Intelligence v1 ────────
+       Pure additive — does not modify any rule above. Boardroom-grade
+       typography polish + table figure alignment + page-break refinement
+       + opt-in utility classes. No placeholder/structure changes. */
+
+    /* Lining + kerning + tabular figures across body and tables.
+       Visual effect: numbers in any cell line up vertically; text reads
+       slightly tighter without changing layout. */
+    body { font-feature-settings: 'kern' 1, 'lnum' 1; }
+    table { font-feature-settings: 'kern' 1, 'lnum' 1, 'tnum' 1; }
+
+    /* Heading micro-typography — boardroom hint of -0.1px tracking on
+       sub-headings (h1 already has -0.2px). Layout impact: imperceptible. */
+    h2, h3 { letter-spacing: -0.1px; }
+
+    /* Page-break refinement — keep each row together; protect captions. */
+    table tr { page-break-inside: avoid; }
+    caption { page-break-after: avoid; }
+
+    /* Severity pill utility — opt-in via class only (template content
+       is NOT changed in v1; classes are available for future use by
+       contradiction_report-aware sections). */
+    .fx-pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 10px;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      line-height: 1.4;
+    }
+    .fx-pill-low    { background: var(--fx-success-light); color: var(--fx-success); }
+    .fx-pill-medium { background: var(--fx-warning-light); color: var(--fx-warning); }
+    .fx-pill-high   { background: var(--fx-danger-light);  color: var(--fx-danger);  }
+    .fx-pill-info   { background: #bee3f8; color: #2b6cb0; }
+    .fx-pill-neutral{ background: var(--fx-light-gray); color: var(--fx-gray); }
+
+    /* No-break utility — page-break-inside avoidance for arbitrary blocks. */
+    .fx-no-break { page-break-inside: avoid; break-inside: avoid; }
+
+    /* Subtle surface — for callouts/groupings without disturbing layout. */
+    .fx-subtle-surface {
+      background: #f8fafc;
+      border: 1px solid var(--fx-border);
+      border-radius: 6px;
+      padding: 12px 16px;
+    }
+
+    /* Negative/positive number utilities — opt-in by class only. */
+    .fx-negative { color: var(--fx-danger); }
+    .fx-positive { color: var(--fx-success); }
+
+    /* Explicit tabular figures — opt-in for inline numbers outside tables. */
+    .fx-tabular {
+      font-feature-settings: 'kern' 1, 'lnum' 1, 'tnum' 1;
+      font-variant-numeric: tabular-nums lining-nums;
+    }
   </style>
 </head>
 <body>
