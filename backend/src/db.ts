@@ -147,6 +147,7 @@ db.exec(`
     unit TEXT NOT NULL,
     raw_unit TEXT,
     sources_json TEXT NOT NULL DEFAULT '[]',
+    confidence_json TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
     UNIQUE(session_id, fact_key),
@@ -206,6 +207,8 @@ ensureColumn('analysis_sessions', 'quality_warning', 'INTEGER DEFAULT 0');
 ensureColumn('analysis_sessions', 'quality_warning_reason', 'TEXT');
 ensureColumn('agent_runs', 'provider_used', 'TEXT');
 ensureColumn('agent_runs', 'retry_count', 'INTEGER DEFAULT 0');
+// Block P / Plan P1A Wave 1 — fact-level confidence scoring (nullable, additive)
+ensureColumn('canonical_facts', 'confidence_json', 'TEXT');
 
 export type AnalysisSession = {
   id: string;
