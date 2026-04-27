@@ -2,13 +2,19 @@
 
 Pipeline milestone'ları için live validation raporları ve örnek rendered HTML/PDF arşivi.
 
-## 2026-04-27 — P4.alpha Live KCHOL Validation
+## 2026-04-27 — P4.beta.2 Live KCHOL Validation (LATEST)
 
 | Dosya | İçerik |
 |---|---|
-| [`p4-validation-report-20260427.md`](./p4-validation-report-20260427.md) | P3 + P4.alpha live KCHOL validation özet raporu (10/10 PASS) |
-| [`KCHOL_Yonetim_Kurulu_Raporu_20260427.html`](./KCHOL_Yonetim_Kurulu_Raporu_20260427.html) | Canlı render edilmiş KCHOL FY2025 raporu (297 KB, 16 sayfa, 9 SVG) — P3+P4 boardroom intelligence sections görünür: İç Tutarlılık Kontrolü + Yönetim Kurulu Beklenen Soruları + Kanıt İndeksi |
-| [`KCHOL_Yonetim_Kurulu_Raporu_20260427.pdf`](./KCHOL_Yonetim_Kurulu_Raporu_20260427.pdf) | Aynı raporun PDF render'ı (9.6 MB) |
+| [`p4-beta2-validation-report-20260427.md`](./p4-beta2-validation-report-20260427.md) | P4.beta.2 live KCHOL validation gate raporu (13/14 ✅, 1 partial). section_filler + metric_clarifier canlı doğrulandı. delivery=CONDITIONAL, banned_remaining=0, kritik_bulgu canonical disclaimer + Piotroski clarifier görünür. |
+| [`KCHOL_Yonetim_Kurulu_Raporu_20260427.html`](./KCHOL_Yonetim_Kurulu_Raporu_20260427.html) | **P4.beta.2 sanitize'lı** KCHOL FY2025 raporu (308 KB, 16 sayfa, 9 SVG). Yönetici Özeti dolduruldu, kritik_bulgu canonical disclaimer, Piotroski limited-data clarifier (×3) görünür. Banned phrase 0. |
+| [`KCHOL_Yonetim_Kurulu_Raporu_20260427.pdf`](./KCHOL_Yonetim_Kurulu_Raporu_20260427.pdf) | Aynı raporun PDF render'ı (8.5 MB). |
+
+## 2026-04-27 — P4.alpha Live KCHOL Validation (önceki)
+
+| Dosya | İçerik |
+|---|---|
+| [`p4-validation-report-20260427.md`](./p4-validation-report-20260427.md) | P3 + P4.alpha live KCHOL validation özet raporu (10/10 PASS) — historik referans |
 
 ### HTML/PDF görüntüleme linkleri
 
