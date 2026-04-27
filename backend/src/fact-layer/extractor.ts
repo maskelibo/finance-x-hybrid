@@ -371,6 +371,144 @@ function detectAgreementSignal(
 }
 
 // =============================================================================
+// P1B Wave 3 — placeholder detection + per-rule helper
+// =============================================================================
+//
+// The multi-statement parse_std loop reuses the SAME per-rule processing
+// path as the legacy single-pass loop. processRule encapsulates the
+// resolution → coerce → normalise → upsert → lineage write logic so both
+// callers share one source of truth.
+
+interface ProcessRuleContext {
+  agentId: string;
+  sessionId: string;
+  extractedAt: string;
+  result: ExtractionResult;
+  seenKeys: Set<string>;
+}
+
+/**
+ * P1B Wave 3 — A statement is a placeholder when ALL THREE core fields
+ * (revenue, net_income, total_assets) are zero or null. Conservative gate:
+ * if ANY one of them is a real non-zero value, the statement is processed
+ * (even if other fields are zero/null individually).
+ */
+function isPlaceholderStatement(stmt: unknown): boolean {
+  if (!stmt || typeof stmt !== 'object') return true;
+  const s = stmt as Record<string, unknown>;
+  const inc = (s.income_statement && typeof s.income_statement === 'object') ? s.income_statement as Record<string, unknown> : {};
+  const bal = (s.balance_sheet  && typeof s.balance_sheet  === 'object') ? s.balance_sheet  as Record<string, unknown> : {};
+  const isZeroOrNull = (v: unknown): boolean => {
+    if (v == null) return true;
+    const n = toFiniteNumber(v);
+    return n === null || n === 0;
+  };
+  return isZeroOrNull(inc.revenue) && isZeroOrNull(inc.net_income) && isZeroOrNull(bal.total_assets);
+}
+
+function processRule(rule: ExtractionRule, parsed: Record<string, unknown>, ctx: ProcessRuleContext): void {
+  const { agentId, sessionId, extractedAt, result, seenKeys } = ctx;
+  let keyForStore = rule.fact_key;
+  if (rule.period_scope === 'per_period') {
+    const pPath = rule.period_path ?? 'period_label';
+    const periodRaw = resolvePath(parsed, pPath);
+    const periodSuffix = normalizePeriodSuffix(periodRaw);
+    if (!periodSuffix) {
+      result.skipped++;
+      result.skip_reasons.push(`${rule.fact_key}: period_missing_or_unparseable@${pPath}`);
+      return;
+    }
+    keyForStore = `${rule.fact_key}_${periodSuffix}`;
+  }
+
+  if (seenKeys.has(keyForStore)) {
+    // Same final key already persisted in this call — skip duplicate.
+    return;
+  }
+
+  const raw = resolvePath(parsed, rule.json_path);
+  if (raw === undefined) {
+    result.skipped++;
+    result.skip_reasons.push(`${keyForStore}: missing_path:${rule.json_path}`);
+    return;
+  }
+  const numeric = toFiniteNumber(raw);
+  if (numeric === null) {
+    result.skipped++;
+    result.skip_reasons.push(`${keyForStore}: non_finite_value:${rule.json_path}`);
+    return;
+  }
+
+  const { value: storedValue, unit: storedUnit, conversion: unitConversion } =
+    normalizeForStorage(numeric, rule.unit);
+
+  const source: FactSource = {
+    type: 'agent',
+    agent_id: agentId,
+    extracted_at: extractedAt,
+    freshness_days: 0,
+  };
+
+  const agreement = detectAgreementSignal(sessionId, keyForStore, storedValue);
+  const confidenceInputs: Omit<FactConfidenceInputs, 'sources'> = {
+    computation_complexity: rule.computation_complexity,
+    cross_agent_agreement_count: agreement.agreement_count,
+    has_conflict: agreement.has_conflict,
+    ...(agreement.has_conflict ? { conflict_severity: agreement.conflict_severity } : {}),
+  };
+
+  try {
+    upsertFact({
+      session_id: sessionId,
+      fact_key: keyForStore,
+      value: storedValue,
+      unit: storedUnit,
+      sources: [source],
+      confidence_inputs: confidenceInputs,
+    });
+    result.extracted++;
+    result.fact_keys.push(keyForStore);
+    seenKeys.add(keyForStore);
+
+    // P1B Wave 2 — resolve source_doc_id with strict no-fabrication semantics.
+    let sourceDocId: string | null = null;
+    if (rule.source_doc_path) {
+      const r = resolvePath(parsed, rule.source_doc_path);
+      if (typeof r === 'string' && r.trim().length > 0) sourceDocId = r.trim();
+    }
+    if (sourceDocId === null && rule.inherit_source_doc) {
+      sourceDocId = findSourceDocIdForFact(sessionId, keyForStore);
+      if (sourceDocId === null && rule.period_scope === 'per_period') {
+        const periodMatch = keyForStore.match(/_(?:fy\d{4}|q[1-4]_\d{4}|h[12]_\d{4}|\d{8})$/i);
+        if (periodMatch) {
+          sourceDocId = inheritSourceDocByPeriodSuffix(sessionId, periodMatch[0]);
+        }
+      }
+    }
+
+    tryRecordLineageNode({
+      session_id: sessionId,
+      fact_key: keyForStore,
+      node_id: `ln-${nanoid(10)}`,
+      node_type: 'raw_extracted',
+      formula: null,
+      computed_by: agentId,
+      computed_at: extractedAt,
+      source_doc_id: sourceDocId,
+      source_page: null,
+      source_snippet: null,
+      raw_value: numeric,
+      normalized_value: storedValue,
+      unit_conversion: unitConversion,
+      input_node_ids: [],
+    });
+  } catch (err) {
+    result.skipped++;
+    result.skip_reasons.push(`${keyForStore}: upsert_failed:${(err as Error).message}`);
+  }
+}
+
+// =============================================================================
 // Main entry — pure, no thrown errors at the rule-evaluation boundary
 // =============================================================================
 
@@ -413,121 +551,35 @@ export function extractFactsFromAgentOutput(
   // best-effort: failure logs warn and never blocks extraction.
   tryRecordSessionMethodology(sessionId);
 
-  for (const rule of rules) {
-    let keyForStore = rule.fact_key;
-    if (rule.period_scope === 'per_period') {
-      const pPath = rule.period_path ?? 'period_label';
-      const periodRaw = resolvePath(parsed, pPath);
-      const periodSuffix = normalizePeriodSuffix(periodRaw);
-      if (!periodSuffix) {
-        result.skipped++;
-        result.skip_reasons.push(`${rule.fact_key}: period_missing_or_unparseable@${pPath}`);
+  const ctx: ProcessRuleContext = { agentId, sessionId, extractedAt, result, seenKeys };
+
+  // P1B Wave 3 — multi-statement extraction for parse_standardization.
+  // When the agent output carries an array of standardized_statements, we
+  // walk every non-placeholder entry and apply the parse_std rule shapes
+  // dynamically per statement index. Each statement keeps its OWN
+  // source_pdf as the doc anchor; no cross-period contamination.
+  if (
+    agentId === 'parse_standardization'
+    && Array.isArray((parsed as Record<string, unknown>)['standardized_statements'])
+  ) {
+    const stmts = (parsed as Record<string, unknown>)['standardized_statements'] as Array<unknown>;
+    for (let idx = 0; idx < stmts.length; idx++) {
+      const stmt = stmts[idx];
+      if (isPlaceholderStatement(stmt)) {
+        result.skip_reasons.push(`statement[${idx}]: placeholder_skipped`);
         continue;
       }
-      keyForStore = `${rule.fact_key}_${periodSuffix}`;
+      // Per-statement rule generation (the existing builder helpers).
+      const periodPath = `standardized_statements[${idx}].period_label`;
+      const stmtRules: ExtractionRule[] = [
+        ...PARSE_STD_INCOME_RULES(idx, periodPath),
+        ...PARSE_STD_BALANCE_RULES(idx, periodPath),
+      ];
+      for (const rule of stmtRules) processRule(rule, parsed, ctx);
     }
-
-    if (seenKeys.has(keyForStore)) {
-      // A second rule resolved into the same final key (e.g. macro nested vs
-      // flat shape both succeeded). Skip the duplicate so we don't overwrite
-      // the first persisted fact with a re-derived but identical value.
-      continue;
-    }
-
-    const raw = resolvePath(parsed, rule.json_path);
-    if (raw === undefined) {
-      result.skipped++;
-      result.skip_reasons.push(`${keyForStore}: missing_path:${rule.json_path}`);
-      continue;
-    }
-    const numeric = toFiniteNumber(raw);
-    if (numeric === null) {
-      result.skipped++;
-      result.skip_reasons.push(`${keyForStore}: non_finite_value:${rule.json_path}`);
-      continue;
-    }
-
-    // Pre-normalise to storage form (TRY → TRY_mn /1e6, pct → decimal /100,
-    // x/decimal/TRY_mn pass-through). Decoupled from unit-normalizer's
-    // fact_key heuristics so the extractor's contract is stable. The
-    // verbal `conversion` label is also persisted into lineage for audit.
-    const { value: storedValue, unit: storedUnit, conversion: unitConversion } =
-      normalizeForStorage(numeric, rule.unit);
-
-    const source: FactSource = {
-      type: 'agent',
-      agent_id: agentId,
-      extracted_at: extractedAt,
-      freshness_days: 0,
-    };
-
-    const agreement = detectAgreementSignal(sessionId, keyForStore, storedValue);
-    const confidenceInputs: Omit<FactConfidenceInputs, 'sources'> = {
-      computation_complexity: rule.computation_complexity,
-      cross_agent_agreement_count: agreement.agreement_count,
-      has_conflict: agreement.has_conflict,
-      ...(agreement.has_conflict ? { conflict_severity: agreement.conflict_severity } : {}),
-    };
-
-    try {
-      upsertFact({
-        session_id: sessionId,
-        fact_key: keyForStore,
-        value: storedValue,
-        unit: storedUnit,
-        sources: [source],
-        confidence_inputs: confidenceInputs,
-      });
-      result.extracted++;
-      result.fact_keys.push(keyForStore);
-      seenKeys.add(keyForStore);
-
-      // P1B Wave 2 — resolve source_doc_id with strict no-fabrication
-      // semantics:
-      //   1. If rule.source_doc_path resolves to a non-empty string in
-      //      the agent output, use that.
-      //   2. Otherwise, if rule.inherit_source_doc is true AND the fact_key
-      //      has period-suffix matches in prior lineage rows (e.g. parse_std
-      //      already wrote `revenue_fy2025` with a doc_id), inherit it.
-      //   3. Otherwise, leave null. No synthetic doc IDs.
-      let sourceDocId: string | null = null;
-      if (rule.source_doc_path) {
-        const r = resolvePath(parsed, rule.source_doc_path);
-        if (typeof r === 'string' && r.trim().length > 0) sourceDocId = r.trim();
-      }
-      if (sourceDocId === null && rule.inherit_source_doc) {
-        sourceDocId = findSourceDocIdForFact(sessionId, keyForStore);
-        if (sourceDocId === null && rule.period_scope === 'per_period') {
-          // Fall back to any prior lineage row in this session whose
-          // fact_key carries the same period suffix.
-          const periodMatch = keyForStore.match(/_(?:fy\d{4}|q[1-4]_\d{4}|h[12]_\d{4}|\d{8})$/i);
-          if (periodMatch) {
-            sourceDocId = inheritSourceDocByPeriodSuffix(sessionId, periodMatch[0]);
-          }
-        }
-      }
-
-      tryRecordLineageNode({
-        session_id: sessionId,
-        fact_key: keyForStore,
-        node_id: `ln-${nanoid(10)}`,
-        node_type: 'raw_extracted',
-        formula: null,
-        computed_by: agentId,
-        computed_at: extractedAt,
-        source_doc_id: sourceDocId,
-        source_page: null,
-        source_snippet: null,
-        raw_value: numeric,
-        normalized_value: storedValue,
-        unit_conversion: unitConversion,
-        input_node_ids: [],
-      });
-    } catch (err) {
-      // Per-rule persistence failure should not abort the whole extraction.
-      result.skipped++;
-      result.skip_reasons.push(`${keyForStore}: upsert_failed:${(err as Error).message}`);
-    }
+  } else {
+    // Default single-pass for FA / macro / technical (and any future agent).
+    for (const rule of rules) processRule(rule, parsed, ctx);
   }
 
   // P1B Wave 2 — post-extraction pass: emit `computed` lineage nodes for
