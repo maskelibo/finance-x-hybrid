@@ -39,6 +39,11 @@ import {
   runContradictionHunter,
   logContradictionSummary,
 } from './truth-layer/contradiction_hunter.js';
+// P3.gamma — chairman question anticipator (single LLM call; observation-only)
+import {
+  runChairmanAnticipator,
+  logChairmanAnticipatorSummary,
+} from './truth-layer/chairman_anticipator.js';
 import { fireMacroAnalysisShadow } from './python/agent_runners/macro_analysis_subagent_shadow.js';
 import { fireValuationShadow } from './python/agent_runners/valuation_subagent_shadow.js';
 import { fireFinalSummaryShadow } from './python/agent_runners/final_summary_subagent_shadow.js';
@@ -2032,6 +2037,17 @@ async function executeSession(
     logContradictionSummary(contradictionReport);
   } catch (err) {
     console.warn(`[contradiction-hunter] non-fatal: ${err instanceof Error ? err.message : err}`);
+  }
+
+  // P3.gamma — Chairman Question Anticipator (single LLM call; observation-only).
+  // Consumes contradiction_report + structured upstream signals; produces
+  // boardroom-grade Q&A. Deterministic fallback runs on any LLM failure.
+  // report_formatter does NOT consume this in v1; output captured for log only.
+  try {
+    const chairmanReport = await runChairmanAnticipator(ticker, accumulatedContext);
+    logChairmanAnticipatorSummary(chairmanReport);
+  } catch (err) {
+    console.warn(`[chairman-anticipator] non-fatal: ${err instanceof Error ? err.message : err}`);
   }
 
   if (activeAgentIds.has('report_formatter')) {
