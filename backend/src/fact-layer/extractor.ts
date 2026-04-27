@@ -24,6 +24,7 @@
 import { nanoid } from 'nanoid';
 import { upsertFact, getFact, type FactSource, type FactValue } from './store.js';
 import { tryRecordLineageNode } from './lineage.js';
+import { tryRecordSessionMethodology } from './methodology.js';
 import type { FactConfidenceInputs } from './confidence.js';
 
 // =============================================================================
@@ -370,6 +371,11 @@ export function extractFactsFromAgentOutput(
 
   const extractedAt = options?.extracted_at ?? new Date().toISOString();
   const seenKeys = new Set<string>();
+
+  // P1C Wave 1 — record the methodology snapshot lazily on the first
+  // extraction call for this session. Idempotent (INSERT OR IGNORE) and
+  // best-effort: failure logs warn and never blocks extraction.
+  tryRecordSessionMethodology(sessionId);
 
   for (const rule of rules) {
     let keyForStore = rule.fact_key;

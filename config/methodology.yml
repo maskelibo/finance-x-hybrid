@@ -1,0 +1,90 @@
+# Block P / Plan P1C — Versioned Methodology Registry
+#
+# Authoritative metadata for every methodological constant currently
+# implemented in TS code (Block P / P1A + P1B Wave 1 baseline).
+# Wave 1 of P1C is OBSERVE-ONLY: yaml IS the source-of-truth label;
+# TS code IS the implementation. verifyMethodologyConsistency() asserts
+# the two stay aligned; runtime behaviour is unchanged.
+#
+# Bump rules:
+# - Any change to a TS constant covered here MUST bump the matching
+#   component.version + the top-level version, and ship a fresh
+#   session_methodology snapshot for new sessions.
+# - Sessions retain the snapshot active when they ran; never rewrite.
+
+version: "1.0.0"
+effective_date: "2026-04-29"
+description: "Block P / P1A + P1B Wave 1 methodology baseline"
+
+components:
+  confidence_scoring:
+    version: "1.0.0"
+    source_file: "backend/src/fact-layer/confidence.ts"
+    source_quality_table:
+      direct_disclosure: 1.0
+      computed: 0.9
+      management_quote: 0.85
+      analyst_estimate: 0.6
+      peer_proxy: 0.5
+      inferred: 0.35
+    freshness_bands_days: [30, 90]    # ≤30 → 0; ≤90 → 0.05; else → 0.10
+    conflict_penalties:
+      minor: 0.05
+      material: 0.20
+      critical: 0.40
+    complexity_penalty_factor: 0.05
+    agreement_bonus_factor: 0.03
+    agreement_bonus_cap: 0.10
+    source_count_bonus_factor: 0.05
+    source_count_bonus_cap: 0.15
+    tier_thresholds:
+      CERTAIN: 0.9
+      HIGH: 0.75
+      MEDIUM: 0.55
+      LOW: 0.30
+
+  extraction_rules:
+    version: "1.0.0"
+    source_file: "backend/src/fact-layer/extractor.ts"
+    supported_agents:
+      - parse_standardization
+      - financial_analysis
+      - macro_analysis
+      - technical_analysis
+    rule_count_per_agent:
+      parse_standardization: 9
+      financial_analysis: 14
+      macro_analysis: 8
+      technical_analysis: 2
+    near_equal_tolerance:
+      relative: 0.01
+      absolute: 0.000001
+
+  unit_normalization:
+    version: "1.0.0"
+    source_file: "backend/src/fact-layer/extractor.ts:normalizeForStorage"
+    transforms:
+      "TRY":    "value / 1e6 → TRY_mn"
+      "TRY_bn": "value × 1000 → TRY_mn"
+      "pct":    "value / 100 → decimal"
+      "TRY_mn": "pass-through"
+      "decimal": "pass-through"
+      "x":      "pass-through"
+
+  lineage:
+    version: "1.0.0"
+    source_file: "backend/src/fact-layer/lineage.ts"
+    wave: "P1B-wave1"
+    supported_node_types:
+      - raw_extracted
+    deferred_node_types:
+      - computed
+      - aggregated
+      - transformed
+
+  fact_pack_v2:
+    version: "1.0.0"
+    source_file: "backend/src/fact-layer/pack-v2.ts"
+    confidence_thresholds:
+      low_confidence: 0.55
+      speculative: 0.30

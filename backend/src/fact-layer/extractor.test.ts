@@ -431,3 +431,46 @@ describe('extractor — P1B lineage integration', () => {
     expect(r.skipped).toBeGreaterThan(0);
   });
 });
+
+// =============================================================================
+// P1C Wave 1 — methodology snapshot lazy recording
+// =============================================================================
+
+describe('extractor — P1C methodology snapshot integration', () => {
+  it('first successful fact write triggers exactly one session_methodology row', () => {
+    const sid = makeSession();
+    const output = JSON.stringify({
+      period_label: 'FY-2025',
+      canonical_numbers: { revenue: 100 },
+    });
+    extractFactsFromAgentOutput('financial_analysis', sid, output);
+    const row = db.prepare(
+      `SELECT methodology_version, recorded_at FROM session_methodology WHERE session_id = ?`,
+    ).get(sid) as { methodology_version: string; recorded_at: string } | undefined;
+    expect(row).toBeDefined();
+    expect(row!.methodology_version).toMatch(/^\d+\.\d+\.\d+$/);
+  });
+
+  it('subsequent extractions in the same session are no-ops (INSERT OR IGNORE)', () => {
+    const sid = makeSession();
+    extractFactsFromAgentOutput('financial_analysis', sid, JSON.stringify({
+      period_label: 'FY-2025', canonical_numbers: { revenue: 100 },
+    }));
+    const first = db.prepare(`SELECT recorded_at FROM session_methodology WHERE session_id = ?`).get(sid) as { recorded_at: string };
+    extractFactsFromAgentOutput('financial_analysis', sid, JSON.stringify({
+      period_label: 'FY-2025', canonical_numbers: { net_income: 10 },
+    }));
+    const second = db.prepare(`SELECT recorded_at FROM session_methodology WHERE session_id = ?`).get(sid) as { recorded_at: string };
+    expect(second.recorded_at).toBe(first.recorded_at);
+  });
+
+  it('extraction succeeds when methodology recording fails (best-effort)', () => {
+    // Methodology recording for a non-existent session FK-fails inside
+    // tryRecordSessionMethodology and is swallowed. The extractor's per-
+    // rule loop must still proceed (and skip everything because the same
+    // FK fails on upsertFact) without throwing at the top level.
+    expect(() => extractFactsFromAgentOutput('financial_analysis', 'no-session', JSON.stringify({
+      period_label: 'FY-2025', canonical_numbers: { revenue: 100 },
+    }))).not.toThrow();
+  });
+});

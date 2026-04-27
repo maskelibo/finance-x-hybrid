@@ -19,6 +19,7 @@ import { db } from '../db.js';
 import { listFacts, type CanonicalFact } from './store.js';
 import type { FactConfidence, FactConfidenceTier } from './confidence.js';
 import { computeSessionLineageStats } from './lineage.js';
+import { getSessionMethodology } from './methodology.js';
 
 // =============================================================================
 // Types
@@ -59,6 +60,13 @@ export interface LineageSummary {
   distinct_root_doc_ids: string[];
 }
 
+/** P1C Wave 1 — methodology snapshot reference for the session. null when
+ *  no snapshot has been recorded (legacy session). */
+export interface MethodologySummary {
+  version: string;
+  recorded_at: string;
+}
+
 export interface CanonicalFactPackV2 {
   session_id: string;
   ticker: string | null;
@@ -69,6 +77,8 @@ export interface CanonicalFactPackV2 {
   /** P1B Wave 1 — optional lineage roll-up. Always present (additive
    *  shape); empty fields when no lineage has been recorded. */
   lineage_summary: LineageSummary;
+  /** P1C Wave 1 — methodology snapshot ref. null for legacy sessions. */
+  methodology_summary: MethodologySummary | null;
   /** Composer wall-clock timestamp. */
   composed_at: string;
 }
@@ -153,8 +163,15 @@ export function getCanonicalFactPackV2(sessionId: string): CanonicalFactPackV2 {
       avg_computation_depth: lineageStats.avg_computation_depth,
       distinct_root_doc_ids: lineageStats.distinct_root_doc_ids,
     },
+    methodology_summary: readMethodologySummary(sessionId),
     composed_at: new Date().toISOString(),
   };
+}
+
+function readMethodologySummary(sessionId: string): MethodologySummary | null {
+  const snap = getSessionMethodology(sessionId);
+  if (!snap) return null;
+  return { version: snap.methodology_version, recorded_at: snap.recorded_at };
 }
 
 // =============================================================================

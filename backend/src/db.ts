@@ -223,6 +223,18 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_lineage_nodes_fact ON lineage_nodes(session_id, fact_key);
   CREATE INDEX IF NOT EXISTS idx_lineage_edges_input ON lineage_edges(session_id, input_node_id);
   CREATE INDEX IF NOT EXISTS idx_lineage_edges_output ON lineage_edges(session_id, output_node_id);
+
+  -- Block P / Plan P1C — Versioned Methodology Registry.
+  -- Per-session snapshot of the methodology in force when the session ran.
+  -- Idempotent INSERT OR IGNORE keyed by session_id; first writer wins.
+  CREATE TABLE IF NOT EXISTS session_methodology (
+    session_id            TEXT PRIMARY KEY,
+    methodology_version   TEXT NOT NULL,
+    methodology_snapshot  TEXT NOT NULL,
+    recorded_at           TEXT NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES analysis_sessions(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_session_methodology_version ON session_methodology(methodology_version);
 `);
 
 export function ensureColumn(tableName: string, columnName: string, columnDefinition: string) {

@@ -249,3 +249,25 @@ describe('pack-v2 — lineage_summary (P1B Wave 1)', () => {
     expect(pack.lineage_summary.distinct_root_doc_ids).toEqual(['KCHOL_FY2025']);
   });
 });
+
+// =============================================================================
+// P1C Wave 1 — methodology_summary
+// =============================================================================
+
+describe('pack-v2 — methodology_summary (P1C Wave 1)', () => {
+  it('null for legacy session with no snapshot', () => {
+    const sid = makeSession();
+    const pack = getCanonicalFactPackV2(sid);
+    expect(pack.methodology_summary).toBeNull();
+  });
+
+  it('populated when session_methodology row exists', () => {
+    const sid = makeSession();
+    db.prepare(
+      `INSERT INTO session_methodology (session_id, methodology_version, methodology_snapshot, recorded_at)
+       VALUES (?, '1.0.0', '{"version":"1.0.0","components":{}}', ?)`,
+    ).run(sid, '2026-04-29T10:00:00.000Z');
+    const pack = getCanonicalFactPackV2(sid);
+    expect(pack.methodology_summary).toEqual({ version: '1.0.0', recorded_at: '2026-04-29T10:00:00.000Z' });
+  });
+});
