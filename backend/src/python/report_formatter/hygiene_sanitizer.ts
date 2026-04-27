@@ -615,11 +615,45 @@ function collectVisibleText(html: string): string {
 // 7. Weak section SCAN (no modification)
 // =============================================================================
 //
-// Walks <h1>/<h2> headings and measures the visible character count until the
-// next heading. Flags sections below threshold or with placeholder density.
+// Walks <h1>/<h2> headings and measures the visible character count of each
+// section. Flags sections below threshold or with placeholder density.
+//
+// P4.beta.4 Wave 1 refinements (scanner heuristic only — no content fabrication):
+//   - H1 rollup: H1 sections are structural dividers whose real content lives
+//     in child H2 sub-sections. Measure H1 content from end-of-H1 to the NEXT
+//     H1 (or end-of-html), ignoring intermediate H2 boundaries. H2 sections
+//     retain the original "next-heading-of-any-level" boundary.
+//   - Table-aware threshold: a leaf H2 whose body is primarily a populated
+//     <table> (≥4 rows with ≥2 non-placeholder cells each) is valid boardroom
+//     content and is not flagged as too_short / placeholder_dense based on
+//     prose length alone.
 
 const HEADING_RE = /<h([12])[^>]*>([\s\S]*?)<\/h\1>/gi;
 const PLACEHOLDER_RE = /(?:—|n\/a|N\/A|Belirsiz|Raporlanmadı|Bilinmiyor|—)/g;
+const TABLE_ROW_RE = /<tr\b[^>]*>([\s\S]*?)<\/tr>/gi;
+const TABLE_CELL_RE = /<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi;
+// A cell is a pure placeholder when its only visible text is a dash/em-dash
+// run or one of the standard "Raporlanmadı / Bilinmiyor / N/A / Belirsiz"
+// markers. Such cells do NOT count toward the populated-row threshold.
+const PLACEHOLDER_ONLY_RE = /^(?:[\s—–\-]+|n\/a|N\/A|Belirsiz|Raporlanmadı|Bilinmiyor)$/i;
+
+function countPopulatedTableRows(slice: string): number {
+  let count = 0;
+  for (const rowMatch of slice.matchAll(TABLE_ROW_RE)) {
+    const rowHtml = rowMatch[1];
+    let nonEmptyCells = 0;
+    for (const cellMatch of rowHtml.matchAll(TABLE_CELL_RE)) {
+      const cellText = stripTags(cellMatch[1]).trim();
+      if (cellText.length > 0 && !PLACEHOLDER_ONLY_RE.test(cellText)) {
+        nonEmptyCells++;
+      }
+    }
+    // A row is populated when it has at least 2 cells with real content
+    // (typical pattern: label cell + value cell, both meaningful).
+    if (nonEmptyCells >= 2) count++;
+  }
+  return count;
+}
 
 function scanWeakSections(html: string): WeakSection[] {
   const out: WeakSection[] = [];
@@ -638,20 +672,36 @@ function scanWeakSections(html: string): WeakSection[] {
   }
   for (let i = 0; i < headings.length; i++) {
     const h = headings[i];
-    const next = headings[i + 1];
     const sliceStart = h.endIndex;
-    const sliceEnd = next ? next.index : html.length;
+
+    // H1 rollup: scan forward for the NEXT H1 (not next heading of any level).
+    // For H2, fall back to original behaviour (next heading regardless of level).
+    let sliceEnd = html.length;
+    if (h.level === 1) {
+      for (let j = i + 1; j < headings.length; j++) {
+        if (headings[j].level === 1) { sliceEnd = headings[j].index; break; }
+      }
+    } else {
+      const next = headings[i + 1];
+      if (next) sliceEnd = next.index;
+    }
+
     const slice = html.slice(sliceStart, sliceEnd);
     const visible = stripTags(slice).trim();
     const charCount = visible.length;
     const placeholderHits = (visible.match(PLACEHOLDER_RE) ?? []).length;
     const placeholderDensity = visible.length > 0 ? placeholderHits / Math.max(1, visible.split(/\s+/).length) : 0;
 
+    // Table-aware: only relevant for leaf H2 sections (an H1's slice may span
+    // multiple tables across child H2s but the H1 already gets prose totals
+    // from rollup). For an H2 whose body has ≥4 populated rows, accept it.
+    const tableDense = h.level === 2 && countPopulatedTableRows(slice) >= 4;
+
     if (charCount === 0) {
       out.push({ heading: h.title, reason: 'no_content', char_count: 0 });
-    } else if (charCount < WEAK_SECTION_MIN_CHARS) {
+    } else if (charCount < WEAK_SECTION_MIN_CHARS && !tableDense) {
       out.push({ heading: h.title, reason: 'too_short', char_count: charCount });
-    } else if (placeholderDensity > 0.25) {
+    } else if (placeholderDensity > 0.25 && !tableDense) {
       out.push({ heading: h.title, reason: 'placeholder_dense', char_count: charCount });
     }
   }

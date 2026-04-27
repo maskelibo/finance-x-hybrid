@@ -225,6 +225,141 @@ describe('hygiene_sanitizer — weak section SCAN', () => {
 });
 
 // =============================================================================
+// P4.beta.4 Wave 1 — scanner refinements
+// =============================================================================
+
+describe('hygiene_sanitizer — weak section SCAN (P4.beta.4 Wave 1)', () => {
+  // Long Turkish prose helper — keeps fixtures readable while crossing the
+  // 200-char boardroom-quality threshold for "real" content.
+  const longProse = (n = 8) =>
+    Array(n).fill('Bu bölüm yeterli kurumsal yorum ve analitik içerik taşımaktadır. ').join('');
+
+  it('H1 rollup: H1 immediately followed by H2 with content is NOT flagged as no_content', () => {
+    // Mirrors the live KCHOL shape:
+    //   <h1>VI. Makroekonomik Bağlam</h1>
+    //   <h2>Kritik Makro Göstergeler</h2><table>... real macro indicators ...</table>
+    //   <h2>Sektör-Spesifik Transmisyon</h2><div>... narrative ...</div>
+    // Pre-Wave-1 the H1 measured 0 chars between itself and the immediately
+    // following H2; with rollup it measures across the whole sub-tree.
+    const html = `
+      <h1>VI. Makroekonomik Bağlam</h1>
+      <h2>Kritik Makro Göstergeler</h2>
+      <p>${longProse()}</p>
+      <h2>Sektör-Spesifik Transmisyon</h2>
+      <p>TCMB faizi sabit kalmış, USD/TRY 44,93 seviyesinde, enflasyon yıllık %38,5 olarak gerçekleşmiştir. Genel makro çerçevede sıkı para politikası devam etmektedir.</p>
+      <h1>VII. Teknik Analiz</h1>
+      <p>${longProse()}</p>
+    `;
+    const { report } = sanitizeBoardroomReport(html);
+    const h1Weak = report.weak_section_details.find(w => w.heading.includes('Makroekonomik'));
+    expect(h1Weak).toBeUndefined();
+  });
+
+  it('H1 rollup: H1 measured until the next H1, not the next heading of any level', () => {
+    // Three H2 children under one H1 — total content well above threshold.
+    const html = `
+      <h1>XI. Risk Değerlendirmesi</h1>
+      <h2>Risk Matrisi</h2>
+      <p>${longProse(4)}</p>
+      <h2>Temel Risk Faktörleri</h2>
+      <p>${longProse(4)}</p>
+      <h2>Detaylı Risk Yorumu</h2>
+      <p>${longProse(4)}</p>
+      <h1>XII. Sonuç</h1>
+      <p>${longProse()}</p>
+    `;
+    const { report } = sanitizeBoardroomReport(html);
+    const h1Weak = report.weak_section_details.find(w => w.heading.includes('Risk Değerlendirmesi'));
+    expect(h1Weak).toBeUndefined();
+  });
+
+  it('table-aware: H2 with ≥4 populated rows is NOT flagged as too_short', () => {
+    // 6-row income statement, no surrounding prose — exactly the live shape
+    // for "Konsolide Gelir Tablosu (milyar TL) — FY-2025".
+    const html = `
+      <h1>III. Finansal Analiz</h1>
+      <h2>Konsolide Gelir Tablosu (milyar TL) — FY-2025</h2>
+      <table>
+        <tr><td>Hasılat</td><td>2.757.295</td></tr>
+        <tr><td>Satışların Maliyeti</td><td>-1.539.222</td></tr>
+        <tr><td>Brüt Kâr</td><td>469.354</td></tr>
+        <tr><td>Faaliyet Kârı</td><td>117.608</td></tr>
+        <tr><td>FAVÖK (EBITDA)</td><td>192.000</td></tr>
+        <tr><td>Net Dönem Kârı</td><td>34.628</td></tr>
+      </table>
+      <h2>Sonraki H2</h2>
+      <p>${longProse()}</p>
+      <h1>IV. Diğer</h1>
+      <p>${longProse()}</p>
+    `;
+    const { report } = sanitizeBoardroomReport(html);
+    const tableSection = report.weak_section_details.find(w => w.heading.includes('Gelir Tablosu'));
+    expect(tableSection).toBeUndefined();
+  });
+
+  it('table-aware: rows whose ONLY value cells are placeholders do NOT count as populated', () => {
+    // Macro indicator table where label is real but value is "Raporlanmadı"
+    // for several rows — only the genuinely populated rows should be counted.
+    const html = `
+      <h1>VI. Makro</h1>
+      <h2>Sınırlı Kapsam</h2>
+      <table>
+        <tr><td>USD/TRY</td><td>44,93</td></tr>
+        <tr><td>EUR/TRY</td><td>52,55</td></tr>
+        <tr><td>TCMB Faizi</td><td>Raporlanmadı</td></tr>
+        <tr><td>TÜFE</td><td>Raporlanmadı</td></tr>
+        <tr><td>GSYH</td><td>Raporlanmadı</td></tr>
+      </table>
+      <h1>VII. Diğer</h1>
+      <p>${longProse()}</p>
+    `;
+    const { report } = sanitizeBoardroomReport(html);
+    // Only 2 rows are genuinely populated (label + numeric value), so the H2
+    // does NOT cross the ≥4 threshold and would still be too_short on prose.
+    const h2Weak = report.weak_section_details.find(w => w.heading.includes('Sınırlı Kapsam'));
+    expect(h2Weak).toBeDefined();
+  });
+
+  it('genuinely empty H1 (no content, no children) remains weak', () => {
+    const html = `<h1>İçeriksiz Bölüm</h1><h1>Sonraki</h1><p>${longProse()}</p>`;
+    const { report } = sanitizeBoardroomReport(html);
+    const empty = report.weak_section_details.find(w => w.heading === 'İçeriksiz Bölüm');
+    expect(empty).toBeDefined();
+    expect(empty?.reason).toBe('no_content');
+  });
+
+  it('thin non-table H2 remains weak (prose-only, below threshold)', () => {
+    const html = `
+      <h1>Üst Başlık</h1>
+      <h2>Az İçerikli H2</h2>
+      <p>Çok kısa.</p>
+      <h2>Yeterli H2</h2>
+      <p>${longProse()}</p>
+      <h1>Sonraki Üst</h1>
+      <p>${longProse()}</p>
+    `;
+    const { report } = sanitizeBoardroomReport(html);
+    const thin = report.weak_section_details.find(w => w.heading === 'Az İçerikli H2');
+    expect(thin).toBeDefined();
+    expect(thin?.reason).toBe('too_short');
+  });
+
+  it('H1 with only placeholder content under H2 children remains placeholder_dense', () => {
+    const html = `
+      <h1>Plaster Bölüm</h1>
+      <h2>Boş Liste</h2>
+      <p>Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz Belirsiz</p>
+      <h1>Sonraki Üst</h1>
+      <p>${longProse()}</p>
+    `;
+    const { report } = sanitizeBoardroomReport(html);
+    const dense = report.weak_section_details.find(w => w.heading === 'Plaster Bölüm');
+    expect(dense).toBeDefined();
+    expect(dense?.reason).toBe('placeholder_dense');
+  });
+});
+
+// =============================================================================
 // HTML structural integrity
 // =============================================================================
 
