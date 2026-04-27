@@ -134,6 +134,96 @@ describe('runner.buildSanitizeOptions — fa_red_flags extraction', () => {
   });
 });
 
+// =============================================================================
+// P4.beta.4 Wave 2 — ownership extraction
+// =============================================================================
+
+describe('runner.buildSanitizeOptions — ownership extraction (Wave 2)', () => {
+  it('extracts shareholder_structure from object form context_extraction_output', () => {
+    const ctx: Record<string, unknown> = {
+      context_extraction_output: {
+        company_profile: {
+          shareholder_structure: [
+            { shareholder: 'Koç Ailesi', stake_pct: 41.1, source: 'KCHOL_Yonetim_Kurulu_Raporu_20260414.html' },
+            { shareholder: 'Halka Açık', stake_pct: 50.7 },
+          ],
+          controlling_shareholder: { name: 'Koç Ailesi', pct: 41.1 },
+          free_float_pct: 50.7,
+          foreign_investor_ratio_pct: 38.4,
+        },
+      },
+    };
+    const opts = buildSanitizeOptions('KCHOL', ctx);
+    expect(Array.isArray(opts.shareholder_structure)).toBe(true);
+    expect(opts.shareholder_structure?.length).toBe(2);
+    expect(opts.shareholder_structure?.[0].shareholder).toBe('Koç Ailesi');
+    expect(opts.shareholder_structure?.[0].stake_pct).toBe(41.1);
+    expect(opts.shareholder_structure?.[0].source).toBe('KCHOL_Yonetim_Kurulu_Raporu_20260414.html');
+    expect(opts.controlling_shareholder?.name).toBe('Koç Ailesi');
+    expect(opts.controlling_shareholder?.pct).toBe(41.1);
+    expect(opts.free_float_pct).toBe(50.7);
+    expect(opts.foreign_investor_ratio_pct).toBe(38.4);
+  });
+
+  it('extracts shareholder_structure from JSON-string context_extraction_output', () => {
+    const ctx: Record<string, unknown> = {
+      context_extraction_output: JSON.stringify({
+        company_profile: {
+          shareholder_structure: [
+            { shareholder: 'Koç Ailesi', stake_pct: 41.1 },
+          ],
+          free_float_pct: 50.7,
+        },
+      }),
+    };
+    const opts = buildSanitizeOptions('KCHOL', ctx);
+    expect(opts.shareholder_structure?.length).toBe(1);
+    expect(opts.free_float_pct).toBe(50.7);
+  });
+
+  it('extracts shareholder_structure when JSON has LLM preamble + trailing prose', () => {
+    // Real KCHOL session shape: agent emits a planning sentence, then JSON,
+    // then a closing fence. Loose parser must recover via brace bounds.
+    const raw = `I have all the data needed. Now I'll produce the structured context extraction output.\n\n{"company_profile":{"shareholder_structure":[{"shareholder":"Koç Ailesi","stake_pct":41.1}],"free_float_pct":50.7}}\n\n\`\`\``;
+    const ctx: Record<string, unknown> = { context_extraction_output: raw };
+    const opts = buildSanitizeOptions('KCHOL', ctx);
+    expect(opts.shareholder_structure?.length).toBe(1);
+    expect(opts.shareholder_structure?.[0].shareholder).toBe('Koç Ailesi');
+    expect(opts.free_float_pct).toBe(50.7);
+  });
+
+  it('returns nulls when context_extraction_output is missing', () => {
+    const ctx: Record<string, unknown> = {};
+    const opts = buildSanitizeOptions('KCHOL', ctx);
+    expect(opts.shareholder_structure).toBeNull();
+    expect(opts.controlling_shareholder).toBeNull();
+    expect(opts.free_float_pct).toBeNull();
+    expect(opts.foreign_investor_ratio_pct).toBeNull();
+  });
+
+  it('returns null shareholder_structure when company_profile is absent', () => {
+    const ctx: Record<string, unknown> = {
+      context_extraction_output: { unrelated: 'data' },
+    };
+    const opts = buildSanitizeOptions('KCHOL', ctx);
+    expect(opts.shareholder_structure).toBeNull();
+    expect(opts.controlling_shareholder).toBeNull();
+  });
+
+  it('does NOT mutate accumulatedContext (Wave 2 read-only)', () => {
+    const ctx: Record<string, unknown> = {
+      context_extraction_output: {
+        company_profile: { shareholder_structure: [{ shareholder: 'X', stake_pct: 10 }] },
+      },
+    };
+    const beforeKeys = Object.keys(ctx).sort();
+    const beforeRef = ctx['context_extraction_output'];
+    buildSanitizeOptions('KCHOL', ctx);
+    expect(Object.keys(ctx).sort()).toEqual(beforeKeys);
+    expect(ctx['context_extraction_output']).toBe(beforeRef);
+  });
+});
+
 describe('runner.buildSanitizeOptions — KCHOL realistic flow', () => {
   it('full KCHOL accumulatedContext shape produces all expected fields', () => {
     const ctx: Record<string, unknown> = {

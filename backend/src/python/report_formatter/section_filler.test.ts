@@ -334,3 +334,200 @@ describe('section_filler — protected blocks', () => {
     expect(out).toContain('<style>h1 { color: red; }</style>');
   });
 });
+
+// =============================================================================
+// P4.beta.4 Wave 2 — Ortaklık Yapısı filler
+// =============================================================================
+
+describe('section_filler — Ortaklık Yapısı (Wave 2)', () => {
+  function ownershipSection(): string {
+    // H2 followed immediately by another H2 with thin content — mirrors
+    // the live KCHOL shape where the chart-only Ortaklık Yapısı section
+    // falls under the 200-char prose threshold.
+    return `<h1>II. Şirket Profili</h1>\n<h2>Ortaklık Yapısı</h2>\n<svg width="100"></svg>\n<h2>Sonraki Alt Başlık</h2>\n<p>X</p>\n<h1>III. Diğer</h1>\n<p>${'Y '.repeat(120)}</p>`;
+  }
+
+  it('builds boardroom paragraph from valid shareholder data', () => {
+    const inp: SectionFillerInputs = {
+      shareholder_structure: [
+        { shareholder: 'Koç Ailesi / Temel Ticaret A.Ş.', stake_pct: 41.1, source: 'KCHOL_Yonetim_Kurulu_Raporu_20260414.html — ortaklık pasta grafiği' },
+        { shareholder: 'Koç Holding Emekli ve Yardım Sandığı', stake_pct: 8.2 },
+        { shareholder: 'Halka Açık (Free Float)', stake_pct: 50.7 },
+      ],
+      free_float_pct: 50.7,
+      foreign_investor_ratio_pct: 38.4,
+    };
+    const { html: out, result } = fillEmptySections(ownershipSection(), inp);
+    expect(result.sections_filled).toBeGreaterThanOrEqual(1);
+    const filled = result.details.find(d => d.heading === 'Ortaklık Yapısı');
+    expect(filled).toBeDefined();
+    expect(filled?.template).toBe('ownership_structure');
+    expect(out).toContain('Halka Açık (Free Float)'); // top stake by pct
+    expect(out).toContain('%50,7');
+    expect(out).toContain('halka açıklık');
+    expect(out).toContain('yabancı yatırımcı');
+  });
+
+  it('humanises raw filing-source IDs (KCHOL_Yonetim_Kurulu_Raporu_*)', () => {
+    const inp: SectionFillerInputs = {
+      shareholder_structure: [
+        { shareholder: 'Koç Ailesi', stake_pct: 41.1, source: 'KCHOL_Yonetim_Kurulu_Raporu_20260414.html' },
+      ],
+    };
+    const { html: out } = fillEmptySections(ownershipSection(), inp);
+    expect(out).not.toContain('KCHOL_Yonetim_Kurulu_Raporu_20260414');
+    expect(out).not.toContain('KCHOL_Yonetim_Kurulu_Raporu_20260414.html');
+    expect(out).toContain('KCHOL Yönetim Kurulu raporu (2026-04-14)');
+  });
+
+  it('humanises *_YK_YYYYMMDD raw filing IDs', () => {
+    const inp: SectionFillerInputs = {
+      shareholder_structure: [
+        { shareholder: 'Test Holding', stake_pct: 30, source: 'TEST_YK_20260101' },
+      ],
+    };
+    const { html: out } = fillEmptySections(ownershipSection(), inp);
+    expect(out).not.toContain('TEST_YK_20260101');
+    expect(out).toContain('TEST Yönetim Kurulu raporu (2026-01-01)');
+  });
+
+  it('emits conservative disclosure when shareholder_structure is missing', () => {
+    const { html: out, result } = fillEmptySections(ownershipSection(), {});
+    expect(out).toContain('Ortaklık yapısı bu raporda yapılandırılmış kanonik veri kaynağında teyit edilmemiştir');
+    expect(result.details.find(d => d.heading === 'Ortaklık Yapısı')).toBeDefined();
+  });
+
+  it('emits conservative disclosure when shareholder_structure is empty array', () => {
+    const inp: SectionFillerInputs = { shareholder_structure: [] };
+    const { html: out } = fillEmptySections(ownershipSection(), inp);
+    expect(out).toContain('Ortaklık yapısı bu raporda yapılandırılmış kanonik veri kaynağında teyit edilmemiştir');
+  });
+
+  it('does NOT invent stake percentages when an entry lacks stake_pct', () => {
+    const inp: SectionFillerInputs = {
+      shareholder_structure: [
+        { shareholder: 'Eksik Pay', stake_pct: null },
+        { shareholder: 'Geçerli Pay', stake_pct: 60 },
+      ],
+    };
+    const { html: out } = fillEmptySections(ownershipSection(), inp);
+    expect(out).toContain('Geçerli Pay');
+    expect(out).not.toContain('Eksik Pay'); // dropped because stake_pct is missing
+  });
+});
+
+// =============================================================================
+// P4.beta.4 Wave 2 — Risk Matrisi summary filler
+// =============================================================================
+
+describe('section_filler — Risk Matrisi (Wave 2)', () => {
+  function riskSection(): string {
+    return `<h1>XI. Risk</h1>\n<h2>Risk Matrisi (Etki × Olasılık)</h2>\n<div class="risk-matrix"></div>\n<h2>Sonraki</h2>\n<p>X</p>\n<h1>XII. Diğer</h1>\n<p>${'Y '.repeat(120)}</p>`;
+  }
+
+  it('builds severity-count summary from KCHOL-shape red_flags', () => {
+    const inp: SectionFillerInputs = {
+      fa_red_flags: [
+        { severity: 'critical', code: 'OVERLEVERAGED' },
+        { severity: 'warn', code: 'LIQUIDITY_TIGHT' },
+        { severity: 'warn', code: 'INTEREST_COVERAGE_LOW' },
+        { severity: 'warn', code: 'PIOTROSKI_WEAK' },
+        { severity: 'info', code: 'HOLDING_DUAL_STREAM' },
+      ],
+    };
+    const { html: out, result } = fillEmptySections(riskSection(), inp);
+    const filled = result.details.find(d => d.heading.startsWith('Risk Matrisi'));
+    expect(filled).toBeDefined();
+    expect(filled?.template).toBe('risk_matrix_summary');
+    expect(out).toContain('1 kritik bulgu');
+    expect(out).toContain('3 izleme uyarısı');
+    expect(out).toContain('1 bilgilendirme sinyali');
+  });
+
+  it('humanises top critical via RED_FLAG_TR (no raw code leakage)', () => {
+    const inp: SectionFillerInputs = {
+      fa_red_flags: [
+        { severity: 'critical', code: 'OVERLEVERAGED' },
+        { severity: 'warn', code: 'LIQUIDITY_TIGHT' },
+      ],
+    };
+    const { html: out } = fillEmptySections(riskSection(), inp);
+    // Expected mapping: OVERLEVERAGED → "Yüksek Borçluluk Riski"
+    expect(out).toContain('Yüksek Borçluluk Riski');
+    // Raw codes must NOT appear in the visible report
+    expect(out).not.toContain('OVERLEVERAGED');
+    expect(out).not.toContain('LIQUIDITY_TIGHT');
+  });
+
+  it('uses safe fallback wording for unknown codes (never leaks raw)', () => {
+    const inp: SectionFillerInputs = {
+      fa_red_flags: [
+        { severity: 'critical', code: 'UNKNOWN_CUSTOM_CODE_XYZ' },
+      ],
+    };
+    const { html: out } = fillEmptySections(riskSection(), inp);
+    expect(out).not.toContain('UNKNOWN_CUSTOM_CODE_XYZ');
+    expect(out).toContain('tanımlanmamış risk bulgusu');
+  });
+
+  it('emits conservative disclosure when fa_red_flags is null', () => {
+    const { html: out } = fillEmptySections(riskSection(), {});
+    expect(out).toContain('Risk matrisi bu raporda yapılandırılmış risk bayraklarıyla doldurulmamıştır');
+  });
+
+  it('emits conservative disclosure when fa_red_flags is empty array', () => {
+    const inp: SectionFillerInputs = { fa_red_flags: [] };
+    const { html: out } = fillEmptySections(riskSection(), inp);
+    expect(out).toContain('Risk matrisi bu raporda yapılandırılmış risk bayraklarıyla doldurulmamıştır');
+  });
+
+  it('handles "warning" severity (alternate spelling) the same as "warn"', () => {
+    const inp: SectionFillerInputs = {
+      fa_red_flags: [
+        { severity: 'warning', code: 'LIQUIDITY_TIGHT' },
+        { severity: 'warning', code: 'INTEREST_COVERAGE_LOW' },
+      ],
+    };
+    const { html: out } = fillEmptySections(riskSection(), inp);
+    expect(out).toContain('2 izleme uyarısı');
+  });
+});
+
+// =============================================================================
+// P4.beta.4 Wave 2 — Ana Katalizörler summary filler
+// =============================================================================
+
+describe('section_filler — Ana Katalizörler (Wave 2)', () => {
+  function catalystSection(liItems: string[]): string {
+    const ul = liItems.length > 0
+      ? `<ul class="bullet-list">${liItems.map(t => `<li>${t}</li>`).join('')}</ul>`
+      : '';
+    return `<h1>XII. Sonuç</h1>\n<h2>Ana Katalizörler</h2>\n${ul}\n<h2>Diğer</h2>\n<p>X</p>\n<h1>XIII. Diğer</h1>\n<p>${'Y '.repeat(120)}</p>`;
+  }
+
+  it('summarises catalyst count when <li> items are already rendered', () => {
+    const html = catalystSection(['Tupras', 'FROTO', 'Temettu', 'Portföy']);
+    const { html: out, result } = fillEmptySections(html, {});
+    const filled = result.details.find(d => d.heading === 'Ana Katalizörler');
+    expect(filled).toBeDefined();
+    expect(filled?.template).toBe('catalysts_summary');
+    expect(out).toContain('Bu raporda 4 pozitif katalizör tespit edilmiştir');
+    expect(out).toContain('sentez katmanının önem skoruna');
+  });
+
+  it('emits zero-catalyst conservative disclosure when no <li> exists', () => {
+    const html = catalystSection([]);
+    const { html: out } = fillEmptySections(html, {});
+    expect(out).toContain('Yakın vadede yapılandırılmış kanonik kaynaklarda pozitif katalizör tespit edilmemiştir');
+  });
+
+  it('does NOT invent new catalyst items (preserves original <li> set)', () => {
+    const html = catalystSection(['Sadece Bir Madde']);
+    const { html: out } = fillEmptySections(html, {});
+    // Original <li> preserved
+    expect(out).toContain('<li>Sadece Bir Madde</li>');
+    // No new <li> injected (count of <li> in output equals input)
+    const liCount = (out.match(/<li[\s>]/g) ?? []).length;
+    expect(liCount).toBe(1);
+  });
+});

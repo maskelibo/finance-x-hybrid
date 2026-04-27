@@ -179,6 +179,13 @@ export function buildSanitizeOptions(
   const macro = parseLooseJson(ctx['macro_analysis_output']);
   const tech = parseLooseJson(ctx['technical_analysis_output']);
   const valuation = parseLooseJson(ctx['valuation_agent_output']);
+  // P4.beta.4 Wave 2 — context_extraction_output may contain an LLM preamble
+  // before the JSON envelope (observed: "I have all the data needed. ..."),
+  // so use the brace-bounded slice parser.
+  const contextEx = parseLooseJson(ctx['context_extraction_output']);
+  const companyProfile = contextEx && typeof contextEx['company_profile'] === 'object'
+    ? contextEx['company_profile'] as Record<string, unknown>
+    : null;
 
   return {
     ticker,
@@ -218,6 +225,26 @@ export function buildSanitizeOptions(
         : undefined,
       as_of: pickString(tech, ['as_of', 'snapshot_at']),
     } : null,
+    // P4.beta.4 Wave 2 — ownership extraction (read-only)
+    shareholder_structure: companyProfile && Array.isArray(companyProfile['shareholder_structure'])
+      ? (companyProfile['shareholder_structure'] as Array<Record<string, unknown>>).map((e) => ({
+          shareholder: pickString(e, ['shareholder', 'name']),
+          stake_pct: pickNumber(e, ['stake_pct', 'pct', 'percentage']),
+          source: pickString(e, ['source', 'citation']),
+        }))
+      : null,
+    controlling_shareholder: companyProfile && typeof companyProfile['controlling_shareholder'] === 'object' && companyProfile['controlling_shareholder']
+      ? (() => {
+          const cs = companyProfile['controlling_shareholder'] as Record<string, unknown>;
+          return {
+            name: pickString(cs, ['name', 'shareholder']),
+            pct: pickNumber(cs, ['pct', 'stake_pct', 'percentage']),
+            source: pickString(cs, ['source', 'citation']),
+          };
+        })()
+      : null,
+    free_float_pct: pickNumber(companyProfile, ['free_float_pct', 'free_float']),
+    foreign_investor_ratio_pct: pickNumber(companyProfile, ['foreign_investor_ratio_pct', 'foreign_ratio_pct']),
   };
 }
 
@@ -227,7 +254,16 @@ function parseLooseJson(raw: unknown): Record<string, any> | null {
   if (typeof raw !== 'string') return null;
   const trimmed = raw.trim();
   if (!trimmed) return null;
-  try { return JSON.parse(trimmed); } catch { return null; }
+  try { return JSON.parse(trimmed); } catch { /* fall through to brace-bounded parse */ }
+  // P4.beta.4 Wave 2 — some agent outputs (e.g. context_extraction) carry an
+  // LLM preamble or trailing prose around the JSON envelope. Recover by
+  // taking the longest brace-bounded slice and re-parsing.
+  const a = trimmed.indexOf('{');
+  const b = trimmed.lastIndexOf('}');
+  if (a >= 0 && b > a) {
+    try { return JSON.parse(trimmed.slice(a, b + 1)); } catch { return null; }
+  }
+  return null;
 }
 
 function pickString(o: unknown, keys: string[]): string | null {
@@ -241,7 +277,7 @@ function pickString(o: unknown, keys: string[]): string | null {
 }
 
 function pickNumber(o: unknown, keys: string[]): number | null {
-  if (!o || typeof o !== 'object') return null;
+  if (o == null || typeof o !== 'object') return null;
   const r = o as Record<string, unknown>;
   for (const k of keys) {
     const v = r[k];

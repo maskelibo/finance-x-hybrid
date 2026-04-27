@@ -157,6 +157,14 @@ export interface SanitizeOptions {
   technical?: SectionFillerInputs['technical'];
   // P4.beta.3 — full red_flags array for critical_finding_resolver active rewrite
   fa_red_flags?: RedFlagInput[] | null;
+  // P4.beta.4 Wave 2 — ownership structure (extracted from
+  // context_extraction_output.company_profile by runner.buildSanitizeOptions).
+  // All optional; section_filler null-guards each clause and falls back to a
+  // conservative disclosure when fields are missing.
+  shareholder_structure?: SectionFillerInputs['shareholder_structure'];
+  controlling_shareholder?: SectionFillerInputs['controlling_shareholder'];
+  free_float_pct?: number | string | null;
+  foreign_investor_ratio_pct?: number | string | null;
 }
 
 export function sanitizeBoardroomReport(
@@ -189,6 +197,12 @@ export function sanitizeBoardroomReport(
     fa_canonical: options.fa_canonical ?? null,
     macro: options.macro ?? null,
     technical: options.technical ?? null,
+    // P4.beta.4 Wave 2 — additional structured inputs for new fillers.
+    shareholder_structure: options.shareholder_structure ?? null,
+    controlling_shareholder: options.controlling_shareholder ?? null,
+    free_float_pct: options.free_float_pct ?? null,
+    foreign_investor_ratio_pct: options.foreign_investor_ratio_pct ?? null,
+    fa_red_flags: options.fa_red_flags ?? null,
   };
   const fillResult = fillEmptySections(trResult.html, fillerInputs);
 
