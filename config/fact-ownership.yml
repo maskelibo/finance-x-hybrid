@@ -1,0 +1,84 @@
+# Block P / Plan P1D Wave 1 — Fact Ownership Rules
+#
+# Prefix-based primary owner registry. P1D Wave 1 ships the lookup helper
+# only — enforcement (rejecting writes from non-owners) is deferred.
+#
+# Order matters: rules are matched first-prefix-wins.
+
+ownership_rules:
+  # Raw financial statement line items — only parse_standardization writes
+  - prefix: "revenue"
+    owner: parse_standardization
+    exception_owners: [financial_analysis]
+  - prefix: "cost_of_sales"
+    owner: parse_standardization
+    exception_owners: [financial_analysis]
+  - prefix: "gross_profit"
+    owner: parse_standardization
+    exception_owners: [financial_analysis]
+  - prefix: "operating_income"
+    owner: parse_standardization
+    exception_owners: [financial_analysis]
+  - prefix: "ebitda"
+    owner: parse_standardization
+    exception_owners: [financial_analysis]
+  - prefix: "net_income"
+    owner: parse_standardization
+    exception_owners: [financial_analysis]
+  - prefix: "total_assets"
+    owner: parse_standardization
+    exception_owners: [financial_analysis]
+  - prefix: "total_equity"
+    owner: parse_standardization
+    exception_owners: [financial_analysis]
+  - prefix: "current_liabilities"
+    owner: parse_standardization
+    exception_owners: [financial_analysis]
+
+  # Derived ratios / margins / leverage — financial_analysis is canonical
+  - prefix: "gross_margin"
+    owner: financial_analysis
+    exception_owners: []
+  - prefix: "ebitda_margin"
+    owner: financial_analysis
+    exception_owners: []
+  - prefix: "net_margin"
+    owner: financial_analysis
+    exception_owners: []
+  - prefix: "roe"
+    owner: financial_analysis
+    exception_owners: []
+  - prefix: "roa"
+    owner: financial_analysis
+    exception_owners: []
+  - prefix: "roce"
+    owner: financial_analysis
+    exception_owners: []
+  - prefix: "current_ratio"
+    owner: financial_analysis
+    exception_owners: []
+  - prefix: "net_debt"
+    owner: financial_analysis
+    exception_owners: []
+  - prefix: "fcf"
+    owner: financial_analysis
+    exception_owners: []
+
+  # Macro context — only macro_analysis writes
+  - prefix: "tcmb_policy_rate"
+    owner: macro_analysis
+    exception_owners: []
+  - prefix: "cpi_yoy"
+    owner: macro_analysis
+    exception_owners: []
+  - prefix: "usd_try"
+    owner: macro_analysis
+    exception_owners: []
+  - prefix: "eur_try"
+    owner: macro_analysis
+    exception_owners: []
+
+  # Technical signals — only technical_analysis
+  - prefix: "rsi_14"
+    owner: technical_analysis
+    exception_owners: []
