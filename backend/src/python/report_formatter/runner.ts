@@ -23,6 +23,8 @@ import { db } from '../../db.js';
 import { renderTemplate } from './template_engine.js';
 import { composeReportContext } from './compose.js';
 import { applyTheme, getTheme, mergeBrandOverride, type BrandOverride, type ThemeName } from './themes.js';
+// P4.alpha — boardroom intelligence sections (additive; reads P3 truth-layer outputs)
+import { buildBoardroomIntelligenceContext } from './boardroom_intelligence.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE_PATH = path.join(__dirname, 'template.html');
@@ -80,13 +82,19 @@ export async function runPythonReportFormatter(
 
   try {
     const reportId = `rpt-${nanoid()}`;
-    const ctx = composeReportContext({
+    const baseCtx = composeReportContext({
       ticker,
       reportId,
       accumulatedContext,
       // Auto-extract narrative blocks from LLM outputs via llm_narrative.ts
       // (passing undefined lets composeReportContext use buildNarrativeBlocks)
     });
+
+    // P4.alpha — boardroom intelligence sections from P3 truth-layer outputs.
+    // Empty data → empty strings + has_X=false → template conditionally omits.
+    // accumulatedContext is read-only here.
+    const boardroomCtx = buildBoardroomIntelligenceContext(accumulatedContext);
+    const ctx = { ...baseCtx, ...boardroomCtx };
 
     // Resolve theme: API/session-level override → company brand override → render.
     const themeName = resolveTheme(accumulatedContext);

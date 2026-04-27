@@ -1195,6 +1195,20 @@
     </div>
     {{/if}}
 
+    <!-- ============================================================ -->
+    <!-- P4.alpha — Boardroom Intelligence Annex (P3 truth-layer)     -->
+    <!-- Conditional: each section renders only when its data exists. -->
+    <!-- ============================================================ -->
+    {{#if has_consistency_check}}
+    {{&consistency_check_html}}
+    {{/if}}
+    {{#if has_boardroom_questions}}
+    {{&boardroom_questions_html}}
+    {{/if}}
+    {{#if has_citation_index}}
+    {{&citation_index_html}}
+    {{/if}}
+
     <h2>Zorunlu Bildirim</h2>
     <div class="disclaimer">
       <strong>Uyarı:</strong> Bu rapor Finance X platformu tarafından otomatik üretilmiştir. Python deterministic
