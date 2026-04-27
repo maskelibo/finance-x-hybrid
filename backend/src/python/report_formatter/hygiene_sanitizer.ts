@@ -264,7 +264,7 @@ export function sanitizeBoardroomReport(
     bannedRemaining: remaining,
     metricConflicts: metricConflicts.length,
     weakSections: weakSections.length,
-    warnings: warnings.length,
+    warnings,  // pass full array; see effectiveWarnings filter below
     explainedCanonicalConflicts: kritikResult.result.conflicts_explained,
     rawAgentPhrasesRemaining: rawAgentRemaining,
     englishResidueRemaining: narResult.result.english_residue_remaining,
@@ -734,7 +734,10 @@ interface StatusInputs {
   bannedRemaining: number;
   metricConflicts: number;
   weakSections: number;
-  warnings: number;
+  /** Full warnings array (preserved for telemetry). The CONDITIONAL trigger
+   *  uses an effectiveWarnings count derived from this array — see the
+   *  raw-flag-tokens diagnostic exclusion in computeDeliveryStatus below. */
+  warnings: string[];
   /** P4.beta.2 — count of metric_conflicts that already received a canonical disclaimer. */
   explainedCanonicalConflicts: number;
   // P4.beta.3 HOLD-gate triggers
@@ -744,6 +747,22 @@ interface StatusInputs {
   internalTokenRemaining: number;
   criticalFindingVisibleConflict: number;
   macroTableNarrativeContradiction: number;
+}
+
+/**
+ * Signature of the RAW_FLAG_TOKENS warn-only banned-phrase entry. The
+ * applyBannedPhrases pass emits warnings shaped as
+ *   "banned_warn_only:<pattern>:<count>"
+ * where <pattern> is the regex source. This constant must mirror the source
+ * string used in banned_phrases.ts so the filter below can detect this
+ * specific entry without a category-tagging refactor across files.
+ */
+const RAW_FLAG_TOKENS_WARN_PATTERN = '\\b[A-Z][A-Z0-9]{2,}_[A-Z][A-Z0-9_]*\\b';
+
+/** True when the given warning entry is the RAW_FLAG_TOKENS warn-only
+ *  diagnostic (telemetry-only signal counted at the pre-translation stage). */
+function isRawFlagTokensWarn(entry: string): boolean {
+  return entry.startsWith(`banned_warn_only:${RAW_FLAG_TOKENS_WARN_PATTERN}:`);
 }
 
 /** P4.beta.3 — HOLD-gate thresholds (exact). */
@@ -806,10 +825,22 @@ function computeDeliveryStatus(s: StatusInputs): { status: DeliveryStatus; reaso
       reasoning: `${s.englishResidueRemaining} İngilizce kalıntı eşik içinde (warning)`,
     };
   }
-  if (s.warnings > 0) {
+  // P4.beta.4 micro-hotfix — effectiveWarnings excludes the RAW_FLAG_TOKENS
+  // catch-all warn-only entry when the post-pipeline raw_flag_token_remaining
+  // counter is already 0. Rationale: that diagnostic counts raw codes at the
+  // pre-translation stage; the post-all-passes counter is the boardroom-quality
+  // truth. When the latter says 0, the catch-all entry is telemetry-only and
+  // must not flip delivery_status to CONDITIONAL. Other warn-only entries
+  // (and the catch-all itself when raw_flag_token_remaining > 0) still count.
+  // The original warnings array is preserved verbatim in the report for telemetry.
+  const effectiveWarnings = s.warnings.filter((w) => {
+    if (s.rawFlagTokenRemaining === 0 && isRawFlagTokensWarn(w)) return false;
+    return true;
+  });
+  if (effectiveWarnings.length > 0) {
     return {
       status: 'CONDITIONAL',
-      reasoning: `${s.warnings} hygiene uyarısı (warn-only)`,
+      reasoning: `${effectiveWarnings.length} hygiene uyarısı (warn-only)`,
     };
   }
   return { status: 'PASS', reasoning: 'tüm hygiene kontrolleri temiz' };
