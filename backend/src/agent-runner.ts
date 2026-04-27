@@ -245,6 +245,13 @@ export type RunAgentOptions = {
   onStdout?: (chunk: string) => void;
   onStderr?: (chunk: string) => void;
   timeoutMs?: number;
+  /**
+   * P1A Wave 2 — optional session id. When supplied AND the run succeeds,
+   * fact-layer/extractor.ts attempts a best-effort fact extraction from the
+   * agent output into canonical_facts. Existing call sites that omit this
+   * field continue to behave exactly as before (no extraction).
+   */
+  sessionId?: string;
 };
 
 const providerRouter = createDefaultProviderRouter();
@@ -420,6 +427,19 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentRunResult> {
     onStdout: opts.onStdout,
     onStderr: opts.onStderr,
   });
+
+  // P1A Wave 2 — best-effort fact extraction. Fire-and-forget; never blocks
+  // the agent run. The wrapper itself swallows all errors; the surrounding
+  // try/catch is defence-in-depth so a future programming error in the
+  // dynamic import path can still not break the run.
+  if (opts.sessionId && result.success && result.output) {
+    try {
+      const { tryExtractFactsBestEffort } = await import('./fact-layer/extractor.js');
+      tryExtractFactsBestEffort(opts.agentId, opts.sessionId, result.output);
+    } catch (err) {
+      console.warn(`[agent-runner] fact-extractor unreachable for ${opts.agentId}: ${(err as Error).message}`);
+    }
+  }
 
   return {
     success: result.success,
