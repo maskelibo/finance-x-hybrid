@@ -1,0 +1,54 @@
+# KCHOL — Koç Holding A.Ş. ortaklık yapısı
+# Source: https://www.koc.com.tr/yatirimci-iliskileri/koc-holding-hakkinda
+# Source filing: KAP "Sermaye ve Pay Sahipleri" (most recent)
+# Curated: 2026-04-28 — auto_curated_pending_operator_review
+#
+# Operator review checklist before flipping verification_status to
+# 'operator_verified':
+#   1. Cross-check each pay-grup against the latest KAP "Sermaye Yapısı"
+#      filing (search KAP for KCHOL CompanyId 4028).
+#   2. Verify Vehbi Koç Vakfı stake against the foundation's annual
+#      audit report.
+#   3. Confirm Treasury (geri alınmış pay) figure against the most
+#      recent buyback disclosure.
+#   4. Sum must equal 100.0% (within 0.1% tolerance for rounding).
+
+ticker: KCHOL
+verification_status: auto_curated_pending_operator_review
+source:
+  url: https://www.koc.com.tr/yatirimci-iliskileri/koc-holding-hakkinda
+  as_of_date: '2026-04-28'
+  source_filing: 'Koç Holding IR — Sermaye ve Pay Sahipleri (snapshot)'
+
+# Hierarchical breakdown matching IR disclosure granularity.
+shareholders:
+  - label: Temel Ticaret ve Yatırım A.Ş.
+    pct: 43.7
+    note: Koç family holding entity (en üst seviye kontrol bloku)
+    is_controlling: true
+  - label: Koç Aile Üyeleri ve İlişkili Şirketler
+    pct: 19.7
+    note: Aile bireyleri + Rahmi M. Koç ve Mahdumları + diğer aile şirketleri
+  - label: Vehbi Koç Vakfı
+    pct: 7.3
+    note: Vakıf payı — vakıf annual audit ile çapraz teyit gerekir
+  - label: Koç Holding Emekli ve Yardım Sandığı Vakfı
+    pct: 2.3
+    note: Çalışan emeklilik vakfı
+  - label: Halka Açık
+    pct: 26.9
+    note: Borsa İstanbul fiili dolaşım
+  - label: Treasury (Geri Alınmış Paylar)
+    pct: 0.1
+    note: Şirket tarafından geri alınmış paylar — buyback disclosure ile teyit
+
+# Total must equal 100.0% (within rounding).
+total_pct: 100.0
+
+# Aggregated rollup for board-grade summary tables.
+rollup:
+  family_and_related_total_pct: 63.4   # Temel Ticaret + Aile Üyeleri
+  foundation_pct: 7.3
+  pension_fund_pct: 2.3
+  free_float_pct: 26.9
+  treasury_pct: 0.1
