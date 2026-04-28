@@ -1216,6 +1216,63 @@
     <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>11</span></div>
   </div></div>
 
+  <!-- ============= XI½. YILLIK FAALİYET RAPORU ÖZETİ ============= -->
+  {{#if annual_report_present}}
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">{{ticker}} · {{company_name}}</span></div>
+      <div>{{report_date}}</div>
+    </div>
+
+    <h1>XI½. Yıllık Faaliyet Raporu — Birincil Kaynak Alıntıları</h1>
+    <p style="font-size:9pt;color:#64748b;font-style:italic;">
+      Aşağıdaki bölümler şirketin Faaliyet Raporu PDF'inden ({{annual_report.page_count}} sayfa) doğrudan alınmıştır. Birincil kaynak — özet/parafraz değil, raporun kendi metni.
+    </p>
+
+    {{#if annual_report_executive_has}}
+    <h2>Yönetici Özeti</h2>
+    <blockquote style="border-left:3px solid #1e3a8a;padding:8px 12px;background:#f8fafc;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.executive_summary}}</blockquote>
+    {{/if}}
+
+    {{#if annual_report_chairman_has}}
+    <h2>Yönetim Kurulu Başkanının Mesajı</h2>
+    <blockquote style="border-left:3px solid #1e3a8a;padding:8px 12px;background:#f8fafc;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.chairman_letter}}</blockquote>
+    {{/if}}
+
+    {{#if annual_report_ceo_has}}
+    <h2>Genel Müdür Mesajı</h2>
+    <blockquote style="border-left:3px solid #1e3a8a;padding:8px 12px;background:#f8fafc;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.ceo_message}}</blockquote>
+    {{/if}}
+
+    {{#if annual_report_segments_has}}
+    <h2>Faaliyet Alanları</h2>
+    <blockquote style="border-left:3px solid #1e3a8a;padding:8px 12px;background:#f8fafc;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.segments_overview}}</blockquote>
+    {{/if}}
+
+    {{#if annual_report_risks_has}}
+    <h2>Risk Yönetimi (Faaliyet Raporundan)</h2>
+    <blockquote style="border-left:3px solid #c53030;padding:8px 12px;background:#fef2f2;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.risks_section}}</blockquote>
+    {{/if}}
+
+    {{#if annual_report_outlook_has}}
+    <h2>Beklentiler / Görünüm</h2>
+    <blockquote style="border-left:3px solid #2f855a;padding:8px 12px;background:#f0fdf4;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.outlook_section}}</blockquote>
+    {{/if}}
+
+    {{#if annual_report_sustainability_has}}
+    <h2>Sürdürülebilirlik</h2>
+    <blockquote style="border-left:3px solid #2f855a;padding:8px 12px;background:#f0fdf4;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.sustainability_section}}</blockquote>
+    {{/if}}
+
+    {{#if annual_report_human_resources_has}}
+    <h2>İnsan Kaynakları</h2>
+    <blockquote style="border-left:3px solid #475569;padding:8px 12px;background:#f8fafc;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.human_resources_section}}</blockquote>
+    {{/if}}
+
+    <div class="page-footer"><span>Finance X · {{ticker}} Analiz</span><span>11½</span></div>
+  </div></div>
+  {{/if}}
+
   <!-- ============= XII. SONUÇ ============= -->
   <div class="page"><div class="page-inner">
     <div class="page-header">

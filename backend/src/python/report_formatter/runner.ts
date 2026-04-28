@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { nanoid } from 'nanoid';
 
 import { db } from '../../db.js';
+import { loadAnnualReportExtracts } from '../../data/annual-report-text-loader.js';
 import { renderTemplate } from './template_engine.js';
 import { composeReportContext } from './compose.js';
 import { applyTheme, getTheme, mergeBrandOverride, type BrandOverride, type ThemeName } from './themes.js';
@@ -88,6 +89,46 @@ export async function runPythonReportFormatter(
   ).run(startedAt, runId);
 
   try {
+    // Phase G — Annual Report (Faaliyet Raporu) text extraction. Pulls
+    // canonical Turkish narrative sections from the most recent activity
+    // report PDF in data_collection_output and injects them as
+    // accumulatedContext['annual_report_extracts_output'] so compose.ts
+    // can render quoted sections (chairman_letter, ceo_message, risks,
+    // outlook, sustainability, segments). Best-effort and isolated;
+    // PDF parse failures fall through to no-section rendering.
+    if (accumulatedContext['annual_report_extracts_output'] == null) {
+      try {
+        const dcRaw = accumulatedContext['data_collection_output'];
+        const dc = dcRaw
+          ? (typeof dcRaw === 'string' ? JSON.parse(dcRaw) : dcRaw) as Record<string, unknown>
+          : null;
+        const manifest = (dc?.['data_manifest'] ?? null) as Record<string, unknown> | null;
+        const activity = Array.isArray(manifest?.['activity_reports'])
+          ? manifest!['activity_reports'] as Array<Record<string, unknown>>
+          : [];
+        // Pick most recent activity report by year desc, then published_at desc
+        activity.sort((a, b) => {
+          const ya = Number(a.year ?? 0);
+          const yb = Number(b.year ?? 0);
+          if (yb !== ya) return yb - ya;
+          return String(b.published_at ?? '').localeCompare(String(a.published_at ?? ''));
+        });
+        const top = activity[0];
+        const localPath = top ? String(top['local_path'] ?? '') : '';
+        if (localPath) {
+          const extracts = await loadAnnualReportExtracts(ticker, localPath);
+          if (extracts) {
+            accumulatedContext['annual_report_extracts_output'] = JSON.stringify(extracts);
+            console.log(
+              `[PYTHON:report_formatter] annual_report extracts: ${extracts.page_count} pages from ${path.basename(localPath)}`,
+            );
+          }
+        }
+      } catch (e) {
+        console.warn(`[PYTHON:report_formatter] annual_report extraction failed: ${(e as Error).message}`);
+      }
+    }
+
     const reportId = `rpt-${nanoid()}`;
     const baseCtx = composeReportContext({
       ticker,

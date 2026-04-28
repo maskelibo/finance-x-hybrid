@@ -158,6 +158,11 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const ac = parseJson<Record<string, unknown>>(ctx['analyst_consensus_agent_output']);
   const parsedRaw = parseJson<Record<string, unknown>>(ctx['parse_standardization_output']);
   const parsed = normalizeParseStandardization(parsedRaw);
+  // Phase G — Annual Report (Faaliyet Raporu) narrative extracts.
+  // Populated by report_formatter runner before compose runs (see
+  // runner.ts). Always optional — falls through cleanly when activity
+  // PDFs are absent or unparseable.
+  const annualReport = parseJson<Record<string, unknown>>(ctx['annual_report_extracts_output']);
 
   // ----- Auto-extract narrative blocks via llm_narrative.ts -----
 
@@ -1470,6 +1475,37 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Section IV
     valuation_warnings: valuationWarnings,
     dcf_present: dcfPresent,
+
+    // Phase G — Annual Report (Faaliyet Raporu) narrative extracts
+    annual_report_present: annualReport != null && (
+      annualReport.chairman_letter != null
+      || annualReport.ceo_message != null
+      || annualReport.executive_summary != null
+      || annualReport.risks_section != null
+      || annualReport.outlook_section != null
+      || annualReport.segments_overview != null
+      || annualReport.sustainability_section != null
+    ),
+    annual_report: annualReport ? {
+      chairman_letter: String(annualReport.chairman_letter ?? '').trim(),
+      ceo_message: String(annualReport.ceo_message ?? '').trim(),
+      executive_summary: String(annualReport.executive_summary ?? '').trim(),
+      segments_overview: String(annualReport.segments_overview ?? '').trim(),
+      risks_section: String(annualReport.risks_section ?? '').trim(),
+      outlook_section: String(annualReport.outlook_section ?? '').trim(),
+      sustainability_section: String(annualReport.sustainability_section ?? '').trim(),
+      human_resources_section: String(annualReport.human_resources_section ?? '').trim(),
+      page_count: Number(annualReport.page_count ?? 0),
+      source_path: String(annualReport.source_path ?? ''),
+    } as unknown as TemplateValue : null,
+    annual_report_chairman_has: annualReport != null && typeof annualReport.chairman_letter === 'string' && annualReport.chairman_letter.trim().length > 0,
+    annual_report_ceo_has: annualReport != null && typeof annualReport.ceo_message === 'string' && annualReport.ceo_message.trim().length > 0,
+    annual_report_executive_has: annualReport != null && typeof annualReport.executive_summary === 'string' && annualReport.executive_summary.trim().length > 0,
+    annual_report_segments_has: annualReport != null && typeof annualReport.segments_overview === 'string' && annualReport.segments_overview.trim().length > 0,
+    annual_report_risks_has: annualReport != null && typeof annualReport.risks_section === 'string' && annualReport.risks_section.trim().length > 0,
+    annual_report_outlook_has: annualReport != null && typeof annualReport.outlook_section === 'string' && annualReport.outlook_section.trim().length > 0,
+    annual_report_sustainability_has: annualReport != null && typeof annualReport.sustainability_section === 'string' && annualReport.sustainability_section.trim().length > 0,
+    annual_report_human_resources_has: annualReport != null && typeof annualReport.human_resources_section === 'string' && annualReport.human_resources_section.trim().length > 0,
 
     // Phase D — SOTP rendering
     sotp_present: sotpData != null,
