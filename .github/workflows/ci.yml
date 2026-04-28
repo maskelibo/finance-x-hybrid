@@ -102,25 +102,17 @@ jobs:
         run: npx vitest run
 
   # ---------------------------------------------------------------------------
-  # 3) Python service unit tests — `uv run pytest` — DISABLED (P6C-fix1)
+  # 3) Python service unit tests — `uv run pytest`
   # ---------------------------------------------------------------------------
-  # ⏸️ TEMPORARILY DISABLED pending a separate python-services test/source
-  # drift fix. The CI infrastructure for this job is sound (mocked httpx
-  # transports, no live API calls), but a pre-existing test failure exists:
-  #
-  #   python-services/tests/test_banking_parse.py::test_lookup_industrial_has_no_interest_income
-  #     AssertionError: assert 'interest_income' is None
-  #     +  where 'interest_income' = lookup('income_statement', 'Faiz Gelirleri', sector='industrial')
-  #
-  # The test asserts the industrial-sector lookup returns None for "Faiz
-  # Gelirleri", but the lookup table now returns 'interest_income' for that
-  # phrase. This is a python-services source-vs-test drift, not a CI bug.
-  # `python-services/*` is outside the P6C scope; the test/source fix needs
-  # its own scope cycle. To re-enable: replace `if: false` with `if: true`
-  # (or remove the line) once the failing test is fixed in python-services.
+  # Re-enabled after the python-services drift fix: the stale
+  # `test_lookup_industrial_has_no_interest_income` assertion was updated to
+  # match shipped behavior — industrial map deliberately includes
+  # `faiz gelirleri → interest_income` for EBITDA / interest-coverage ratio
+  # calculations (commit 1080bcf8). All python-services tests use mocked
+  # httpx transports + fixture data; no live API calls. Safe for unattended
+  # CI execution.
   python-tests:
-    name: Python service tests (DISABLED — pending python-services drift fix)
-    if: false
+    name: Python service tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

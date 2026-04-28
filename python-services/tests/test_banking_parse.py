@@ -37,9 +37,13 @@ def test_lookup_banking_loan_loss_provisions() -> None:
     )
 
 
-def test_lookup_industrial_has_no_interest_income() -> None:
-    # Industrial map has no "interest_income" field.
-    assert lookup("income_statement", "Faiz Gelirleri", sector="industrial") is None
+def test_lookup_industrial_maps_faiz_gelirleri_to_interest_income() -> None:
+    # Industrial map intentionally includes finansman gelir/gider lines —
+    # `faiz gelirleri → interest_income` is required for EBITDA + interest-
+    # coverage ratio calculations on non-banking companies (commit 1080bcf8,
+    # see also the comment block above the entry in label_mapping.py).
+    # The original `*_has_no_interest_income` test predated that addition.
+    assert lookup("income_statement", "Faiz Gelirleri", sector="industrial") == "interest_income"
 
 
 def test_lookup_banking_balance_sheet_varliklar_toplami() -> None:
