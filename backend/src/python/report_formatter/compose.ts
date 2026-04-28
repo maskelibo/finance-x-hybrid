@@ -516,6 +516,21 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
       quartile_badge: b.quartile != null ? `Q${b.quartile}` : '—',
     }));
 
+  // Wave 4 (2026-04-28) — peer absence detection + honest disclaim.
+  // When sector_competition.peer_count is 0 (no live peer chain run),
+  // benchmarks devolve into self-median artifacts (min=Q1=median=Q3=
+  // max=company_value). Surface this honestly to the board reader
+  // instead of rendering deceptive "Sektör Medyanı = company value"
+  // bars without context.
+  const peerCountFromSc = (() => {
+    const peers = sc?.peer_group;
+    return Array.isArray(peers) ? peers.length : 0;
+  })();
+  const peerSelfMedianDetected = benchmarks.length > 0 && peerCountFromSc === 0;
+  const peerAbsenceBanner = peerSelfMedianDetected
+    ? `<div style="margin:12px 0;padding:10px 14px;background:#fde8e8;border-left:4px solid #c53030;border-radius:4px;font-size:12px;color:#5a1a1a"><strong>⚠ Peer verisi yetersiz (peer_count=0):</strong> Sektör karşılaştırma istatistikleri gerçek emsal verisinden değil, şirketin kendi değerinden türetilmiştir (min=medyan=max=şirket). Aşağıdaki tablolar yalnızca <em>placeholder</em>'dır; SAHOL/DOHOL/AGHOL/SISE gibi gerçek peer chain'leri Wave-future'da paralel çalıştırılacaktır. Yönetim kurulu kararlarında bu rakamları emsal medyanı olarak okumayın.</div>`
+    : '';
+
   // SWOT — sektör ve ticker-özel, gerçek iş analizi (swot_analysis.ts'ten).
   // Signal buckets'tan dökülen "Top quartile: ROE" gibi otomatik
   // etiketler yerine hand-curated Turkish cümleler.
@@ -901,8 +916,14 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
 
   // Sector-typical ownership pie (placeholder when context_extraction
   // doesn't surface structured ownership data)
+  // Wave 4 (2026-04-28) — when the data comes from the static lookup
+  // (buildOwnershipPie returns hardcoded ticker breakdown), wrap the
+  // chart with an honest "static reference" rozet so the board reader
+  // knows this isn't from a live KAP filing parse.
   const ownershipPie = buildOwnershipPie(ticker, sectorRaw);
-  const ownershipPieSvg = ownershipPie ? pieChart(ownershipPie, 'Ortaklık Yapısı (Yaklaşık)') : '';
+  const ownershipPieSvg = ownershipPie
+    ? `${pieChart(ownershipPie, 'Ortaklık Yapısı (Statik Referans)')}<div style="margin-top:8px;padding:6px 10px;background:#fff3cd;border-left:3px solid #c6973f;font-size:11px;color:#5a4400;border-radius:3px"><strong>ⓘ Statik referans verisi:</strong> Ortaklık yapısı hardcoded lookup'tan gelmektedir. Güncel KAP "Sermaye ve Pay Sahipleri" filing'inden parse edilmemiştir; küçük pay devirleri yansımayabilir. Wave-future: KAP-fed extractor.</div>`
+    : '';
 
   // ESG Radar (E/S/G 3-axis) — sector-specific baseline profiles
   // Scores 0-100; adjusted by CBAM data availability and QA score
@@ -1328,6 +1349,10 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Chairman sektör uyarı banner
     chairman_banner_html: chairmanBanner,
     chairman_banner_has: chairmanBanner.length > 0,
+
+    // Wave 4 — Peer absence honest banner (replaces self-median deception)
+    peer_absence_banner_html: peerAbsenceBanner,
+    peer_absence_banner_has: peerAbsenceBanner.length > 0,
 
     // Section V — Peer bundle (hardcoded sector medians for now)
     peer_list: (peerBundle?.peers ?? []) as unknown as TemplateValue,
@@ -2287,10 +2312,18 @@ function buildOwnershipPie(ticker: string, sectorRaw: string): Array<{ label: st
       { label: 'Türkiye Varlık Fonu', value: 49.12 },
       { label: 'Halka Açık', value: 50.88 },
     ],
+    // Wave 4 (2026-04-28) — KCHOL ownership corrected per koc.com.tr/IR.
+    // Previous 3-bucket consolidation (41.1 / 8.2 / 50.7) hid the true
+    // family breakdown. Real disclosure: Temel Ticaret 43.7%, Aile
+    // Üyeleri 18.3% (total Koç family + related cos 63.4%), Vehbi Koç
+    // Vakfı 7.3%, Pension Fund 2.3%, Free Float 26.9%. Treasury ~0.04%.
     KCHOL: [
-      { label: 'Koç Ailesi (Temel Ticaret)', value: 41.12 },
-      { label: 'Koç Holding Emekli ve Yardım Sandığı', value: 8.19 },
-      { label: 'Halka Açık', value: 50.69 },
+      { label: 'Temel Ticaret ve Yatırım A.Ş.', value: 43.7 },
+      { label: 'Koç Aile Üyeleri ve İlişkili Şirketler', value: 19.7 },
+      { label: 'Vehbi Koç Vakfı', value: 7.3 },
+      { label: 'Koç Holding Emekli ve Yardım Sandığı', value: 2.3 },
+      { label: 'Halka Açık', value: 26.9 },
+      { label: 'Treasury Hisseleri', value: 0.1 },
     ],
     SAHOL: [
       { label: 'Sabancı Aile Şirketleri', value: 59.72 },
