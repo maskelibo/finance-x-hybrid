@@ -174,6 +174,28 @@ npx tsx scripts/u8-e2e-regression-test.ts     # U8 20-Q RAG + pipeline + agent r
 npx tsx scripts/migrate-memory-to-lessons.ts
 ```
 
+## Polish-faz eklemeleri (2026-04-28 itibariyle)
+
+Bu sprint Part 2 (Block S + Block P) kapsamında shipped olan yeni modüller:
+
+- **Truth Layer (P1.alpha + P1.beta)** — `truth-layer/classifier.ts` + `weighter.ts` + `filing-selector.ts`. Orchestrator preflight + FA hint integration.
+- **P5A — Golden eval scaffolding** — schema + harness; gerçek golden facts operator delivery'e bağlı.
+- **P5B Wave 1 — A/B testing framework** — Welch t-test istatistikleri, mocked runner harness; canlı runner ertelendi.
+- **P5C Wave 1 — Synthetic edge-case generator** — 8 deterministic Python fixture + JSON schema; torture runner ertelendi.
+- **P6A Wave 1 — Pluggable secrets** — `backend/src/security/secrets.ts`. Default mode `env`; 1Password / Vault stub. `SECRETS_MODE` env var.
+- **P6B Wave 1 — Immutable audit log** — `backend/src/security/audit-log.ts`. SHA-256 hash-chained JSONL. Default OFF (`AUDIT_LOG_ENABLED=1`); test-mode disk-disable.
+- **P6C — CI** — `.github/workflows/ci.yml` typecheck + vitest + python-services pytest aktif; regression-eval `if: false`.
+- **P6D Wave 1 — Health & readiness** — `backend/src/observability/health.ts`. `/health` + `/ready` JSON; `buildMetricsResponse()` helper hazır. `METRICS_ENABLED=1` default OFF gate; mevcut `/metrics` route değiştirilmedi.
+- **P6E Wave 1 — Prompt-injection defense** — `backend/src/security/prompt-injection.ts`. 11 frozen regex + `validateUserInput`. Consumer wiring ertelendi.
+- **P7A Wave 1 — SSE streaming** — `backend/src/streaming/sse.ts`. `/api/sessions/:id/stream` consumer-side. `SSE_ENABLED=1` gate. Publisher emisyonları Wave 2'ye ertelendi.
+- **P7B Wave 1 — Observable DAG** — `backend/src/observability/dag.ts`. `/api/sessions/:id/dag` JSON snapshot. `DAG_ENABLED=1` gate. React frontend Wave 2.
+- **P7C Wave 1 — Replay tool** — `backend/src/dev-tools/replay.ts` + `backend/scripts/replay.ts` CLI. Text + HTML export.
+- **P7D Wave 1 — Lineage trail** — `backend/src/observability/lineage-api.ts`. `/api/lineage/:sessionId/:factKey` over `lineage_nodes` + `lineage_edges`. `LINEAGE_API_ENABLED=1` gate.
+
+P7E (Analyst Review Bundle) shipped backing tablolar olmadığı için bu sprint'te ertelendi (truth_decisions, citation_reports, evidence_chunks, analyst_review_bundles tabloları yok).
+
+Ayrıntı: [docs/ROADMAP.md](docs/ROADMAP.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Lisans
 
 MIT — bkz. [LICENSE](LICENSE)
