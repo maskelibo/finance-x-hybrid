@@ -1,0 +1,30 @@
+{
+  "ticker": "DOHOL",
+  "sector": "holding",
+  "period_label": "FY-2024",
+  "canonical_numbers": {
+    "revenue": "85420000000",
+    "gross_profit": "11200000000",
+    "gross_margin": "13.11",
+    "ebitda": "8900000000",
+    "ebitda_margin": "10.42",
+    "net_income": "-1850000000",
+    "net_margin": "-2.17",
+    "total_assets": "168400000000",
+    "total_equity": "42700000000",
+    "roe": "-4.33",
+    "roa": "-1.10",
+    "current_ratio": "1.18",
+    "net_debt": "37200000000",
+    "net_debt_to_ebitda": "4.18",
+    "fcf": "-2400000000"
+  },
+  "verification_status": "auto_curated_pending_operator_review",
+  "source_attribution": {
+    "source_url": "https://www.kap.org.tr/en/Bildirim/DOHOL",
+    "as_of_date": "2024-12-31",
+    "source_filing": "Doğan Holding 2024 Konsolide Finansal Tablolar (FY-2024)",
+    "unit_label": "TRY"
+  },
+  "notes": "Auto-curated. Operator must verify against actual KAP filing."
+}

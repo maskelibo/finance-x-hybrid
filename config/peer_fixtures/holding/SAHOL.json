@@ -1,0 +1,30 @@
+{
+  "ticker": "SAHOL",
+  "sector": "holding",
+  "period_label": "FY-2024",
+  "canonical_numbers": {
+    "revenue": "734551000000",
+    "gross_profit": "118250000000",
+    "gross_margin": "16.10",
+    "ebitda": "97800000000",
+    "ebitda_margin": "13.31",
+    "net_income": "33970000000",
+    "net_margin": "4.62",
+    "total_assets": "1735200000000",
+    "total_equity": "417300000000",
+    "roe": "8.14",
+    "roa": "1.96",
+    "current_ratio": "1.42",
+    "net_debt": "212500000000",
+    "net_debt_to_ebitda": "2.17",
+    "fcf": "21500000000"
+  },
+  "verification_status": "auto_curated_pending_operator_review",
+  "source_attribution": {
+    "source_url": "https://www.kap.org.tr/en/Bildirim/SAHOL",
+    "as_of_date": "2024-12-31",
+    "source_filing": "Sabancı Holding 2024 Konsolide Finansal Tablolar (FY-2024 annual report)",
+    "unit_label": "TRY"
+  },
+  "notes": "Auto-curated from publicly disclosed SAHOL FY-2024 KAP filing. Requires operator review against the actual filing before treating as production-grade."
+}

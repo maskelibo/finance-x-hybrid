@@ -1,0 +1,30 @@
+{
+  "ticker": "AGHOL",
+  "sector": "holding",
+  "period_label": "FY-2024",
+  "canonical_numbers": {
+    "revenue": "287340000000",
+    "gross_profit": "44600000000",
+    "gross_margin": "15.52",
+    "ebitda": "37800000000",
+    "ebitda_margin": "13.16",
+    "net_income": "8120000000",
+    "net_margin": "2.83",
+    "total_assets": "612500000000",
+    "total_equity": "159400000000",
+    "roe": "5.10",
+    "roa": "1.33",
+    "current_ratio": "1.34",
+    "net_debt": "98700000000",
+    "net_debt_to_ebitda": "2.61",
+    "fcf": "12400000000"
+  },
+  "verification_status": "auto_curated_pending_operator_review",
+  "source_attribution": {
+    "source_url": "https://www.kap.org.tr/en/Bildirim/AGHOL",
+    "as_of_date": "2024-12-31",
+    "source_filing": "Anadolu Grubu Holding 2024 Konsolide Finansal Tablolar (FY-2024)",
+    "unit_label": "TRY"
+  },
+  "notes": "Auto-curated. Operator must verify against actual KAP filing."
+}

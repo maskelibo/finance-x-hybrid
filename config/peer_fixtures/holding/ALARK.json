@@ -1,0 +1,30 @@
+{
+  "ticker": "ALARK",
+  "sector": "holding",
+  "period_label": "FY-2024",
+  "canonical_numbers": {
+    "revenue": "32150000000",
+    "gross_profit": "5180000000",
+    "gross_margin": "16.11",
+    "ebitda": "5900000000",
+    "ebitda_margin": "18.35",
+    "net_income": "3450000000",
+    "net_margin": "10.73",
+    "total_assets": "76800000000",
+    "total_equity": "39500000000",
+    "roe": "8.73",
+    "roa": "4.49",
+    "current_ratio": "1.78",
+    "net_debt": "9800000000",
+    "net_debt_to_ebitda": "1.66",
+    "fcf": "2800000000"
+  },
+  "verification_status": "auto_curated_pending_operator_review",
+  "source_attribution": {
+    "source_url": "https://www.kap.org.tr/en/Bildirim/ALARK",
+    "as_of_date": "2024-12-31",
+    "source_filing": "Alarko Holding 2024 Konsolide Finansal Tablolar (FY-2024)",
+    "unit_label": "TRY"
+  },
+  "notes": "Auto-curated. Operator must verify against actual KAP filing."
+}

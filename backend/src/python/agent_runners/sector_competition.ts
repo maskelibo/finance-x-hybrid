@@ -6,6 +6,11 @@ import {
   extractFinancialAnalysis,
   extractPeers,
 } from '../adapters/sector_competition.js';
+import {
+  loadPeerFixtures,
+  peerFixturesToContextValue,
+} from '../../peers/peer-fixture-loader.js';
+import { getSector } from '../../sector-registry.js';
 
 export type RunOutcome = 'ok' | 'failed';
 
@@ -23,6 +28,35 @@ export async function runPythonSectorCompetition(
 
   const faRaw = accumulatedContext['financial_analysis_output'];
   const fa = extractFinancialAnalysis(faRaw);
+
+  // Pre-Core-4 Phase B (2026-04-28) — fixture-backed peer loader.
+  // If accumulatedContext['sector_competition_peers'] is unset (the
+  // common production case — no live peer chain runs), fall back to
+  // committed peer fixtures under config/peer_fixtures/<sector>/*.json.
+  // This eliminates the "peer_count=0 → self-median" deception that
+  // KCHOL 2026-04-28 surfaced.
+  if (!accumulatedContext['sector_competition_peers']) {
+    const sector = getSector(ticker) ?? 'industrial';
+    const loaded = loadPeerFixtures(sector);
+    if (loaded.fixtures.length > 0) {
+      accumulatedContext['sector_competition_peers'] = peerFixturesToContextValue(loaded);
+      accumulatedContext['__peer_fixture_meta'] = JSON.stringify({
+        sector,
+        loaded_count: loaded.loaded_count,
+        verified_count: loaded.verified_count,
+        warnings: loaded.warnings,
+      });
+      console.log(
+        `[PYTHON:sector_competition] peer-fixtures loaded sector=${sector} ` +
+        `loaded=${loaded.loaded_count} verified=${loaded.verified_count}`,
+      );
+    } else if (loaded.warnings.length > 0) {
+      console.log(
+        `[PYTHON:sector_competition] peer-fixtures unavailable sector=${sector} — ` +
+        `${loaded.warnings.join('; ')}`,
+      );
+    }
+  }
   const peers = extractPeers(accumulatedContext['sector_competition_peers']);
 
   const llmMarkdownSource = typeof faRaw === 'string' ? faRaw : null;
