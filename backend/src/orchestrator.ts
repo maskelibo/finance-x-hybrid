@@ -1378,6 +1378,13 @@ async function executeSession(
     if (indicators) {
       accumulatedContext['technical_indicators'] = JSON.stringify(indicators);
       currentPrice = indicators.currentPrice;
+      // Wave 6 (2026-04-28) — plumb spot price into accumulatedContext as
+      // a top-level scalar so the report_formatter sanitizer (Wave 1
+      // canonical price normalizer) can find it via pickNumber on
+      // ['current_price', 'current_price_try']. Previously only embedded
+      // in market_cap_snapshot JSON, which the sanitizer didn't unpack.
+      accumulatedContext['current_price'] = indicators.currentPrice;
+      accumulatedContext['current_price_as_of'] = new Date().toISOString();
       console.log(`[ORCHESTRATOR] Technical indicators: price=${indicators.currentPrice} RSI=${indicators.rsi14.toFixed(1)} MACD=${indicators.macd.line.toFixed(2)}`);
     }
   } catch (err) {

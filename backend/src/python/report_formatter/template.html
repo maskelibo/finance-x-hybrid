@@ -844,9 +844,18 @@
     {{/if}}
 
     {{#if peer_multiples_rows_has}}
-    <h2>Değerleme Çarpanları — Sektör Medyanı</h2>
+    <h2>Değerleme Çarpanları — Sektör Medyanı (Statik Referans)</h2>
+    <div style="margin:8px 0 12px;padding:8px 12px;background:#fff3cd;border-left:4px solid #c6973f;border-radius:4px;font-size:11px;color:#5a4400">
+      <strong>ⓘ Statik referans:</strong> Aşağıdaki sektör medyanları
+      <code>peer_sets.ts:SUBSECTOR_MULTIPLES</code> tablosundan gelen
+      yönlendirici 2025/2026 BIST tahminleridir. Live peer chain
+      (SAHOL/DOHOL/AGHOL/SISE vs.) shipped olmadığı için gerçek
+      anlık peer verisi DEĞİLDİR. Yönetim kurulu kararlarında bu
+      değerleri "kalıba uygun mu?" karşılaştırması olarak okuyun;
+      tek başına gerekçe olarak kullanmayın.
+    </div>
     <table>
-      <thead><tr><th>Çarpan</th><th class="num">Sektör Medyan</th><th>Not</th></tr></thead>
+      <thead><tr><th>Çarpan</th><th class="num">Sektör Medyan (Statik)</th><th>Not</th></tr></thead>
       <tbody>
         {{#each peer_multiples_rows}}
         <tr>
