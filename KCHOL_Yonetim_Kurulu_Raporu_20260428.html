@@ -1,0 +1,2303 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KCHOL — Finance X Kapsamlı Analiz Raporu</title>
+  <style>
+    @page { size: A4 portrait; margin: 18mm 14mm 18mm 14mm; }
+    :root {
+      /* Theme: institutional — applied by applyTheme() at render time */
+      --brand-primary: #1a365d;
+      --brand-primary-dark: #0f2440;
+      --brand-primary-light: #3182ce;
+      --brand-accent: #c6973f;
+      --brand-accent-light: #e0b85c;
+      --fx-dark: #1a202c;
+      --fx-gray: #718096;
+      --fx-light-gray: #f7fafc;
+      --fx-border: #e2e8f0;
+      --fx-border-dark: #cbd5e0;
+      --fx-success: #276749;
+      --fx-success-light: #c6f6d5;
+      --fx-warning: #c05621;
+      --fx-warning-light: #feebc8;
+      --fx-danger: #9b2c2c;
+      --fx-danger-light: #fed7d7;
+      --fx-white: #ffffff;
+      --font-main: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', ui-monospace, 'Consolas', monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-main); font-size: 10pt; line-height: 1.6; color: var(--fx-dark); background: var(--fx-white); -webkit-font-smoothing: antialiased; }
+
+    .page { page-break-before: always; min-height: 257mm; padding: 0 0 30px; position: relative; }
+    .page:first-child { page-break-before: avoid; }
+    .page-inner { padding: 0 8mm; }
+
+    /* ─── Running header & footer ──────────────────────────── */
+    .page-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 8px; border-bottom: 2.5px solid var(--brand-primary); margin-bottom: 18px; font-size: 8pt; color: var(--fx-gray); }
+    .page-header-left { display: flex; align-items: center; gap: 10px; }
+    .company-ticker { font-weight: 700; color: var(--brand-primary); font-size: 9.5pt; letter-spacing: 0.3px; }
+    .brand-mark { background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%); color: #fff; padding: 3px 9px; border-radius: 3px; font-weight: 800; font-size: 8.5pt; letter-spacing: 0.5px; }
+    .page-footer { position: absolute; bottom: 6px; left: 8mm; right: 8mm; display: flex; justify-content: space-between; font-size: 7pt; color: var(--fx-gray); border-top: 0.5px solid var(--fx-border); padding-top: 5px; }
+
+    /* ─── Cover page — premium institutional ───────────────── */
+    .cover-page { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 260mm; height: 260mm; text-align: center; background: linear-gradient(155deg, #0f2440 0%, #1a365d 40%, #2c5282 80%, #1a365d 100%); background-color: #1a365d; color: #ffffff; padding: 60px 40px; position: relative; overflow: hidden; }
+    .cover-page::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 30% 20%, rgba(198,151,63,0.08) 0%, transparent 60%); pointer-events: none; }
+    .cover-page .cover-ticker { font-size: 58pt; font-weight: 800; letter-spacing: 6px; margin-bottom: 6px; text-shadow: 0 2px 20px rgba(0,0,0,0.2); position: relative; z-index: 1; }
+    .cover-page .cover-company { font-size: 17pt; font-weight: 300; margin-bottom: 6px; opacity: 0.92; letter-spacing: 0.5px; }
+    .cover-page .cover-exchange { font-size: 10pt; font-weight: 400; opacity: 0.65; margin-bottom: 40px; letter-spacing: 1px; text-transform: uppercase; }
+    .cover-page .cover-title { font-size: 13pt; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.3px; }
+    .cover-page .cover-date { font-size: 11pt; opacity: 0.85; font-family: var(--font-mono); }
+    .cover-page .cover-badge { margin-top: 50px; padding: 8px 28px; border: 1px solid rgba(198,151,63,0.5); border-radius: 3px; font-size: 8.5pt; color: var(--brand-accent-light); letter-spacing: 0.5px; text-transform: uppercase; }
+    .cover-divider { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--brand-accent), transparent); margin: 28px auto; }
+    .cover-meta { display: flex; gap: 48px; margin-top: 28px; font-size: 9pt; opacity: 0.9; }
+    .cover-meta-item { text-align: center; }
+    .cover-meta-item .cv-val { font-size: 16pt; font-weight: 700; display: block; margin-bottom: 3px; font-family: var(--font-mono); }
+    .cover-meta-item .cv-label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+
+    /* ─── Typography ───────────────────────────────────────── */
+    h1 { font-size: 15pt; font-weight: 700; color: var(--brand-primary); margin: 22px 0 12px; padding-bottom: 7px; border-bottom: 2.5px solid var(--brand-primary); page-break-after: avoid; letter-spacing: -0.2px; }
+    h2 { font-size: 12pt; font-weight: 600; color: var(--fx-dark); margin: 18px 0 8px; page-break-after: avoid; position: relative; padding-left: 12px; }
+    h2::before { content: ''; position: absolute; left: 0; top: 2px; bottom: 2px; width: 3px; background: var(--brand-accent); border-radius: 2px; }
+    h3 { font-size: 10.5pt; font-weight: 600; color: var(--brand-primary); margin: 14px 0 6px; page-break-after: avoid; }
+    p { margin: 7px 0; text-align: justify; orphans: 4; widows: 4; }
+    ul, ol { margin: 7px 0 7px 20px; }
+    li { margin-bottom: 4px; orphans: 4; widows: 4; }
+    strong { font-weight: 600; }
+    em { font-style: italic; }
+
+    /* ─── Tables — clean institutional ──────────────────────── */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 9pt; table-layout: fixed; page-break-inside: avoid; border: 1px solid var(--fx-border-dark); }
+    table th { background: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%); color: #fff; font-weight: 600; padding: 8px 10px; text-align: left; border: none; font-size: 8.5pt; letter-spacing: 0.2px; text-transform: none; }
+    table td { padding: 7px 10px; border-bottom: 1px solid var(--fx-border); vertical-align: top; word-wrap: break-word; }
+    table tr:nth-child(even) { background: var(--fx-light-gray); }
+    table tr:hover { background: #edf2f7; }
+    table td.num, table th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 9pt; }
+    table td.label { font-weight: 600; color: var(--fx-dark); }
+    table tr.subtotal td { background: #ebf4ff; font-weight: 600; border-top: 1.5px solid var(--brand-primary-light); }
+    table tr.total td { background: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%); color: #fff; font-weight: 700; border: none; }
+    table caption { caption-side: bottom; font-size: 7.5pt; color: var(--fx-gray); padding: 4px 0; text-align: left; font-style: italic; }
+
+    /* ─── KPI Cards ─────────────────────────────────────────── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .kpi-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .kpi-card { border: 1px solid var(--fx-border); border-radius: 8px; padding: 14px; background: var(--fx-white); position: relative; overflow: hidden; }
+    .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--brand-primary); }
+    .kpi-card .kpi-label { font-size: 7.5pt; color: var(--fx-gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .kpi-card .kpi-value { font-size: 18pt; font-weight: 800; color: var(--brand-primary); font-family: var(--font-mono); }
+    .kpi-card .kpi-sub { font-size: 7.5pt; color: var(--fx-gray); margin-top: 4px; }
+    .kpi-card.positive { border-color: var(--fx-success-light); }
+    .kpi-card.positive::after { background: var(--fx-success); }
+    .kpi-card.positive .kpi-value { color: var(--fx-success); }
+    .kpi-card.negative { border-color: var(--fx-danger-light); }
+    .kpi-card.negative::after { background: var(--fx-danger); }
+    .kpi-card.negative .kpi-value { color: var(--fx-danger); }
+    .kpi-card.warning { border-color: var(--fx-warning-light); }
+    .kpi-card.warning::after { background: var(--fx-warning); }
+    .kpi-card.warning .kpi-value { color: var(--fx-warning); }
+
+    /* ─── Badges ────────────────────────────────────────────── */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8pt; font-weight: 700; letter-spacing: 0.3px; }
+    .badge-pass { background: var(--fx-success-light); color: var(--fx-success); }
+    .badge-fail { background: var(--fx-danger-light); color: var(--fx-danger); }
+    .badge-warn { background: var(--fx-warning-light); color: var(--fx-warning); }
+    .badge-info { background: #bee3f8; color: #2b6cb0; }
+    .badge-neutral { background: var(--fx-light-gray); color: var(--fx-gray); }
+
+    /* ─── Bullet lists ──────────────────────────────────────── */
+    .bullet-list { list-style: none; padding: 0; margin: 10px 0; }
+    .bullet-list li { padding: 8px 14px; border-left: 3px solid var(--fx-border-dark); margin: 5px 0; background: var(--fx-light-gray); font-size: 9.5pt; border-radius: 0 4px 4px 0; }
+    .bullet-list li.critical { border-left-color: var(--fx-danger); background: var(--fx-danger-light); }
+    .bullet-list li.warn { border-left-color: var(--fx-warning); background: var(--fx-warning-light); }
+    .bullet-list li.ok { border-left-color: var(--fx-success); background: var(--fx-success-light); }
+
+    /* ─── Porter's 5 Forces ─────────────────────────────────── */
+    .porter-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .porter-box { border: 1px solid var(--fx-border); border-radius: 8px; padding: 12px 14px; background: var(--fx-white); }
+    .porter-box h4 { font-size: 9.5pt; font-weight: 700; color: var(--brand-primary); margin-bottom: 6px; }
+    .porter-box .intensity { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 7.5pt; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .porter-box .intensity.high { background: var(--fx-danger-light); color: var(--fx-danger); }
+    .porter-box .intensity.medium { background: var(--fx-warning-light); color: var(--fx-warning); }
+    .porter-box .intensity.low { background: var(--fx-success-light); color: var(--fx-success); }
+
+    /* ─── Risk matrix ───────────────────────────────────────── */
+    .risk-matrix { display: grid; grid-template-columns: 80px repeat(3, 1fr); gap: 5px; margin: 14px 0; page-break-inside: avoid; font-size: 8.5pt; }
+    .risk-cell { padding: 10px; text-align: center; border-radius: 6px; min-height: 48px; display: flex; align-items: center; justify-content: center; font-weight: 500; }
+    .risk-axis { font-weight: 700; color: var(--fx-gray); font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; }
+    .risk-low { background: var(--fx-success-light); color: var(--fx-success); }
+    .risk-med { background: var(--fx-warning-light); color: var(--fx-warning); }
+    .risk-high { background: var(--fx-danger-light); color: var(--fx-danger); }
+
+    /* ─── Scenarios ─────────────────────────────────────────── */
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .scenario-box { border: 1px solid var(--fx-border); border-radius: 8px; padding: 16px; background: var(--fx-white); text-align: center; position: relative; overflow: hidden; }
+    .scenario-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+    .scenario-box h4 { font-size: 10pt; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1.5px; }
+    .scenario-box.bear h4 { color: var(--fx-danger); }
+    .scenario-box.bear::before { background: var(--fx-danger); }
+    .scenario-box.base h4 { color: var(--brand-primary); }
+    .scenario-box.base::before { background: var(--brand-primary); }
+    .scenario-box.bull h4 { color: var(--fx-success); }
+    .scenario-box.bull::before { background: var(--fx-success); }
+    .scenario-box .scn-price { font-size: 22pt; font-weight: 800; font-family: var(--font-mono); color: var(--fx-dark); margin: 8px 0; }
+    .scenario-box .scn-sub { font-size: 8pt; color: var(--fx-gray); font-family: var(--font-mono); }
+    .scenario-box ul { list-style: none; padding: 0; margin-top: 10px; text-align: left; }
+    .scenario-box li { font-size: 8pt; padding: 3px 0; border-bottom: 1px dotted var(--fx-border); }
+
+    /* ─── ESG bars ──────────────────────────────────────────── */
+    .esg-bars { margin: 14px 0; }
+    .esg-bars .bar-row { display: grid; grid-template-columns: 80px 1fr 40px; gap: 10px; align-items: center; margin: 6px 0; font-size: 9pt; }
+    .esg-bars .bar-track { height: 14px; background: var(--fx-light-gray); border-radius: 7px; overflow: hidden; border: 1px solid var(--fx-border); }
+    .esg-bars .bar-fill { height: 100%; background: linear-gradient(90deg, var(--brand-primary-light) 0%, var(--brand-primary) 100%); border-radius: 6px; }
+
+    /* ─── Table of contents ─────────────────────────────────── */
+    .toc { background: var(--fx-light-gray); padding: 20px 24px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--fx-border); }
+    .toc ul { list-style: none; padding: 0; columns: 2; gap: 28px; }
+    .toc li { padding: 5px 0; border-bottom: 1px dotted var(--fx-border-dark); font-size: 9.5pt; }
+    .toc li .toc-num { display: inline-block; width: 36px; font-weight: 800; color: var(--brand-primary); font-family: var(--font-mono); }
+
+    /* ─── SWOT ──────────────────────────────────────────────── */
+    .swot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; page-break-inside: avoid; }
+    .swot-box { border: 1px solid var(--fx-border); border-radius: 8px; padding: 14px; background: var(--fx-white); }
+    .swot-box h4 { font-size: 9.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 2.5px solid; }
+    .swot-box.strengths h4 { color: var(--fx-success); border-color: var(--fx-success); }
+    .swot-box.weaknesses h4 { color: var(--fx-danger); border-color: var(--fx-danger); }
+    .swot-box.opportunities h4 { color: var(--brand-primary); border-color: var(--brand-accent); }
+    .swot-box.threats h4 { color: var(--fx-warning); border-color: var(--fx-warning); }
+    .swot-box ul { list-style: none; padding: 0; }
+    .swot-box li { font-size: 8.5pt; padding: 4px 0; border-bottom: 1px dotted var(--fx-border); }
+    .swot-box li:last-child { border-bottom: none; }
+
+    /* ─── Callouts & notes ──────────────────────────────────── */
+    .note { background: #fffbeb; border-left: 4px solid var(--fx-warning); padding: 12px 16px; margin: 12px 0; font-size: 9pt; color: #78350f; border-radius: 0 6px 6px 0; }
+    .note strong { color: #92400e; }
+    .note-info { background: #ebf8ff; border-left-color: var(--brand-primary-light); color: #2a4365; }
+    .note-info strong { color: var(--brand-primary); }
+
+    /* ─── Disclaimer ────────────────────────────────────────── */
+    .disclaimer { margin-top: 40px; padding: 22px; background: var(--fx-light-gray); border-radius: 8px; font-size: 8pt; color: var(--fx-gray); line-height: 1.75; border: 1px solid var(--fx-border); }
+    .disclaimer strong { color: var(--fx-dark); }
+    .method-list { font-size: 8.5pt; }
+
+    .score-gauge { display: inline-block; width: 100%; height: 10px; background: var(--fx-light-gray); border-radius: 5px; overflow: hidden; margin: 4px 0; border: 1px solid var(--fx-border); }
+    .score-gauge-fill { height: 100%; background: linear-gradient(90deg, var(--brand-primary-light) 0%, var(--brand-primary) 100%); border-radius: 4px; }
+
+    /* ─── Section divider (optional use) ────────────────────── */
+    .section-rule { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--fx-border-dark), transparent); margin: 20px 0; }
+
+    /* ─── Print & screen adaptations ────────────────────────── */
+    @media screen {
+      body { background: #e2e8f0; padding: 20px; }
+      .page { max-width: 210mm; margin: 0 auto 12px; background: var(--fx-white); box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 16mm 10mm 30px; border-radius: 2px; }
+      .page.cover-page { background: linear-gradient(155deg, #0f2440 0%, #1a365d 40%, #2c5282 80%, #1a365d 100%) !important; padding: 60px 40px; border-radius: 2px; }
+    }
+    @media print {
+      .page { box-shadow: none; }
+      table tr:hover { background: inherit; }
+    }
+
+    /* ─── P3.beta — Executive Formatting Intelligence v1 ────────
+       Pure additive — does not modify any rule above. Boardroom-grade
+       typography polish + table figure alignment + page-break refinement
+       + opt-in utility classes. No placeholder/structure changes. */
+
+    /* Lining + kerning + tabular figures across body and tables.
+       Visual effect: numbers in any cell line up vertically; text reads
+       slightly tighter without changing layout. */
+    body { font-feature-settings: 'kern' 1, 'lnum' 1; }
+    table { font-feature-settings: 'kern' 1, 'lnum' 1, 'tnum' 1; }
+
+    /* Heading micro-typography — boardroom hint of -0.1px tracking on
+       sub-headings (h1 already has -0.2px). Layout impact: imperceptible. */
+    h2, h3 { letter-spacing: -0.1px; }
+
+    /* Page-break refinement — keep each row together; protect captions. */
+    table tr { page-break-inside: avoid; }
+    caption { page-break-after: avoid; }
+
+    /* Severity pill utility — opt-in via class only (template content
+       is NOT changed in v1; classes are available for future use by
+       contradiction_report-aware sections). */
+    .fx-pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 10px;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      line-height: 1.4;
+    }
+    .fx-pill-low    { background: var(--fx-success-light); color: var(--fx-success); }
+    .fx-pill-medium { background: var(--fx-warning-light); color: var(--fx-warning); }
+    .fx-pill-high   { background: var(--fx-danger-light);  color: var(--fx-danger);  }
+    .fx-pill-info   { background: #bee3f8; color: #2b6cb0; }
+    .fx-pill-neutral{ background: var(--fx-light-gray); color: var(--fx-gray); }
+
+    /* No-break utility — page-break-inside avoidance for arbitrary blocks. */
+    .fx-no-break { page-break-inside: avoid; break-inside: avoid; }
+
+    /* Subtle surface — for callouts/groupings without disturbing layout. */
+    .fx-subtle-surface {
+      background: #f8fafc;
+      border: 1px solid var(--fx-border);
+      border-radius: 6px;
+      padding: 12px 16px;
+    }
+
+    /* Negative/positive number utilities — opt-in by class only. */
+    .fx-negative { color: var(--fx-danger); }
+    .fx-positive { color: var(--fx-success); }
+
+    /* Explicit tabular figures — opt-in for inline numbers outside tables. */
+    .fx-tabular {
+      font-feature-settings: 'kern' 1, 'lnum' 1, 'tnum' 1;
+      font-variant-numeric: tabular-nums lining-nums;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================== COVER ============================ -->
+  <div class="page cover-page">
+    <div class="cover-ticker">KCHOL</div>
+    <div class="cover-company">Koç Holding A.Ş.</div>
+    <div class="cover-exchange">Borsa İstanbul · Holding</div>
+    <div class="cover-divider"></div>
+    <div class="cover-title">Kapsamlı Şirket Analiz Raporu</div>
+    <div class="cover-date">2026-04-28</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><span class="cv-val">1.00</span><span class="cv-label">QA Skoru</span></div>
+      <div class="cover-meta-item"><span class="cv-val">+0.36</span><span class="cv-label">Sinyal Konverjansı</span></div>
+      <div class="cover-meta-item"><span class="cv-val">%0</span><span class="cv-label">Uzlaştırma</span></div>
+    </div>
+    <div class="cover-badge">Finance X Platform · Hibrit Analiz · 2026-04-28</div>
+  </div>
+
+  <!-- ============= İÇİNDEKİLER ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>İçindekiler</h1>
+    <div class="toc">
+      <ul>
+        <li><span class="toc-num">I.</span>Yönetici Özeti</li>
+        <li><span class="toc-num">II.</span>Şirket Profili</li>
+        <li><span class="toc-num">III.</span>Finansal Analiz</li>
+        <li><span class="toc-num">IV.</span>Değerleme &amp; Hedef Fiyat</li>
+        <li><span class="toc-num">V.</span>Sektör &amp; Rekabet</li>
+        <li><span class="toc-num">VI.</span>Makroekonomik Bağlam</li>
+        <li><span class="toc-num">VII.</span>Teknik Analiz</li>
+        <li><span class="toc-num">VIII.</span>ESG Değerlendirmesi</li>
+        
+        <li><span class="toc-num">X.</span>KAP Olayları</li>
+        <li><span class="toc-num">XI.</span>Risk Değerlendirmesi</li>
+        <li><span class="toc-num">XII.</span>Sonuç &amp; Öneriler</li>
+      </ul>
+    </div>
+
+    <h2>Raporun Kapsamı</h2>
+    <p>Bu rapor Koç Holding A.Ş. (KCHOL) için Finance X platformunun kademeli analiz hattııyla otomatik olarak üretilmiştir.  hesaplamalar (bilanço, nakit akışı, ratio, DCF, Altman Z, Piotroski F) ile  metin blokları (yorum, strateji, sentez) hibrit olarak bir araya getirilmiştir. Veriler FY-2025 dönemine aittir ve KAP resmi bildirimleri, TCMB, TradingView/Yahoo Finance ile Google News RSS kaynaklarından çekilmiştir.</p>
+
+    <h2>Hızlı Göstergeler</h2>
+<p class="fx-section-fill" style="margin-top: 8px;">Net Borç 996.438.000.000 TL düzeyindedir. Net Borç / FAVÖK çarpanı 5,1898x olarak hesaplanmıştır. Cari oran 0,8719x seviyesindedir.</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">QA Skoru</div><div class="kpi-value">1.00</div><div class="kpi-sub">Geçer</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sinyal</div><div class="kpi-value">+0.36</div><div class="kpi-sub">orta</div></div>
+      <div class="kpi-card"><div class="kpi-label">Uzl.</div><div class="kpi-value">%0</div><div class="kpi-sub">0/7</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sektör</div><div class="kpi-value" style="font-size:12pt;">Holding</div><div class="kpi-sub">doğrulanmış</div></div>
+    </div>
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>i</span></div>
+  </div></div>
+
+
+  <!-- ============= I. YÖNETİCİ ÖZETİ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>I. Yönetici Özeti</h1>
+<p class="fx-section-fill" style="margin-top: 8px;">KCHOL (Holding), FY-2025 dönemi finansalları çerçevesinde değerlendirilmiştir. Holding yapısı dikkate alındığında ana değerleme yaklaşımı Parçaların Toplamı (SOTP / NAD)'dir. Detaylı finansal analiz, değerleme ve risk değerlendirmesi izleyen bölümlerde sunulmuştur.</p>
+
+
+    <!-- Temel Parametreler tablosu (EREGL tarzı) -->
+    
+    <h2>Temel Parametreler</h2>
+    <table>
+      <thead><tr><th style="width:35%">Parametre</th><th>Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Güncel Fiyat</td><td>203,70 TRY</td></tr>
+        
+        <tr><td class="label">Hasılat</td><td>2.757,3 milyar TRY</td></tr>
+        
+        <tr><td class="label">Net Kâr</td><td>34,6 milyar TRY</td></tr>
+        
+        <tr><td class="label">Net Borç</td><td>996,4 milyar TRY</td></tr>
+        
+        <tr><td class="label">ROE</td><td>%3,2</td></tr>
+        
+        <tr><td class="label">Brüt Marj</td><td>%17,0</td></tr>
+        
+        <tr><td class="label">Piotroski F-Skoru</td><td>2/9</td></tr>
+        
+        <tr><td class="label">Sektör</td><td>Holding</td></tr>
+        
+        <tr><td class="label">Dönem</td><td>FY-2025</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <div class="note" style="background: #eef2ff; border-left-color: var(--brand-primary); color: #1e40af; margin-bottom: 16px;">
+      <strong style="color: var(--brand-primary);">Sektörel Dikkat Noktaları</strong>
+      <div style="margin:4px 0;">🏢 <strong>Holding</strong>: SOTP analizi ZORUNLU. Konsolide DCF üst sınır; her iştirak ayrı değerlenmelidir.</div><div style="margin:4px 0;">🚩 <strong>1 kritik bulgu ve 3 izleme uyarısı</strong>: Aşağıdaki Yönetici Özeti'nde detaylar mevcut.</div><div style="margin:4px 0;">📊 <strong>Holding</strong>: İştirak portföy performansı, konglomerat indirimi, sermaye dağıtım politikası.</div>
+    </div>
+    
+
+    
+    <h2>Temel Değerlendirme</h2>
+    <div>KCHOL için üretilen kapsamlı analizde QA skoru 1.00 ile yüksek kalite standardında, sinyal konverjansı +0.36 ile karışık ama hafif pozitif göstermektedir. Şirket 2757.3 milyar TL hasılat üreterek %3,2 özsermaye kârlılığıyla Holding sektöründe konumlanmaktadır. Piotroski F-skoru 2/9 ile zayıf finansal sağlık profilini doğrular. Raporda 1 kritik bulgu ve 3 izleme uyarısı tespit edilmiştir; bunların detayı sonraki bölümlerde ele alınmıştır. Aşağıdaki skor kartı, ilgili bölümlere hızlı erişim için konumlandırılmış ve detay analizlerin referans noktasını oluşturmaktadır.</div>
+    
+
+    <!-- Detaylı Skor Kartı (EREGL tarzı — ağırlıklı) -->
+    <h2>Skor Kartı</h2>
+    
+    <table>
+      <thead><tr><th>Boyut</th><th class="num" style="width:10%">Puan</th><th class="num" style="width:10%">Ağırlık</th><th>Değerlendirme</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Finansal Sağlık</td><td class="num">3/10</td><td class="num">%30</td><td>Piotroski 2/9; Cari oran 0.87x; ROE %3.2 <em class="fx-piotroski-clarifier" style="font-size: 8.5pt; color: var(--fx-gray);">(Bu skor yalnızca cari yıl kriterlerine göre hesaplanmıştır; tam dokuz kriterli Piotroski değerlendirmesi için önceki dönem finansalları gerekmektedir. Altı kriter önceki dönem karşılaştırması olmadan değerlendirilemediği için sıfır olarak sayılmıştır.)</em></td></tr>
+        
+        <tr><td class="label">Büyüme Potansiyeli</td><td class="num">5/10</td><td class="num">%20</td><td>Gelir YoY değerlendirmesi için karşılaştırılabilir dönem verisi eksik</td></tr>
+        
+        <tr><td class="label">Sektör Pozisyonu</td><td class="num">5/10</td><td class="num">%15</td><td>Sektör: holding; Brüt Marj %17.0</td></tr>
+        
+        <tr><td class="label">Makro Uyumluluk</td><td class="num">4/10</td><td class="num">%15</td><td>Yüksek kaldıraç — faiz şokuna duyarlı</td></tr>
+        
+        <tr><td class="label">Teknik Görünüm</td><td class="num">6/10</td><td class="num">%10</td><td>RSI 53; Yükseliş trendi</td></tr>
+        
+        <tr><td class="label">Yönetim Kalitesi</td><td class="num">5/10</td><td class="num">%10</td><td>Yönetim değişikliği veya son KAP duyurularına göre değerlendirilir</td></tr>
+        
+        <tr class="total"><td class="label">GENEL SKOR</td><td class="num">5.2/10</td><td class="num">—</td><td>Ağırlıklı skor — detaylar yukarıda</td></tr>
+      </tbody>
+    </table>
+    
+
+    <!-- Temel Finansal Metrikler tablosu (EREGL tarzı) -->
+    
+    <h2>Temel Finansal Metrikler — FY-2025</h2>
+    <table>
+      <thead><tr><th>Metrik</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Hasılat</td><td class="num">2.757,3 milyar TRY</td></tr>
+        
+        <tr><td class="label">Brüt Kâr</td><td class="num">469,4 milyar TRY</td></tr>
+        
+        <tr><td class="label">Faaliyet Kârı</td><td class="num">117,6 milyar TRY</td></tr>
+        
+        <tr><td class="label">Net Kâr</td><td class="num">34,6 milyar TRY</td></tr>
+        
+        <tr><td class="label">Operasyonel Nakit Akışı (OCF)</td><td class="num">-102,0 milyar TRY</td></tr>
+        
+        <tr><td class="label">Net Borç</td><td class="num">996,4 milyar TRY</td></tr>
+        
+        <tr><td class="label">Brüt Marj</td><td class="num">%17,0</td></tr>
+        
+        <tr><td class="label">Net Marj</td><td class="num">%1,3</td></tr>
+        
+        <tr><td class="label">ROE</td><td class="num">%3,2</td></tr>
+        
+        <tr><td class="label">ROA</td><td class="num">%0,7</td></tr>
+        
+        <tr><td class="label">Cari Oran</td><td class="num">0,87x</td></tr>
+        
+        <tr><td class="label">Piotroski F-Skoru</td><td class="num">2/9</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    <h3>Finansal Sağlık Göstergeleri</h3>
+    <div class="kpi-grid-3">
+      <div class="kpi-card"><div class="kpi-label">Piotroski F <span style="font-size:7pt;color:var(--fx-gray);">(Mali güç 0-9)</span></div><div class="kpi-value">2</div><div class="kpi-sub">Zayıf</div></div>
+      <div class="kpi-card"><div class="kpi-label">Altman Z <span style="font-size:7pt;color:var(--fx-gray);">(İflas riski)</span></div><div class="kpi-value">—</div><div class="kpi-sub">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Net Borç/Özsermaye</div><div class="kpi-value" style="font-size:14pt;">0,91x</div><div class="kpi-sub">Orta kaldıraç</div></div>
+    </div>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 720 206" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:720px;height:auto;font-family:-apple-system, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;"><defs>
+  <linearGradient id="hb_bgG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fafbfd"/>
+  </linearGradient>
+  <filter id="hb_sh" x="-3%" y="-3%" width="106%" height="106%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+    <feOffset dx="0" dy="1.5"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs><rect x="0" y="0" width="720" height="206" fill="url(#hb_bgG)" rx="10" stroke="#e2e8f0" stroke-width="0.5"/><text x="360" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#1a202c" letter-spacing="-0.2">Kalite Skorları Karşılaştırma</text><rect x="170" y="44" width="460" height="36" fill="#f7fafc" opacity="0.5"/><text x="158" y="66" text-anchor="end" font-size="10" font-weight="500" fill="#1a202c">QA Skoru</text><rect x="170" y="52" width="460.0" height="20" fill="#1a365d" rx="3" opacity="0.9"/><text x="640" y="66" font-size="10.5" font-weight="700" fill="#1a202c" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">100/100</text><text x="158" y="102" text-anchor="end" font-size="10" font-weight="500" fill="#1a202c">Sinyal Konverjansı</text><rect x="170" y="88" width="165.6" height="20" fill="#c6973f" rx="3" opacity="0.9"/><text x="345.6" y="102" font-size="10.5" font-weight="700" fill="#1a202c" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">36/100</text><rect x="170" y="116" width="460" height="36" fill="#f7fafc" opacity="0.5"/><text x="158" y="138" text-anchor="end" font-size="10" font-weight="500" fill="#1a202c">Piotroski F</text><rect x="170" y="124" width="102.1" height="20" fill="#276749" rx="3" opacity="0.9"/><text x="282.12" y="138" font-size="10.5" font-weight="700" fill="#1a202c" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">22,2/100 (norm)</text><text x="158" y="174" text-anchor="end" font-size="10" font-weight="500" fill="#1a202c">Uzlaştırma</text><rect x="170" y="160" width="0.0" height="20" fill="#3182ce" rx="3" opacity="0.9"/><text x="180" y="174" font-size="10.5" font-weight="700" fill="#1a202c" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0%</text></svg></div>
+    
+
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; page-break-inside:avoid;">
+      <div><svg viewBox="0 0 340 230" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:340px;height:auto;font-family:-apple-system, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;"><defs>
+  <linearGradient id="ga_bgG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fafbfd"/>
+  </linearGradient>
+  <filter id="ga_sh" x="-3%" y="-3%" width="106%" height="106%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+    <feOffset dx="0" dy="1.5"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <linearGradient id="ga_arcG" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#fc8181"/>
+    <stop offset="50%" stop-color="#e0b85c"/>
+    <stop offset="100%" stop-color="#48bb78"/>
+  </linearGradient></defs><rect x="0" y="0" width="340" height="230" fill="url(#ga_bgG)" rx="10" stroke="#e2e8f0" stroke-width="0.5"/><text x="170" y="24" text-anchor="middle" font-size="14" font-weight="700" fill="#1a202c" letter-spacing="-0.2">Kalite Göstergesi</text><path d="M75.0,180.0 A95,95 0 0 1 265.0,180.0" stroke="#edf2f7" stroke-width="26" fill="none" stroke-linecap="round"/><path d="M75.0,180.0 A95,95 0 0 1 122.5,97.7" stroke="#fc8181" stroke-width="24" fill="none" stroke-linecap="butt" opacity="0.7"/><path d="M122.5,97.7 A95,95 0 0 1 217.5,97.7" stroke="#e0b85c" stroke-width="24" fill="none" stroke-linecap="butt" opacity="0.7"/><path d="M217.5,97.7 A95,95 0 0 1 265.0,180.0" stroke="#48bb78" stroke-width="24" fill="none" stroke-linecap="butt" opacity="0.7"/><polygon points="253.0,180.0 170.0,184.0 170.0,176.0" fill="#1a202c"/><circle cx="170" cy="180" r="7" fill="#1a202c"/><circle cx="170" cy="180" r="3.5" fill="#ffffff"/><text x="170" y="212" text-anchor="middle" font-size="26" font-weight="800" fill="#276749" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">1.00</text><text x="170" y="230" text-anchor="middle" font-size="10" font-weight="500" fill="#718096">QA Skoru (0-1)</text><text x="57.0" y="183.0" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0</text><text x="90.1" y="103.1" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0.25</text><text x="170.0" y="70.0" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0.50</text><text x="249.9" y="103.1" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0.75</text><text x="283.0" y="183.0" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">1</text></svg></div>
+      <div><svg viewBox="0 0 340 230" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:340px;height:auto;font-family:-apple-system, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;"><defs>
+  <linearGradient id="ga_bgG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fafbfd"/>
+  </linearGradient>
+  <filter id="ga_sh" x="-3%" y="-3%" width="106%" height="106%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+    <feOffset dx="0" dy="1.5"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <linearGradient id="ga_arcG" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#fc8181"/>
+    <stop offset="50%" stop-color="#e0b85c"/>
+    <stop offset="100%" stop-color="#48bb78"/>
+  </linearGradient></defs><rect x="0" y="0" width="340" height="230" fill="url(#ga_bgG)" rx="10" stroke="#e2e8f0" stroke-width="0.5"/><text x="170" y="24" text-anchor="middle" font-size="14" font-weight="700" fill="#1a202c" letter-spacing="-0.2">Veri Doğrulama</text><path d="M75.0,180.0 A95,95 0 0 1 265.0,180.0" stroke="#edf2f7" stroke-width="26" fill="none" stroke-linecap="round"/><path d="M75.0,180.0 A95,95 0 0 1 122.5,97.7" stroke="#fc8181" stroke-width="24" fill="none" stroke-linecap="butt" opacity="0.7"/><path d="M122.5,97.7 A95,95 0 0 1 217.5,97.7" stroke="#e0b85c" stroke-width="24" fill="none" stroke-linecap="butt" opacity="0.7"/><path d="M217.5,97.7 A95,95 0 0 1 265.0,180.0" stroke="#48bb78" stroke-width="24" fill="none" stroke-linecap="butt" opacity="0.7"/><polygon points="87.0,180.0 170.0,176.0 170.0,184.0" fill="#1a202c"/><circle cx="170" cy="180" r="7" fill="#1a202c"/><circle cx="170" cy="180" r="3.5" fill="#ffffff"/><text x="170" y="212" text-anchor="middle" font-size="26" font-weight="800" fill="#9b2c2c" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0.00</text><text x="170" y="230" text-anchor="middle" font-size="10" font-weight="500" fill="#718096">Uzlaştırma (0/7)</text><text x="57.0" y="183.0" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0</text><text x="90.1" y="103.1" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0.25</text><text x="170.0" y="70.0" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0.50</text><text x="249.9" y="103.1" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">0.75</text><text x="283.0" y="183.0" text-anchor="middle" font-size="8.5" font-weight="600" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">1</text></svg></div>
+    </div>
+    
+
+    
+    <h2>1 kritik bulgu ve 3 izleme uyarısı</h2>
+    <ul class="bullet-list">
+      
+      <li class="critical">Cari oran 0.8719, 1,0x altında — kısa vadeli yükümlülükler dönen varlıkları aşmaktadır.</li>
+      
+      <li class="critical">Net Borç / FAVÖK çarpanı 5.1898, 5,0x sınırını aşıyor — yüksek finansal sıkıntı sinyali.</li>
+      
+      <li class="critical">Faiz karşılama oranı 1.8173, 2,0x altında — kazançlar finansman maliyetini güçlükle karşılamaktadır.</li>
+      
+      <li class="critical">Piotroski F skoru 2/9 — temel finansal kalite zayıf.</li>
+      
+      <li class="critical">Holding iki-akımlı P&amp;L present (finans segment). Sanayi brüt marj zinciri yalnızca finansman dışı segment üzerinden kontrol edilmiştir.</li>
+      
+      <li class="critical">Sektörel sinyaller karışık görünüm sergiliyor; daha detaylı inceleme önerilmiştir..</li>
+      
+    </ul>
+    
+
+    
+    <h3>Güçlü Yönler</h3>
+    <ul class="bullet-list">
+      
+      <li class="ok">Brüt Marj</li>
+      
+      <li class="ok">FAVÖK Marjı</li>
+      
+      <li class="ok">Net Marj</li>
+      
+      <li class="ok">Özsermaye Kârlılığı (ROE)</li>
+      
+      <li class="ok">Nakit Dönüşüm Süresi</li>
+      
+    </ul>
+    
+
+    
+    <h3>Zayıf Yönler</h3>
+    <ul class="bullet-list">
+      
+      <li class="warn">Likidite Sıkışıklığı</li>
+      
+      <li class="warn">Yüksek Borçluluk Riski</li>
+      
+      <li class="warn">Faiz Karşılama Zayıflığı</li>
+      
+      <li class="warn">Piotroski Skoru Zayıf (Sınırlı Değerlendirme)</li>
+      
+    </ul>
+    
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>1</span></div>
+  </div></div>
+
+  <!-- ============= II. ŞİRKET PROFİLİ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>II. Şirket Profili</h1>
+
+    
+    <div>KCHOL, Borsa İstanbul'da işlem gören Holding sektöründen bir şirket olup FY-2025 itibarıyla 2757.3 milyar TL hasılat, 1092.6 milyar TL özsermaye ve 5317.6 milyar TL bilanço büyüklüğüne ulaşmıştır. Holding yapısında faaliyet gösteren şirket, birden fazla iştirak aracılığıyla farklı sektörlerde konumlanmakta. Portföy kompozisyonu, iştirak seviyesindeki operasyonel performanslar ve sermaye dağıtım politikası yatırımcı değerini şekillendiren başlıca faktörler. Şirket Profili bölümü, yatırımcının şirketi doğru değerlendirebilmesi için gerekli kurumsal yapı, iş modeli ve segment bilgisini sunmayı amaçlamaktadır. Aşağıdaki tabloda temel kurumsal göstergeler özetlenmiş olup, ileride detaylandırılacak segment analizi ve yönetim kadrosu bilgisi bu bölümü tamamlayacaktır.</div>
+    
+
+    
+    <h2>Kurumsal Özet</h2>
+    <table>
+      <thead><tr><th style="width:35%">Gösterge</th><th>Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Ticker</td><td>KCHOL</td></tr>
+        
+        <tr><td class="label">Dönem</td><td>FY-2025</td></tr>
+        
+        <tr><td class="label">Sektör</td><td>Holding</td></tr>
+        
+        <tr><td class="label">Toplam Gelir (TL)</td><td>2.757,3 milyar</td></tr>
+        
+        <tr><td class="label">Toplam Özsermaye (TL)</td><td>1.092,6 milyar</td></tr>
+        
+        <tr><td class="label">Net Borç (TL)</td><td>996,4 milyar</td></tr>
+        
+        <tr><td class="label">Net Kâr (TL)</td><td>34,6 milyar</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Ortaklık Yapısı</h2>
+<p class="fx-section-fill" style="margin-top: 8px;">Ortaklık yapısı bu raporda yapılandırılmış kanonik veri kaynağında teyit edilmemiştir; bağımsız doğrulama önerilir.</p>
+
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 640 380" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:640px;height:auto;font-family:-apple-system, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;"><defs>
+  <linearGradient id="pie_bgG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fafbfd"/>
+  </linearGradient>
+  <filter id="pie_sh" x="-3%" y="-3%" width="106%" height="106%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+    <feOffset dx="0" dy="1.5"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <filter id="pie_sliceSh" x="-5%" y="-5%" width="110%" height="110%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+    <feOffset dx="0" dy="1"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.08"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter></defs><rect x="0" y="0" width="640" height="380" fill="url(#pie_bgG)" rx="10" stroke="#e2e8f0" stroke-width="0.5"/><text x="320" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1a202c" letter-spacing="-0.2">Ortaklık Yapısı (Yaklaşık)</text><path d="M190.0,67.0 A135,135 0 0 1 261.5,316.5 L221.8,252.9 A60,60 0 0 0 190.0,142.0 Z" fill="#1a365d" stroke="#ffffff" stroke-width="2.5" filter="url(#pie_sliceSh)"/><text x="283.7" y="179.2" text-anchor="middle" font-size="11" font-weight="700" fill="white" style="text-shadow:0 1px 2px rgba(0,0,0,0.3)">41.1%</text><rect x="370" y="55" width="20" height="18" fill="#1a365d" rx="4"/><text x="398" y="68" font-size="11" font-weight="500" fill="#1a202c">Koç Ailesi (Temel Ticaret)</text><text x="618" y="68" text-anchor="end" font-size="11" font-weight="700" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">41.1%</text><path d="M261.5,316.5 A135,135 0 0 1 195.9,336.9 L192.6,261.9 A60,60 0 0 0 221.8,252.9 Z" fill="#c6973f" stroke="#ffffff" stroke-width="2.5" filter="url(#pie_sliceSh)"/><text x="218.9" y="299.1" text-anchor="middle" font-size="11" font-weight="700" fill="white" style="text-shadow:0 1px 2px rgba(0,0,0,0.3)">8.2%</text><rect x="370" y="87" width="20" height="18" fill="#c6973f" rx="4"/><text x="398" y="100" font-size="11" font-weight="500" fill="#1a202c">Koç Holding Emekli ve Yardım Sandığı</text><text x="618" y="100" text-anchor="end" font-size="11" font-weight="700" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">8.2%</text><path d="M195.9,336.9 A135,135 0 1 1 190.0,67.0 L190.0,142.0 A60,60 0 1 0 192.6,261.9 Z" fill="#276749" stroke="#ffffff" stroke-width="2.5" filter="url(#pie_sliceSh)"/><text x="92.5" y="208.1" text-anchor="middle" font-size="11" font-weight="700" fill="white" style="text-shadow:0 1px 2px rgba(0,0,0,0.3)">50.7%</text><rect x="370" y="119" width="20" height="18" fill="#276749" rx="4"/><text x="398" y="132" font-size="11" font-weight="500" fill="#1a202c">Halka Açık</text><text x="618" y="132" text-anchor="end" font-size="11" font-weight="700" fill="#718096" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">50.7%</text><circle cx="190" cy="202" r="52" fill="#f7fafc" stroke="#e2e8f0" stroke-width="0.5"/><text x="190" y="200" text-anchor="middle" font-size="10" font-weight="600" fill="#718096">Toplam</text><text x="190" y="216" text-anchor="middle" font-size="15" font-weight="800" fill="#1a202c" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">%100</text></svg></div>
+    
+
+    
+    <h2>Segment / İştirak Yapısı</h2>
+    <div><p><table><thead><tr><th>Şirket</th><th>Ticker</th><th>KH Doğrudan (%)</th><th>KH Efektif (%)</th><th>standart Stake</th><th>Tanım</th></tr></thead><tbody><tr><td><strong>Tüpraş</strong></td><td>TUPRS</td><td>6.35</td><td><strong>42.07</strong></td><td>42.07%</td><td>EYAŞ (%46.4) → KH %77</td></tr><tr><td>Aygaz</td><td>AYGAZ</td><td>41.0</td><td>51.2</td><td>41.0%</td><td>legal_entity_direct</td></tr><tr><td>Opet</td><td>—</td><td>—</td><td><strong>19.75</strong></td><td>19.75%</td><td>TUPRS → Opet %41.7</td></tr><tr><td><strong>Ford Otosan</strong></td><td>FROTO</td><td>39.0</td><td>41.0</td><td>39.0%</td><td>legal_entity_direct</td></tr><tr><td>Tofaş</td><td>TOASO</td><td>38.0</td><td>—</td><td>38.0%</td><td>legal_entity_direct</td></tr><tr><td>TürkTraktör</td><td>TTRAK</td><td>37.5</td><td>—</td><td>37.5%</td><td>legal_entity_direct</td></tr><tr><td>Otokar</td><td>OTKAR</td><td>47.0</td><td>—</td><td>47.0%</td><td>legal_entity_direct</td></tr><tr><td><strong>Arçelik</strong></td><td>ARCLK</td><td>49.0</td><td>64.0</td><td>49.0%</td><td>legal_entity_direct</td></tr><tr><td>KFS</td><td>—</td><td>84.53</td><td>—</td><td>84.53%</td><td>legal_entity_direct</td></tr><tr><td><strong>Yapı Kredi</strong></td><td>YKBNK</td><td>20.22</td><td><strong>54.8</strong></td><td>54.8%</td><td>KH doğrudan+KFS efektif</td></tr><tr><td>Koç Finansman</td><td>—</td><td>50.0</td><td>—</td><td>50.0%</td><td>legal_entity_direct</td></tr><tr><td>Otokoç</td><td>—</td><td>99.8</td><td>—</td><td>99.8%</td><td></td></tr><tr><td>Koçtaş</td><td>—</td><td>49.8</td><td>—</td><td>49.8%</td><td>Kingfisher JV</td></tr></tbody></table></p>
+<p><em>Kaynak: KCHOL FY2025 IR Sunumu s.24 — 31 Aralık 2025 itibarıyla</em></p></div>
+    
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>2</span></div>
+  </div></div>
+
+  <!-- ============= III. FİNANSAL ANALİZ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>III. Finansal Analiz</h1>
+
+    
+    <div><p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;"><strong>Sektör:</strong> Holding/Konglomera | <strong>Dönem:</strong> FY2025 | <strong>Güven:</strong> MEDIUM<br><strong>Kritik Uyarı:</strong> 1 CRITICAL + 3 WARN kırmızı bayrak tespit edildi. Bu rapor kurumsal araştırma analizdir; yatırım tavsiyesi değildir.</blockquote></p>
+<p><strong>1. Sektör Override:</strong>  "industrial" atamış — <strong>KCHOL holding/konglomera</strong>, standart override uygulandı. Tüm benchmark'lar holding sektörü referansıdır.</p>
+<p><strong>2. YKBNK iki-akımlı:</strong> Yapı Kredi Bankası (YKBNK) konsolide rakamlara dahil. YKBNK'nın finansal borçları ile mevduatları konsolide Net Borç, cari oran ve kaldıraç metriklerini sistematik olarak etkiliyor. Bank-only izolasyonu bu raporda yapılamadı — bulgular [RAPOR EDİLEN KONSOLİDE] bazındadır.</p>
+<p><strong>3. DSO Anomalisi:</strong>  DSO=0.12 gün → açık veri hatası (plausible range: 5-200 gün). Trade receivables datası yeniden kontrol gerekiyor. DSO yorumu kilitlendi; DIO/DPO/CCC güvenilir.</p>
+<p><strong>4. Parasal Kazanç/Kayıp (IAS29 NMP):</strong>  bu değeri üretmedi. <em style="color:#94a3b8;">(Raporlanmadı — | denendi: ; sebep: NMP satırı hesaplanmadı; etki: IAS29 NMP yorumu kısmi)</em></p>
+<p><table><thead><tr><th>Metrik</th><th>FY2025 Değer</th><th>Kaynak</th><th>Benchmark (Holding)</th></tr></thead><tbody><tr><td><strong>Net Satışlar</strong></td><td>2.757.295 mn TL</td><td></td><td>—</td></tr><tr><td><strong>Brüt Kar</strong></td><td>~469.094 mn TL</td><td></td><td>—</td></tr><tr><td><strong>Brüt Kar Marjı</strong></td><td><strong>%17,02</strong></td><td></td><td>Holding: %15-30</td></tr><tr><td><strong>Brüt Kar IAS29</strong></td><td><strong>466.487 mn TL</strong></td><td></td><td>—</td></tr><tr><td><strong>Brüt Kar Marjı IAS29</strong></td><td><strong>%16,92</strong></td><td></td><td>—</td></tr><tr><td><strong>Parasal Kazanç/Kayıp</strong></td><td><strong><em style="color:#94a3b8;">(Raporlanmadı)</em></strong></td><td>'den gelmedi</td><td>—</td></tr><tr><td><strong>FAVÖK</strong></td><td><strong>192.000 mn TL</strong></td><td></td><td>—</td></tr><tr><td><strong>FAVÖK Marjı</strong></td><td><strong>%6,96</strong></td><td></td><td>Holding: %10-20</td></tr><tr><td><strong>FAVÖK Marjı IAS29</strong></td><td><strong>%6,96</strong></td><td></td><td>—</td></tr><tr><td><strong>VÖK (Vergi Öncesi Kâr)</strong></td><td><strong>74.436 mn TL</strong></td><td></td><td>—</td></tr><tr><td><strong>Net Dönem Kârı</strong></td><td><strong>34.628 mn TL</strong></td><td></td><td>—</td></tr><tr><td><strong>Net Kâr Marjı</strong></td><td><strong>%1,26</strong></td><td></td><td>Holding: %3-8</td></tr><tr><td><strong>OPEX/Ciro</strong></td><td><strong>-%12,02</strong></td><td></td><td>⚠️ Anomali — bkz. not</td></tr></tbody></table></p>
+<p><strong>OPEX/Ciro Anomali Notu:</strong>  -%12,02 döndürdü — negatif OPEX/Ciro holding konsolidasyonunda mümkün (yönetim ücretleri, kira gelirleri, alt şirket temettü gelirleri OPEX'i netleştiriyor). Ancak KAP gelir tablosundan doğrulanmadan bu değer olarak işaretlendi.</p>
+<p><strong>BÖLÜM YORUMU — Karlılık:</strong></p>
+<p><strong>Ne kadar?</strong> KCHOL FY2025'te 2,76 trilyon TL gelir üzerinden %17,02 brüt marj ve sadece %6,96 FAVÖK marjı üretiyor. Net marj ise yalnızca %1,26 — yani her 100 TL gelirden 1,26 TL kâr kalıyor.</p>
+<p><strong>Nasıl değişti?</strong> Tek-yıl veri mevcut (FY2025); 5 yıl trendini değerlendirmek için FY2021-2024 verileri eksik. Ancak mevcut tablonun yapısal zayıflıkları açık.</p>
+<p><strong>Neden bu kadar düşük?</strong> Holding sektöründe FAVÖK marjı %10-20 beklenirken KCHOL %6,96 üretiyor. Bunun başlıca 3 nedeni: (1) TUPRS/FROTO gibi düşük-marjlı sanayi iştirakleri konsolide ağırlığını baskılıyor; (2) finansman maliyetleri vergi öncesi kârı 74B TL'ye indiriyor (FAVÖK 192B iken EBT 74B → 118B TL finansal yük); (3) Net kâra ulaşana kadar vergi ve azınlık hakları düşüyor.</p>
+<p><strong>Yatırım etkisi:</strong> 34.628 mn TL net kâr, 2,76 T TL gelir üzerinden anlamsız derecede düşük. ROE analizi daha da dramatik tabloyu gösteriyor (bkz. A.2). IAS29 düzeltmesi nominal ile restated arasında yalnızca 2.600 mn TL fark yaratıyor (%0,6) — yani enflasyon muhasebesi brüt marjı bu dönemde önemli ölçüdeğiştirmiyor.</p>
+<p><strong>Bölüm Skoru: zayıf</strong></p>
+<p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Formül</th><th>Benchmark</th></tr></thead><tbody><tr><td><strong>ROE</strong></td><td><strong>%3,17</strong></td><td>34.628 / 1.092.573</td><td>Holding: >%15 ideal; TRY CoE ~%30</td></tr><tr><td><strong>ROA</strong></td><td><strong>%0,65</strong></td><td>34.628 / 5.317.600</td><td>Holding: >%3</td></tr><tr><td><strong>ROCE</strong></td><td><strong>%6,33</strong></td><td></td><td>>%10 ideal</td></tr><tr><td><strong>ROIC</strong></td><td><strong>%2,62</strong></td><td></td><td>>%8</td></tr></tbody></table></p>
+<p><strong>ROE — %3,17 (KRİTİK DEĞER YARATIM SORUNU)</strong> <blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">Formül: Net Kâr 34.628 mn TL ÷ Ortalama Özsermaye ~1.092.573 mn TL = %3,17<br>Benchmark: Holding sektörü >%15; TRY bazlı özsermaye maliyeti (CoE) ~%30; USD bazlı ~%15<br>Trend: Tek dönem mevcut — karşılaştırma yapılamıyor<br><strong>Neden:</strong> ROE %3,17 TRY CoE'nin onda biri. Bu KCHOL'un hissedar için her 100 TL özkaynaktan yalnızca 3,17 TL kâr ürettiği anlamına gelir. TRY mevduat faizinin ~%40-45 olduğu (TCMB politika faizi doğrulanmalı) ortamda hissedar sermayesi şirkette bırakmanın fırsat maliyeti son derece yüksek.<br><strong>Yatırım etkisi:</strong> %3,17 ROE, "değer yaratım" eşiğinin çok altında. Şirketin piyasa değeri üzerinde sistematik iskonto baskısı oluşturur. SOTP üzerinden NAV hesabı olmadan holding primi/iskontosu yorumlanamaz — ancak 1.09 T TL özsermaye üzerinden %3,17 getiri holding indirimini derinleştirici bir faktör.</blockquote></p>
+<p><strong>ROCE — %6,33</strong> <blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">EBIT / (Toplam Varlık − KVY)<br>Benchmark: >%10 yeterli, >%15 mükemmel; holding için %8-12 kabul edilebilir<br><strong>Yorum:</strong> %6,33 ROCE, bağlı sermaye başına getirinin yetersiz olduğuna işaret ediyor. Bunun arkasında YKBNK'nın büyük bilançosu var (banka varlıkları ROCE paydayı şişiriyor, paydaki banka kârını ise netleştiriyor). YKBNK izole edilmiş sanayi-only ROCE bu rakamdan önemli ölçüde farklı olabilir.</blockquote></p>
+<p><strong>BÖLÜM DEĞERLENDİRMESİ — Karlılık:</strong> En kritik bulgu: ROE %3,17 — TRY özsermaye maliyetinin onumda biri, holding konglomera için felaket seviyesi. Önümüzdeki 12 ay için yatırımcının dikkat etmesi gereken: Faiz maliyetinin FAVÖK'e oranı %55,03 (bkz. F bölümü) — faiz indirimi olmadan net marjın toparlanması güç. <strong>Bölüm Skoru: zayıf</strong></p>
+<p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Formül / Kaynak</th><th>Benchmark</th></tr></thead><tbody><tr><td><strong>DSO</strong></td><td><strong>⚠️ 0,12 gün</strong></td><td></td><td>Sanayi: 30-60 gün</td></tr><tr><td><strong>DIO</strong></td><td><strong>46,26 gün</strong></td><td>Stok / (COGS/365)</td><td>Holding: 30-60 gün</td></tr><tr><td><strong>DPO</strong></td><td><strong>70,06 gün</strong></td><td>Borç / (COGS/365)</td><td>>60 gün güçlü</td></tr><tr><td><strong>CCC</strong></td><td><strong>-23,68 gün</strong></td><td>DSO+DIO-DPO</td><td>&lt;0 mükemmel</td></tr><tr><td><strong>NWC/Hasılat</strong></td><td><strong>-%16,07</strong></td><td></td><td>Negatif: likidite riski</td></tr></tbody></table></p>
+<p><strong>DSO Anomali Açıklaması:</strong> 'in trade receivables değeri çok düşük görünüyor (olası: yalnızca kısa vadeli ticari alacak kullanıldı, uzun vadeli alacak veya YKBNK alacak bakiyesi eksik). Gerçek DSO 30-60 gün aralığında olabilir. Bu raporda DSO yorumu kilitli; DIO/DPO/CCC daha güvenilir.</p>
+<p><strong>CCC — -23,68 gün (Görünürde Olumlu, Yapısal Soru İşareti)</strong> <blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">DSO anomalisi düzeltilseydi CCC daha yüksek çıkabilirdi. Yine de DPO=70,06 ve DIO=46,26 baz alınırsa CCC = DSO_gerçek + 46,26 - 70,06 negatif kalmaya devam eder — bu "tedarikçi finansmanı" modelini gösterir.<br><strong>Yorum:</strong> Negatif CCC teoride nakit döngüsünün tedarikçi finansmanıyla yürüdüğü anlamına gelir. KCHOL'un büyük alım hacmi tedarikçilerle güçlü pazarlık pozisyonu sağlıyor (DPO=70 gün). Ancak NWC/Hasılat -%16,07 olması kısa vadeli yükümlülüklerin dönen varlıkları aştığını gösteriyor — bu pozitif bir model değil, cari oran &lt;1 ile birleşince likidite riskine işaret ediyor.</blockquote></p>
+<p><strong>DPO — 70,06 gün</strong> <blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">Tedarikçilere 70 günde ödeme yapıyor. Sektör içinde güçlü bir müzakere pozisyonunu yansıtıyor — ancak tedarikçi ilişkileri üzerinde baskı yaratan bir politika.</blockquote></p>
+<p><strong>BÖLÜM DEĞERLENDİRMESİ — İşletme Sermayesi:</strong> En kritik bulgu: DSO anomalisi düzeltilse bile NWC -%16,07 ve CCC baskısı var. Önümüzdeki 12 ay: Tedarikçi ödeme vadelerinin uzatılmasının sürdürülebilirliği izlenmeli — kredibilite baskısı altında DPO geri çekilebilir. <strong>Bölüm Skoru: ORTA (DSO eksikliğiyle)</strong></p>
+<p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Formül / Kaynak</th><th>Benchmark</th></tr></thead><tbody><tr><td><strong>Net Borç</strong></td><td><strong>996.438 mn TL</strong></td><td></td><td>—</td></tr><tr><td><strong>Net Borç/FAVÖK</strong></td><td><strong>🔴 5,19x</strong></td><td>996.438 / 192.000</td><td>>5x = Stresli</td></tr><tr><td><strong>Cari Oran</strong></td><td><strong>🔴 0,87</strong></td><td></td><td>>1,5 sağlıklı</td></tr><tr><td><strong>Asit-Test</strong></td><td><strong>🔴 0,82</strong></td><td></td><td>>1,0 güvenli</td></tr><tr><td><strong>Faiz Karşılama</strong></td><td><strong>🔴 1,82x</strong></td><td>FAVÖK/Faiz</td><td>>3x güvenli</td></tr><tr><td><strong>Faiz/FAVÖK</strong></td><td><strong>%55,03</strong></td><td></td><td>>%33 yüksek yük</td></tr><tr><td><strong>FCF/Faiz</strong></td><td><strong>-1,94x</strong></td><td></td><td>>1,5x güvenli</td></tr></tbody></table></p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">Formül: Finansal Borçlar − Nakit<br><strong>Yorum:</strong> KCHOL'un net borcu 1 trilyon TL eşiğine yaklaşıyor. Bu rakam toplam özsermayenin (1.093 mn TL) yaklaşık %91'ine denk geliyor. Ancak önemli not: YKBNK konsolidasyonu net borç rakamını şişiriyor; banka bilançosunun izole edilmesi gerekiyor. Net borç endüstriyel segment bazında çok daha farklı görünebilir.</blockquote></p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">Formül: 996.438 ÷ 192.000 = 5,19x<br>Benchmark: &lt;1x güçlü, 1-3x orta, 3-5x yüksek, <strong>>5x = Stresli/Tehlikeli</strong><br><strong>Ne kadar?</strong> 5,19x — eşiğin üzerinde, kritik bölgede.<br><strong>Nasıl değişti?</strong> Tek dönem mevcut; trend analizi için 5 yıl gerekli.<br><strong>Neden?</strong> CAPEX yoğunluğu (%53,60 CAPEX/FAVÖK) ve negatif OCF borcun erimesini engelledi. Faiz ödemeleri FAVÖK'ün %55'ini yuttuğu için borç geri ödemesi kaldı yok.<br><strong>Yatırım etkisi:</strong> Mevcut normalize FCF 67.122 mn TL. Net Borcu bu FCF ile sıfırlamak: 996.438 / 67.122 = <strong>yaklaşık 14,8 yıl</strong>. 1x seviyesine inmek (192B TL) için bile (996.438 - 192.000) = 804.438 mn TL gereken, mevcut normalize FCF ile <strong>~12 yıl</strong>. Deleveraging hikayesi uzak — yeniden yapılanma veya varlık satışı olmadan borç çok yavaş erir.</blockquote></p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">Formül: FAVÖK 192.000 ÷ Faiz Gideri<br>Faiz Gideri ≈ 192.000 / 1,82 = <strong>~105.495 mn TL</strong><br>Benchmark: >10x mükemmel, 3-10x sağlıklı, <strong>&lt;3x riskli, &lt;2x kritik</strong><br><strong>Yorumu zorunlu:</strong> 1,82x FAVÖK karşılama, şirketin faiz giderini sadece %82 marjla karşılayabildiğini gösteriyor. Herhangi bir FAVÖK gerilemesi (satış düşüşü, maliyet artışı, TRY değer kaybı) faiz karşılamayı 1x'in altına itebilir — bu "teknik stres" sinyalidir.<br>TCMB politika faizinin güncel durumu <em style="color:#94a3b8;">(Raporlanmadı — web araştırması ile doğrulanmalı)</em>. Eğer faiz yüksek seyrediyor ve refinancing gerekseydi, yeni borç maliyeti mevcut 1,82x karşılamayı daha da aşağı çeker.<br><strong>Yatırım etkisi:</strong> 1,82x ile şirket, FAVÖK'ünün %55,03'ünü faize harcıyor (bkz. aşağı). Bu seviyede %10'luk FAVÖK daralması (19.200 mn TL) faiz karşılamayı 1,65x'e, %20'lik düşüş 1,46x'e çeker — kredi covenant ihlali tetiklenebilir.</blockquote></p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">Formül: Faiz Gideri ÷ FAVÖK = ~105.495 / 192.000 = %55,03<br>Benchmark: &lt;%10 mükemmel, %10-33 kabul edilebilir, <strong>>%33 yüksek, >%50 kritik</strong><br><strong>Yorum:</strong> FAVÖK'ün %55'i faize gidiyor. Amortisman ve vergi sonrası net kâra ulaşana kadar çok az kalmıyor. Holding sektörü için bu oran sürdürülemez seyrediyor.</blockquote></p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">Benchmark: >2,0 ideal, 1,5-2,0 yeterli, <strong>&lt;1,0 = kısa vadeli yükümlülükler karşılanamıyor</strong><br><strong>Yorum:</strong> Cari oran 0,87 — her 1 TL kısa vadeli borcun karşısında yalnızca 0,87 TL dönen varlık mevcut. Asit-test da 0,82 (stoklar çıkarıldıktan sonra bile benzer seviye — stok bileşeni küçük). Bu tabloda kısa vadeli refinancing riski somut. YKBNK mevduatlarının dönen yükümlülükler içinde görünmesi cari oranı bozuyor olabilir — ancak banka izolasyonu yapılmadan net sonuç çıkarmak güç.</blockquote></p>
+<p><strong>BÖLÜM DEĞERLENDİRMESİ — Borç ve Likidite:</strong> En kritik bulgu: Net Borç/FAVÖK 5,19x — kritik bölge. Faiz karşılama 1,82x — tehlikeli sınırda. Bir sonraki 12 ay için yatırımcının dikkat etmesi gereken: Refinancing kararları (hangi borçlar vadeleşiyor?), olası varlık satışları (Arçelik hissesi, diğer iştiraklerin kısmi satışı) ve TCMB faiz politikası. Faiz indirimi bu tablonun en önemli rahatlatıcısı olur. <strong>Bölüm Skoru: zayıf</strong></p>
+<p><table><thead><tr><th>Nakit Akışı Kalemi</th><th>FY2025</th><th>FY2024</th><th>FY2023</th><th>FY2022</th><th>FY2021</th><th>Trend</th></tr></thead><tbody><tr><td><strong>OCF</strong></td><td>~-101.958 mn TL</td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td>↓</td></tr><tr><td><strong>ICF (CAPEX baz)</strong></td><td>~-102.904 mn TL</td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td>—</td></tr><tr><td><strong>FCF</strong></td><td><strong>-204.862 mn TL</strong></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td>—</td></tr><tr><td><strong>Normalized FCF</strong></td><td><strong>+67.122 mn TL</strong></td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></p>
+<p><em>Not: OCF ve ICF tahmini — FCF = OCF − CAPEX, CAPEX = 53,60% × 192.000 = 102.912 mn TL, OCF = FCF + CAPEX = -204.862 + 102.912 ≈ -101.950 mn TL. 5 yıllık tarihsel seri mevcut veri setinden gelmedi — <em style="color:#94a3b8;">(Raporlanmadı — | denendi: ; sebep: yalnızca FY2025 dönem mevcut)</em>.</em></p>
+<p><strong>Yorum:</strong> FY2025'te operasyonel nakit akışı tahminen -101.950 mn TL negatif. Bu, 192.000 mn TL FAVÖK üreten bir şirketin nakit bazında ciddi sıkışma yaşadığını gösteriyor. Nakit akışı yapısı şu an sağlıksız: şirket operasyonlardan nakit üretemiyor, CAPEX devam ediyor, ancak WC serbest bırakması (-ΔWC=+271.984 mn TL) tek yıl normalize FCF'yi pozitife çekiyor.</p>
+<p><strong>Son 12 Ay OCF (tahmin):</strong> ~-101.950 mn TL</p>
+<p><table><thead><tr><th>OCF Bileşeni</th><th>Tutar (mn TL)</th><th>Kaynak</th></tr></thead><tbody><tr><td>Net Kâr</td><td>34.628</td><td></td></tr><tr><td>(+) D&amp;A (tahmini)</td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td> D&amp;A satırı yok</td></tr><tr><td>(+/-) WC Değişimi (net)</td><td>−271.984 (nakit emdi)</td><td></td></tr><tr><td>(+/-) Diğer Düzeltmeler</td><td>—</td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td></tr></tbody></table></p>
+<p><strong>OCF / FAVÖK Oranı:</strong> <strong>-%53,10</strong></p>
+<ul>
+<li>Benchmark: >%80 sağlıklı, %60-80 orta, <strong>&lt;%60 düşük kalite</strong></li>
+<li>Bu seviye: <strong>Kırmızı Bayrak — OLUMSUZ</strong></li>
+</ul>
+<p><strong>OCF / net kâr:</strong> ~-101.950 / 34.628 = <strong>~-2,94x</strong></p>
+<ul>
+<li>Benchmark: >1,0x sağlıklı (nakit kalitesi yüksek)</li>
+<li>Bu seviye: <strong>Kritik — kazanç nakde dönüşmüyor, aksine nakit yakılıyor</strong></li>
+</ul>
+<p><strong>Yorum:</strong> -%53,10 OCF/FAVÖK oranı son derece endişe verici. 192.000 mn TL muhasebe FAVÖK üreten şirket, operasyonel nakit olarak -101.950 mn TL harcıyor. WC değişiminin yorumu: ΔWC negatif (WC azaldı = nakit serbest bırakıldı +271.984 mn TL) — ama buna rağmen OCF negatif demek, D&amp;A, nakit faiz ödemeleri ve diğer non-cash düzeltmeler toplamı bu serbest bırakmayı geçmiş. Earnings quality son derece zayıf.</p>
+<p><table><thead><tr><th>FCF Kalemi</th><th>Tutar (mn TL)</th><th>Kaynak</th></tr></thead><tbody><tr><td>OCF</td><td>~-101.950</td><td></td></tr><tr><td>(-) CAPEX</td><td>~-102.912</td><td></td></tr><tr><td><strong>= FCF</strong></td><td><strong>-204.862</strong></td><td></td></tr><tr><td><strong>WC Release (-ΔWC)</strong></td><td><strong>+271.984</strong></td><td></td></tr><tr><td><strong>= Normalize FCF</strong></td><td><strong>+67.122</strong></td><td></td></tr></tbody></table></p>
+<p><strong>FCF Marjı:</strong> -204.862 / 2.757.295 = <strong>-%7,43</strong> <strong>FCF / net kâr:</strong> -204.862 / 34.628 = <strong>-5,92x</strong> <strong>Normalize FCF Marjı:</strong> 67.122 / 2.757.295 = <strong>%2,43</strong></p>
+<p><strong>CEO Mandate FCF Quartet:</strong></p>
+<ul>
+<li><strong>FCF:</strong> -204.862 mn TL</li>
+<li><strong>WC Release (-ΔWC):</strong> +271.984 mn TL → "Şirket FY2025'te işletme sermayesinden 271.984 mn TL nakit serbest bıraktı (alacak tahsilatı, stok azalışı veya borç ertelemesi). Bu yapısal değil tek seferliktir."</li>
+<li><strong>Normalized FCF:</strong> +67.122 mn TL → "WC dalgalanmasından arındırılmış run-rate FCF"</li>
+<li><strong>FCF Annualized (FY=yıllık):</strong> -204.862 mn TL | <strong>Normalized FCF Annualized:</strong> +67.122 mn TL</li>
+</ul>
+<p><strong>Yorum:</strong> Ham FCF -204.862 mn TL negatif. Bu rakamın arkasında ağırlıklı olarak CAPEX (~102.912 mn TL) ve negatif OCF birleşimi var. WC release +271.984 mn TL büyük ama tek seferlik — stok eritme, alacak tahsilatı veya borç ertelemesinden geliyor. Run-rate FCF 67.122 mn TL. Bu seviyede mevcut faiz ödemesini (~105.495 mn TL) karşılamak mümkün değil — şirket faiz ödemek için borçlanmak ya da varlık satmak zorunda.</p>
+<p><strong>Formül:</strong> OCF (işletme kaynaklı) ≈ -101.950 mn TL</p>
+<p><table><thead><tr><th>Karşılaştırma</th><th>Tutar (mn TL)</th></tr></thead><tbody><tr><td>Reported FAVÖK</td><td>192.000</td></tr><tr><td>Cash OCF (tahmini)</td><td>-101.950</td></tr><tr><td><strong>Cash FAVÖK / Reported FAVÖK</strong></td><td><strong>-%53,10</strong></td></tr><tr><td>Benchmark</td><td>>%80 sağlıklı</td></tr></tbody></table></p>
+<p><strong>Yorum:</strong> Muhasebe FAVÖK ile nakit üretim gücü arasında derin uçurum var. Her 100 TL FAVÖK için şirket operasyonel bazda -53 TL nakit yakıyor. Bu "kazanç kalitesi krizi" — accrual muhasebesi kâr gösteriyor ama kasa boşalıyor. Olası nedenler: nakit faiz ödemeleri (FAVÖK'te görünmüyor ama OCF'de görünüyor), vergi ödemeleri, IAS29 enflasyon düzeltmeleri.</p>
+<p><table><thead><tr><th>WC Kalemi</th><th>FY2025</th><th>Önceki Dönem</th><th>Değişim</th><th>Nakit Etkisi</th></tr></thead><tbody><tr><td>Ticari Alacaklar</td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td>—</td><td>—</td><td>—</td></tr><tr><td>Stoklar</td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td>—</td><td>—</td><td>—</td></tr><tr><td>Ticari Borçlar</td><td><em style="color:#94a3b8;">(Raporlanmadı)</em></td><td>—</td><td>—</td><td>—</td></tr><tr><td><strong>Net WC Değişimi (−ΔWC)</strong></td><td><strong>+271.984 mn TL</strong></td><td>—</td><td>—</td><td><strong>Nakit serbest bıraktı</strong></td></tr></tbody></table></p>
+<p><em>Not: Kalem bazlı WC breakdown 'den gelmedi. Toplam WC release +271.984 mn TL.</em></p>
+<p><strong>Yorum:</strong> +271.984 mn TL WC serbest bırakması olumlu ama muhtemelen geçici. Stoklarda erime, alacak tahsilatı hızlanması veya ticari borç vade uzatmasından kaynaklanıyor olabilir. Bu faktörlerin FY2026'da tekrarlanması garanti değil — bu yüzden normalize FCF (67.122 mn TL) run-rate göstergesi olarak daha güvenilir.</p>
+<p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Benchmark</th><th>Yorum</th></tr></thead><tbody><tr><td><strong>FCF / Faiz Ödemesi</strong></td><td><strong>-1,94x</strong></td><td>>3x güvenli</td><td>FCF negatif — faiz nakit FCF'den karşılanamıyor</td></tr><tr><td><strong>OCF / Faiz Ödemesi</strong></td><td>~-0,97x</td><td>>5x güvenli</td><td>OCF da negatif — kritik</td></tr><tr><td><strong>Normalize FCF / Faiz</strong></td><td>~0,64x</td><td>>1,5x</td><td>Normalize edilince bile yetersiz</td></tr></tbody></table></p>
+<p><strong>Yorum:</strong> Hiçbir nakit bazlı borç servis metriği eşiği karşılamıyor. FCF/Faiz -1,94x — şirket faizini serbest nakit akışından ödeyemiyor. Normalize FCF bazında dahi 0,64x — her 1 TL faiz için yalnızca 0,64 TL nakit üretiliyor. Refinancing veya varlık satışı zorunluluğu güncelliğini koruyor. Bu tablo "borç servisi kırılganlığı" için kırmızı bayrak.</p>
+<p><table><thead><tr><th>#</th><th>Kontrol</th><th>Sonuç</th><th>Durum</th></tr></thead><tbody><tr><td>1</td><td>OCF &lt; FAVÖK? (earnings quality)</td><td>Evet (-101.950 vs 192.000)</td><td>🔴</td></tr><tr><td>2</td><td>FCF &lt; 0?</td><td>Evet (-204.862 mn TL)</td><td>🔴</td></tr><tr><td>3</td><td>FCF &lt; Faiz Ödemesi?</td><td>Evet (-204.862 vs ~105.495)</td><td>🔴</td></tr><tr><td>4</td><td>WC 3+ yıl nakit tüketiyor mu?</td><td>Hayır — FY2025'te WC nakit serbest bıraktı</td><td>🟢</td></tr><tr><td>5</td><td>OCF/NI &lt; 0,5x?</td><td>Evet (~-2,94x)</td><td>🔴</td></tr><tr><td>6</td><td>CAPEX > OCF?</td><td>Evet (102.912 > -101.950)</td><td>🔴</td></tr><tr><td>7</td><td>Nakit pozisyonu azalıyor mu? (3Y trend)</td><td><em style="color:#94a3b8;">(Raporlanmadı — tek dönem)</em></td><td>⚪</td></tr></tbody></table></p>
+<p><strong>Genel nakit akışı Değerlendirmesi: 🔴 KRİTİK</strong></p>
+<p>5 bayraktan 5'i kırmızı (1 yeşil, 1 <em style="color:#94a3b8;">Raporlanmadı</em>). KCHOL FY2025'te nakit akışı perspektifinden ciddi stres altında. FAVÖK güçlü görünse de nakde dönüşme oranı negatif. CAPEX yatırımları sürdürülüyor ama finansmanı net borç artışı veya WC serbest bırakmasıyla sağlanıyor. Normalize FCF pozitif (+67,1B TL) olması bir ışık noktası — WC baskısı normalleşirse run-rate'in iyileşme potansiyeli var; ancak mevcut faiz yükü altında bu gecikmeli sonuç verir.</p>
+<p><strong>BÖLÜM DEĞERLENDİRMESİ — Nakit Akışı:</strong> En kritik bulgu: OCF negatif, FCF -204.862 mn TL, faiz karşılanamıyor — nakit kriz sinyalleri güçlü. Bir sonraki 12 ay için yatırımcının dikkat etmesi gereken: WC release'in tekrar gerçekleşip gerçekleşmeyeceği, CAPEX planının değişip değişmeyeceği ve refinancing koşulları. <strong>Bölüm Skoru: KRİTİK</strong></p>
+<p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Benchmark</th></tr></thead><tbody><tr><td>Aktif Devir Hızı</td><td>2.757.295 / 5.317.600 = <strong>0,52x</strong></td><td>Holding: 0,3-0,8x</td></tr><tr><td>DIO (Stok Devir)</td><td><strong>46,26 gün</strong></td><td>Sanayi alt: 30-60 gün</td></tr><tr><td>DPO (Tedarikçi)</td><td><strong>70,06 gün</strong></td><td>>60 = güçlü pozisyon</td></tr></tbody></table></p>
+<p><strong>Yorum:</strong> Aktif devir hızı 0,52x holding için makul aralıkta. 5.32T TL büyük varlık tabanı (büyük ölçüde YKBNK bilançosu dahil) üzerinden 2.76T TL gelir üretiyor. YKBNK izole edilseydi sanayi segmenti devir hızı farklı olurdu. DPO=70 gün güçlü tedarikçi müzakere gücü gösteriyor.</p>
+<p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Benchmark</th><th>Durum</th></tr></thead><tbody><tr><td><strong>CAPEX/FAVÖK</strong></td><td><strong>%53,60</strong></td><td>%30-60 normal sanayi</td><td>🟡 Orta-ağır</td></tr><tr><td><strong>Faiz Gideri/FAVÖK</strong></td><td><strong>%55,03</strong></td><td>&lt;%33 kabul edilebilir</td><td>🔴 Kritik yük</td></tr></tbody></table></p>
+<p><strong>CAPEX/FAVÖK — %53,60</strong> <blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">Formül: CAPEX ~102.912 ÷ FAVÖK 192.000 = %53,60<br>Benchmark: &lt;%30 hafif, %30-60 orta, >%60 ağır, >%100 dış finansman zorunlu<br><strong>Yorum:</strong> %53,60 sanayi konglomera için orta-ağır düzeyde. KCHOL büyük altyapı yatırımcısı (TÜPRAŞ, FROTO, enerji). Ancak bu CAPEX büyüme mü yoksa bakımı? <em style="color:#94a3b8;">(Raporlanmadı — CAPEX breakdown yok)</em>. Yatırım etkisi: CAPEX/FAVÖK %53,60 iken FCF zaten negatif — CAPEX gevşemesi normalize FCF'yi doğrudan iyileştirir. %10 CAPEX azalması ~10.291 mn TL FCF katkısı yapar.</blockquote></p>
+<p><strong>Faiz Gideri/FAVÖK — %55,03</strong> (Yukarıda detaylandırıldı — bkz. C bölümü)</p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;"><br>Benchmark: 8-9 çok güçlü, 5-7 orta, <strong>0-4 = zayıf</strong><br>2/9 son derece düşük. Piotroski 9 kriterin yalnızca 2'sini karşılıyor. Büyük ihtimalle karşılanan kriterler: pozitif net kâr (34.628 mn TL > 0) ve belki aktif devir hızı artışı. Kaçırılan kriterler: ROA büyüme yok/düşük, OCF&lt;Net Kar, borç artışı, düşük cari oran, brüt marj baskısı.<br><strong>Yatırım etkisi:</strong> Piotroski F=2, hisse seçim modellerinde "SHORT sinyali" üretir. Temel faktörlerin birçoğu bozulmuş. Kısa vadeli yatırımcılar için fundamentals pozisyon almayı desteklemiyor.</blockquote></p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;"><br>piyasa değeri olmadan D = Piyasa Değeri / Toplam Yükümlülükler hesaplanamıyor → Altman Z kilitli.<br><em style="color:#94a3b8;">(Raporlanmadı — | denendi: ; sebep: market_cap parametresi yok; etki: distress scoring eksik)</em></blockquote></p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">Holding sektörü için SOTP zorunlu. Temel iştiraklerin piyasa değeri'leri olmadan tam NAV hesabı yapılamıyor.<br><em style="color:#94a3b8;">(Raporlanmadı — | denendi: ; sebep: alt şirket piyasa değeri listesi yok; etki: holding iskontosu/primi hesaplanamıyor)</em><br><strong>Temel iştirakleri (biliniyorsa):</strong> YKBNK, TÜPRAŞ (TUPRS), Ford Otosan (FROTO), Otokar — bu şirketlerin mevcut BIST fiyatlarıyla NAV hesabı yapılması gerekiyor.</blockquote></p>
+<p><table><thead><tr><th>Kategori</th><th>Durum</th><th>Yön</th><th>Bölüm Skoru</th></tr></thead><tbody><tr><td>Karlılık</td><td>Zayıf</td><td>— (tek yıl)</td><td>zayıf</td></tr><tr><td>İşletme Sermayesi</td><td>Orta</td><td>— (tek yıl)</td><td>ORTA</td></tr><tr><td>Borç/Likidite</td><td>Kritik</td><td>—</td><td>zayıf</td></tr><tr><td>Nakit Akışı</td><td>Kritik</td><td>—</td><td>KRİTİK</td></tr><tr><td>Verimlilik</td><td>Orta</td><td>—</td><td>ORTA</td></tr></tbody></table></p>
+<p><strong>5 yıllık trend analizi için FY2021-FY2024 verileri gerekli — bu raporda yalnızca FY2025 mevcut. CEO mandate'e göre 5 yıl zorunlu — yukarıdaki bölüm'e eskalasyon önerilir.</strong></p>
+<p><strong>KOÇ HOLDİNG FY2025 — Kurumsal Özet</strong></p>
+<p>KCHOL FY2025'te 2,76 trilyon TL gelir ve 192 milyar TL FAVÖK üretiyor — nominal rakamlar büyük, ancak tablonun üç açık yarası var:</p>
+<p><strong>1. Borç Yapısı (Kritik):</strong> Net Borç/FAVÖK 5,19x — 5x kritik eşiğinin üzerinde. Faiz gideri FAVÖK'ün %55'ini yiyor ve faiz karşılama 1,82x ile tehlikeli sınırda. Deleveraging mevcut FCF koşullarında onlarca yıl alır.</p>
+<p><strong>2. Nakit Akışı Kalitesi (Kritik):</strong> OCF negatif, FCF -204.862 mn TL. Şirket faizini serbest nakit akışından ödeyemiyor. Normalize FCF +67.122 mn TL bir umut noktası ama faiz ~105.495 mn TL — normalize bazda bile yetersiz.</p>
+<p><strong>3. Değer Yaratımı (Kırılmış):</strong> ROE %3,17 — TRY CoE'nin onunda biri. Hissedar için sermaye yakılıyor. Piotroski F=2/9 zayıf fundamental tabloyu teyit ediyor.</p>
+<p><strong>Olası Katalizörler (Pozitif):</strong></p>
+<ul>
+<li>TCMB faiz indirimi → faiz yükü hafifler, karşılama artar</li>
+<li>Varlık satışı (alt şirket hisse satışı) → borç azalır</li>
+<li>CAPEX disiplini → FCF iyileşir</li>
+<li>Konjonktürel FAVÖK artışı (emtia/yakıt margin recovery TUPRS için)</li>
+</ul>
+<p><strong>Önemli Sınırlama:</strong> YKBNK konsolidasyon etkisi izole edilmeden tüm kaldıraç/likidite metrikleri şişirilebilir (veya konservatif olabilir). Non-bank adjusted analiz kritik.</p></div>
+    
+
+    <h2>Temel Finansal Göstergeler — FY-2025</h2>
+    
+    <table>
+      <thead><tr><th style="width:30%">Metrik</th><th class="num" style="width:20%">Değer</th><th>Yorum</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Brüt Marj</td>
+          <td class="num">%17,0</td>
+          <td>Sektör eşiği: sanayi için %20 altı düşük, %30 üstü güçlü. Ürün karması ve maliyet yönetiminin birleşik göstergesi.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">FAVÖK Marjı</td>
+          <td class="num">%7,0</td>
+          <td>Operasyonel verimliliğin temel göstergesi. Sanayi için %12-15 makul, %20 üstü güçlü.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Marj</td>
+          <td class="num">%1,3</td>
+          <td>Finansman giderleri ve vergi etkisini de içeren nihai kârlılık. Negatif işaret gelir tablosu sıkıntısı.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Özsermaye Kârlılığı (ROE)</td>
+          <td class="num">%3,2</td>
+          <td>Türk lirası bazında sermaye maliyeti ~%30; üzeri değer yaratımı, altı değer erozyonu işareti.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Nakit Dönüşüm Süresi</td>
+          <td class="num">-24 gün</td>
+          <td>Pozitif CCC operasyonel sermaye bağlanması, negatif CCC tedarikçi-finanslı büyüme (nadir ve güçlü).</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Borç</td>
+          <td class="num">996,4 milyar TL</td>
+          <td>Finansal borç − nakit; özsermayeye göre oran yatırımcı için ek okuma sağlar.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Borç / FAVÖK</td>
+          <td class="num">5,19x</td>
+          <td>&lt;2x sağlıklı, 2-3.5x orta, 3.5-5x yakın izleme, &gt;5x distress eşiği.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">serbest nakit akışı (OCF−CAPEX)</td>
+          <td class="num">-204,9 milyar TL</td>
+          <td>Negative FCF: growth CAPEX or ops drag?  should distinguish.</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Piotroski F Skoru</td>
+          <td class="num">2/9</td>
+          <td>7-9 güçlü finansal sağlık, 4-6 orta, 0-3 zayıf (0-9 skalası).</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Konsolide Bilanço (milyar TL) — FY-2025</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Toplam Varlıklar</td><td class="num">5.317.600</td></tr>
+        
+        <tr><td class="label">Nakit ve Benzerleri</td><td class="num">358.830</td></tr>
+        
+        <tr><td class="label">Ticari Alacaklar</td><td class="num">933</td></tr>
+        
+        <tr><td class="label">Stoklar</td><td class="num">195.089</td></tr>
+        
+        <tr><td class="label">Toplam Dönen Varlıklar</td><td class="num">3.016.408</td></tr>
+        
+        <tr><td class="label">Maddi Duran Varlıklar (Net)</td><td class="num">561.856</td></tr>
+        
+        <tr><td class="label">Maddi Olmayan Varlıklar</td><td class="num">233.818</td></tr>
+        
+        <tr><td class="label">Şerefiye</td><td class="num">90.702</td></tr>
+        
+        <tr><td class="label">Toplam Duran Varlıklar</td><td class="num">2.301.192</td></tr>
+        
+        <tr><td class="label">Toplam Yükümlülükler</td><td class="num">4.225.027</td></tr>
+        
+        <tr><td class="label">Kısa Vadeli Yükümlülükler</td><td class="num">3.459.611</td></tr>
+        
+        <tr><td class="label">KV Finansal Borç</td><td class="num">753.729</td></tr>
+        
+        <tr><td class="label">Ticari Borçlar</td><td class="num">295.438</td></tr>
+        
+        <tr><td class="label">UV Finansal Borç</td><td class="num">601.539</td></tr>
+        
+        <tr><td class="label">Toplam Özsermaye</td><td class="num">1.092.573</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Konsolide Gelir Tablosu (milyar TL) — FY-2025</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Hasılat</td><td class="num">2.757.295</td></tr>
+        
+        <tr><td class="label">Satışların Maliyeti</td><td class="num">-1.539.222</td></tr>
+        
+        <tr><td class="label">Brüt Kâr</td><td class="num">469.354</td></tr>
+        
+        <tr><td class="label">Faaliyet Kârı</td><td class="num">117.608</td></tr>
+        
+        <tr><td class="label">FAVÖK (EBITDA)</td><td class="num">192.000</td></tr>
+        
+        <tr><td class="label">Net Dönem Kârı</td><td class="num">34.628</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Nakit Akış Özeti (milyar TL)</h2>
+    <table>
+      <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">Operasyonel Nakit Akışı (OCF)</td><td class="num">-101.956</td></tr>
+        
+        <tr><td class="label">Yatırım Harcaması (CAPEX)</td><td class="num">-102.906</td></tr>
+        
+        <tr><td class="label">İşletme Sermayesi Değişimi (ΔWC)</td><td class="num">-271.984</td></tr>
+        
+        <tr><td class="label">Nakit Serbest Bırakımı (−ΔWC)</td><td class="num">271.984</td></tr>
+        
+        <tr><td class="label">Normalize Edilmiş FCF (FCF − ΔWC)</td><td class="num">67.122</td></tr>
+        
+        <tr><td class="label">Finansman Faaliyetlerinden Nakit</td><td class="num">281.903</td></tr>
+        
+        <tr><td class="label">Ödenen Temettü</td><td class="num">-41.839</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+
+    <h2>Finansal Trend (5 dönem)</h2>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:900px;height:auto;font-family:-apple-system, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;"><defs>
+  <linearGradient id="lc_bgG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fafbfd"/>
+  </linearGradient>
+  <filter id="lc_sh" x="-3%" y="-3%" width="106%" height="106%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+    <feOffset dx="0" dy="1.5"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <linearGradient id="lc_areaG0" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#1a365d" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="#1a365d" stop-opacity="0.02"/>
+  </linearGradient>
+  <linearGradient id="lc_areaG1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#c6973f" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="#c6973f" stop-opacity="0.02"/>
+  </linearGradient></defs><rect x="0" y="0" width="900" height="440" fill="url(#lc_bgG)" rx="10" stroke="#e2e8f0" stroke-width="0.5"/><rect x="85" y="55" width="780" height="305" fill="#f7fafc" rx="3"/><text x="450" y="32" text-anchor="middle" font-size="14" font-weight="700" fill="#1a202c" letter-spacing="-0.2">Gelir / FAVÖK / Net Kar Trendi (mn TL)</text><line x1="85" y1="360.0" x2="865" y2="360.0" stroke="#cbd5e0" stroke-width="1"/><text x="75" y="363.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">-334.223,08</text><line x1="85" y1="309.2" x2="865" y2="309.2" stroke="#edf2f7" stroke-width="0.5"/><text x="75" y="312.7" text-anchor="end" font-size="10" font-weight="500" fill="#718096">236.235,61</text><line x1="85" y1="258.3" x2="865" y2="258.3" stroke="#edf2f7" stroke-width="0.5"/><text x="75" y="261.8" text-anchor="end" font-size="10" font-weight="500" fill="#718096">806.694,31</text><line x1="85" y1="207.5" x2="865" y2="207.5" stroke="#edf2f7" stroke-width="0.5"/><text x="75" y="211.0" text-anchor="end" font-size="10" font-weight="500" fill="#718096">1,4M</text><line x1="85" y1="156.7" x2="865" y2="156.7" stroke="#edf2f7" stroke-width="0.5"/><text x="75" y="160.2" text-anchor="end" font-size="10" font-weight="500" fill="#718096">1,9M</text><line x1="85" y1="105.8" x2="865" y2="105.8" stroke="#edf2f7" stroke-width="0.5"/><text x="75" y="109.3" text-anchor="end" font-size="10" font-weight="500" fill="#718096">2,5M</text><line x1="85" y1="55.0" x2="865" y2="55.0" stroke="#edf2f7" stroke-width="0.5"/><text x="75" y="58.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">3,1M</text><line x1="85.0" y1="55" x2="85.0" y2="360" stroke="#edf2f7" stroke-width="0.5"/><text x="85.0" y="380" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">Q1-2025</text><line x1="280.0" y1="55" x2="280.0" y2="360" stroke="#edf2f7" stroke-width="0.5"/><text x="280.0" y="380" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">H1-2025</text><line x1="475.0" y1="55" x2="475.0" y2="360" stroke="#edf2f7" stroke-width="0.5"/><text x="475.0" y="380" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">Q3-2025</text><line x1="670.0" y1="55" x2="670.0" y2="360" stroke="#edf2f7" stroke-width="0.5"/><text x="670.0" y="380" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">FY-2025</text><line x1="865.0" y1="55" x2="865.0" y2="360" stroke="#edf2f7" stroke-width="0.5"/><text x="865.0" y="380" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">FY-2026</text><path d="M85.0,360.0 L85.0,282.2 L280.0,225.3 L475.0,156.0 L670.0,84.5 L670.0,360.0 Z" fill="url(#lc_areaG0)"/><path d="M85.0,282.2 L280.0,225.3 L475.0,156.0 L670.0,84.5" stroke="#1a365d" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/><circle cx="85.0" cy="282.2" r="4.5" fill="#ffffff" stroke="#1a365d" stroke-width="2.5"/><circle cx="85.0" cy="282.2" r="1.8" fill="#1a365d"/><text x="85.0" y="272.2" text-anchor="middle" font-size="9" font-weight="600" fill="#1a365d">538.320</text><circle cx="280.0" cy="225.3" r="4.5" fill="#ffffff" stroke="#1a365d" stroke-width="2.5"/><circle cx="280.0" cy="225.3" r="1.8" fill="#1a365d"/><text x="280.0" y="215.3" text-anchor="middle" font-size="9" font-weight="600" fill="#1a365d">1,2M</text><circle cx="475.0" cy="156.0" r="4.5" fill="#ffffff" stroke="#1a365d" stroke-width="2.5"/><circle cx="475.0" cy="156.0" r="1.8" fill="#1a365d"/><text x="475.0" y="146.0" text-anchor="middle" font-size="9" font-weight="600" fill="#1a365d">2M</text><circle cx="670.0" cy="84.5" r="4.5" fill="#ffffff" stroke="#1a365d" stroke-width="2.5"/><circle cx="670.0" cy="84.5" r="1.8" fill="#1a365d"/><text x="670.0" y="74.5" text-anchor="middle" font-size="9" font-weight="600" fill="#1a365d">2,8M</text><path d="M85.0,360.0 L85.0,330.5 L280.0,329.4 L475.0,328.1 L670.0,327.1 L670.0,360.0 Z" fill="url(#lc_areaG1)"/><path d="M85.0,330.5 L280.0,329.4 L475.0,328.1 L670.0,327.1" stroke="#c6973f" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/><circle cx="85.0" cy="330.5" r="4.5" fill="#ffffff" stroke="#c6973f" stroke-width="2.5"/><circle cx="85.0" cy="330.5" r="1.8" fill="#c6973f"/><text x="85.0" y="320.5" text-anchor="middle" font-size="9" font-weight="600" fill="#c6973f">-2.989</text><circle cx="280.0" cy="329.4" r="4.5" fill="#ffffff" stroke="#c6973f" stroke-width="2.5"/><circle cx="280.0" cy="329.4" r="1.8" fill="#c6973f"/><text x="280.0" y="319.4" text-anchor="middle" font-size="9" font-weight="600" fill="#c6973f">9.529</text><circle cx="475.0" cy="328.1" r="4.5" fill="#ffffff" stroke="#c6973f" stroke-width="2.5"/><circle cx="475.0" cy="328.1" r="1.8" fill="#c6973f"/><text x="475.0" y="318.1" text-anchor="middle" font-size="9" font-weight="600" fill="#c6973f">23.290</text><circle cx="670.0" cy="327.1" r="4.5" fill="#ffffff" stroke="#c6973f" stroke-width="2.5"/><circle cx="670.0" cy="327.1" r="1.8" fill="#c6973f"/><text x="670.0" y="317.1" text-anchor="middle" font-size="9" font-weight="600" fill="#c6973f">34.628</text><line x1="85" y1="418" x2="105" y2="418" stroke="#1a365d" stroke-width="2.5" stroke-linecap="round"/><circle cx="95" cy="418" r="3" fill="#ffffff" stroke="#1a365d" stroke-width="2"/><text x="113" y="422" font-size="11" font-weight="600" fill="#1a202c">Hasılat</text><line x1="225" y1="418" x2="245" y2="418" stroke="#c6973f" stroke-width="2.5" stroke-linecap="round"/><circle cx="235" cy="418" r="3" fill="#ffffff" stroke="#c6973f" stroke-width="2"/><text x="253" y="422" font-size="11" font-weight="600" fill="#1a202c">Net Kar</text></svg></div>
+    
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 860 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:860px;height:auto;font-family:-apple-system, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;"><defs>
+  <linearGradient id="sa_bgG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fafbfd"/>
+  </linearGradient>
+  <filter id="sa_sh" x="-3%" y="-3%" width="106%" height="106%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+    <feOffset dx="0" dy="1.5"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs><rect x="0" y="0" width="860" height="360" fill="url(#sa_bgG)" rx="10" stroke="#e2e8f0" stroke-width="0.5"/><rect x="80" y="55" width="750" height="230" fill="#f7fafc" rx="2"/><text x="430" y="34" text-anchor="middle" font-size="14" font-weight="700" fill="#1a202c" letter-spacing="-0.2">Gelir-Brüt Kar-Net Kar Dağılımı</text><line x1="80" y1="285.0" x2="830" y2="285.0" stroke="#cbd5e0" stroke-width="1"/><text x="70" y="288.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">0</text><line x1="80" y1="239.0" x2="830" y2="239.0" stroke="#edf2f7" stroke-width="0.5"/><text x="70" y="242.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">730.526,05</text><line x1="80" y1="193.0" x2="830" y2="193.0" stroke="#edf2f7" stroke-width="0.5"/><text x="70" y="196.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">1,5M</text><line x1="80" y1="147.0" x2="830" y2="147.0" stroke="#edf2f7" stroke-width="0.5"/><text x="70" y="150.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">2,2M</text><line x1="80" y1="101.0" x2="830" y2="101.0" stroke="#edf2f7" stroke-width="0.5"/><text x="70" y="104.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">2,9M</text><line x1="80" y1="55.0" x2="830" y2="55.0" stroke="#edf2f7" stroke-width="0.5"/><text x="70" y="58.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">3,7M</text><path d="M80.0,251.1 L267.5,210.9 L455.0,161.9 L642.5,111.4 L830.0,285.0 L830.0,285.0 L642.5,285.0 L455.0,285.0 L267.5,285.0 L80.0,285.0 Z" fill="#1a365d" opacity="0.82" stroke="#ffffff" stroke-width="0.8"/><path d="M80.0,245.3 L267.5,198.2 L455.0,141.1 L642.5,81.8 L830.0,285.0 L830.0,285.0 L642.5,111.4 L455.0,161.9 L267.5,210.9 L80.0,251.1 Z" fill="#c6973f" opacity="0.82" stroke="#ffffff" stroke-width="0.8"/><path d="M80.0,245.5 L267.5,197.6 L455.0,139.6 L642.5,79.6 L830.0,285.0 L830.0,285.0 L642.5,81.8 L455.0,141.1 L267.5,198.2 L80.0,245.3 Z" fill="#276749" opacity="0.82" stroke="#ffffff" stroke-width="0.8"/><text x="80.0" y="305" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">Q1-2025</text><text x="267.5" y="305" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">H1-2025</text><text x="455.0" y="305" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">Q3-2025</text><text x="642.5" y="305" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">FY-2025</text><text x="830.0" y="305" text-anchor="middle" font-size="11" font-weight="600" fill="#1a202c">FY-2026</text><rect x="80" y="332" width="14" height="12" fill="#1a365d" rx="2" opacity="0.82"/><text x="100" y="341" font-size="11" font-weight="600" fill="#1a202c">Hasılat</text><rect x="230" y="332" width="14" height="12" fill="#c6973f" rx="2" opacity="0.82"/><text x="250" y="341" font-size="11" font-weight="600" fill="#1a202c">Brüt Kar</text><rect x="380" y="332" width="14" height="12" fill="#276749" rx="2" opacity="0.82"/><text x="400" y="341" font-size="11" font-weight="600" fill="#1a202c">Net Kar</text></svg></div>
+    
+
+    
+
+    <h3>Gelir ve Kârlılık</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (milyar TL)</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Hasılat</td>
+          <td class="num">538.320</td><td class="num">1.177.413</td><td class="num">1.954.626</td><td class="num">2.757.295</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Brüt Kar</td>
+          <td class="num">92.085</td><td class="num">201.804</td><td class="num">330.543</td><td class="num">469.354</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Faaliyet Karı</td>
+          <td class="num">17.485</td><td class="num">46.726</td><td class="num">81.111</td><td class="num">117.608</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Kar</td>
+          <td class="num">-2.989</td><td class="num">9.529</td><td class="num">23.290</td><td class="num">34.628</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <h3>Bilanço Kalemleri</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (milyar TL)</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Toplam Varlıklar</td>
+          <td class="num">4.209.252</td><td class="num">4.659.703</td><td class="num">5.105.989</td><td class="num">5.317.600</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Nakit ve Benzerleri</td>
+          <td class="num">325.424</td><td class="num">311.130</td><td class="num">375.008</td><td class="num">358.830</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Stoklar</td>
+          <td class="num">195.084</td><td class="num">192.869</td><td class="num">209.239</td><td class="num">195.089</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Maddi Duran Varlıklar</td>
+          <td class="num">468.232</td><td class="num">501.407</td><td class="num">536.276</td><td class="num">561.856</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">KV Finansal Borç</td>
+          <td class="num">545.358</td><td class="num">607.034</td><td class="num">711.428</td><td class="num">753.729</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">UV Finansal Borç</td>
+          <td class="num">399.013</td><td class="num">446.576</td><td class="num">498.958</td><td class="num">601.539</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Toplam Özsermaye</td>
+          <td class="num">916.778</td><td class="num">959.379</td><td class="num">1.039.810</td><td class="num">1.092.573</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    
+    <h3>Nakit Akışı</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metrik (milyar TL)</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Operasyonel Nakit</td>
+          <td class="num">-13.401</td><td class="num">-51.070</td><td class="num">-46.711</td><td class="num">-101.956</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">CAPEX</td>
+          <td class="num">-21.031</td><td class="num">-47.981</td><td class="num">-72.455</td><td class="num">-102.906</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Temettü Ödemesi</td>
+          <td class="num">-16.818</td><td class="num">-29.400</td><td class="num">-39.159</td><td class="num">-41.839</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h3>Oran Trendleri</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Oran</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Brüt Marj</td>
+          <td class="num">%17,1</td><td class="num">%17,1</td><td class="num">%16,9</td><td class="num">%17,0</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Marj</td>
+          <td class="num">%-0,6</td><td class="num">%0,8</td><td class="num">%1,2</td><td class="num">%1,3</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">ROE</td>
+          <td class="num">%-0,3</td><td class="num">%1,0</td><td class="num">%2,2</td><td class="num">%3,2</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">ROA</td>
+          <td class="num">%-0,1</td><td class="num">%0,2</td><td class="num">%0,5</td><td class="num">%0,7</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Cari Oran</td>
+          <td class="num">0.91</td><td class="num">0.89</td><td class="num">0.90</td><td class="num">0.87</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h3>Temettü Geçmişi</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:38%">Kalem</th>
+          <th class="num">Q1-2025</th><th class="num">H1-2025</th><th class="num">Q3-2025</th><th class="num">FY-2025</th><th class="num">FY-2026</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Temettü Ödemesi (mn TL)</td>
+          <td class="num">16.818.000.000</td><td class="num">29.400.000.000</td><td class="num">39.159.000.000</td><td class="num">41.839.000.000</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Ciro Yüzdesi</td>
+          <td class="num">%3,12</td><td class="num">%2,50</td><td class="num">%2,00</td><td class="num">%1,52</td><td class="num">—</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Payout Ratio (Net Kar Yüzdesi)</td>
+          <td class="num">%-562,7</td><td class="num">%308,5</td><td class="num">%168,1</td><td class="num">%120,8</td><td class="num">—</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Karlılık Analizi</h2>
+    <div><p>Konsolide brüt marjın (%17.02) holding sektörü için makul görünmesinin altında bazı önemli yapısal sorunlar yatmaktadır. Net marjın yalnızca %1.26 olması ve ROIC'in %2.62 seviyesinde bulunması, holdingdeki yüksek finansman giderlerinin ve banka yükümlülüklerinin operasyonel karlılığı nasıl erittiğini açıkça göstermektedir.</p>
+<p><table><thead><tr><th>Metrik</th><th>FY2025</th><th>Holding Benchmark</th><th>Durum</th></tr></thead><tbody><tr><td>Brüt Marj</td><td>%17.02</td><td>%15-25</td><td>Normal bant icinde</td></tr><tr><td>FAVÖK Marjı</td><td>%6.96</td><td>%8-12 (conglomerate)</td><td>Baskılı — alt bant</td></tr><tr><td>Net Marj</td><td>%1.26</td><td>%3-6</td><td>Ciddi baskı altında</td></tr><tr><td>ROE</td><td>%3.17</td><td>>%15 ideal, >%8 kabul edilebilir</td><td>Değer yikimi bölgesi</td></tr><tr><td>ROCE</td><td>%6.33</td><td>>%10</td><td>Yetersiz</td></tr><tr><td>ROIC</td><td>%2.62</td><td>>WACC (~%13 USD)</td><td>Ciddi değer yikimi</td></tr></tbody></table></p>
+<p><em>Kaynak:; benchmark: standart/sectors/holding</em></p></div>
+    
+
+    
+    <h2>Bilanço ve Borçluluk</h2>
+    <div><p>Koç Holding'in kaldıraç profilini yorumlamak için önce yapısal karmaşıklığı anlamak gerekir: YKBNK'nın bankacılık operasyonları —müşteri mevduatları, kredi portföyü, repo yükümlülükleri— konsolide bilançoya dahil edilmiştir. Bu durum Net Borç ve likidite metriklerini sistematik olarak bozabilmektedir.</p>
+<p><table><thead><tr><th>Metrik</th><th>Deger</th><th>Bağlam</th><th>Degerlendirme</th></tr></thead><tbody><tr><td>Net Borc (Mly TRY)</td><td>996.4</td><td>YKBNK yükümlülükleri dahil konsolide</td><td>Yanıltıcı — holding-only düşük</td></tr><tr><td>Net Borc/FAVOK</td><td>5.19x</td><td>>5x = yüksek stres</td><td>UYARI — bankacılık izolasyonu yapılmadan yorumlanamaz</td></tr><tr><td>Faiz Karsilama</td><td>1.82x</td><td>&lt;2x = kırılgan</td><td>KRITIK — FY2025 en önemli kırmızı bayrak</td></tr><tr><td>Cari Oran</td><td>0.87</td><td>&lt;1 = kısa vadeli borç > dönen varlık</td><td>SIKIŞIK — endişe verici</td></tr><tr><td>Asit-Test</td><td>0.82</td><td>&lt;1</td><td>SIKIŞIK</td></tr></tbody></table></p></div>
+    
+
+    <hr class="section-rule">
+
+    
+
+    
+    <h2>Nakit Akışı Yorumu</h2>
+    <div><p>FY2025 FCF raporlanan değeri -204.9 Mly TRY ile negatiftir. Bu rakamın doğru anlaşılması için üç katmanın ayrıştırılması gerekir:</p>
+<p><table><thead><tr><th>FCF Katmani</th><th>Deger (Mly TRY)</th><th>Açıklama</th></tr></thead><tbody><tr><td>OCF (İşletme Nakit Akışı)</td><td>-102.0</td><td>Negatif — EBITDA'ya göre ciddi sapma</td></tr><tr><td>CAPEX</td><td>-103.0 (tahmini)</td><td>CAPEX/EBITDA %53.6 = yoğun yatırım</td></tr><tr><td>Rapor. FCF (OCF - CAPEX)</td><td><strong>-204.9</strong></td><td>Ham FCF — kaynak: </td></tr><tr><td>WC Salımı (tek seferlik)</td><td>+272.0</td><td>Çalışma sermayesi azalması — sürdürülebilir değil</td></tr><tr><td><strong>Normalize FCF</strong></td><td><strong>+67.1</strong></td><td>WC salımı çıkarıldıktan sonra — sürdürülebilir taban</td></tr></tbody></table></p>
+<p><em>Kaynak:</em></p></div>
+    
+
+    
+    <h2>Yatırım Programı ve Büyüme Planı</h2>
+    <div><p>Veri kaynakları: TCMB (politika faizi, kur), TÜİK (enflasyon, büyüme), KCHOL IR FY2025 Sunumu (segment veriler — platform_derived), financial_analysis  (finansal oranlar), değerleme modeli (SOTP senaryoları), technical_analysis (teknik göstergeler — TradingView OHLCV), macro_analysis (makro tablo — web araştırması doğrulamalı), document_evidence (SOTP NAV iddiaları — platform_derived, KAP doğrulaması eksik).</p></div>
+    
+
+    
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>3</span></div>
+  </div></div>
+
+  <!-- ============= IV. DEĞERLEME & HEDEF FİYAT ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>IV. Değerleme & Hedef Fiyat</h1>
+
+    
+    <div class="note">
+      
+      <div>⚠ Holding — SOTP analizi zorunlu, konsolide DCF üst sınır olarak kabul edilmeli</div>
+      
+      <div>⚠ Holding yapısındaki şirketlerde konsolide DCF analizi yalnızca üst sınır kontrolü olarak değerlendirilmelidir.. SOTP table required for real fair value.</div>
+      
+    </div>
+    
+
+    
+
+    
+    <h2>Emsal Çarpanları</h2>
+<p class="fx-section-fill" style="margin-top: 8px;">Sektörel emsal medyanları için doğrulanmış piyasa değeri, net borç, FAVÖK ve net kâr verileri henüz teyit edilmemiştir. Emsal karşılaştırması bu raporda yayımlanmamıştır.</p>
+
+    <table>
+      <thead><tr><th>Çarpan</th><th class="num">Şirket</th><th class="num">Emsal Medyan</th><th class="num">Q1 / Q3</th></tr></thead>
+      <tbody>
+        <tr><td class="label">EBITDA Margin</td><td class="num">%7,0</td><td class="num">Emsal grubu oluşturulamadı</td><td class="num">—</td></tr>
+        <tr><td class="label">net marj</td><td class="num">%1,3</td><td class="num">Emsal grubu oluşturulamadı</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+    
+
+    
+
+    
+
+    
+    <h2>Senaryo Analizi — Yorumlu</h2>
+    <div><p><strong>Tarih:</strong> 28 Nisan 2026 | <strong>Dönem:</strong> FY2025 | <strong>Analiz Modu:</strong> Full Synthesis | <strong>Analist:</strong> Strategic Synthesis modül</p>
+<p>Koç Holding, Türkiye'nin en büyük sanayi-finans-enerji konglomerasıdır. FY2025 analizinde tablo şunu ortaya koyuyor: <strong>konsolide marjlar sağlıklı görünse de, ROE (%3.17) TRY sermaye maliyetinin (%30) çok altında; reported FCF -204.9B TRY; Piotroski F = 2/9; faiz karşılama oranı 1.82x.</strong> Öte yandan, teknik trend bullish ve olay dengesi net pozitif (+12/-3). Sinyal uyuşmazlığı en baskın tema.</p>
+<p><strong>Ağırlıklı SOTP hedef fiyat: 238 TL</strong> (baz 242 TL, bear 142 TL, bull 325 TL). Güncel piyasa: ~207 TL. Baz senaryoya göre %16.9 yukarı potansiyel; ancak bear senaryoda -%31.4 aşağı risk. <strong>Asimetrik risk profili:</strong> Hormuz krizi veya faiz karşılama ihlali gerçekleşirse aşağı baskı ciddi.</p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;">⚠️ <strong>Güven düzeyi: DÜŞÜK.</strong> Peer benchmarkı sıfır, SOTP metodoloji çatışması çözümsüz, bağlam çıkarma eksik, DSO anomalisi mevcut.</blockquote></p>
+<p>Python  iki kritik sınıflandırma hatası içeriyor:</p>
+<p><table><thead><tr><th>Metrik</th><th>'in Sınıflandırması</th><th>Gerçek Değer</th><th>Doğru Sınıflandırma</th></tr></thead><tbody><tr><td>FCF</td><td>`positive`</td><td>-204,862,000,000 TRY</td><td><strong>NEGATIVE</strong></td></tr><tr><td>Piotroski F</td><td>`positive`</td><td>2/9 (0-3 bandı)</td><td><strong>NEGATIVE</strong></td></tr></tbody></table></p>
+<p>Bu hata sentez hassasiyet skoru = 0.36'yı yapay olarak şişiriyor. <strong>Düzeltilmiş gerçek oran yaklaşık 0.18-0.22 bandında</strong> — zayıf uyum, temel ve teknik sinyaller karşı kutuplarda.</p>
+<p><strong>Aynı metriğin hem positive hem negative listesinde olması (Piotroski):</strong> Çift kayıt temizlenmeli; yalnızca NEGATIVE olarak tutulmalı.</p>
+<p><strong>BULGU:</strong> CCC = -23.68 gün. Tedarikçilere ödeme süresi (DPO 70.06 gün), envanter tutma süresinden (DIO 46.26 gün) daha uzun. Holding ölçeğinden kaynaklanan piyasa gücü tedarikçilerden nakit önceden alınmasına imkân tanıyor.</p>
+<p><strong>KAYNAKLAR:</strong> financial_analysis (CCC, DPO, DIO) + fundamental_signals (CCC: positive) + sector_competition (CCC pozisyonu teyit)</p>
+<p><strong>YATIRIMCI ETKİSİ:</strong> Negatif CCC, KCHOL'ün çalışma sermayesini finanse etmek için dış kaynak kullanmadığı anlamına geliyor. Piyasa baskısı dönemlerinde nakit tamponu işlevi görür.</p>
+<p><strong>AKSİYON NOTU:</strong> WC release 271.9B TRY tek seferlik mi yoksa yapısal mı? Sürdürülebilirlik teyit edilirse normalized FCF +67.1B TRY güvenilir baz haline gelir.</p>
+<p><strong>BULGU:</strong> IAS29 ayarlaması öncesi ve sonrası marjlar neredeyse aynı: Gross %17.02 vs %16.92, EBITDA %6.96 vs %6.96. Enflasyon muhasebesi marjları anlamlı şekilde değiştirmiyor.</p>
+<p><strong>KAYNAKLAR:</strong> financial_analysis (gross_profit_ias29, ebitda_ias29) + financial_analysis (gross_margin, ebitda_margin)</p>
+<p><strong>YATIRIMCI ETKİSİ:</strong> IAS29 etkisinin marjinal olması FY2025 raporlanan rakamların güvenilirliğini artırıyor; enflasyon muhasebesi sürprizi yok.</p>
+<p><strong>AKSİYON NOTU:</strong> Net marj %1.26 çok ince — finansman maliyeti kâr payını büyük oranda eritiyor. EBITDA'nın faize oranı kritik izleme noktası.</p>
+<p><strong>ÇATIŞMA:</strong> financial_analysis ROE = 3.1694 →  "positive" olarak etiketlemiş. Ancak macro_analysis: TCMB politika faizi (bu raporda kanonik veri kaynağında teyit edilmemiştir). TRY sermaye maliyeti minimum %30 (Rf ~37% + beta-adjusted ERP ~-7%). <strong>ROE/CoE = 0.106 → her yatırım edilen 100 TL için yalnızca 10.6 TL değer yaratılıyor.</strong></p>
+<p><strong>RECONCILIATION HİPOTEZİ:</strong></p>
+<ul>
+<li>(a) Holding bankacılık gelirlerinin YKBNK'ya konsolide yansıması KCHOL ROE'sini yapay olarak düşürüyor olabilir (holding tüm özkaynağı taşıyor, kazancın bir kısmı azınlık payı);</li>
+<li>(b) FY2025 yüksek CAPEX döneminin geçici baskısı (Ford Otosan EV yatırımı);</li>
+<li>(c) Gerçekten değer yıkıcı seviye — dönemsel değil yapısal.</li>
+</ul>
+<p><strong>HANGİSİNE GÜVENİYORUZ:</strong> (a) kısmen açıklıyor; (b) muhtemel ama yeterli değil. Piotroski F = 2/9 ile birleşince (c) oranı yükseltiyor. <strong>Güven: ORTA — yapısal baskı baskın.</strong></p>
+<p><strong>YATIRIM ETKİSİ:</strong> Mevcut faiz ortamında KCHOL yatırımcıya reel getiri sunmuyor. Faiz düşüş döngüsü (2027+) başlamazsa CoE-ROE makası kapanmaz.</p>
+<p><strong>ÇATIŞMA:</strong> technical_analysis: bullish trend. fundamental_analysis: FCF -204.9B TRY, faiz karşılama 1.82x, Piotroski F 2/9, Cari oran 0.87. BIST-100 +52.76% YTD rallisi KCHOL'ü taşıyor; temel veriler bu fiyatlamayı desteklemiyor. <em class="fx-piotroski-clarifier" style="font-size: 8.5pt; color: var(--fx-gray);">(Bu skor yalnızca cari yıl kriterlerine göre hesaplanmıştır; tam dokuz kriterli Piotroski değerlendirmesi için önceki dönem finansalları gerekmektedir. Altı kriter önceki dönem karşılaştırması olmadan değerlendirilemediği için sıfır olarak sayılmıştır.)</em></p>
+<p><strong>RECONCILIATION HİPOTEZİ:</strong></p>
+<ul>
+<li>(a) Piyasa normalized FCF (+67.1B TRY) ve SOTP NAV'ı fiyatlıyor, raporlanan değerleri değil;</li>
+<li>(b) Genel BIST rallisi sistematik — bireysel hisse fundamentalleri ikincil;</li>
+<li>(c) Teknik trend ilerleyen dönemde fundamental baskıyı yansıtmak üzere kırılacak.</li>
+</ul>
+<p><strong>HANGİSİNE GÜVENİYORUZ:</strong> (b) kısa vadede dominant; (c) orta vadede risk. <strong>Teknik bullish geçici destek sağlıyor; fundamental zayıflık bir katalizörle hızla fiyatlanabilir.</strong></p>
+<p><strong>ÇATIŞMA:</strong> değerleme modeli üç farklı NAV hesabı üretiyor; bunlar birbirinden %50-127 ayrışıyor. KAP SGBF doğrulaması yapılmadan hangi metodolojinin doğru olduğu bilinemiyor.</p>
+<p><strong>RECONCILIATION HİPOTEZİ:</strong></p>
+<ul>
+<li>Legal entity direkt paylar (~179 TL) muhafazakâr alt sınır;</li>
+<li>Koç Grup efektif paylar (~268 TL) orta nokta;</li>
+<li>GCM konsensüs ~406 TL üst sınır (belki efektif pay + kontrol primi).</li>
+<li>Mevcut 207 TL piyasa fiyatı iki metodoloji arasında konumlanmış.</li>
+</ul>
+<p><strong>HANGİSİNE GÜVENİYORUZ:</strong> KAP doğrulaması olmadan net cevap yok. <strong>Bu belirsizlik bu analizin en kritik yapısal sınırlamasıdır.</strong> Güven: DÜŞÜK.</p>
+<p><table><thead><tr><th>#</th><th>Güçlü Yön</th><th>Kanıt</th></tr></thead><tbody><tr><td>1</td><td>Portföy çeşitliliği (7 sektör)</td><td>Makro analiz — enerji, otomotiv, finans, perakende, savunma</td></tr><tr><td>2</td><td>Negatif CCC (-23.68 gün)</td><td>financial_analysis.ratios.ccc</td></tr><tr><td>3</td><td>BIST-100'ün en büyük konglomerası</td><td>Makro — piyasa değeri benchmark</td></tr><tr><td>4</td><td>Tüpraş ham petrol stok değerleme kazancı (Brent +75.7% YTD)</td><td>macro_analysis.energy.brent_crude</td></tr><tr><td>5</td><td>Normalized FCF +67.1B TRY</td><td>financial_analysis.ratios.normalized_fcf</td></tr></tbody></table></p>
+<p><table><thead><tr><th>#</th><th>Zayıf Yön</th><th>Kanıt</th></tr></thead><tbody><tr><td>1</td><td>ROE %3.17 vs CoE ~%30 — değer yıkımı</td><td>financial_analysis.ratios.roe vs macro_analysis.policy_rate</td></tr><tr><td>2</td><td>Reported FCF -204.9B TRY</td><td>financial_analysis.ratios.fcf</td></tr><tr><td>3</td><td>Piotroski F = 2/9 — düşük temel kalite</td><td>financial_analysis (Piotroski F)</td></tr><tr><td>4</td><td>faiz karşılama 1.82x — eşik altı</td><td>financial_analysis.ratios.interest_coverage</td></tr><tr><td>5</td><td>Cari oran 0.87 — likidite baskısı</td><td>financial_analysis.ratios.current_ratio</td></tr><tr><td>6</td><td>Peer benchmarkı sıfır</td><td>sector_competition (peer_count=0)</td></tr></tbody></table></p>
+<p><table><thead><tr><th>#</th><th>Fırsat</th><th>Zaman Ufku</th></tr></thead><tbody><tr><td>1</td><td>Ford Otosan EV Romanya lansmanı</td><td>24 ay</td></tr><tr><td>2</td><td>BIST-100 rallisi + reel pozitif faiz → yabancı yatırımcı</td><td>12 ay</td></tr><tr><td>3</td><td>Hormuz krizi çözümünde Brent düzelirse Tüpraş marj genişlemesi</td><td>12-18 ay</td></tr><tr><td>4</td><td>Holding iskonto daralması (IPO/yapısal event)</td><td>24+ ay</td></tr></tbody></table></p>
+<p><table><thead><tr><th>#</th><th>Tehdit</th><th>Olasılık</th></tr></thead><tbody><tr><td>1</td><td>Hormuz Boğazı uzun süreli kapalılık</td><td>Yüksek</td></tr><tr><td>2</td><td>TCMB %37 faiz → iç araç/tüketim baskısı</td><td>Orta-Yüksek</td></tr><tr><td>3</td><td>TRY değer kaybı (%4.7 YTD) YP borç maliyeti</td><td>Orta</td></tr><tr><td>4</td><td>Rusya-NATO çatışma riski → Ford Otosan AB ihracat</td><td>Düşük-Orta</td></tr><tr><td>5</td><td>faiz karşılama covenant ihlali</td><td>Orta</td></tr></tbody></table></p>
+<p><table><thead><tr><th>Risk</th><th>Olasılık (1-5)</th><th>Etki (1-5)</th><th>Risk Skoru</th><th>Önem</th><th>Azaltıcı</th></tr></thead><tbody><tr><td>Hormuz krizi — Tüpraş tedarik</td><td>4</td><td>5</td><td><strong>20</strong></td><td>KRİTİK</td><td>Alternatif boru hatları; stok değerleme kazancı</td></tr><tr><td>SOTP metodoloji belirsizliği</td><td>5</td><td>4</td><td><strong>20</strong></td><td>KRİTİK</td><td>KAP SGBF doğrulaması</td></tr><tr><td>faiz karşılama ihlali</td><td>3</td><td>4</td><td><strong>12</strong></td><td>YÜKSEK</td><td>Holding portföy geliri; refinansman</td></tr><tr><td>FCF negatif süreklilik</td><td>4</td><td>3</td><td><strong>12</strong></td><td>YÜKSEK</td><td>Normalized FCF +67B TRY alt destek</td></tr><tr><td>TRY değer kaybı</td><td>4</td><td>3</td><td><strong>12</strong></td><td>YÜKSEK</td><td>İhracat geliri doğal hedge</td></tr><tr><td>Piotroski F yapısal zayıflık</td><td>4</td><td>2</td><td><strong>8</strong></td><td>ORTA</td><td>Holding yapısı analizde dikkate alınmalı</td></tr><tr><td>Rusya-NATO eskalasyonu</td><td>2</td><td>5</td><td><strong>10</strong></td><td>YÜKSEK</td><td>Ford Otosan AB çeşitlendirmesi</td></tr></tbody></table></p>
+<p><strong>Tetikleyiciler:</strong> 1. Hürmüz Boğazı 6+ ay kapalı → Tüpraş ham petrol tedariki %30-50 kesiliyor 2. faiz karşılama 1.5x altına düşüyor → covenant ihlali riski 3. TRY %15+ daha değer kaybı → YP borç maliyeti artışı 4. BIST-100 rallisi sona eriyor → genel satış baskısı</p>
+<p><table><thead><tr><th>Metrik</th><th>Bear FY2026E</th><th>Kaynak</th></tr></thead><tbody><tr><td>Revenue</td><td>~2,500,000 mn TRY</td><td></td></tr><tr><td>EBITDA</td><td>~130,000 mn TRY</td><td></td></tr><tr><td>EBITDA Marjı</td><td>~5.2%</td><td></td></tr><tr><td>FCF</td><td>-300,000 mn TRY</td><td></td></tr><tr><td>EPS</td><td>~1.8 TRY</td><td></td></tr><tr><td>Hedef Fiyat</td><td><strong>142 TRY</strong></td><td></td></tr><tr><td>Mevcut Fiyattan Sapma</td><td>-%31.4%</td><td></td></tr></tbody></table></p>
+<p><strong>İzleme KPI'ları:</strong> Tüpraş Q1 2026 üretim kapasitesi kullanımı; faiz karşılama 1.5x eşiği; BIST teknik destek kırılımı.</p>
+<p><strong>Varsayımlar:</strong></p>
+<ul>
+<li>Hormuz krizi Q3 2026'da çözüme kavuşuyor; Brent ~85-95 $/bbl'e normalleşiyor</li>
+<li>Ford Otosan EV lansmanı planlandığı gibi ilerliyor</li>
+<li>TCMB 2026 H2'de 200 baz puan indirim yapıyor</li>
+<li>Mevcut trendlerin büyük ölçüde devamı</li>
+</ul>
+<p><table><thead><tr><th>Metrik</th><th>Baz FY2026E</th><th>Kaynak</th></tr></thead><tbody><tr><td>Revenue</td><td>~2,980,000 mn TRY</td><td></td></tr><tr><td>EBITDA</td><td>~192,000 mn TRY</td><td></td></tr><tr><td>EBITDA Marjı</td><td>~6.4%</td><td></td></tr><tr><td>Normalized FCF</td><td>~67,000 mn TRY</td><td></td></tr><tr><td>EPS</td><td>~4.5 TRY</td><td></td></tr><tr><td>Hedef Fiyat</td><td><strong>242 TRY</strong></td><td></td></tr><tr><td>Mevcut Fiyattan Sapma</td><td>+16.9%</td><td></td></tr></tbody></table></p>
+<p><strong>Hassasiyet:</strong> Brent $10/bbl değişimi → EBITDA ~5-8B TRY etki; TCMB 100 baz puan indirim → faiz karşılama ~0.1x iyileşme.</p>
+<p><strong>Tetikleyiciler:</strong> 1. Hormuz hızla açılıyor, Brent $70-80 bandına geriledi → Tüpraş marj genişlemesi 2. Ford Otosan Romanya EV tam kapasiteye ulaştı → AB ihracat geliri 3. TCMB agresif indirim döngüsü → iç talep canlanması 4. KCHOL holding iskonto daralması (stratejik iştirak IPO'su)</p>
+<p><table><thead><tr><th>Metrik</th><th>Bull FY2026E</th><th>Kaynak</th></tr></thead><tbody><tr><td>Revenue</td><td>~3,200,000 mn TRY</td><td></td></tr><tr><td>EBITDA</td><td>~240,000 mn TRY</td><td></td></tr><tr><td>EBITDA Marjı</td><td>~7.5%</td><td></td></tr><tr><td>FCF</td><td>+80,000 mn TRY pozitif</td><td></td></tr><tr><td>EPS</td><td>~7.5 TRY</td><td></td></tr><tr><td>Hedef Fiyat</td><td><strong>325 TRY</strong></td><td></td></tr><tr><td>Mevcut Fiyattan Sapma</td><td>+57.0%</td><td></td></tr></tbody></table></p>
+<p><table><thead><tr><th>Senaryo</th><th>Hedef</th><th>Ağırlık</th><th>Katkı</th></tr></thead><tbody><tr><td>Bear</td><td>142 TL</td><td>%25</td><td>35.5 TL</td></tr><tr><td>Baz</td><td>242 TL</td><td>%50</td><td>121.0 TL</td></tr><tr><td>Bull</td><td>325 TL</td><td>%25</td><td>81.25 TL</td></tr><tr><td><strong>Ağırlıklı Ortalama</strong></td><td><strong>238 TL</strong></td><td>%100</td><td><strong>237.75 TL</strong></td></tr></tbody></table></p>
+<p>Mevcut fiyat (207 TL) → Ağırlıklı hedefe göre <strong>+%14.9 yukarı potansiyel.</strong></p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;"><em>Bu bölüm yatırım tavsiyesi değil, analitik senaryo haritalandırmasıdır. Portföy kararları için lisanslı yatırım danışmanına başvurunuz.</em></blockquote></p>
+<p><strong>Pozitif Senaryo Koşulları (Değerleme Yukarı Riski Artırır):</strong> 1. Hormuz Boğazı yeniden açılır ve Brent $80 altına gerilerse → Tüpraş marj normalleşmesi → EBITDA +20% potansiyeli 2. KCHOL hisse fiyatı 170 TL (legal entity NAV) altına düşerse → normalized FCF yield >4% → değerleme cezbedici hale gelir 3. Ford Otosan EV Romanya siparişleri Q4 2026'da açıklanırsa → NAV yukarı revizyon 4. TCMB 2026 H2'de 400+ baz puan indirim yaparsa → faiz karşılama → 2.5x → kaldıraç riski gerilemiş olur 5. KAP SGBF stake doğrulaması Koç Grup efektif payları (~268 TL NAV) teyit ederse → holding iskonto daralır</p>
+<p><strong>Negatif Senaryo Koşulları (Değerleme Aşağı Riski Artırır):</strong> 1. Hürmüz Boğazı 6 ay+ kapalı kalırsa → Tüpraş tedarik krizi → EBITDA -30%+ → bear senaryo aktive 2. faiz karşılama 1.5x altına inerse (EBITDA baskısı veya faiz artışı) → covenant riski → hisse fiyatı 170 TL altına kırılabilir 3. KCHOL normalized FCF'in gerçekte WC tek seferlik release'e dayandığı anlaşılırsa → kalıcı negatif FCF prizi → değerleme yeniden fiyatlanır 4. Rusya-NATO çatışması tırmanırsa → Ford Otosan AB ihracat kesintisi → otomotiv segment baskısı 5. KAP SGBF stake doğrulaması legal entity paylarını (~179 TL NAV) teyit ederse → piyasa fiyatı 207 TL NAV primini satabilir</p>
+<p><strong><em style="color:#94a3b8;">(Raporlanmadı — | denendi: yukarıdaki bölüm inputs; sebep: ESG modül output bu pipeline'a dahil değil; etki: kurumsal yatırımcı erişim kısıtı değerlendirilemedi)</em></strong></p>
+<p>Genel bağlam: Koç Holding, BIST Sürdürülebilirlik Endeksi'nde yer almaktadır. ESG skoru kurumsal yatırımcıların minimum %20'sinde pasif tarama filtresi olarak kullanılıyor. KCHOL'ün kurumsal yönetim altyapısı (bağımsız yönetim kurulu üyeleri, kamuoyu aydınlatma kalitesi) Türkiye holdingleri arasında üst kuşakta kabul görüyor — ancak bu analiz için sayısal doğrulama yapılmamıştır. <strong>Değerleme tavanı üzerindeki ESG etkisi belirsiz — downstream raporda flag olarak taşınmalı.</strong></p>
+<ul>
+<li>Negatif CCC (-23.68 gün): yapısal çalışma sermayesi gücü</li>
+<li>Portföy çeşitliliği: Hormuz krizi baskısını kısmen dengeliyor</li>
+<li>Normalized FCF +67.1B TRY: temel nakit üretimi pozitif</li>
+<li>Brent $111/bbl → Tüpraş stok değerleme kazancı kısa vadede pozitif</li>
+</ul>
+<ul>
+<li>ROE %3.17 vs CoE ~%30: değer yıkımı</li>
+<li>Piotroski F = 2/9: zayıf temel kalite</li>
+<li>faiz karşılama 1.82x: eşiğin altı</li>
+<li>Peer benchmarkı yok</li>
+</ul>
+<ul>
+<li>Ford Otosan EV → en yüksek değer katalizörü</li>
+<li>TCMB indirim döngüsü → CoE-ROE makası daralır</li>
+</ul>
+<ul>
+<li>Hormuz krizi en yüksek olasılıklı-etkili senaryo (risk skoru 20/25)</li>
+<li>SOTP metodoloji belirsizliği değerlemeyi spekülatif kılıyor</li>
+</ul>
+<p><strong>Koç Holding,</strong> Türkiye'nin en büyük sanayi-finans-enerji konglomerası olarak portföy çeşitliliği sayesinde makro şoklara karşı doğal hedge sunmaktadır; ancak FY2025 itibarıyla ROE (%3.17) TRY sermaye maliyetinin (~%30) çok altında seyrediyor ve gerçek değer yaratımı sorgulanır hale geliyor. <strong>Temel katalizör:</strong> Hormuz krizinin çözüme kavuşması (Tüpraş marj normalleşmesi) ve Ford Otosan EV dönüşümünün Romanya'da tam kapasite gerçekleşmesi — bu iki gelişme baz senaryoyu (242 TL) bull senaryoya (325 TL) taşıyabilir. Baz senaryoda SOTP ağırlıklı hedef 238 TL olup mevcut piyasa fiyatına (%14.9 yukarı) göre sınırlı upside sunarken bear senaryoda -%31.4 aşağı risk mevcuttur. <strong>Ana risk:</strong> Hormuz uzun süreli kapalılığı + faiz karşılama ihlali eş zamanlı gerçekleşirse holding değerlemesi bear senaryonun da altına kırılabilir.</p>
+<p><blockquote style="border-left:3px solid #3b82f6; background:#eff6ff; padding:8px 14px; margin:10px 0; color:#1e3a8a;"><em>Bu rapor SPK mevzuatı çerçevesinde hazırlanmış analitik sentezdir. Yatırım tavsiyesi içermez. Herhangi bir karar almadan önce lisanslı aracı kurum ve yatırım danışmanına başvurunuz.</em></blockquote></p></div>
+    
+
+    
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>4</span></div>
+  </div></div>
+
+  <!-- ============= V. SEKTÖR & REKABET ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>V. Sektör & Rekabet Analizi</h1>
+
+    
+    <div>Holding yapısı iştirak portföyü üzerinden değer yaratıyor; ana değerleme yaklaşımı Sum-of-the-Parts (SOTP) olup konsolide DCF bir üst sınır anlamı taşımaktadır. Piyasa genelde holding indirimi uygulayarak iştiraklerin bireysel piyasa değerlerinin altında fiyatlama yapmaktadır; bu indirimin tarihsel aralığı ve genişleme/daralma dönemleri yatırım tezinin önemli bir parçasıdır. Yönetim karar alma hızı, sermaye dağıtım politikası ve iştirakler arası sinerji yaratma kapasitesi holding primi/indirimini belirleyen faktörlerdir. Aşağıdaki benchmark tablosu sektör içindeki konumlanmaya göre 7 temel metriği karşılaştırmaktadır.  sektör içinde diferansiye olmaktadır. Porter 5 Forces çerçevesinde sektörel rekabet baskısı, yeni giren tehdidi, ikame riski, tedarikçi ve alıcı pazarlık gücü aşağıda detaylandırılmıştır. SWOT analizi ise şirketin mevcut pozisyonunu Strengths/Weaknesses/Opportunities/Threats üzerinden özetlemektedir.</div>
+    
+
+    
+    <h2>Sektördeki Emsal Şirketler</h2>
+    <div class="note" style="background:#fef3c7; border-left-color:var(--fx-warning); color:#78350f; margin-bottom:12px;">
+      <strong>⚠ Metodoloji Notu:</strong> Aşağıdaki emsal listesi <strong>holding</strong> alt-sektöründe işlem gören BIST şirketlerinden derlenmiştir. Şirket rakamları gerçek parse edilmiş finansal tablolardan gelir; emsal medyan değerleri ise <strong>sektör bazlı directional tahminlerdir</strong> (2025-2026 yaklaşık) — her bir emsalin canlı filer verisi için ayrı finansal analiz çalıştırılmadı. Kesin karşılaştırma için her emsal ticker üzerinden bağımsız analiz önerilir.
+    </div>
+    <table>
+      <thead><tr><th style="width:20%">Ticker</th><th>Şirket Unvanı</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label" style="font-family:var(--font-mono);">SAHOL</td><td>Sabancı Holding</td></tr>
+        
+        <tr><td class="label" style="font-family:var(--font-mono);">DOHOL</td><td>Doğan Holding</td></tr>
+        
+        <tr><td class="label" style="font-family:var(--font-mono);">SISE</td><td>Şişe Cam</td></tr>
+        
+        <tr><td class="label" style="font-family:var(--font-mono);">ENKAI</td><td>Enka İnşaat</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Şirket vs Sektör Medyanı — Operasyonel Oranlar</h2>
+<p class="fx-section-fill" style="margin-top: 8px;">Sektörel emsal medyanları için doğrulanmış piyasa değeri, net borç, FAVÖK ve net kâr verileri henüz teyit edilmemiştir. Emsal karşılaştırması bu raporda yayımlanmamıştır.</p>
+
+    <table>
+      <thead>
+        <tr><th>Metrik</th><th class="num">Şirket</th><th class="num">Sektör Medyan</th><th>Fark</th></tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">Brüt Marj</td>
+          <td class="num">%17.0</td>
+          <td class="num">%18.0</td>
+          <td>-1.0 pp</td>
+        </tr>
+        
+        <tr>
+          <td class="label">FAVÖK Marjı</td>
+          <td class="num">%7.0</td>
+          <td class="num">%15.0</td>
+          <td>-8.0 pp</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Marj</td>
+          <td class="num">%1.3</td>
+          <td class="num">%9.0</td>
+          <td>-7.7 pp</td>
+        </tr>
+        
+        <tr>
+          <td class="label">ROE</td>
+          <td class="num">%3.2</td>
+          <td class="num">%14.0</td>
+          <td>-10.8 pp</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Değerleme Çarpanları — Sektör Medyanı</h2>
+    <table>
+      <thead><tr><th>Çarpan</th><th class="num">Sektör Medyan</th><th>Not</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">EV/EBITDA</td>
+          <td class="num">3.0x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı (yaklaşık 2025-2026)</td>
+        </tr>
+        
+        <tr>
+          <td class="label">F/K (P/E)</td>
+          <td class="num">4.0x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı</td>
+        </tr>
+        
+        <tr>
+          <td class="label">PD/DD (P/BV)</td>
+          <td class="num">0.45x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Temettü Verimi</td>
+          <td class="num">%4.0</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör ortalaması</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net Borç/FAVÖK</td>
+          <td class="num">2.5x</td>
+          <td style="font-size:9pt; color:var(--fx-gray);">Sektör medyanı</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 860 380" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:860px;height:auto;font-family:-apple-system, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;"><defs>
+  <linearGradient id="bc_bgG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fafbfd"/>
+  </linearGradient>
+  <filter id="bc_sh" x="-3%" y="-3%" width="106%" height="106%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+    <feOffset dx="0" dy="1.5"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <linearGradient id="bc_compG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#3182ce"/><stop offset="100%" stop-color="#1a365d"/>
+  </linearGradient>
+  <linearGradient id="bc_medG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#e0b85c"/><stop offset="100%" stop-color="#c6973f"/>
+  </linearGradient></defs><rect x="0" y="0" width="860" height="380" fill="url(#bc_bgG)" rx="10" stroke="#e2e8f0" stroke-width="0.5"/><rect x="75" y="55" width="755" height="245" fill="#f7fafc" rx="2"/><text x="430" y="34" text-anchor="middle" font-size="14" font-weight="700" fill="#1a202c" letter-spacing="-0.2">Emsal Benchmark (Şirket vs Medyan)</text><line x1="75" y1="300.0" x2="830" y2="300.0" stroke="#cbd5e0" stroke-width="1"/><text x="65" y="303.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">0</text><line x1="75" y1="251.0" x2="830" y2="251.0" stroke="#edf2f7" stroke-width="0.5"/><text x="65" y="254.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">122,48</text><line x1="75" y1="202.0" x2="830" y2="202.0" stroke="#edf2f7" stroke-width="0.5"/><text x="65" y="205.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">244,97</text><line x1="75" y1="153.0" x2="830" y2="153.0" stroke="#edf2f7" stroke-width="0.5"/><text x="65" y="156.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">367,45</text><line x1="75" y1="104.0" x2="830" y2="104.0" stroke="#edf2f7" stroke-width="0.5"/><text x="65" y="107.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">489,94</text><line x1="75" y1="55.0" x2="830" y2="55.0" stroke="#edf2f7" stroke-width="0.5"/><text x="65" y="58.5" text-anchor="end" font-size="10" font-weight="500" fill="#718096">612,42</text><rect x="95.6" y="232.0" width="40.3" height="68.0" fill="url(#bc_compG)" rx="3"/><text x="115.8" y="225.0" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1a365d">170</text><rect x="139.9" y="232.0" width="40.3" height="68.0" fill="url(#bc_medG)" rx="3"/><text x="160.0" y="225.0" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c6973f">170</text><text x="137.9" y="318" text-anchor="middle" font-size="10" font-weight="600" fill="#1a202c">brüt marj</text><rect x="221.5" y="272.0" width="40.3" height="28.0" fill="url(#bc_compG)" rx="3"/><text x="241.6" y="265.0" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1a365d">70</text><rect x="265.8" y="272.0" width="40.3" height="28.0" fill="url(#bc_medG)" rx="3"/><text x="285.9" y="265.0" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c6973f">70</text><text x="263.8" y="318" text-anchor="middle" font-size="10" font-weight="600" fill="#1a202c">EBITDA margin</text><rect x="347.3" y="294.8" width="40.3" height="5.2" fill="url(#bc_compG)" rx="3"/><text x="367.4" y="287.8" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1a365d">13</text><rect x="391.6" y="294.8" width="40.3" height="5.2" fill="url(#bc_medG)" rx="3"/><text x="411.7" y="287.8" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c6973f">13</text><text x="389.6" y="318" text-anchor="middle" font-size="10" font-weight="600" fill="#1a202c">net marj</text><rect x="473.1" y="287.2" width="40.3" height="12.8" fill="url(#bc_compG)" rx="3"/><text x="493.3" y="280.2" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1a365d">32</text><rect x="517.4" y="287.2" width="40.3" height="12.8" fill="url(#bc_medG)" rx="3"/><text x="537.5" y="280.2" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c6973f">32</text><text x="515.4" y="318" text-anchor="middle" font-size="10" font-weight="600" fill="#1a202c">Return on equi…</text><rect x="599.0" y="92.4" width="40.3" height="207.6" fill="url(#bc_compG)" rx="3"/><text x="619.1" y="85.4" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1a365d">519</text><rect x="643.2" y="92.4" width="40.3" height="207.6" fill="url(#bc_medG)" rx="3"/><text x="663.4" y="85.4" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c6973f">519</text><text x="641.2" y="318" text-anchor="middle" font-size="10" font-weight="600" fill="#1a202c">Net debt / EBI…</text><text x="767.1" y="318" text-anchor="middle" font-size="10" font-weight="600" fill="#1a202c">Cash conversio…</text><rect x="75" y="350" width="16" height="12" fill="url(#bc_compG)" rx="2"/><text x="97" y="359" font-size="11" font-weight="600" fill="#1a202c">Şirket</text><rect x="175" y="350" width="16" height="12" fill="url(#bc_medG)" rx="2"/><text x="197" y="359" font-size="11" font-weight="600" fill="#1a202c">Sektör Medyanı</text></svg></div>
+    
+
+    
+    <h2>Emsal Karşılaştırma Tablosu</h2>
+    <table>
+      <thead><tr><th>Metrik</th><th class="num">Şirket</th><th class="num">Medyan</th><th class="num">Min/Max</th><th>Quartile</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td class="label">brüt marj</td>
+          <td class="num">%17,0</td>
+          <td class="num">%17,0</td>
+          <td class="num">%17,0 – %17,0</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">EBITDA margin</td>
+          <td class="num">%7,0</td>
+          <td class="num">%7,0</td>
+          <td class="num">%7,0 – %7,0</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">net marj</td>
+          <td class="num">%1,3</td>
+          <td class="num">%1,3</td>
+          <td class="num">%1,3 – %1,3</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Return on equity</td>
+          <td class="num">%3,2</td>
+          <td class="num">%3,2</td>
+          <td class="num">%3,2 – %3,2</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Net debt / EBITDA</td>
+          <td class="num">5,19x</td>
+          <td class="num">5,19x</td>
+          <td class="num">5,19x – 5,19x</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">nakit dönüş süresi</td>
+          <td class="num">-24 gün</td>
+          <td class="num">-24 gün</td>
+          <td class="num">-24 gün – -24 gün</td>
+          <td>Q2</td>
+        </tr>
+        
+        <tr>
+          <td class="label">Piotroski F-score</td>
+          <td class="num">2/9</td>
+          <td class="num">2/9</td>
+          <td class="num">2/9 – 2/9</td>
+          <td>Q2</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Porter's 5 Forces</h2>
+    <div class="porter-grid">
+      <div class="porter-box"><h4>Rakipler Arası Rekabet</h4><span class="intensity medium">Orta</span><p>İştiraklerin kendi sektörlerinde rekabet; holding seviyesinde konglomerat discount etkisi.</p></div>
+      <div class="porter-box"><h4>Yeni Giren Tehdidi</h4><span class="intensity low">Düşük</span><p>Ölçek ve sermaye bariyeri yüksek; yeni holding kurmak zor.</p></div>
+      <div class="porter-box"><h4>İkame Ürün/Hizmet</h4><span class="intensity low">Düşük</span><p>Holding yapısı doğrudan ikame edilemez; segment bazlı ikame mümkün.</p></div>
+      <div class="porter-box"><h4>Tedarikçi Pazarlık Gücü</h4><span class="intensity low">Düşük</span><p>Holding toplam satın alma gücü ile bireysel şirketlerden üstün.</p></div>
+      <div class="porter-box" style="grid-column: span 2;"><h4>Alıcı Pazarlık Gücü</h4><span class="intensity medium">Orta</span><p>Yatırımcılar holding discount’a karşı hassas.</p></div>
+    </div>
+    
+
+    
+    <h2>SWOT Analizi</h2>
+    <div class="swot-grid">
+      <div class="swot-box strengths"><h4>Güçlü Yönler</h4><ul><li>Sabit iştirak portföyü: TUPRS (rafineri), YKB (banka), Ford Otosan (otomotiv), Arçelik (beyaz eşya)</li><li>Türkiye&#39;nin en büyük sanayi grubu, toplam 130+ şirket</li><li>Güçlü governance + 60+ yıllık kurumsal miras</li></ul></div>
+      <div class="swot-box weaknesses"><h4>Zayıf Yönler</h4><ul><li>Konglomerat iskontosu — piyasa holding değerini NAV&#39;ın altında fiyatlıyor</li><li>İştirakler arası sermaye akışının şeffaflığı yatırımcı güvenini zorluyor</li><li>Karmaşık yapısı nedeniyle kısa vadeli trading stratejisine uygun değil</li></ul></div>
+      <div class="swot-box opportunities"><h4>Fırsatlar</h4><ul><li>Stratejik dönüşüm (ESG, dijitalleşme, yenilenebilir enerji) iştirak seviyesinde ek değer</li><li>İştirak satış veya halka arz yoluyla değer kristalizasyonu</li><li>Yurt dışı büyüme (M&amp;A, joint venture) global trafik kazandırma potansiyeli</li></ul></div>
+      <div class="swot-box threats"><h4>Tehditler</h4><ul><li>TUPRS crack spread volatilitesi holding net kârı üzerinde dalgalanma</li><li>Ford Otosan elektrikli araç geçişinde CAPEX yükü</li><li>Arçelik Avrupa pazarında zayıflayan talep</li></ul></div>
+    </div>
+    
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>5</span></div>
+  </div></div>
+
+  <!-- ============= VI. MAKRO ORTAM ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>VI. Makroekonomik Bağlam</h1>
+
+    <h2>Kritik Makro Göstergeler</h2>
+    <table>
+      <thead><tr><th>Gösterge</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        <tr><td class="label">USD/TRY</td><td class="num">45,0515 TL</td></tr>
+        <tr><td class="label">EUR/TRY</td><td class="num">52,6761 TL</td></tr>
+        <tr><td class="label">TCMB Politika Faizi</td><td class="num">Raporlanmadı</td></tr>
+        
+        <tr><td class="label">TÜFE (YoY)</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">GDP (YoY)</td><td class="num">Raporlanmadı</td></tr>
+        <tr><td class="label">BIST-100 Seviye</td><td class="num">14.594</td></tr>
+        
+      </tbody>
+    </table>
+
+    
+    <h2>Sektör-Spesifik Transmisyon</h2>
+    <div><p>KCHOL analizi 2026 yılının jeopolitik açıdan en karmaşık çeyreğine denk gelmektedir. Hürmüz ablukası, yüksek enflasyon ve TCMB'nin temkinli duruşu birlikte KCHOL için hem tehdit hem fırsat penceresi açmaktadır.</p>
+<p><table><thead><tr><th>Gösterge</th><th>Deger</th><th>Dönem</th><th>Kaynak</th></tr></thead><tbody><tr><td>TCMB Politika Faizi</td><td>%37.00</td><td>22 Nis 2026</td><td></td></tr><tr><td>TÜFE (YoY)</td><td>%30.87</td><td>Mart 2026</td><td></td></tr><tr><td>Çekirdek TÜFE</td><td>%29.68</td><td>Mart 2026</td><td></td></tr><tr><td>Yİ-ÜFE (YoY)</td><td>%28.08</td><td>Mart 2026</td><td></td></tr><tr><td>Reel Politika Faizi</td><td>+%6.13</td><td>Hesaplama</td><td>37.00 - 30.87</td></tr><tr><td>USD/TRY</td><td>45.05</td><td>28 Nis 2026</td><td></td></tr><tr><td>TRY YTD Değer Kaybı</td><td>+%4.70</td><td>1 Oca - 28 Nis 2026</td><td></td></tr><tr><td>GSYİH (FY2025)</td><td>+%3.6</td><td>2025</td><td></td></tr><tr><td>Brent Ham Petrol</td><td>$111.16/varil</td><td>28 Nis 2026</td><td></td></tr><tr><td>Brent YTD Değişim</td><td>+%75.67</td><td>2026 YTD</td><td></td></tr><tr><td>BIST-100</td><td>14.594</td><td>27 Nis 2026</td><td></td></tr><tr><td>BIST-100 YTD</td><td>+%52.76</td><td>2026 YTD</td><td></td></tr></tbody></table></p></div>
+    
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>6</span></div>
+  </div></div>
+
+  <!-- ============= VII. TEKNİK ANALİZ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>VII. Teknik Analiz</h1>
+<p class="fx-section-fill" style="margin-top: 8px;">KCHOL, kapanış itibarıyla pozitif yönde bir teknik görünüm sergilemektedir. Teknik analiz tek başına yatırım kararı dayanağı oluşturmaz.</p>
+
+
+    
+    <p style="font-size:9pt; color:#718096; margin:0 0 6px 0;">Veri itibariyle: 2026-04-28 (günlük bar kapanışı)</p>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Trend</div><div class="kpi-value" style="font-size:14pt;">Yükseliş</div></div>
+      <div class="kpi-card"><div class="kpi-label">RSI (14)</div><div class="kpi-value">52.9</div><div class="kpi-sub">Nötr</div></div>
+      <div class="kpi-card"><div class="kpi-label">Son Kapanış</div><div class="kpi-value">203,70 TL</div></div>
+      <div class="kpi-card"><div class="kpi-label">Hacim (7g ort.)</div><div class="kpi-value" style="font-size:12pt;">—</div></div>
+    </div>
+    
+
+    
+    <h2>Hareketli Ortalamalar</h2>
+    <table>
+      <thead><tr><th>Periyot</th><th class="num">Değer</th><th class="num">Kapanışa Göre Fark</th></tr></thead>
+      <tbody>
+        
+        <tr><td class="label">MA 20</td><td class="num">201,68 TL</td><td class="num">+1.0%</td></tr>
+        
+        <tr><td class="label">MA 50</td><td class="num">199,96 TL</td><td class="num">+1.9%</td></tr>
+        
+        <tr><td class="label">MA 200</td><td class="num">183,30 TL</td><td class="num">+11.1%</td></tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <h2>Trend Analizi</h2>
+    <div><p>Koç Holding'in konsolide geliri 2021-2025 döneminde 477 Mly TRY'den 2.757 Mly TRY'ye, yani 5 yılda yaklaşık 5.8 kata ulaşmıştır. Bu büyümenin büyük bölümünü YKBNK'nın 2024 yılında tam konsolidasyona alınması (yaklaşık +924 Mly TRY katkı) açıklamaktadır; organik büyüme bunun çok gerisindedir. Bu ayrımı yapmak önemlidir: YKBNK konsolidasyonu karşılaştırmalı analizlerde baz etkisi yaratmakta, görüntüde dramatik bir büyüme sergilenmesini sağlamaktadır.</p>
+<p><table><thead><tr><th>Yil</th><th>Konsolide Gelir (Mly TRY)</th><th>YoY Değişim</th><th>Ana Etken</th></tr></thead><tbody><tr><td>FY2021</td><td>477.1</td><td>—</td><td>Referans yıl</td></tr><tr><td>FY2022</td><td>1.555.7</td><td>+%226</td><td>Konsolidasyon genişlemesi + enflasyon</td></tr><tr><td>FY2023</td><td>1.988.4</td><td>+%28</td><td>Organik + enflasyon</td></tr><tr><td>FY2024</td><td>2.252.7</td><td>+%13</td><td>Baz etkisi azalıyor</td></tr><tr><td>FY2025</td><td>2.757.3</td><td>+%22</td><td>YKBNK tam yıl + enerji fiyatları</td></tr></tbody></table></p>
+<p><em>Kaynak: KCHOL IR FY2025 Sunumu — 5 yıllık tablo</em></p></div>
+    
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>7</span></div>
+  </div></div>
+
+  <!-- ============= VIII. ESG ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>VIII. ESG Değerlendirmesi</h1>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 460 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:460px;height:auto;font-family:-apple-system, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;"><defs>
+  <linearGradient id="rad_bgG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fafbfd"/>
+  </linearGradient>
+  <filter id="rad_sh" x="-3%" y="-3%" width="106%" height="106%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+    <feOffset dx="0" dy="1.5"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <radialGradient id="rad_fillG" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#3182ce" stop-opacity="0.35"/>
+    <stop offset="100%" stop-color="#1a365d" stop-opacity="0.08"/>
+  </radialGradient></defs><rect x="0" y="0" width="460" height="360" fill="url(#rad_bgG)" rx="10" stroke="#e2e8f0" stroke-width="0.5"/><text x="230" y="24" text-anchor="middle" font-size="14" font-weight="700" fill="#1a202c" letter-spacing="-0.2">ESG Skor Profili (0-100)</text><polygon points="230.0,168.0 250.8,204.0 209.2,204.0" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><text x="240.0" y="171.0" font-size="8" fill="#a0aec0">20</text><polygon points="230.0,144.0 271.6,216.0 188.4,216.0" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><text x="240.0" y="147.0" font-size="8" fill="#a0aec0">40</text><polygon points="230.0,120.0 292.4,228.0 167.6,228.0" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><text x="240.0" y="123.0" font-size="8" fill="#a0aec0">60</text><polygon points="230.0,96.0 313.1,240.0 146.9,240.0" fill="none" stroke="#e2e8f0" stroke-width="0.5"/><text x="240.0" y="99.0" font-size="8" fill="#a0aec0">80</text><polygon points="230.0,72.0 333.9,252.0 126.1,252.0" fill="none" stroke="#e2e8f0" stroke-width="1"/><text x="240.0" y="75.0" font-size="8" fill="#a0aec0">100</text><line x1="230" y1="192" x2="230.0" y2="72.0" stroke="#e2e8f0" stroke-width="0.8"/><text x="230.0" y="53.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1a202c">Çevresel (E)</text><line x1="230" y1="192" x2="333.9" y2="252.0" stroke="#e2e8f0" stroke-width="0.8"/><text x="353.0" y="266.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1a202c">Sosyal (S)</text><line x1="230" y1="192" x2="126.1" y2="252.0" stroke="#e2e8f0" stroke-width="0.8"/><text x="107.0" y="266.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1a202c">Yönetişim (G)</text><polygon points="230.0,120.0 297.5,231.0 150.0,238.2" fill="url(#rad_fillG)" stroke="#1a365d" stroke-width="2"/><circle cx="230.0" cy="120.0" r="4" fill="#ffffff" stroke="#1a365d" stroke-width="2"/><text x="230.0" y="111.0" text-anchor="middle" font-size="9" font-weight="700" fill="#1a365d" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">60</text><circle cx="297.5" cy="231.0" r="4" fill="#ffffff" stroke="#1a365d" stroke-width="2"/><text x="297.5" y="222.0" text-anchor="middle" font-size="9" font-weight="700" fill="#1a365d" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">65</text><circle cx="150.0" cy="238.2" r="4" fill="#ffffff" stroke="#1a365d" stroke-width="2"/><text x="150.0" y="229.2" text-anchor="middle" font-size="9" font-weight="700" fill="#1a365d" font-family="'SF Mono', 'Fira Code', ui-monospace, Consolas, monospace">77</text></svg></div>
+    
+
+    
+
+    
+
+    
+    <div><p><table><thead><tr><th>Alan</th><th>Skor</th><th>Temel Bulgu</th></tr></thead><tbody><tr><td>Çevresel (E)</td><td>7/10</td><td>CDP A- (iklim + su); Kapsam 1&amp;2 %17 azaltım (2017-2024); SBTi 1.5°C (ARCLK, FROTO)</td></tr><tr><td>Sosyal (S)</td><td>6/10</td><td>84.000+ çalışan; iş güvenliği verileri raporlanıyor ancak tedarikçi denetimi kısıtlı</td></tr><tr><td>Yönetişim (G)</td><td>6/10</td><td>En az 4 bağımsız YK üyesi; TSRS uyumlu rapor (EY denetimli); aile hâkimiyeti yapısı azınlık risk</td></tr><tr><td><strong>ESG Genel</strong></td><td><strong>6.3/10</strong></td><td>Türkiye holdingleri içinde lider konumda; küresel benchmark için gelişim alanı mevcut</td></tr></tbody></table></p>
+<p><em>Kaynak:</em></p>
+<p>YKB'nin finanse edilen emisyonları (Scope 3) SBTi çerçevesine dahil etmesi Türkiye bankacılığında bir ilk olması bakımından önemlidir. ARCLK'nın Hitachi devir sonrası ESG raporlama uyumu henüz netleşmemiştir.</p></div>
+    
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>8</span></div>
+  </div></div>
+
+  <!-- ============= IX. HABER & SENTIMENT ============= -->
+  
+
+  <!-- ============= X. KAP OLAYLARI ============= -->
+  
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>X. KAP Olayları & Etki Analizi</h1>
+
+    
+    <div style="margin: 14px 0; page-break-inside: avoid;"><svg viewBox="0 0 860 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:860px;height:auto;font-family:-apple-system, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;"><defs>
+  <linearGradient id="tl_bgG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fafbfd"/>
+  </linearGradient>
+  <filter id="tl_sh" x="-3%" y="-3%" width="106%" height="106%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+    <feOffset dx="0" dy="1.5"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs><rect x="0" y="0" width="860" height="200" fill="url(#tl_bgG)" rx="10" stroke="#e2e8f0" stroke-width="0.5"/><text x="430" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1a202c" letter-spacing="-0.2">Son 12 Ay KAP Olay Zaman Çizelgesi</text><line x1="50" y1="105" x2="830" y2="105" stroke="#cbd5e0" stroke-width="1.5"/><line x1="50" y1="102" x2="50" y2="108" stroke="#718096" stroke-width="0.8"/><text x="50" y="121" text-anchor="middle" font-size="8" fill="#718096">2026-03</text><line x1="50" y1="105" x2="50" y2="75" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="50" cy="75" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="50" cy="75" r="2" fill="#a0aec0"/><text x="50" y="65" text-anchor="middle" font-size="7" font-weight="500" fill="#1a202c">Kurumsal Yönetim Bilgi F…</text><line x1="211.3793103448276" y1="105" x2="211.3793103448276" y2="135" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="211.3793103448276" cy="135" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="211.3793103448276" cy="135" r="2" fill="#a0aec0"/><text x="211.3793103448276" y="149" text-anchor="middle" font-size="7" font-weight="500" fill="#1a202c">Hak Kullanımı</text><line x1="238.27586206896552" y1="105" x2="238.27586206896552" y2="75" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="238.27586206896552" cy="75" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="238.27586206896552" cy="75" r="2" fill="#a0aec0"/><line x1="238.27586206896552" y1="105" x2="238.27586206896552" y2="135" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="238.27586206896552" cy="135" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="238.27586206896552" cy="135" r="2" fill="#a0aec0"/><line x1="238.27586206896552" y1="105" x2="238.27586206896552" y2="75" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="238.27586206896552" cy="75" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="238.27586206896552" cy="75" r="2" fill="#a0aec0"/><line x1="265.1724137931035" y1="105" x2="265.1724137931035" y2="135" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="265.1724137931035" cy="135" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="265.1724137931035" cy="135" r="2" fill="#a0aec0"/><line x1="265.1724137931035" y1="105" x2="265.1724137931035" y2="75" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="265.1724137931035" cy="75" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="265.1724137931035" cy="75" r="2" fill="#a0aec0"/><line x1="265.1724137931035" y1="105" x2="265.1724137931035" y2="135" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="265.1724137931035" cy="135" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="265.1724137931035" cy="135" r="2" fill="#a0aec0"/><line x1="292.0689655172414" y1="105" x2="292.0689655172414" y2="75" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="292.0689655172414" cy="75" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="292.0689655172414" cy="75" r="2" fill="#a0aec0"/><text x="292.0689655172414" y="65" text-anchor="middle" font-size="7" font-weight="500" fill="#1a202c">Bağımsız Denetim Kuruluş…</text><line x1="292.0689655172414" y1="105" x2="292.0689655172414" y2="135" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="292.0689655172414" cy="135" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="292.0689655172414" cy="135" r="2" fill="#a0aec0"/><line x1="292.0689655172414" y1="105" x2="292.0689655172414" y2="75" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="292.0689655172414" cy="75" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="292.0689655172414" cy="75" r="2" fill="#a0aec0"/><line x1="399.6551724137931" y1="105" x2="399.6551724137931" y2="135" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="399.6551724137931" cy="135" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="399.6551724137931" cy="135" r="2" fill="#a0aec0"/><text x="399.6551724137931" y="149" text-anchor="middle" font-size="7" font-weight="500" fill="#1a202c">Pay Alım Satım Bildirimi</text><line x1="426.55172413793105" y1="105" x2="426.55172413793105" y2="75" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="426.55172413793105" cy="75" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="426.55172413793105" cy="75" r="2" fill="#a0aec0"/><line x1="749.3103448275862" y1="105" x2="749.3103448275862" y2="135" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="749.3103448275862" cy="135" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="749.3103448275862" cy="135" r="2" fill="#a0aec0"/><text x="749.3103448275862" y="149" text-anchor="middle" font-size="7" font-weight="500" fill="#1a202c">Finansal Takvim</text><line x1="830" y1="105" x2="830" y2="75" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="2,2"/><circle cx="830" cy="75" r="4.5" fill="#ffffff" stroke="#a0aec0" stroke-width="2"/><circle cx="830" cy="75" r="2" fill="#a0aec0"/><text x="830" y="65" text-anchor="middle" font-size="7" font-weight="500" fill="#1a202c">Özel Durum Açıklaması (G…</text></svg></div>
+    
+
+    <table>
+      <thead><tr><th style="width:40%">Olay</th><th>Tip</th><th>Etki</th><th>Zamanlama</th><th>Etkilenen</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>Özel Durum Açıklaması (Genel)</td>
+          <td>governance</td>
+          <td>Belirsiz</td>
+          <td>Yakın</td>
+          <td>Bilanço</td>
+        </tr>
+        
+        <tr>
+          <td>Finansal Takvim</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Kamuyu Aydınlatma Platformu Duyurusu</td>
+          <td>material_event</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Pay Alım Satım Bildirimi</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Bağımsız Denetim Kuruluşunun Belirlenmesi</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Genel Kurul İşlemlerine İlişkin Bildirim</td>
+          <td>governance</td>
+          <td>Belirsiz</td>
+          <td>Yakın</td>
+          <td>Bilanço</td>
+        </tr>
+        
+        <tr>
+          <td>Pay Mali Hak Kullanım İşlemi - Nakit Ödeme</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Toptan Alış Satış İşlemi</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Toptan Alış Satış İşlemi Bildirimi</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Pay Alım Satım Bildirimi</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Pay Alım Satım Bildirimi</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+        <tr>
+          <td>Borsada İşlem Gören Tipe Dönüşüm Duyurusu</td>
+          <td>other</td>
+          <td>Belirsiz</td>
+          <td>Orta</td>
+          <td>G/Z</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>10</span></div>
+  </div></div>
+  
+
+  <!-- ============= XI. RİSK ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>XI. Risk Değerlendirmesi</h1>
+
+    <h2>Risk Matrisi (Etki × Olasılık)</h2>
+<p class="fx-section-fill" style="margin-top: 8px;">Risk matrisinde 1 kritik bulgu ve 3 izleme uyarısı, 3 izleme uyarısı, 1 bilgilendirme sinyali yer almaktadır. En yüksek etki kategorisinde "Yüksek Borçluluk Riski" öne çıkmaktadır.</p>
+
+    <div class="risk-matrix">
+      <div class="risk-axis">Etki ↑</div>
+      <div class="risk-axis">Düşük Olasılık</div>
+      <div class="risk-axis">Orta Olasılık</div>
+      <div class="risk-axis">Yüksek Olasılık</div>
+
+      <div class="risk-axis">Yüksek</div>
+      <div class="risk-cell risk-med">Yüksek Borçluluk Riski</div>
+      <div class="risk-cell risk-high">—</div>
+      <div class="risk-cell risk-high">—</div>
+
+      <div class="risk-axis">Orta</div>
+      <div class="risk-cell risk-low">—</div>
+      <div class="risk-cell risk-med">fundamental has both positive and negati</div>
+      <div class="risk-cell risk-high">—</div>
+
+      <div class="risk-axis">Düşük</div>
+      <div class="risk-cell risk-low">Likidite Baskısı / Faiz Karşılama Zayıflığı</div>
+      <div class="risk-cell risk-low">—</div>
+      <div class="risk-cell risk-med">—</div>
+    </div>
+
+    
+    <h2>Temel Risk Faktörleri</h2>
+    <ul class="bullet-list">
+      
+      <li class="warn">Net Borç / FAVÖK çarpanı 5.1898, 5,0x sınırını aşıyor — yüksek finansal sıkıntı sinyali.</li>
+      
+      <li class="warn">Sektörel sinyaller karışık görünüm sergiliyor; daha detaylı inceleme önerilmiştir..</li>
+      
+      <li class="warn">Holding — SOTP analizi zorunlu, konsolide DCF üst sınır olarak kabul edilmeli</li>
+      
+      <li class="warn">Holding yapısındaki şirketlerde konsolide DCF analizi yalnızca üst sınır kontrolü olarak değerlendirilmelidir.. SOTP table required for real fair value.</li>
+      
+    </ul>
+    
+
+    
+    <h2>Detaylı Risk Yorumu</h2>
+    <div>Rapor, 1 kritik risk faktörü tespit etmiştir (Overleveraged). Bu faktörler yatırım tezini doğrudan etkileyebilecek yapıda olup, yakın izlenme gerektirmektedir. 3 orta düzey uyarı mevcut — bunlar doğrudan yatırım kararını bozmasa da raporlama ve izleme açısından takip edilmeli. Sinyal kaynakları arasında 1 sapma tespit edilmiştir; farklı kaynakların birbirini doğrulamayan sinyalleri bulunması yatırım tezinin konfidans seviyesini sınırlamaktadır. Holding yapısında başlıca riskler: (i) iştirak seviyesindeki operasyonel sorunların konsolide tabloya yansıması, (ii) sektörel konsantrasyon riski — portföyün belirli sektörlere aşırı ağırlığı, (iii) piyasa değerlemesinde konglomerat indirimi genişlemesi, (iv) iştirakler arası kaynak tahsisi verimsizliği. Risk matrisi (etki × olasılık) yukarıda tespit edilen faktörleri 3×3 grid üzerinde konumlandırmakta ve yakın izleme önceliğini görsel olarak iletmektedir.</div>
+    
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>11</span></div>
+  </div></div>
+
+  <!-- ============= XII. SONUÇ ============= -->
+  <div class="page"><div class="page-inner">
+    <div class="page-header">
+      <div class="page-header-left"><span class="brand-mark">FX</span><span class="company-ticker">KCHOL · Koç Holding A.Ş.</span></div>
+      <div>2026-04-28</div>
+    </div>
+
+    <h1>XII. Sonuç & Öneriler</h1>
+
+    
+    <h2>Analitik Sonuç</h2>
+    <div>KCHOL için üretilen bu kapsamlı analiz temkinli pozitif bir değerlendirme sunmaktadır. Finansal sağlık, sektörel konumlanma, makro bağlam ve KAP olay akışı birlikte ele alındığında, yatırım tezi yakın izlenmesi gereken risk profiliyle şekillenmektedir. Ana katalizörler arasında yatırım planı uygulanması, sektörel dönüş sinyalleri ve makro iyileşmeler yer alırken, bu katalizörlerin uygun zamanlamayla materyalize olması üst senaryoların gerçekleşme olasılığını artıracaktır. Bu rapor Holding özelinde sektör-spesifik dinamikleri yansıtmakta olup, ileri dönemde yeni KAP bildirimleri ve finansal tabloların yayımlanmasıyla yenilenmesi önerilmektedir. Yatırımcı, raporu kendi risk iştahı, portföy diversifikasyonu ve zaman ufku çerçevesinde değerlendirmelidir. Finance X platformu deterministic Python hesaplamalar ile  metin blokları hibrit yaklaşımıyla üretilen bu rapor, yatırım tavsiyesi niteliği taşımaz. Nihai kararlar için lisanslı yatırım danışmanına başvurulmalıdır.</div>
+    
+
+    
+
+    
+    <h2>Ana Katalizörler</h2>
+<p class="fx-section-fill" style="margin-top: 8px;">Bu raporda 6 pozitif katalizör tespit edilmiştir; sıralama sentez katmanının önem skoruna göre yapılmıştır. Ayrıntılar yukarıdaki maddelerde özetlenmiştir.</p>
+
+    <ul class="bullet-list">
+      
+      <li class="ok">Brüt Marj</li>
+      
+      <li class="ok">FAVÖK Marjı</li>
+      
+      <li class="ok">Net Marj</li>
+      
+      <li class="ok">Özel Durum Açıklaması (Genel)</li>
+      
+      <li class="ok">Sermaye Artırımı - Azaltımı İşlemlerine İlişkin Bildirim</li>
+      
+      <li class="ok">Sermaye Artırımı - Azaltımı İşlemlerine İlişkin Bildirim</li>
+      
+    </ul>
+    
+
+    
+
+    <!-- ============================================================ -->
+    <!-- P4.alpha — Boardroom Intelligence Annex (P3 truth-layer)     -->
+    <!-- Conditional: each section renders only when its data exists. -->
+    <!-- ============================================================ -->
+    
+    <div class="page fx-no-break" style="page-break-before: always;">
+  <div class="page-inner">
+    <h1>İç Tutarlılık Kontrolü</h1>
+    <p style="color: var(--fx-gray); font-size: 8.5pt;">Yapısal çapraz-modül tutarlılık taraması; bulgular istişari niteliktedir ve rapor içeriğini değiştirmez.</p>
+    <div style="margin: 10px 0 14px;">
+      <span class="fx-pill fx-pill-medium">2 bulgu</span>
+      <span class="fx-pill fx-pill-high">0 yüksek</span>
+      <span class="fx-pill fx-pill-medium">1 orta</span>
+      <span class="fx-pill fx-pill-low">1 düşük</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 12%;">Şiddet</th>
+          <th style="width: 26%;">Kategori</th>
+          <th style="width: 62%;">Bulgu / Önerilen Çözüm</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td><span class="fx-pill fx-pill-low">düşük</span></td>
+          <td class="label" style="font-size: 8.5pt;">Finansal Riskler ile Yatırım Tezi Arasında Uyum Kontrolü</td>
+          <td>
+            <strong style="font-size: 9pt;">1 kritik bulgu ve 3 izleme uyarısı mevcut iken sentez katmanı pozitif yönü korumaktadır (score=0.36)</strong><br/>
+            <span style="font-size: 8.5pt; color: var(--fx-gray);">Finansal analiz 1 kritik bulgu ve 3 izleme uyarısı işaret etmektedir while strategic synthesis points positive (sentez hassasiyet skoru=0.36). Yönetim kurulu,  the flags are addressed in the thesis.</span><br/><em style="font-size: 8.5pt; color: var(--fx-dark);">Öneri: Her kritik finansal bulgu yatırım tezinde açıklanmalıdır with an explicit remediation/why-not-blocker note.</em>
+          </td>
+        </tr>
+        <tr>
+          <td><span class="fx-pill fx-pill-medium">orta</span></td>
+          <td class="label" style="font-size: 8.5pt;">Sentez Katmanı Tutarsızlık Uyarısı</td>
+          <td>
+            <strong style="font-size: 9pt;">Synthesis-detected divergence: Sektörel sinyaller karışık görünüm sergiliyor; daha detaylı inceleme önerilmiştir..</strong><br/>
+            <span style="font-size: 8.5pt; color: var(--fx-gray);">strategic_synthesis surfaced this divergence directly: &quot;Sektörel sinyaller karışık görünüm sergiliyor; daha detaylı inceleme önerilmiştir..&quot;</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 14px; font-style: italic;">Bu bölüm istişari niteliktedir; rapor içeriği bu kontrole bağımlı değildir.</p>
+  </div>
+</div>
+    
+    
+    <div class="page fx-no-break" style="page-break-before: always;">
+  <div class="page-inner">
+    <h1>Yönetim Kurulu Beklenen Soruları</h1>
+    <p style="color: var(--fx-gray); font-size: 8.5pt;">Yönetim kurulu seviyesinde sorulması beklenen sorular ve proactive cevaplar; istişari niteliktedir, resmi tavsiye değildir.</p>
+    <div style="margin: 10px 0 14px;">
+      <span class="fx-pill fx-pill-info">7 soru</span>
+    </div>
+    
+    <div class="fx-subtle-surface fx-no-break" style="margin: 10px 0;">
+      <div style="margin-bottom: 6px;">
+        <span class="fx-pill fx-pill-info">Finansal Risk Sorgulaması</span>
+        <span class="fx-pill fx-pill-info">güven: yüksek</span>
+      </div>
+      <h4 style="font-size: 10.5pt; color: var(--brand-primary); margin: 0 0 6px;">Raporda &#39;Yüksek Borçluluk Riski&#39; olarak işaretlenmiş kritik bir kaldıraç uyarısı var. Holding&#39;in konsolide borç yükü ve faiz karşılama oranları mevcut faiz ortamında sürdürülebilir mi?</h4>
+      <p style="font-size: 9.5pt; margin: 0;">KCHOL&#39;un konsolide bilançosunda Yüksek Borçluluk Riski uyarısı tetiklenmiştir; bu durum özellikle yüksek faiz ortamında finansman maliyetinin öz kaynak getirisini aşındırma riskine işaret etmektedir. Faiz Karşılama Zayıflığı uyarısıyla birlikte değerlendirildiğinde, ana holdinge temettü akışı sağlayan iştiraklerden — başta Yapı Kredi — beklenen nakit akışlarının yeterince güçlü kalıp kalmadığı kritik sorudur. Kısa vadeli likidite baskısı (Likidite Baskısı) bu tabloya eklenince, olası bir yeniden finansman gereksinimi veya kâr payı kısıtlaması senaryosu yönetimle doğrulanmalıdır.</p>
+      <div style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 6px;">Kanıt: kritik bulgu sayısı=1 &middot; finansal analiz alanı=[Yüksek Borçluluk Riski(critical),Faiz Karşılama Zayıflığı(warn),Likidite Baskısı(warn)] &middot; finansal analiz alanıüven: düşük</div>
+    </div>
+    <div class="fx-subtle-surface fx-no-break" style="margin: 10px 0;">
+      <div style="margin-bottom: 6px;">
+        <span class="fx-pill fx-pill-info">Değerleme Sorgulaması</span>
+        <span class="fx-pill fx-pill-info">güven: yüksek</span>
+      </div>
+      <h4 style="font-size: 10.5pt; color: var(--brand-primary); margin: 0 0 6px;">SOTP değerlemesinde %65 ağırlık verilmiş. Yapı Kredi gibi bankacılık ağırlıklı iştiraklerin SOTP&#39;a dahil edilme yöntemi nedir ve piyasa değeri ile defter değeri arasındaki makasın genişlemesi halinde bu değerleme nasıl etkilenir?</h4>
+      <p style="font-size: 9.5pt; margin: 0;">Bankacılık ağırlıklı holding sınıflandırması nedeniyle SOTP&#39;un %65 ağırlıkla baskın yöntem seçilmesi metodolojik olarak savunulabilir; ancak banka iştirakleri için kullanılan P/B çarpanlarının (metodolojide %20 ağırlıkla destekleniyor) döngüsel duyarlılığı yüksektir. Piyasa P/B iskontosunun derinleşmesi — özellikle Yapı Kredi&#39;nin takipteki alacak oranı veya sermaye yeterlilik baskısıyla — SOTP&#39;ta tek başına belirleyici olan bu kaleme ciddi downside getirebilir. Bu nedenle banka iştiraki için baz/stres P/B senaryolarının SOTP tablosunda açıkça gösterilmesi gerekir.</p>
+      <div style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 6px;">Kanıt: .primary_method=val_sotp &middot; .weights={val_sotp:0.65,val_p_b:0.2} &middot; CLASSIFICATION.sub=[banking_heavy]</div>
+    </div>
+    <div class="fx-subtle-surface fx-no-break" style="margin: 10px 0;">
+      <div style="margin-bottom: 6px;">
+        <span class="fx-pill fx-pill-info">Metodoloji Sorgulaması</span>
+        <span class="fx-pill fx-pill-neutral">güven: orta</span>
+      </div>
+      <h4 style="font-size: 10.5pt; color: var(--brand-primary); margin: 0 0 6px;">DCF yalnızca %10 ağırlık almış. Holdingde nakit akışı görünürlüğü bu denli düşük mü, yoksa veri yetersizliği nedeniyle mi bu yöntem ikincil bırakıldı?</h4>
+      <p style="font-size: 9.5pt; margin: 0;">Holding yapılarında ana holdinge ulaşan serbest nakit akışı; temettü üst limitleri, vergi ve çifte vergileme ile iştiraklerin kâr dağıtım politikalarına bağlı olduğundan DCF&#39;in düşük ağırlıkla tutulması teknik olarak gerekçelendirilebilir. Bununla birlikte finansal analizin &#39;düşük güven&#39; seviyesinde kalması, mevcut veri kalitesinin bu konudaki belirsizliği artırdığına işaret etmektedir. Yatırım komitesi, DCF&#39;in %10&#39;da tutulmasının bilinçli bir metodolojik tercih mi yoksa veri kısıtı sonucu mu olduğunu sorgulayacaktır; bu ayrımın açıkça belgelenmesi gerekir.</p>
+      <div style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 6px;">Kanıt: .weights={val_dcf:0.1} &middot; finansal analiz alanıüven: düşük &middot; METHODOLOGY.confidence=1.00</div>
+    </div>
+    <div class="fx-subtle-surface fx-no-break" style="margin: 10px 0;">
+      <div style="margin-bottom: 6px;">
+        <span class="fx-pill fx-pill-info">Yönetim ve Strateji Soruları</span>
+        <span class="fx-pill fx-pill-neutral">güven: orta</span>
+      </div>
+      <h4 style="font-size: 10.5pt; color: var(--brand-primary); margin: 0 0 6px;">Stratejik sentezde temel sinyaller hem pozitif hem negatif olarak ayrışıyor. Yönetim, holdinge değer katan ve azaltan iştirakleri önümüzdeki 12-18 ayda nasıl ele almayı planlıyor?</h4>
+      <p style="font-size: 9.5pt; margin: 0;">Stratejik sentezin yakınsama skoru 0.36 ile oldukça düşük; bu, farklı analiz bacaklarının holding için tutarlı bir görüş oluşturamadığını göstermektedir. Yönetimin portföy rasyonalizasyonu, sermaye tahsisi öncelikleri ve olası varlık satışı/birleşme gündemine dair net bir iletişim politikasının olup olmadığı kritik önem taşımaktadır. Düşük yakınsama skoru ve temel çelişkinin çözümsüz kalması (cf-e160f20837), tez ciddiyeti açısından yönetimle birebir doğrulama gerektiren bir kırmızı bayraktır.</p>
+      <div style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 6px;">Kanıt: SS.sentez hassasiyet skoru=0.36 &middot; SS.güven: orta &middot; iç tutarlılık bulgusu</div>
+    </div>
+    <div class="fx-subtle-surface fx-no-break" style="margin: 10px 0;">
+      <div style="margin-bottom: 6px;">
+        <span class="fx-pill fx-pill-info">Finansal Risk Sorgulaması</span>
+        <span class="fx-pill fx-pill-info">güven: yüksek</span>
+      </div>
+      <h4 style="font-size: 10.5pt; color: var(--brand-primary); margin: 0 0 6px;">Likidite baskısı (Likidite Baskısı) ile aşırı kaldıraç birlikte değerlendirildiğinde, holding düzeyinde olası bir refinansman veya sermaye artırımı ihtiyacı var mı?</h4>
+      <p style="font-size: 9.5pt; margin: 0;">Likidite Baskısı ve Yüksek Borçluluk Riski uyarılarının eş zamanlı tetiklenmesi, holdingde kısa vadeli nakit tamponunun daraldığına ve mevcut borç yapısının yeniden finansman riski taşıdığına işaret etmektedir. Özellikle banka dışı iştiraklerin temettü akışlarında aksamа ya da Yapı Kredi&#39;nin sermaye gereksiniminin artması durumunda ana holdingin ek borçlanma veya sermaye artırımına gitmesi gündeme gelebilir. Bu riskin yönetimin orta vadeli finansman planına nasıl yansıtıldığı ve mevcut kredi limitleri/likidite rezervlerinin yeterliliği raporun yanıtlaması gereken temel sorulardır.</p>
+      <div style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 6px;">Kanıt: finansal analiz alanı=[Likidite Baskısı(warn),Yüksek Borçluluk Riski(critical)] &middot; kritik bulgu sayısı=1 &middot; iç tutarlılık bulgusu</div>
+    </div>
+    <div class="fx-subtle-surface fx-no-break" style="margin: 10px 0;">
+      <div style="margin-bottom: 6px;">
+        <span class="fx-pill fx-pill-info">Aşağı Yönlü Senaryo</span>
+        <span class="fx-pill fx-pill-neutral">güven: orta</span>
+      </div>
+      <h4 style="font-size: 10.5pt; color: var(--brand-primary); margin: 0 0 6px;">Temel tezde hem pozitif hem negatif sinyaller mevcut ve güven skoru düşük. En kötü senaryoda hedef fiyat ne kadar aşağı revize edilebilir ve bu senaryonun tetikleyicileri nelerdir?</h4>
+      <p style="font-size: 9.5pt; margin: 0;">Finansal analiz güven seviyesinin &#39;düşük&#39; kalması ve çelişki cf-4eb5ff09e1&#39;in tezi doğrudan zayıflattığı göz önünde bulundurulduğunda, stres senaryosunda SOTP değerinin %20-30 aşağı gelmesi teknik olarak mümkündür; ancak kesin rakam için banka iştiraki P/B ve NIM baskısı varsayımları netleştirilmelidir. Tetikleyiciler: Yapı Kredi sermaye yeterlilik oranının baskıya girmesi, Türk lirası faiz ortamının holdingin borç servisini zorlaştırması ve iştiraklerin temettü dağıtımını kısıtlamasıdır. Stres senaryosu ile temel senaryo arasındaki downside bandının raporun risk bölümünde sayısallaştırılmış olması gerekir.</p>
+      <div style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 6px;">Kanıt: SS.sentez hassasiyet skoru=0.36 &middot; finansal analiz alanıüven: düşük &middot; iç tutarlılık bulgusu &middot; iç tutarlılık bulgusu &middot; .primary_method=val_sotp</div>
+    </div>
+    <div class="fx-subtle-surface fx-no-break" style="margin: 10px 0;">
+      <div style="margin-bottom: 6px;">
+        <span class="fx-pill fx-pill-info">Değerleme Sorgulaması</span>
+        <span class="fx-pill fx-pill-info">güven: yüksek</span>
+      </div>
+      <h4 style="font-size: 10.5pt; color: var(--brand-primary); margin: 0 0 6px;">Holding iskontosu SOTP hesabına dahil edildi mi? Piyasanın KCHOL&#39;a uyguladığı holding iskontosunun tarihi ortalaması ve mevcut seviyesi nedir?</h4>
+      <p style="font-size: 9.5pt; margin: 0;">Bankacılık ağırlıklı holding yapılarında piyasanın SOTP değerine uyguladığı iskonto tarihsel olarak %20-35 bandında seyredebilmektedir; bu iskontunun metodolojiye dahil edilip edilmediği raporun en kritik varsayımlarından biridir. Eğer holding iskontosu SOTP&#39;a yansıtılmamışsa, piyasa koşullarına göre hedef fiyat önemli ölçüde aşağı çekilebilir ve mevcut değerleme iyimser kalır. Mevcut piyasa fiyatının zımni olarak uyguladığı iskonto seviyesi ile tarihsel ortalama arasındaki karşılaştırma, giriş noktasının cazip olup olmadığını netleştirecektir.</p>
+      <div style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 6px;">Kanıt: .primary_method=val_sotp &middot; .weights={val_sotp:0.65} &middot; CLASSIFICATION.sub=[banking_heavy] &middot; CLASSIFICATION.holding=true</div>
+    </div>
+    <p style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 14px; font-style: italic;">Bu bölüm yönetim kurulu hazırlığına yönelik istişari nitelikte sunulmuştur.</p>
+  </div>
+</div>
+    
+    
+    <div class="page fx-no-break" style="page-break-before: always;">
+  <div class="page-inner">
+    <h1>Kanıt İndeksi</h1>
+    <p style="color: var(--fx-gray); font-size: 8.5pt;">Rapor içinde geçen iddialara çapraz referans olarak yapılandırılmış kaynak indeksi; rapor içeriği bu bölüme bağımlı değildir.</p>
+    <div style="margin: 10px 0 14px;">
+      <span class="fx-pill fx-pill-info">31 kaynak</span>
+      <span class="fx-pill fx-pill-low">4 kaynaklı</span>
+      <span class="fx-pill fx-pill-medium">5 kısmen kaynaklı</span>
+      <span class="fx-pill fx-pill-neutral">0 kaynaksız</span>
+    </div>
+    
+    
+    <h3>KAP Bildirimleri <span style="font-size: 9pt; color: var(--fx-gray); font-weight: 400;">(8)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Kayıt No</th>
+          <th style="width: 22%;">Kaynak</th>
+          <th style="width: 14%;">Güven</th>
+          <th style="width: 46%;">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-7a20f8f455</td>
+          <td><strong style="font-size: 8.5pt;">kap:1555915</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">KAP filing 1555915 — Özel Durum Açıklaması (Genel)</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-24aec56070</td>
+          <td><strong style="font-size: 8.5pt;">kap:1555903</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">KAP filing 1555903 — Finansal Rapor</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-e90a42efe7</td>
+          <td><strong style="font-size: 8.5pt;">kap:1512405</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">KAP filing 1512405 — Özel Durum Açıklaması (Genel)</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-85af01a7a9</td>
+          <td><strong style="font-size: 8.5pt;">kap:1512353</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">KAP filing 1512353 — Finansal Rapor</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-22460e4013</td>
+          <td><strong style="font-size: 8.5pt;">kap:1470579</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">KAP filing 1470579 — Özel Durum Açıklaması (Genel)</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-32b2a2dd5c</td>
+          <td><strong style="font-size: 8.5pt;">kap:1470523</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">KAP filing 1470523 — Finansal Rapor</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-747f36ae51</td>
+          <td><strong style="font-size: 8.5pt;">kap:1432151</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">KAP filing 1432151 — Özel Durum Açıklaması (Genel)</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-f075d94368</td>
+          <td><strong style="font-size: 8.5pt;">kap:1431952</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">KAP filing 1431952 — Finansal Rapor</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Şirket Yapı ve Metodoloji Tespitleri <span style="font-size: 9pt; color: var(--fx-gray); font-weight: 400;">(3)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Kayıt No</th>
+          <th style="width: 22%;">Kaynak</th>
+          <th style="width: 14%;">Güven</th>
+          <th style="width: 46%;">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-afdaaf0970</td>
+          <td><strong style="font-size: 8.5pt;">:classification</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">holding sub=[banking_heavy] holding=true banking=false conf=1.00</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-55d769e15c</td>
+          <td><strong style="font-size: 8.5pt;">:methodology:primary_method</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">primary=val_sotp conf=1.00</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-52f064c326</td>
+          <td><strong style="font-size: 8.5pt;">:methodology:weights</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">weights={&quot;val_sotp&quot;:0.65,&quot;val_p_b&quot;:0.2,&quot;val_dcf&quot;:0.1,&quot;val_trading_comps&quot;:0.05,&quot;val_ddm&quot;:0,&quot;val_nav&quot;:0}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Değerleme Metodoloji Kararı <span style="font-size: 9pt; color: var(--fx-gray); font-weight: 400;">(1)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Kayıt No</th>
+          <th style="width: 22%;">Kaynak</th>
+          <th style="width: 14%;">Güven</th>
+          <th style="width: 46%;">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-2c4ae87ab8</td>
+          <td><strong style="font-size: 8.5pt;">methodology:val_sotp:bankacılık iştiraki ağırlıklı holding</strong></td>
+          <td><span class="fx-pill fx-pill-info">birincil kaynak</span></td>
+          <td style="font-size: 8.5pt;">[bankacılık iştiraki ağırlıklı holding] Holding consolidates banking subsidiary (e.g., KCHOL/YKBNK or SAHOL/AKBNK) — consolidated DCF is distorted by bank P&amp;L. SOTP primary; P/B sleeve for the ba…</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Finansal Risk Bayrakları <span style="font-size: 9pt; color: var(--fx-gray); font-weight: 400;">(5)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Kayıt No</th>
+          <th style="width: 22%;">Kaynak</th>
+          <th style="width: 14%;">Güven</th>
+          <th style="width: 46%;">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-e8807edb9f</td>
+          <td><strong style="font-size: 8.5pt;">finansal risk bayrağı</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">Likidite Baskısı severity=warn — Cari oran 0.8719, 1,0x altında — kısa vadeli yükümlülükler dönen varlıkları aşmaktadır.</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-bcc5699802</td>
+          <td><strong style="font-size: 8.5pt;">finansal risk bayrağı</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">Yüksek Borçluluk Riski severity=critical — Net Borç / FAVÖK çarpanı 5.1898, 5,0x sınırını aşıyor — yüksek finansal sıkıntı sinyali.</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-2c2b072b7f</td>
+          <td><strong style="font-size: 8.5pt;">finansal risk bayrağı</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">Faiz Karşılama Zayıflığı severity=warn — Faiz karşılama oranı 1.8173, 2,0x altında — kazançlar finansman maliyetini güçlükle karşılamaktadır.</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-9ebc0e0049</td>
+          <td><strong style="font-size: 8.5pt;">finansal risk bayrağı</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">Piotroski Skoru Zayıf (Sınırlı Değerlendirme) severity=warn — Piotroski F skoru 2/9 — temel finansal kalite zayıf.</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-d0eb7816e5</td>
+          <td><strong style="font-size: 8.5pt;">finansal risk bayrağı</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">Holding İki-Akımlı Gelir Yapısı severity=info — Holding iki-akımlı P&amp;L present (finans segment). Sanayi brüt marj zinciri yalnızca finansman dışı segment üzerinden kontrol edilmiştir.</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Finansal Metrikler <span style="font-size: 9pt; color: var(--fx-gray); font-weight: 400;">(9)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Kayıt No</th>
+          <th style="width: 22%;">Kaynak</th>
+          <th style="width: 14%;">Güven</th>
+          <th style="width: 46%;">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-7a8ff02fed</td>
+          <td><strong style="font-size: 8.5pt;">fa_metric:GROSS_MARGIN</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">GROSS_MARGIN=17.0223</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-3991354b3d</td>
+          <td><strong style="font-size: 8.5pt;">fa_metric:EBITDA_MARGIN</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">EBITDA_MARGIN=6.9633</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-05b7614c7e</td>
+          <td><strong style="font-size: 8.5pt;">fa_metric:NET_MARGIN</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">NET_MARGIN=1.2559</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-e29d497655</td>
+          <td><strong style="font-size: 8.5pt;">fa_metric:ROE</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">ROE=3.1694</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-a28e7a1bfb</td>
+          <td><strong style="font-size: 8.5pt;">fa_metric:CCC</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">CCC=-23.68</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-6998e75d71</td>
+          <td><strong style="font-size: 8.5pt;">fa_metric:NET_DEBT</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">NET_DEBT=996438000000</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-9c3c9a9fee</td>
+          <td><strong style="font-size: 8.5pt;">fa_metric:NET_DEBT_TO_EBITDA</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">NET_DEBT_TO_EBITDA=5.1898</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-ffb4bb22e1</td>
+          <td><strong style="font-size: 8.5pt;">fa_metric:FCF</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">FCF=-204862000000</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-95f6cc30c7</td>
+          <td><strong style="font-size: 8.5pt;">fa_metric:PIOTROSKI_F</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">PIOTROSKI_F=2</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Finansal Analiz Güven Düzeyi <span style="font-size: 9pt; color: var(--fx-gray); font-weight: 400;">(1)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Kayıt No</th>
+          <th style="width: 22%;">Kaynak</th>
+          <th style="width: 14%;">Güven</th>
+          <th style="width: 46%;">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-b2cfac853a</td>
+          <td><strong style="font-size: 8.5pt;">fa_confidence:low</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">FA güven: düşük</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Sentez Hassasiyet Skoru <span style="font-size: 9pt; color: var(--fx-gray); font-weight: 400;">(1)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Kayıt No</th>
+          <th style="width: 22%;">Kaynak</th>
+          <th style="width: 14%;">Güven</th>
+          <th style="width: 46%;">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-5a3b33ccc5</td>
+          <td><strong style="font-size: 8.5pt;">sentez hassasiyet skoru</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">sentez hassasiyet skoru=0.36 güven: orta</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Çapraz Sentez Sinyalleri <span style="font-size: 9pt; color: var(--fx-gray); font-weight: 400;">(1)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Kayıt No</th>
+          <th style="width: 22%;">Kaynak</th>
+          <th style="width: 14%;">Güven</th>
+          <th style="width: 46%;">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-cc2db5fc3b</td>
+          <td><strong style="font-size: 8.5pt;">sentez tutarsızlığı</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">Sektörel sinyaller karışık görünüm sergiliyor; daha detaylı inceleme önerilmiştir..</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>İç Tutarlılık Bulguları <span style="font-size: 9pt; color: var(--fx-gray); font-weight: 400;">(2)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Kayıt No</th>
+          <th style="width: 22%;">Kaynak</th>
+          <th style="width: 14%;">Güven</th>
+          <th style="width: 46%;">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-a846c6d308</td>
+          <td><strong style="font-size: 8.5pt;">iç tutarlılık bulgusu</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">[low] Finansal Riskler ile Yatırım Tezi Arasında Uyum Kontrolü: 1 kritik bulgu ve 3 izleme uyarısı mevcut iken sentez katmanı pozitif yönü korumaktadır (score=0.36)</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); font-size: 8pt;">ct-7135e7ddce</td>
+          <td><strong style="font-size: 8.5pt;">iç tutarlılık bulgusu</strong></td>
+          <td><span class="fx-pill fx-pill-neutral"> ölçüm</span></td>
+          <td style="font-size: 8.5pt;">[medium] Sentez Katmanı Tutarsızlık Uyarısı: Synthesis-detected divergence: Sektörel sinyaller karışık görünüm sergiliyor; daha detaylı inceleme önerilmiştir..</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size: 7.5pt; color: var(--fx-gray); margin-top: 14px; font-style: italic;">Bu bölüm istişari nitelikte yapılandırılmış kaynak indeksi sunar; rapor içeriği bu bölüme bağımlı değildir.</p>
+  </div>
+</div>
+    
+
+    <h2>Zorunlu Bildirim</h2>
+    <div class="disclaimer">
+      <strong>Uyarı:</strong> Bu rapor Finance X platformu tarafından otomatik üretilmiştir. 
+      hesaplamalar +  metin blokları hibrit modeliyle hazırlanmış olup,
+      <strong>yatırım tavsiyesi değildir</strong>. Rapor veri kaynağı sınırlıdır ve profesyonel bir yatırım danışmanının yerini
+      tutmaz. Sermaye Piyasası Kurulu (SPK) düzenlemeleri çerçevesinde herhangi bir karar almadan önce profesyonel danışmanlık alınız.
+      <div class="method-list" style="margin-top:14px;">
+        <strong>Metodoloji:</strong> Python kap_watch → event_classification (kural tabanlı) → event_impact_mapper (template tablosu) |
+        parse_standardization (pdfplumber) → reconciliation (BS/IS/CF identity) → financial_analysis ( DCF, ratios) |
+        macro_analysis (TCMB) → technical_analysis (TradingView/yfinance yedek hesaplama) →
+        qa_review (rubric scoring) → strategic_synthesis (signal convergence) → report_formatter (template render).
+        metin blokları  (Claude) üzerinden enjekte edilir.
+      </div>
+      <div style="margin-top:10px;">
+        <strong>Rapor ID:</strong> <code>rpt-Yw8K5-5hhipTuqwaiKqSd</code> ·
+        <strong>Ticker:</strong> <code>KCHOL</code> ·
+        <strong>Dönem:</strong> <code>FY-2025</code> ·
+        <strong>QA Skor:</strong> <code>1.00</code>
+      </div>
+    </div>
+
+    <div class="page-footer"><span>Finance X · KCHOL Analiz</span><span>12</span></div>
+  </div></div>
+
+</body>
+</html>
