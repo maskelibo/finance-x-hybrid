@@ -241,7 +241,16 @@ export function ensureColumn(tableName: string, columnName: string, columnDefini
   const columns = db.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>;
   const exists = columns.some((column) => column.name === columnName);
   if (!exists) {
-    db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition}`);
+    try {
+      db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition}`);
+    } catch (err) {
+      // Idempotent under parallel workers (vitest forks): a peer worker may
+      // have added the column between our PRAGMA check and our ALTER. Swallow
+      // only that specific race-window error; re-raise everything else.
+      if (!(err instanceof Error) || !/duplicate column name/i.test(err.message)) {
+        throw err;
+      }
+    }
   }
 }
 

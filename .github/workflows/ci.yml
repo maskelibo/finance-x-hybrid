@@ -84,6 +84,19 @@ jobs:
         working-directory: backend
         run: mkdir -p data
 
+      # P6C-fix2: src/python/pipeline-smoke.test.ts subprocess-calls Python
+      # runners in python-services. Without uv + synced deps, the bridge
+      # returns 'failed' instead of 'ok'/'completed'. Provision the Python
+      # toolchain here so pipeline-smoke can execute against the real
+      # python-services runtime. The python-tests job remains disabled
+      # (separate test/source drift), so this provisioning is not redundant.
+      - name: Setup uv (Python toolchain for pipeline-smoke bridge)
+        uses: astral-sh/setup-uv@v3
+
+      - name: Sync python-services dependencies
+        working-directory: python-services
+        run: uv sync
+
       - name: Run vitest (full suite)
         working-directory: backend
         run: npx vitest run
