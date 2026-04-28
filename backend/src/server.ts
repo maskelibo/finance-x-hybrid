@@ -18,6 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ALLOWED_ORIGINS, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_INTERVAL_MIN, NIGHT_TRAINING_HOUR_UTC, LLM_PRIMARY_PROVIDER } from './config.js';
 import { loadSecrets } from './security/secrets.js';
+import { guardUserNote } from './security/request-input-guard.js';
 import { registerHealthRoutes } from './observability/health.js';
 import { registerSseRoutes } from './streaming/sse.js';
 import { registerDagRoutes } from './observability/dag.js';
@@ -235,34 +236,15 @@ app.get('/api/agents/:id', (req, res) => {
 const VALID_THEMES = new Set(['institutional', 'anthropic', 'minimal']);
 
 app.post('/api/analysis/start', (req, res) => {
-  const { ticker, runtimeMode, layers, theme, user_note } = req.body as {
+  // Phase 13 (compliance fix) — P6E user_note injection guard
+  if (!guardUserNote(req, res)) return;
+
+  const { ticker, runtimeMode, layers, theme } = req.body as {
     ticker?: string;
     runtimeMode?: RuntimeMode;
     layers?: AnalysisLayer[];
     theme?: string;
-    user_note?: string;
   };
-
-  // Phase 13 (2026-04-28) — P6E prompt-injection guard on user_note.
-  // The validator is conservative: ticker/mode/layers are already
-  // checked below; we only run the injection detector when user_note
-  // is supplied (most calls don't have one). On detection: 400 with
-  // a stable error code so callers can surface a useful message.
-  if (typeof user_note === 'string' && user_note.length > 0) {
-    // Lazy import to avoid hot-path module load on every request.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { detectPromptInjection } = require('./security/prompt-injection.js') as
-      typeof import('./security/prompt-injection.js');
-    const inj = detectPromptInjection(user_note);
-    if (inj.suspicious) {
-      console.warn(`[input-validation] prompt_injection_detected ticker=${String(ticker ?? '?')} patterns=[${inj.patterns_matched.join(',')}]`);
-      return res.status(400).json({
-        error: 'user_note_injection_detected',
-        patterns_matched: inj.patterns_matched,
-        message: 'user_note alanında potansiyel injection paterni tespit edildi. Lütfen düzgün cümle olarak yeniden gönderin.',
-      });
-    }
-  }
 
   // Ticker validation
   if (!ticker) return res.status(400).json({ error: 'ticker required' });
