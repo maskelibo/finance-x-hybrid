@@ -77,6 +77,8 @@ import { runRegressionEval } from './regression-eval.js';
 import { ANALYSIS_LAYERS, MODE_DEFAULT_LAYERS, type AnalysisLayer, type RuntimeMode } from './analysis-config.js';
 import { computeIndicators } from './technical-indicators.js';
 import { fetchMacroSnapshot } from './macro-refresh.js';
+// P4.5 — governance runtime shadow helpers (default OFF via GOVERNANCE_SHADOW_MODE)
+import { recordSessionStartGovernance, recordSessionEndGovernance } from './orchestrator-governance.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -1348,6 +1350,10 @@ async function executeSession(
     console.warn(`[truth-layer] preflight failed (non-fatal): ${err instanceof Error ? err.message : err}`);
   }
 
+  // P4.5 — session-start governance shadow (default OFF; never blocks).
+  try { await recordSessionStartGovernance(sessionId, ticker, accumulatedContext); }
+  catch (err) { console.warn(`[governance-shadow] session-start guard: ${err instanceof Error ? err.message : err}`); }
+
     // Price snapshot lock — tek referans fiyat tüm agent'larda kullanılır
     accumulatedContext['session_metadata'] = JSON.stringify({
       ticker,
@@ -2175,6 +2181,10 @@ async function executeSession(
       // PDF fail olsa bile text rapor reports tablosunda mevcut — block etme
     }
   }
+
+  // P4.5 — session-end governance shadow (default OFF; never blocks).
+  try { await recordSessionEndGovernance(sessionId, ticker, costTracker.totalCost, accumulatedContext); }
+  catch (err) { console.warn(`[governance-shadow] session-end guard: ${err instanceof Error ? err.message : err}`); }
 
   // Guard: only mark completed if still running (prevent duplicate completion on resume race)
   const currentRow = db.prepare(`SELECT status, quality_warning FROM analysis_sessions WHERE id = ?`).get(sessionId) as { status: string; quality_warning: number | null } | undefined;
