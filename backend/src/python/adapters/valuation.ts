@@ -187,12 +187,12 @@ export function adaptValuationForLegacy(
 
   if (sector === 'holding') {
     holdingSotp = true;
-    notes.push('Holding filer — consolidated DCF is an upper bound only. SOTP table required for real fair value.');
+    notes.push('Holding şirketi — konsolide DCF yalnızca üst sınır referansıdır. Gerçek değer için SOTP (parts) tablosu zorunludur.');
   }
 
   if (sector === 'banking') {
     bankingWarn = true;
-    notes.push('Banking filer — FCF-based DCF not applicable. Prefer excess return / DDM. Engine DCF (if any) should be ignored.');
+    notes.push('Banka — FCF tabanlı DCF uygulanamaz. Tercih edilen yöntem fazla getiri (excess return) veya DDM. Mevcut engine DCF yok sayılmalı.');
   }
 
   if (!dcf) {

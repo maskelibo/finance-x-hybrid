@@ -275,8 +275,13 @@ function cleanupMarkdown(md: string): string {
   out = out.replace(/\bcontext_extraction\b/gi, 'bağlam çıkarma');
   out = out.replace(/\bsnippet'ları\b/gi, 'verileri');
   out = out.replace(/\bsnippet(?:'?s)?\b/gi, 'veri parçaları');
-  out = out.replace(/\bfundamental has both positive and negative signals\s*[—\-]\s*inspect closer\.?/gi,
-    'Temel göstergeler hem olumlu hem olumsuz sinyaller içermektedir — detaylı inceleme gerekmektedir.');
+  // Wave 1 (2026-04-28): broadened to catch LLM truncation
+  // ("fundamental has both positive and negati"). Old strict regex
+  // missed truncated outputs and English residue leaked to the report.
+  out = out.replace(
+    /\bfundamental[^.\n<]{0,40}both[^.\n<]{0,30}positive[^.\n<]{0,80}(?=\.|\n|<|$)/gi,
+    'Temel göstergeler hem olumlu hem olumsuz sinyaller içermektedir — detaylı inceleme gerekmektedir.',
+  );
 
   // -----------------------------------------------------------------
   // Fix #2 + #14 (2026-04-24): Python financial_engine emits English

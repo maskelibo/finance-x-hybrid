@@ -240,11 +240,28 @@ export function sanitizeBoardroomReport(
   //    specific value contradiction → narrative numeric replaced with disclaimer
   const macroResult = guardMacroConsistency(narResult.html);
 
+  // 9b) Wave 1 (2026-04-28) — single-source-of-truth price normalization.
+  //     If options.current_price_try is provided, replace ALL "guncel fiyat
+  //     X TL / Mevcut fiyat (X TL) / piyasa: ~X TL" mentions where X
+  //     deviates from canonical by > 0.5 TL with the canonical value.
+  //     Prevents the "207 vs 203.7" hallucination cluster.
+  const priceNormResult = normalizeCanonicalPrice(macroResult.html, options.current_price_try ?? null);
+  for (const w of priceNormResult.warnings) warnings.push(w);
+
+  // 9c) Wave 1 (2026-04-28) — no-estimate-no-judgment hard gate.
+  //     If a section contains "tahmini" / "estimated" / "Raporlanmadı"
+  //     markers AND board-grade judgment indicators (🔴 KRİTİK, ciddi
+  //     stres, KRITIK), replace the judgment paragraph with an honest
+  //     "Veri yetersiz — analiz yapılamadı" notice. Prevents fabricated
+  //     CFS conclusions from reaching the board.
+  const estimateGateResult = enforceNoEstimateJudgment(priceNormResult.html);
+  for (const w of estimateGateResult.warnings) warnings.push(w);
+
   // 10) Re-detect remaining banned phrases (post-all-passes)
-  const remaining = countRemainingBanned(macroResult.html);
+  const remaining = countRemainingBanned(estimateGateResult.html);
 
   // 11) Restore protected blocks
-  const finalHtml = restoreProtectedBlocks(macroResult.html, protectedSegments);
+  const finalHtml = restoreProtectedBlocks(estimateGateResult.html, protectedSegments);
 
   // 12) Scan-only: metric consistency + weak sections (post all transformations)
   const metricConflicts = scanMetricConsistency(finalHtml);
@@ -591,6 +608,102 @@ const METRIC_PATTERNS: Array<{ key: string; re: RegExp }> = [
   { key: 'piotroski', re: /Piotroski[^<\d]*?(\d)\/(?:9)/gi },
   { key: 'kritik_bulgu', re: /(\d)\s*(?:kritik\s*bulgu|critical\s*flag)/gi },
 ];
+
+// =============================================================================
+// 6a. Wave 1 — no-estimate-no-judgment hard gate (active rewrite)
+// =============================================================================
+//
+// When a paragraph contains BOTH:
+//   - estimate markers: "tahmini", "estimated", "Raporlanmadı", "(estimate)"
+//   - judgment markers: "🔴", "🚨", "KRİTİK", "KRITIK", "ciddi stres",
+//     "nakit kriz sinyalleri güçlü", "5 bayraktan 5'i kırmızı", "katastrofik"
+// then the paragraph is replaced with an honest "Veri yetersiz — analiz
+// yapılamadı" notice. This prevents the "OCF tahmini → 🔴 KRİTİK ciddi
+// stres" pattern observed in the KCHOL 2026-04-28 report.
+
+const ESTIMATE_MARKERS_RE = /(tahmini|estimated|Raporlanmadı|\(estimate\)|placeholder)/i;
+const JUDGMENT_MARKERS_RE = /(🔴|🚨|\bKRİTİK\b|\bKRITIK\b|ciddi stres|nakit kriz|katastrofik|kırmızı bayrak|kırmızı.*5|crisis signal|critical alarm)/i;
+const PARAGRAPH_BLOCK_RE = /<(p|div|li)([^>]*)>([\s\S]*?)<\/\1>/gi;
+
+function enforceNoEstimateJudgment(html: string): {
+  html: string;
+  warnings: string[];
+  rewrites: number;
+} {
+  const warnings: string[] = [];
+  let rewrites = 0;
+
+  const { protected: protectedSegments, scaffold } = extractProtectedBlocks(html);
+  const mutated = scaffold.replace(PARAGRAPH_BLOCK_RE, (full, tag, attrs, body) => {
+    // Skip if no judgment marker — fast path
+    if (!JUDGMENT_MARKERS_RE.test(body)) return full;
+    // Skip if no estimate marker — only block estimate-based judgments
+    if (!ESTIMATE_MARKERS_RE.test(body)) return full;
+    // Skip very short paragraphs (likely table cells or labels)
+    const visibleText = body.replace(/<[^>]*>/g, '').trim();
+    if (visibleText.length < 60) return full;
+    rewrites++;
+    return `<${tag}${attrs} data-no-estimate-rewrite="1"><strong>Veri yetersiz — analiz yapılamadı.</strong> Bu bölümdeki sonuçlar için yeterli kaynak verisi mevcut olmadığından yönetim kurulu seviyesinde bir hüküm üretilememiştir. İlgili line item'lar (OCF, CAPEX, çalışma sermayesi bileşenleri) finansal raporlardan parse edildikten sonra analiz tamamlanacaktır.</${tag}>`;
+  });
+  const restored = restoreProtectedBlocks(mutated, protectedSegments);
+
+  if (rewrites > 0) {
+    warnings.push(`no_estimate_judgment_rewritten: ${rewrites} paragraph(s) with estimate-based judgments replaced with honest "Veri yetersiz" notice`);
+  }
+  return { html: restored, warnings, rewrites };
+}
+
+
+// =============================================================================
+// 6b. Wave 1 — single-source-of-truth canonical price normalizer (active)
+// =============================================================================
+//
+// Replaces deviating "X TL" mentions in price-context with the canonical
+// price (when provided). Tolerance: ±0.5 TL (rounding artefacts allowed).
+// Triggered by phrases that strongly imply "current market price":
+//   - "güncel fiyat", "mevcut fiyat", "piyasa fiyat", "kapanış", "spot"
+//   - "Mevcut piyasa: ~X TL", "Mevcut fiyat (X TL)"
+// Does NOT touch target price / hedef fiyat / SOTP / DCF figures (those have
+// different sources and may legitimately differ).
+//
+// If canonicalPrice is null, this is a no-op.
+
+const PRICE_CONTEXT_RE = /((?:güncel|mevcut|piyasa|spot|kapanış|referans)\s*(?:fiyat[ıi]?|piyasa)?[^<\n]{0,40}?[~≈]?\s*)(\d{1,4}[,.]\d{1,3})(\s*TL\b)/gi;
+const PRICE_PARENTHETICAL_RE = /(Mevcut\s*fiyat\s*\(\s*[~≈]?)(\d{1,4}[,.]\d{1,3})(\s*TL\s*\))/gi;
+
+function normalizeCanonicalPrice(
+  html: string,
+  canonicalPrice: number | null,
+): { html: string; warnings: string[]; replacements: number } {
+  const warnings: string[] = [];
+  if (canonicalPrice == null || !Number.isFinite(canonicalPrice) || canonicalPrice <= 0) {
+    return { html, warnings, replacements: 0 };
+  }
+
+  // Format canonical with comma decimal separator (Turkish locale)
+  const canonical: number = canonicalPrice;
+  const canonicalStr = canonical.toFixed(2).replace('.', ',');
+  const tolerance = 0.5;
+  let replacements = 0;
+
+  function replacer(match: string, prefix: string, value: string, suffix: string): string {
+    const numeric = Number(value.replace(',', '.'));
+    if (!Number.isFinite(numeric)) return match;
+    if (Math.abs(numeric - canonical) <= tolerance) return match;
+    replacements++;
+    return `${prefix}${canonicalStr}${suffix}`;
+  }
+
+  const { protected: protectedSegments, scaffold } = extractProtectedBlocks(html);
+  let mutated = scaffold.replace(PRICE_CONTEXT_RE, replacer);
+  mutated = mutated.replace(PRICE_PARENTHETICAL_RE, replacer);
+  const restored = restoreProtectedBlocks(mutated, protectedSegments);
+
+  if (replacements > 0) {
+    warnings.push(`canonical_price_normalized: ${replacements} mismatched price mention(s) replaced with ${canonicalStr} TL`);
+  }
+  return { html: restored, warnings, replacements };
+}
 
 function scanMetricConsistency(html: string): MetricConflict[] {
   // Only inspect visible text — re-use protected extraction

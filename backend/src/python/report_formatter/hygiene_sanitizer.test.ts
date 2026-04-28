@@ -507,3 +507,61 @@ describe('hygiene_sanitizer — KCHOL-shaped fixture', () => {
     expect(['PASS', 'CONDITIONAL']).toContain(report.delivery_status);
   });
 });
+
+describe('hygiene_sanitizer — Wave 1 single-source price + no-estimate gates', () => {
+  it('replaces deviating price mentions with canonical (parenthetical form)', () => {
+    const html = '<p>Mevcut fiyat (207,00 TL) ve hedef fiyatımız geniş.</p>';
+    const r = sanitizeBoardroomReport(html, { current_price_try: 203.7 });
+    expect(r.html).toContain('Mevcut fiyat (203,70 TL)');
+    expect(r.html).not.toContain('207,00 TL');
+  });
+
+  it('does NOT replace prices within tolerance ±0.5 TL', () => {
+    const html = '<p>Mevcut fiyat (203,30 TL)</p>';
+    const r = sanitizeBoardroomReport(html, { current_price_try: 203.7 });
+    expect(r.html).toContain('203,30 TL');
+  });
+
+  it('is no-op when canonical_price_try not provided', () => {
+    const html = '<p>Mevcut fiyat (207,00 TL)</p>';
+    const r = sanitizeBoardroomReport(html);
+    expect(r.html).toContain('207,00 TL');
+  });
+
+  it('rewrites estimate+judgment paragraph to honest Veri yetersiz notice', () => {
+    const html = '<p>OCF tahmini -101.950, FCF tahmini -204.862. 5 bayraktan 5\'i kırmızı, KCHOL FY2025 nakit kriz sinyalleri güçlü. 🔴 KRİTİK değerlendirme.</p>';
+    const r = sanitizeBoardroomReport(html);
+    expect(r.html).toContain('Veri yetersiz — analiz yapılamadı');
+    expect(r.html).not.toContain('🔴');
+    expect(r.html).not.toContain('KRİTİK');
+  });
+
+  it('does NOT rewrite when only judgment marker present (no estimate)', () => {
+    const html = '<p>Net borç/FAVÖK 5,2x — yüksek kaldıraç riski. 🔴 KRİTİK değerlendirme yapıldı bunlarla bunlarla bunlarla bunlarla bunlarla.</p>';
+    const r = sanitizeBoardroomReport(html);
+    expect(r.html).toContain('🔴');
+  });
+
+  it('does NOT rewrite very short paragraphs (likely labels)', () => {
+    const html = '<p>tahmini KRİTİK</p>';
+    const r = sanitizeBoardroomReport(html);
+    expect(r.html).toContain('tahmini');
+  });
+});
+
+describe('hygiene_sanitizer — Wave 1 broadened English residue catch', () => {
+  it('catches truncated "fundamental ... negati"', () => {
+    const html = '<p>Sektörel: fundamental has both positive and negati</p>';
+    const r = sanitizeBoardroomReport(html);
+    expect(r.html.toLowerCase()).not.toContain('negati');
+    expect(r.html).toContain('Sektörel sinyaller karışık');
+  });
+
+  it('catches full English sentence (legacy form)', () => {
+    const html = '<p>Note: fundamental has both positive and negative signals — inspect closer.</p>';
+    const r = sanitizeBoardroomReport(html);
+    expect(r.html).not.toContain('inspect closer');
+    expect(r.html).toContain('Sektörel sinyaller karışık');
+  });
+});
+

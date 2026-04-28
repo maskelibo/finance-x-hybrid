@@ -183,19 +183,24 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
     dio = _days(bs.inventories, cogs_abs, label="DIO", days=period_days)
     dpo = _days(bs.trade_payables, cogs_abs, label="DPO", days=period_days)
 
-    # Fix #12 (2026-04-24) — DSO/DIO/DPO anomali tespiti.
-    # Turkish BIST sanayi beyaz eşya normali: DSO 40-90, DIO 60-120, DPO 60-180.
-    # Dışına çıkan değerler tipik olarak parse hatası (örn. receivables 0'a
-    # yakın olduğunda DSO ~0). Bu durumda raw value'yu silme, ama agent
-    # için "anomaly" flag ekle. Downstream yorum bunu görür.
+    # Wave 1 (2026-04-28) — DSO/DIO/DPO anomaly NULL-on-detect.
+    # Önceki davranış (Fix #12) value'yu korup sadece warning ekliyordu —
+    # bu da "0,12 gün DSO" gibi absürt değerlerin board-grade rapora
+    # düşmesine yol açtı. Yeni kural: anomaly tespit edilirse value=None,
+    # warning preserve. Downstream LLM "raporlanmadı" görecek.
+    # Threshold: holding/banking gibi sektörlerde DSO çok kısa olabilir
+    # (intercompany), o yüzden lower bound 5 → kept. Asıl risk üst sınır.
     def _flag_anomaly(rv: RatioValue, low: int, high: int, label: str) -> RatioValue:
-        if rv.value is None or rv.value == 0:
+        if rv.value is None:
             return rv
         v = float(rv.value)
-        if v < low or v > high:
-            tag = f"anomaly_detected: {label} {v:.2f} out of plausible range [{low}-{high}] — verify upstream data"
-            # Preserve value but attach warning so downstream LLM sees the flag.
-            return RatioValue(value=rv.value, warning=tag)
+        if v == 0 or v < low or v > high:
+            tag = (
+                f"anomaly_nulled: {label} {v:.2f} out of plausible range [{low}-{high}] — "
+                f"upstream data unreliable, value suppressed"
+            )
+            # NULL-on-anomaly: value silinir, warning preserve.
+            return RatioValue(value=None, warning=tag)
         return rv
     dso = _flag_anomaly(dso, 5, 200, "DSO")
     dio = _flag_anomaly(dio, 15, 400, "DIO")
@@ -205,7 +210,7 @@ def _industrial_ratios(pf: PeriodFinancials) -> EngineRatios:
     if dso.value is not None and dio.value is not None and dpo.value is not None:
         ccc_val = (dso.value + dio.value - dpo.value).quantize(Decimal("0.01"))
     else:
-        ccc_warn = "CCC: one of DSO/DIO/DPO missing"
+        ccc_warn = "CCC: one of DSO/DIO/DPO missing or anomaly-nulled"
 
     net_debt_value: Decimal | None = None
     if (bs.short_term_debt is not None) and (bs.long_term_debt is not None) and (bs.cash_and_equivalents is not None):

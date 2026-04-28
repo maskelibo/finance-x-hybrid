@@ -31,7 +31,8 @@ describe('adaptValuationForLegacy — warnings/flags', () => {
     const out = adaptValuationForLegacy(fa, null, 'AKBNK', 'val-1');
     expect(out.banking_sector_warning).toBe(true);
     expect(out.dcf).toBeNull();
-    expect(out.notes.some(n => n.toLowerCase().includes('banking'))).toBe(true);
+    // Wave 1: notes were Turkified ("Banka — FCF tabanlı DCF...")
+    expect(out.notes.some(n => /banka|banking/i.test(n))).toBe(true);
   });
 
   it('emits holding_sotp_required for holding filer', () => {
@@ -43,7 +44,7 @@ describe('adaptValuationForLegacy — warnings/flags', () => {
     };
     const out = adaptValuationForLegacy(fa, null, 'KCHOL', 'val-1');
     expect(out.holding_sotp_required).toBe(true);
-    expect(out.notes.some(n => n.toLowerCase().includes('sotp'))).toBe(true);
+    expect(out.notes.some(n => /sotp/i.test(n))).toBe(true);
   });
 
   it('emits try_wacc_warning when engine DCF used WACC > 25%', () => {

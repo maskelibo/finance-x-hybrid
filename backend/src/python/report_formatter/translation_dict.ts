@@ -144,8 +144,18 @@ export interface SentencePattern {
 
 export const SENTENCE_PATTERNS: SentencePattern[] = [
   {
-    pattern: 'fundamental has both positive and negative signals[\\s—–-]+inspect closer',
+    // Wave 1 — broaden to catch truncated/varied LLM output: "fundamental
+    // has both positive and negati" (cut off mid-word) was leaking through.
+    // Match any "fundamental" + "both" + "positive" sequence regardless of
+    // suffix.
+    pattern: 'fundamental[^.\\n]{0,40}both[^.\\n]{0,30}positive[^.\\n]{0,80}(?=\\.|\\n|<|$)',
     replacement: 'Sektörel sinyaller karışık görünüm sergiliyor; daha detaylı inceleme önerilmiştir.',
+  },
+  {
+    // Belt-and-suspenders: also catch the EXACT-truncated form some
+    // Sonnet runs produce ("fundamental has both positive and negati").
+    pattern: 'fundamental has both positive and negati(?!ve)',
+    replacement: 'Sektörel sinyaller karışık görünüm sergilemektedir.',
   },
   {
     pattern: 'FA raised (\\d+) critical (?:red )?flag\\(?s?\\)? while synthesis stayed positive',
