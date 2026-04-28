@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://finance-x-hybrid/evals/synthetic/schema/synthetic_company.schema.json",
+  "title": "Synthetic Company (P5C)",
+  "description": "Schema for deterministically-generated synthetic edge-case companies. Every fixture under evals/synthetic/*.json MUST validate against this schema and MUST set synthetic_fixture: true. These are non-authoritative test artefacts.",
+  "type": "object",
+  "required": [
+    "_warning",
+    "synthetic_fixture",
+    "synthetic_id",
+    "case_id",
+    "sector",
+    "induced_issues",
+    "financial_statements",
+    "disclosures",
+    "expected_agent_behavior",
+    "generator"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "_warning": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Inline warning text. MUST clearly state that the file is synthetic and not real financial data."
+    },
+    "synthetic_fixture": {
+      "type": "boolean",
+      "const": true,
+      "description": "MUST be exactly true. Schema rejects any value other than true."
+    },
+    "synthetic_id": {
+      "type": "string",
+      "pattern": "^SYNTH_[A-Z0-9_]+$"
+    },
+    "case_id": {
+      "type": "string",
+      "enum": [
+        "holding_with_segment_conflict",
+        "airline_missing_da",
+        "steel_ias29_anomaly",
+        "bank_nim_jump",
+        "exporter_fx_shock",
+        "conflicting_disclosures",
+        "missing_critical_metric",
+        "high_leverage_liquidity_stress"
+      ]
+    },
+    "sector": {
+      "type": "string",
+      "enum": ["holding", "aviation", "steel", "banking", "industrial", "any"]
+    },
+    "induced_issues": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "financial_statements": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "income_statement": { "type": "object" },
+        "balance_sheet": { "type": "object" },
+        "cash_flow": { "type": "object" },
+        "segment_breakdown": { "type": "object" }
+      }
+    },
+    "disclosures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["disclosure_id", "topic", "text"],
+        "additionalProperties": true,
+        "properties": {
+          "disclosure_id": { "type": "string", "minLength": 1 },
+          "topic": { "type": "string", "minLength": 1 },
+          "text": { "type": "string", "minLength": 1 },
+          "intentionally_conflicting_with": { "type": "string" }
+        }
+      }
+    },
+    "expected_agent_behavior": {
+      "type": "object",
+      "required": ["should_flag", "expected_contradiction_severity"],
+      "additionalProperties": false,
+      "properties": {
+        "should_flag": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "should_not_silently_pass": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "expected_contradiction_severity": {
+          "type": "string",
+          "enum": ["soft", "material", "critical"]
+        }
+      }
+    },
+    "generator": {
+      "type": "object",
+      "required": ["script_version", "seed", "generated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "script_version": { "type": "string", "minLength": 1 },
+        "seed": { "type": "integer" },
+        "generated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

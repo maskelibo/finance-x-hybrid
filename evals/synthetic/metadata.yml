@@ -1,0 +1,84 @@
+# P5C Wave 1 — Synthetic Edge-Case Company Framework Metadata
+#
+# Phase: P5C Wave 1 (finance-x-polish), shipped at HEAD `b17213a2`.
+#
+# This directory holds DETERMINISTICALLY GENERATED edge-case company fixtures
+# produced by `scripts/synth_generator.py`. Every fixture under reports
+# `synthetic_fixture: true` and includes an inline `_warning` text — these
+# are non-authoritative test artefacts, NOT real financial data.
+#
+# IMPORTANT: the torture-test runner (`evals/synthetic/run_torture_tests.ts`
+# from the master plan) is NOT shipped in Wave 1. It would invoke the full
+# session pipeline against each synthetic company, which constitutes a paid
+# LLM run. That deferred capability requires its own scope cycle with
+# explicit budget envelope authorization.
+
+framework_version: '1.0.0'
+schema_version: '1.0.0'
+schema_id: 'https://finance-x-hybrid/evals/synthetic/schema/synthetic_company.schema.json'
+
+generator:
+  script: 'scripts/synth_generator.py'
+  language: 'python3'
+  stdlib_only: true
+  default_seed: 42
+  determinism: |
+    Identical (case_id, seed) → byte-identical JSON output, modulo the
+    `generated_at` timestamp. The committed fixtures under this directory
+    were generated with seed=42.
+  cli:
+    invocation: 'python3 scripts/synth_generator.py --case <case_id|all> [--seed N] [--out-dir DIR]'
+    exit_codes:
+      0: success
+      2: bad arguments
+      3: generation error
+
+case_index:
+  - case_id: holding_with_segment_conflict
+    sector: holding
+    induced_issues: [parent_consolidated_mismatch, segment_total_mismatch]
+    expected_severity: material
+  - case_id: airline_missing_da
+    sector: aviation
+    induced_issues: [depreciation_null_in_cf, ebitda_lower_than_ebit]
+    expected_severity: critical
+  - case_id: steel_ias29_anomaly
+    sector: steel
+    induced_issues: [monetary_gain_50pct_of_ni, operating_margin_anomaly]
+    expected_severity: material
+  - case_id: bank_nim_jump
+    sector: banking
+    induced_issues: [nim_yoy_doubled, unexplained_trading_gain]
+    expected_severity: material
+  - case_id: exporter_fx_shock
+    sector: industrial
+    induced_issues: [fx_translation_gain_40pct, export_revenue_down_despite_try_weakness]
+    expected_severity: material
+  - case_id: conflicting_disclosures
+    sector: any
+    induced_issues: [disclosure_1_says_X, disclosure_2_says_Y_on_same_metric]
+    expected_severity: critical
+  - case_id: missing_critical_metric
+    sector: industrial
+    induced_issues: [revenue_present_ebitda_missing, coverage_gap_critical]
+    expected_severity: material
+  - case_id: high_leverage_liquidity_stress
+    sector: industrial
+    induced_issues: [net_debt_to_ebitda_above_5, current_ratio_below_1]
+    expected_severity: material
+
+deferred_torture_runner:
+  status: 'not shipped in Wave 1'
+  rationale: |
+    A torture-test runner that invokes the full session pipeline against
+    each synthetic company would consume paid LLM API budget. The runner is
+    deferred to a future P5C-wave2 scope cycle that requires:
+      - explicit operator-set budget envelope (max USD per torture run)
+      - GOVERNANCE_TORTURE_TEST_LIVE=on env flag with default OFF
+      - pre-flight cost estimate + abort-if-exceeds-cap
+      - per-case skip-on-failure + aggregate report
+  how_to_use_today: |
+    Wave 1 fixtures are immediately usable for any offline analysis: manual
+    review, scoring sandbox, test-fixture suite. Hand them to existing
+    deterministic engines (contradiction-engine, coverage-engine, etc.) for
+    structural validation without invoking any paid LLM path.
