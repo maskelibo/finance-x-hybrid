@@ -18,6 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ALLOWED_ORIGINS, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_INTERVAL_MIN, NIGHT_TRAINING_HOUR_UTC, LLM_PRIMARY_PROVIDER } from './config.js';
 import { loadSecrets } from './security/secrets.js';
+import { registerHealthRoutes } from './observability/health.js';
 
 // P6A: pluggable secrets boot hook. SECRETS_MODE unset/'env' = no-op.
 loadSecrets().catch(err => {
@@ -33,6 +34,12 @@ app.use(cors({
   origin: ALLOWED_ORIGINS,
 }));
 app.use(express.json({ limit: '10mb' }));
+
+// P6D Wave 1: gated /health + /ready registration. Default OFF; existing /metrics route preserved.
+if (process.env.METRICS_ENABLED === '1') {
+  try { registerHealthRoutes(app); }
+  catch (err) { console.warn('[health-routes] register skipped:', err instanceof Error ? err.message : err); }
+}
 
 // API Key authentication middleware
 const API_KEY = process.env.FINANCE_X_API_KEY;
