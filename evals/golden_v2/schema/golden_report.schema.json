@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://finance-x-hybrid/evals/golden_v2/schema/golden_report.schema.json",
+  "title": "Golden Analyst Report (P5A)",
+  "description": "Canonical schema for golden analyst reports consumed by the P5A scoring framework. Recommendation enum and period regex reflect shipped Python schema (python-services/src/financex/schemas/analyst.py) and shipped period suffix convention. Operator-curated golden facts MUST be normalized to the lowercase English enum at extraction time; Turkish display values (AL/TUT/SAT) do not appear here.",
+  "type": "object",
+  "required": ["ticker", "period", "expected_facts", "expected_narratives", "expected_conclusions"],
+  "additionalProperties": false,
+  "properties": {
+    "_warning": {
+      "type": "string",
+      "description": "Optional inline warning text for synthetic / non-authoritative fixtures. Conventional underscore prefix marks informational metadata."
+    },
+    "ticker": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,8}$",
+      "description": "BIST ticker symbol, uppercase."
+    },
+    "period": {
+      "type": "string",
+      "pattern": "^(fy[0-9]{4}|q[1-4]_[0-9]{4}|h[12]_[0-9]{4}|[0-9]{8})$",
+      "description": "Period suffix matching the shipped fact-layer convention: fy2025 / q3_2025 / h1_2025 / YYYYMMDD."
+    },
+    "synthetic_fixture": {
+      "type": "boolean",
+      "description": "REQUIRED to be true for non-authoritative test fixtures (P5A test data). Reports curated from real analyst sources omit this field or set it to false. Scoring CLI logs a clear warning when scoring against a synthetic_fixture report so operators are not misled."
+    },
+    "analyst_name": {
+      "type": "string"
+    },
+    "analyst_firm": {
+      "type": "string"
+    },
+    "report_date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO-8601 date when the analyst report was published."
+    },
+    "expected_facts": {
+      "type": "object",
+      "description": "Map of fact_key (snake_case, period-suffixed) to expected value with optional unit and tolerance.",
+      "patternProperties": {
+        "^[a-z][a-z_0-9]*$": {
+          "type": "object",
+          "required": ["value"],
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "description": "Expected value. Number for numeric facts; string for categorical facts."
+            },
+            "unit": {
+              "type": "string",
+              "description": "Canonical unit (e.g., TRY_mn, decimal, x, days). Empty string permitted for unitless facts."
+            },
+            "tolerance_pct": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Per-fact override of the default 0.02 (2%) numeric tolerance."
+            }
+          }
+        }
+      }
+    },
+    "expected_narratives": {
+      "type": "array",
+      "description": "List of topics and the key points each topic should cover in the actual report.",
+      "items": {
+        "type": "object",
+        "required": ["topic", "key_points"],
+        "additionalProperties": false,
+        "properties": {
+          "topic": {
+            "type": "string",
+            "minLength": 1
+          },
+          "key_points": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "expected_conclusions": {
+      "type": "object",
+      "description": "Operator-supplied analyst-firm conclusions normalized to the shipped Python Recommendation enum.",
+      "additionalProperties": false,
+      "required": ["recommendation"],
+      "properties": {
+        "recommendation": {
+          "type": "string",
+          "enum": ["buy", "outperform", "hold", "underperform", "sell", "not_rated"],
+          "description": "Lowercase 6-value enum matching python-services/src/financex/schemas/analyst.py:14-20. Turkish display values (AL/TUT/SAT/GUCLU AL/GUCLU SAT) MUST be normalized at extraction time."
+        },
+        "target_price_try": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Target price in TRY (single point estimate)."
+        },
+        "target_price_range": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "[low, high] target price band in TRY."
+        }
+      }
+    }
+  }
+}

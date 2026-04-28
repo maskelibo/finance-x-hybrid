@@ -1,0 +1,50 @@
+# Finance-X Golden Dataset v2 — Eval Framework Metadata
+#
+# Phase: P5A (finance-x-polish), shipped at HEAD `4a935591`.
+# Reconciled with shipped P3/P4/Pre-P5 architecture (master plan reconciliation
+# `f38e4f0b`, 2026-04-28).
+#
+# This directory is a TEST + EVAL FRAMEWORK, not authoritative analyst data.
+# Files under reports/<TICKER>/*.json that carry `"synthetic_fixture": true`
+# are non-authoritative test fixtures used to exercise the scoring math; they
+# MUST NOT be confused with real analyst ground truth.
+
+framework_version: '1.0.0'
+schema_version: '1.0.0'
+schema_id: 'https://finance-x-hybrid/evals/golden_v2/schema/golden_report.schema.json'
+canonical_recommendation_enum:
+  values: ['buy', 'outperform', 'hold', 'underperform', 'sell', 'not_rated']
+  source: 'python-services/src/financex/schemas/analyst.py:14-20'
+  normalization_policy: |
+    Operator-curated golden reports MUST be normalized to lowercase English
+    at extraction time. Turkish display values (AL/TUT/SAT) do not appear in
+    golden_report.json files.
+
+period_regex: '^(fy[0-9]{4}|q[1-4]_[0-9]{4}|h[12]_[0-9]{4}|[0-9]{8})$'
+period_examples:
+  - fy2025          # Full year FY-2025
+  - q3_2025         # Third quarter 2025
+  - h1_2026         # First half 2026
+  - '20260427'      # Specific date (YYYYMMDD)
+
+scoring_modules:
+  numeric_accuracy:
+    location: 'backend/src/quality-data/golden_v2/scoring/numeric_accuracy.ts'
+    default_tolerance_pct: 0.02
+    description: 'Compares expected_facts values against CanonicalFactPackV2 facts.'
+  coverage_score:
+    location: 'backend/src/quality-data/golden_v2/scoring/coverage_score.ts'
+    description: 'Fraction of expected_narratives topics whose key_points appear in actual report text.'
+  narrative_quality:
+    location: 'backend/src/quality-data/golden_v2/scoring/narrative_quality.ts'
+    description: 'Keyword-overlap score (no LLM); fraction of expected key_points found in actual narrative.'
+
+cli:
+  location: 'backend/scripts/golden-eval.ts'
+  invocation: 'cd backend && npx tsx scripts/golden-eval.ts <session_id> <ticker> [<golden_report_path>]'
+  side_effects: 'NONE — read-only DB access (analysis_sessions, canonical_facts, reports). No DB writes. No LLM calls. No paid runs.'
+
+operator_inputs_required_before_real_use:
+  - At least one real analyst report extracted into reports/<TICKER>/<period>_real.json (NOT marked synthetic_fixture).
+  - Confirmation of the lowercase enum + period regex decisions in the reconciled master plan.
+  - Per-fact tolerance_pct overrides where the default 2% is too tight or too loose.

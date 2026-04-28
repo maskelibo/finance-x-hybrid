@@ -1,0 +1,52 @@
+{
+  "_warning": "SYNTHETIC TEST FIXTURE — NOT AUTHORITATIVE ANALYST DATA. Do not cite, do not use for production scoring, do not share externally. This file exists solely to exercise the P5A scoring framework's structural correctness. Values are placeholders chosen for shape testing; they do not reflect any real analyst's view on THYAO.",
+  "synthetic_fixture": true,
+  "ticker": "THYAO",
+  "period": "q1_2026",
+  "analyst_name": "synthetic-fixture-author",
+  "analyst_firm": "synthetic-fixture-firm",
+  "report_date": "2026-01-15",
+  "expected_facts": {
+    "revenue_q1_2026": {
+      "value": 100000,
+      "unit": "TRY_mn",
+      "tolerance_pct": 0.05
+    },
+    "ebitda_q1_2026": {
+      "value": 25000,
+      "unit": "TRY_mn",
+      "tolerance_pct": 0.05
+    },
+    "net_income_q1_2026": {
+      "value": 12000,
+      "unit": "TRY_mn"
+    },
+    "ebitda_margin_q1_2026": {
+      "value": 0.25,
+      "unit": "decimal"
+    }
+  },
+  "expected_narratives": [
+    {
+      "topic": "fleet_expansion",
+      "key_points": [
+        "yeni uçak teslimat planı",
+        "filo gençleştirme",
+        "kapasite artışı"
+      ]
+    },
+    {
+      "topic": "fuel_cost_pressure",
+      "key_points": [
+        "yakıt maliyeti",
+        "hedge",
+        "operasyonel marj"
+      ]
+    }
+  ],
+  "expected_conclusions": {
+    "recommendation": "hold",
+    "target_price_try": 350.0,
+    "target_price_range": [320.0, 380.0]
+  }
+}
