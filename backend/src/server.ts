@@ -19,6 +19,7 @@ import path from 'node:path';
 import { ALLOWED_ORIGINS, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_INTERVAL_MIN, NIGHT_TRAINING_HOUR_UTC, LLM_PRIMARY_PROVIDER } from './config.js';
 import { loadSecrets } from './security/secrets.js';
 import { registerHealthRoutes } from './observability/health.js';
+import { registerSseRoutes } from './streaming/sse.js';
 
 // P6A: pluggable secrets boot hook. SECRETS_MODE unset/'env' = no-op.
 loadSecrets().catch(err => {
@@ -39,6 +40,12 @@ app.use(express.json({ limit: '10mb' }));
 if (process.env.METRICS_ENABLED === '1') {
   try { registerHealthRoutes(app); }
   catch (err) { console.warn('[health-routes] register skipped:', err instanceof Error ? err.message : err); }
+}
+
+// P7A Wave 1: gated SSE route registration. Default OFF; no publishers yet.
+if (process.env.SSE_ENABLED === '1') {
+  try { registerSseRoutes(app); }
+  catch (err) { console.warn('[sse-routes] register skipped:', err instanceof Error ? err.message : err); }
 }
 
 // API Key authentication middleware
