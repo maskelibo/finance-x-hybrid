@@ -7104,6 +7104,23 @@ if (decision.decision === 'run_haiku') {
 
 # FAZ P4 — Reliability & Self-Healing
 
+> **🔧 SHIPPED RECONCILIATION NOTE (Pre-P5 master plan reconciliation, 2026-04-28)**
+>
+> **All P4 phases shipped under `backend/src/execution/`, NOT `backend/src/reliability/`.** The `reliability/` directory referenced in the original P4A-P4D snippets below does not exist in the codebase. The **shipped reality** is:
+>
+> | Original plan | Shipped path | Filename change |
+> |---|---|---|
+> | `backend/src/reliability/escalation.ts` | `backend/src/execution/escalation-manager.ts` | filename: `-manager` suffix |
+> | `backend/src/reliability/self-healing.ts` | `backend/src/execution/self-healing.ts` | unchanged |
+> | `backend/src/reliability/idempotency.ts` + `backend/src/reliability/saga.ts` (two files) | `backend/src/execution/idempotency-saga.ts` (one combined file) | merged |
+> | `backend/src/reliability/circuit-breaker.ts` (stateful registry) | `backend/src/execution/circuit-breaker.ts` (**stateless decision engine**) | **architecture change** |
+>
+> **All P4 modules are pure read-only decision engines** (no DB writes, no LLM calls, no orchestrator wiring). They emit verdicts/findings/plans into the caller's `accumulatedContext` via append-only adapters. The original P4A-D pseudo-code below describes a stateful, side-effecting design that **was not the path taken**. Treat the snippets as historical design intent; the shipped implementation is verifiable in the corresponding `backend/src/execution/<module>.ts` file with a matching `*.test.ts` neighbor.
+>
+> **P4D specifically: there is no `breakers` registry.** `runCircuitBreaker(sessionId, inputs, options)` takes operation history (`recent_attempts`) as input and emits a `CircuitBreakerPlan` with per-operation `verdicts[*].state ∈ {closed, open, half_open}` and `decision ∈ {allow, block, probe}`. The seven frozen reason codes (`CB_CLOSED_HEALTHY`, `CB_CLOSED_UNDER_THRESHOLD`, `CB_INSUFFICIENT_HISTORY`, `CB_OPEN_FAILURE_THRESHOLD_EXCEEDED`, `CB_OPEN_COOLDOWN_ACTIVE`, `CB_HALF_OPEN_PROBE`, `CB_HALF_OPEN_RECOVERED`) are exported. **No `breakers.kap.getStatus()` API exists.** Anything downstream (notably P6D) must consume this shape, not the registry shape originally drafted.
+>
+> Shipped commits: P4A `7b3058c1`, P4B `7b7001e2`, P4C `13f3f8a8`, P4D `165b68ba`.
+
 ## FAZ P4A — Escalation Manager State Machine
 
 ### Görevler
@@ -7534,9 +7551,160 @@ await breakers.kap.execute(async () => {
 
 ---
 
+# Pre-P5 Bridge Phases (post-P4D, pre-P5A)
+
+> Four additive bridge phases were executed between P4D and P5A. None of these were in the original master plan; all were retroactively necessary because the standalone P3/P4 stack required validation, runtime visibility, and calibration before P5 work could safely proceed. Documented here so future plan readers understand the complete sequence.
+
+## Pre-P5 Full-Stack Governance Replay Validation
+
+**Commit:** `44a6596a` — `test(execution): validate full-stack governance replay [finance-x-polish pre-P5]`
+
+**Objective:** Verify the seven standalone P3/P4 governance modules + four `quality-os` reads compose without cross-layer crashes against the persisted KCHOL session `qJASnWiqC-3xomxzyLamS`.
+
+**Allowed file:** `backend/src/execution/full-stack-replay.test.ts` (additive, 426 lines, 5 tests).
+
+**Validation:**
+- Cold-cache pass: P3B → P3C(cold) → P3D → P4A → P4B → P4C → P4D composes cleanly; KCHOL escalation level ∈ {info, warning, needs_review}; zero blockers; deterministic across two runs.
+- Warm-cache pass: primer-derived `cached_outputs_meta` causes every P3C verdict → `reuse`; cost governor honors via `GOV_PROCEED_REUSE_HONORED` (effective_cost=0); strictly less than cold projected cost.
+- Cross-layer reason-code coherence proven: `GOV_STOP_BUDGET_EXHAUSTED` → `ESC_COST_BUDGET_EXHAUSTED` → `HEAL_ABORT_NO_RECOVERY` end-to-end.
+- DB `total_cost_usd` snapshot before/after equal (zero side effects).
+
+---
+
+## P4.5 Wave 1 — Runtime Governance Shadow Wiring
+
+**Commit:** `9c42e15d` — `feat(orchestrator): shadow governance runtime wiring [finance-x-polish P4.5-wave1]`
+
+**Objective:** Wire the standalone P3/P4 governance stack into the orchestrator runtime in **strict shadow mode** (observation-only). No enforcement: nothing blocks, skips, downgrades, or compensates.
+
+**Allowed files:**
+- `backend/src/orchestrator-governance.ts` (NEW, 285 lines): `recordSessionStartGovernance(sessionId, ticker, accumulatedContext)` and `recordSessionEndGovernance(sessionId, ticker, totalCostUsd, accumulatedContext)`.
+- `backend/src/orchestrator-governance.test.ts` (NEW, 355 lines, 17 tests).
+- `backend/src/orchestrator.ts` (MODIFIED, **+10 / −0 lines** under the P4.5 additive template — 2 import lines + 4 lines per call site at session-start and session-end, both wrapped in try/catch guards).
+
+**Feature flag:** `process.env.GOVERNANCE_SHADOW_MODE === 'on'` (strict equality). Any other value = OFF; helpers no-op. **Default OFF.**
+
+**Behavioural contract:**
+- With flag OFF: byte-for-byte identical orchestrator behaviour to pre-P4.5.
+- With flag ON: helpers populate seven `accumulatedContext` keys + their `_json` mirrors:
+  - `task_plan`, `computation_plan` (session-start)
+  - `cost_governor_report`, `escalation_report`, `self_healing_plan`, `idempotency_saga_plan`, `circuit_breaker_plan` (session-end)
+- Helpers wrap every inner engine call in per-engine try/catch; failures emit `[governance-shadow] <stage> failed:` warnings via `console.warn` and never propagate.
+- **Two layers of exception isolation:** helper-internal try/catch + orchestrator call-site guard. A governance throw cannot fail a session.
+
+**Established the "P4.5 template"** for any future ≤ 15-line additive forbidden-file touch: default-OFF env flag + exception-isolated guard + zero behavioural change with flag OFF. P6A and P6B (when scoped) should reuse this template.
+
+---
+
+## Shadow Observation — Policy-vs-Runtime Drift Quantification
+
+**Commit:** `b55c8451` — `test(execution): measure governance shadow drift [finance-x-polish shadow-observation]`
+
+**Objective:** Quantify drift between what the runtime actually did vs. what the governance policy would have recommended, against stored completed sessions.
+
+**Allowed file:** `backend/src/execution/shadow-observation.test.ts` (additive, 432 lines, 12 tests).
+
+**Validation result (10 stored completed sessions across KCHOL/THYAO/EREGL; ASELS=0):**
+- **False-skip rate: 0%** (planner never recommended skipping an agent the runtime executed).
+- **False-abort rate: 40%** — entirely concentrated on KCHOL sessions where actual cost ($4.7-$6.2) exceeded the default $5 budget cap. **Calibration issue, not a behavioural defect.**
+- Aggregate cost drift (Σ actual − projected): $28.90.
+- Aggregate reuse savings if warm cache available: $15.50 (~$1.55/session).
+- Self-healing recoverability: 4 not_recoverable (KCHOL aborts), 2 partially, 4 fully.
+- DB `total_cost_usd` snapshot before/after equal across all 10 sessions.
+
+**Decision:** the false-abort signal indicated a default cap calibration issue; the false-skip rate of 0% confirmed P3B skip enforcement would be safe; reuse savings confirmed P3C is high-value if wired. Triggered the next phase: cost-cap calibration.
+
+---
+
+## Pre-P5 Cost-Cap Calibration
+
+**Commit:** `e9124e0e` — `test(execution): calibrate governance cost caps [finance-x-polish pre-P5-calibration]`
+
+**Objective:** Determine whether the default `budget_cap_usd = $5` could be replaced with a data-derived value to bring false-abort rate to ≤ 5% without regressing the 0% false-skip rate.
+
+**Allowed file:** `backend/src/execution/cost-cap-calibration.test.ts` (additive, 443 lines, 10 tests).
+
+**Strategy comparison across 10 stored sessions:**
+
+| Strategy | false-abort rate | false-skip rate | cap range |
+|---|---|---|---|
+| default ($5) | 40% (4/10) | 0% | $5.00 |
+| global $8 | 0% (0/10) | 0% | $8.00 |
+| **per-ticker p95 + 20%** | **0% (0/10)** | **0%** | **$2.68 – $7.46** |
+| taskPlan × 1.5 | 80% (8/10) — worst | 0% | $2.33 |
+| hybrid | 0% (0/10) | 0% | $2.68 – $7.46 |
+
+**Recommended strategy:** **per-ticker p95 + 20%** (lowest mean cap among passing strategies, tightest meaningful guard). Calibrated values:
+
+| Ticker | p95 cost | Calibrated cap |
+|---|---|---|
+| KCHOL | $6.2165 | **$7.46** |
+| THYAO | $2.2364 | **$2.68** |
+| EREGL | $4.6059 | **$5.53** |
+
+Unknown / cold-start tickers (e.g. ASELS) fall back to **$8.00** (the proven-safe global flat cap).
+
+**Output:** test-only research artefact; no source change; no DB write. Recommended caps surfaced via `console.log` in test output for operator review.
+
+---
+
+## Pre-P5 Wave A2 — Cost Cap Resolver / Configuration Surface
+
+**Commit:** `e089c27b` — `feat(execution): calibrated cost cap resolver [finance-x-polish pre-P5-A2]`
+
+**Objective:** Wire the calibrated per-ticker caps into the shadow governance runtime so `runCostGovernor` consumes data-derived values instead of the unsafe global $5 default.
+
+**Allowed files:**
+- `backend/src/execution/cost-cap-resolver.ts` (NEW, 153 lines): `resolveCostCap(ticker)` returns `CostCapResolution { cap_usd, reason_code, source, details }` with three frozen reason codes (`COST_CAP_CALIBRATED`, `COST_CAP_FALLBACK_UNKNOWN_TICKER`, `COST_CAP_FALLBACK_MISSING_TICKER`).
+- `backend/src/execution/cost-cap-resolver.test.ts` (NEW, 164 lines, 19 tests).
+- `backend/src/orchestrator-governance.ts` (MODIFIED, +17 / −1 lines): planner and cost governor calls now pass `budget_cap_usd: resolveCostCap(ticker).cap_usd`.
+- `backend/src/orchestrator-governance.test.ts` (MODIFIED, +20 lines): added KCHOL no-longer-false-aborts assertion.
+
+**Validation result on KCHOL `qJASnWiqC-3xomxzyLamS`:**
+- Pre-Wave-A2: `escalation_level=abort action=stop_session` (default $5 cap < KCHOL $6.22 actual).
+- **Post-Wave-A2: `escalation_level=warning action=proceed_with_warning`** (calibrated $7.46 cap > $6.22).
+- Full backend suite: 1184 passed + 9 skipped (was 1164+9, delta = +20 = exact new test count).
+
+**Note:** the resolver consumes the calibration result frozen at commit `e9124e0e`. Re-calibration on a larger session sample size in the future would add new tickers to the calibrated table; the source commit is cited in `details` for auditability.
+
+---
+
 # FAZ P5 — Quality Data Foundation
 
 ## FAZ P5A — Golden Dataset Framework
+
+> **🔧 SHIPPED RECONCILIATION NOTE (Pre-P5 master plan reconciliation, 2026-04-28)**
+>
+> The original P5A schema below has three drifts from shipped reality that **must** be corrected before any golden report is authored:
+>
+> **1. Recommendation enum drift.** The schema below specifies:
+> ```json
+> "recommendation": { "enum": ["BUY", "HOLD", "SELL", "NOT_RATED"] }
+> ```
+> The shipped Python schema (`python-services/src/financex/schemas/analyst.py:14-20`) actually uses **lowercase 6-value** enum:
+> ```python
+> class Recommendation(str, Enum):
+>     BUY = "buy"; OUTPERFORM = "outperform"; HOLD = "hold"
+>     UNDERPERFORM = "underperform"; SELL = "sell"; NOT_RATED = "not_rated"
+> ```
+> **Corrected schema must use:** `"enum": ["buy", "outperform", "hold", "underperform", "sell", "not_rated"]` (lowercase, 6 values). The scoring layer should case-insensitively match operator-supplied golden values to this enum.
+>
+> **2. Display-layer Turkish normalization.** Real Turkish analyst reports use `AL` / `TUT` / `SAT` (and occasionally `GÜÇLÜ AL` / `GÜÇLÜ SAT`). Operator-curated golden reports MUST be normalized to the lowercase English enum at extraction time. The scoring layer SHOULD NOT attempt automated TR→EN translation; that's the operator's responsibility during golden-report curation. Explicit policy: golden_report.json values are canonical lowercase English; analyst-firm-language values do not appear in the JSON.
+>
+> **3. Period naming guidance.** The schema's `period: { "type": "string" }` is open-typed. Shipped fact-layer keys use a strict suffix convention: `fy2025` / `q3_2025` / `h1_2025` / `YYYYMMDD` (e.g. `20260427`). **Corrected schema must constrain `period` via regex:**
+> ```json
+> "period": { "type": "string", "pattern": "^(fy[0-9]{4}|q[1-4]_[0-9]{4}|h[12]_[0-9]{4}|[0-9]{8})$" }
+> ```
+> This prevents silent format drift between golden reports and shipped session output.
+>
+> **4. Data-dependency labelling.** P5A produces **zero operational value without operator-supplied real golden facts.** The scoring code is implementable autonomously, but the framework only becomes useful once at least one real analyst report is extracted into the schema for one ticker (KCHOL / THYAO / EREGL — the three with stored sessions). **Until that operator input arrives, P5A ships as scaffolding only.** Do not consume engineering effort speculating about real golden-report structure beyond the enum + period correction above.
+>
+> **Operator inputs needed before P5A is more than scaffolding:**
+> - At least one real analyst report (Yapı Kredi Yatırım / İş Yatırım / Garanti BBVA Yatırım or equivalent) extracted into `evals/golden_v2/reports/<TICKER>/<period>_real.json` matching the corrected schema.
+> - Confirmation of the lowercase 6-value enum decision (or alternative).
+> - Explicit period regex acceptance.
+>
+> **Test fixture vs. real golden report:** if no real golden report is available, P5A may ship a single synthetic fixture clearly marked `"synthetic_fixture": true` for unit-testing the scoring math. **Synthetic fixtures must never be confused with authoritative analyst ground truth** — that's why the explicit boolean tag is required.
 
 ### Görevler
 
@@ -8031,6 +8199,35 @@ await recordAuditEvent({
 
 ## FAZ P6C — CI/CD Pipeline
 
+> **🔧 SHIPPED RECONCILIATION NOTE (Pre-P5 master plan reconciliation, 2026-04-28)**
+>
+> The original YAML below uses `pnpm typecheck` / `pnpm test:run` commands. **The repo does not use `pnpm`** (see `backend/package-lock.json`) and **`backend/package.json` exposes only `test:watch`** — there is no `typecheck` or `test:run` script. The YAML must be adapted to the actual command surface:
+>
+> **Corrected commands (replace pnpm with npm + direct npx invocations):**
+> ```yaml
+> # typecheck job
+> - run: cd backend && npm install
+> - run: cd backend && npx tsc --noEmit
+>
+> # unit-tests job
+> - run: cd backend && npm install
+> - run: cd backend && npx vitest run
+> ```
+>
+> **Working directory:** all backend commands must `cd backend` first (the repo root is the parent of `backend/`).
+>
+> **Regression-eval job MUST be disabled by default.** The original YAML schedules `npx tsx scripts/regression-eval.ts` with `ANTHROPIC_API_KEY` on every PR — this triggers paid LLM runs. The job must ship as `if: false` with an explicit comment so an operator can opt in manually:
+> ```yaml
+> regression-eval:
+>   if: false  # Pre-P5 reconciliation: paid LLM runs disabled by default; operator enables manually after review.
+> ```
+>
+> **Local validation gap:** `actionlint` is not installed in the dev toolchain. YAML correctness cannot be linted locally beyond syntax (the repo has `js-yaml` and `yaml` as Node deps for syntax-only validation). First-PR-after-merge becomes the GitHub Actions semantics validator. Operators should accept this trade-off explicitly OR add `actionlint` to the dev dependency chain before authoring CI YAMLs.
+>
+> **Schema-validation job (`ajv compile -s`):** keep as documented; `schemas/**/*.schema.json` is a stable convention.
+>
+> **Python-tests job (`uv sync && uv run pytest`):** keep as documented; `python-services/pyproject.toml` exists and `uv` is the canonical Python tooling for this repo.
+
 ### Görevler
 
 **1. `.github/workflows/ci.yml`:**
@@ -8111,6 +8308,30 @@ Production deployment workflow, Docker build, push to registry.
 
 ## FAZ P6D — Health Checks + Metrics
 
+> **🔧 SHIPPED RECONCILIATION NOTE (Pre-P5 master plan reconciliation, 2026-04-28)**
+>
+> The snippet below imports `breakers` from `./reliability/circuit-breaker.js` and consumes `breakers.kap.getStatus()`. **Neither the path nor that API exists** (see the FAZ P4 reconciliation note at the top of this section: shipped `backend/src/execution/circuit-breaker.ts` is a stateless decision engine, not a stateful per-name registry).
+>
+> **P6D as written cannot be implemented.** Two paths to resolve:
+>
+> 1. **Build a new stateful breaker registry layer** under `reliability/` to back the doc-canonical API. **Not recommended** — duplicates P4D logic at the runtime layer; major scope creep.
+>
+> 2. **Re-scope P6D to use shipped code only** (recommended):
+>
+>    - **`/health`** — returns `{ status: 'ok', uptime_seconds: process.uptime() }`. No external dependencies. Trivial.
+>    - **`/ready`** — replace `breakers.kap.getStatus().state !== 'OPEN'` with a check that derives breaker state from recent `agent_runs` history:
+>      ```ts
+>      // Build OperationInput[] from recent agent_runs failures (last N attempts per kind)
+>      const cb = await runCircuitBreaker(sessionId ?? 'liveness-probe', { operations: [...] });
+>      const kapOpen = cb.verdicts.find(v => v.kind === 'kap_watch')?.state === 'open';
+>      // ...checks for database, qdrant, anthropic remain unchanged conceptually
+>      ```
+>    - **`/metrics`** — replace the `Object.values(breakers).flatMap(b => ...)` loop with the same `runCircuitBreaker` over the same `agent_runs`-derived inputs, then map `verdicts[*].state` to Prometheus gauges. The `finance_x_active_sessions` and `finance_x_failed_sessions_today` gauges (DB queries) remain unchanged.
+>
+> **Server.ts touch requires explicit operator approval under the P4.5 template:** the additive endpoints (`/health`, `/ready`, `/metrics`) should be added behind a `process.env.METRICS_ENABLED === 'on'` (or similar) flag with default OFF, ≤ 15 additive lines, exception-isolated. Behaviour with flag OFF must be byte-for-byte identical to today.
+>
+> **Hard prerequisite:** an operator standing approval for the P4.5-style server.ts touch (a single decision unblocks P6A + P6D + future similar phases) before P6D implementation can begin autonomously.
+
 ### Görevler
 
 **1. `backend/src/server.ts`'e ekle:**
@@ -8163,6 +8384,31 @@ app.get('/metrics', (req, res) => {
 
 ### Commit
 `feat(ops): health checks + Prometheus metrics endpoint [finance-x-polish P6D]`
+
+---
+
+# Pre-P5 Tier Classification (Autonomous-Safety Mapping)
+
+> **Added during Pre-P5 master plan reconciliation, 2026-04-28.** Reflects the post-Wave-A2 understanding of which P5/P6 phases can be executed autonomously under the existing sprint hard constraints (no live paid run, no DB schema change, no enforcement, no broad orchestrator refactor) vs. which require explicit operator approval or paid-run authorization.
+
+| Tier | Phases | Autonomous? | Prerequisites |
+|---|---|---|---|
+| **Tier 1 — Docs only** | This reconciliation patch | ✅ **YES, immediately** | none |
+| **Tier 2 — Test-only / additive code, no forbidden-file touch** | **P6C** (CI YAMLs with `regression-eval` disabled, commands adapted), **P5C generator-only** (Python script + JSON), **P5A scaffolding** (after the recommendation enum + period regex decisions are accepted) | ✅ **YES** | (a) operator accepts first-PR-as-validator for CI YAMLs (no `actionlint`); (b) for P5A: enum + period decisions accepted in this doc; one synthetic fixture acceptable for unit tests; **real golden facts deferred to operator delivery**. |
+| **Tier 3 — Forbidden-file touch under P4.5 template** | **P6A** (server.ts secrets boot), **P6B** (orchestrator.ts audit-log wiring), **P6D re-scoped** (server.ts health/ready/metrics endpoints) | ⚠️ **CONDITIONAL** | One **standing operator approval** for P4.5-style touches (≤ 15 additive lines, default-OFF env flag, exception-isolated, byte-identical behaviour with flag OFF) unblocks all three at once. **P6D additionally requires the re-scope above** (drop `breakers` registry, derive from `agent_runs` + shipped P4D engine). **P6B additionally requires a test-mode disk-write disable** (`AUDIT_LOG_DISK_DISABLED=1` or equivalent) to prevent test runs from polluting `./logs/audit/`. |
+| **Tier 4 — Blocked pending paid-run authorization** | **P5B end-to-end** (`runABTest` invokes `startAnalysisSession`), **P5C torture-test runner** (full pipeline against synthetic companies), **P6C regression-eval enablement** (5 golden samples on every PR) | ❌ **NO** | Explicit operator authorization for paid LLM runs. **No autonomous path exists** — a single bad config can burn API budget on every PR. |
+
+**Sequencing recommendation post-reconciliation:**
+
+1. **(Now, this commit)** Tier 1 docs reconciliation. Closes architectural drift in one commit; unblocks every subsequent phase from being designed against stale assumptions.
+2. **(Next)** Tier 2 phases in any order. Recommended order: **P6C-first** (CI safety net, every subsequent phase gets automatic green/red feedback), then **P5C generator** (synthetic test fixtures usable downstream), then **P5A scaffolding** (with operator-supplied or synthetic-fixture-only ground truth). Each as its own commit + scope-review cycle.
+3. **(Then, after one operator decision)** Tier 3 phases in any order. The single standing approval on the P4.5 template unblocks all three.
+4. **(Deferred)** Tier 4 phases require operator policy decisions on paid-run authorization that go beyond engineering scope.
+
+**Specifically NOT recommended:**
+- Going from this reconciliation directly to P5A as the next implementation phase. Without CI (P6C) in place, every subsequent phase lands without an automated regression gate. **P6C-first is the higher-leverage next step.**
+- Approving Tier 3 phases without first observing P4.5 in any production session (currently `GOVERNANCE_SHADOW_MODE` defaults OFF; no production session has yet exercised the shadow path). At least one operator-driven shadow-mode session against a real ticker would surface any orchestration-level issues before another forbidden-file touch lands.
+- Enabling `regression-eval` (or any other paid CI step) without explicit budget envelope authorization.
 
 ---
 
