@@ -18,6 +18,7 @@
  * sector-aware flags right.
  */
 
+import { holdingSotpGatePass, type SotpData } from '../../valuation/sotp-loader.js';
 import { resolveSector } from './llm_fallback.js';
 
 export interface UpstreamRatioValue {
@@ -87,6 +88,13 @@ export interface LegacyValuationOutput {
   notes: string[];
   warnings: string[];
   review_status: string;
+  // Phase D — SOTP hard gate. For holding sector tickers without a
+  // SOTP YAML (or with too few subs), target_price_publish_blocked = true
+  // and the report formatter must NOT emit upside/target_price.
+  sotp_gate_pass: boolean;
+  sotp_gate_reason: string;
+  sotp_data: SotpData | null;
+  target_price_publish_blocked: boolean;
   source: 'python';
 }
 
@@ -190,6 +198,29 @@ export function adaptValuationForLegacy(
     notes.push('Holding şirketi — konsolide DCF yalnızca üst sınır referansıdır. Gerçek değer için SOTP (parts) tablosu zorunludur.');
   }
 
+  // Phase D — SOTP hard gate. If the ticker is a holding company,
+  // require a SOTP YAML with ≥3 subsidiaries before target_price
+  // can be published. Otherwise the gate trivially passes.
+  const sotpGate = holdingSotpGatePass(
+    (fa?.ticker ?? ticker).toUpperCase(),
+    sector,
+  );
+  const targetPriceBlocked = sector === 'holding' && !sotpGate.pass;
+  if (sector === 'holding') {
+    if (!sotpGate.pass) {
+      warnings.push(`SOTP gate FAIL — ${sotpGate.reason}. target_price publish blocked.`);
+      notes.push('Holding SOTP zorunlu — bu raporda target_price / upside YAYINLANAMAZ. Önce config/sotp/<TICKER>.yaml curated edilmeli.');
+    } else if (sotpGate.data) {
+      const c = sotpGate.data.computed;
+      const verifBadge = sotpGate.data.verification_status === 'operator_verified'
+        ? 'doğrulanmış kaynak'
+        : 'operatör incelemesi bekliyor';
+      notes.push(
+        `SOTP NAV: gross ${(c.gross_nav_try / 1e9).toFixed(1)}B TL → net ${(c.net_nav_try / 1e9).toFixed(1)}B TL → adj. (-${c.holding_discount_pct.toFixed(0)}%) ${(c.adjusted_nav_try / 1e9).toFixed(1)}B TL → ${c.per_share_nav_try.toFixed(2)} TL/hisse (${c.total_subsidiary_count} iştirak; ${verifBadge}).`,
+      );
+    }
+  }
+
   if (sector === 'banking') {
     bankingWarn = true;
     notes.push('Banka — FCF tabanlı DCF uygulanamaz. Tercih edilen yöntem fazla getiri (excess return) veya DDM. Mevcut engine DCF yok sayılmalı.');
@@ -202,13 +233,22 @@ export function adaptValuationForLegacy(
   const peerEvEbitda = peerMultipleFromBenchmark(sc, 'EBITDA_MARGIN');
   const peerPe       = peerMultipleFromBenchmark(sc, 'NET_MARGIN');
 
+  // For holdings without a passing SOTP gate, also strip per_share_value
+  // out of the DCF so downstream consumers cannot accidentally publish
+  // it as a target price. Keep the rest of the DCF block (wacc, EV)
+  // for sanity-ceiling reporting.
+  let dcfFinal: UpstreamDcfResult | null = bankingWarn ? null : dcf;
+  if (targetPriceBlocked && dcfFinal) {
+    dcfFinal = { ...dcfFinal, per_share_value: null };
+  }
+
   return {
     agent_id: 'valuation_agent',
     output_id: outputId,
     ticker: (fa?.ticker ?? ticker).toUpperCase(),
     period_label: fa?.period_label ?? 'unknown',
     sector,
-    dcf: bankingWarn ? null : dcf,  // refuse to surface an FCF-DCF on a bank
+    dcf: dcfFinal,
     peer_ev_ebitda: peerEvEbitda,
     peer_pe: peerPe,
     try_wacc_warning: tryWacc,
@@ -218,6 +258,10 @@ export function adaptValuationForLegacy(
     notes,
     warnings,
     review_status: 'pending_ceo_review',
+    sotp_gate_pass: sotpGate.pass,
+    sotp_gate_reason: sotpGate.reason,
+    sotp_data: sotpGate.data,
+    target_price_publish_blocked: targetPriceBlocked,
     source: 'python',
   };
 }

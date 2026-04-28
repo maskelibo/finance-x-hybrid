@@ -710,6 +710,8 @@
 
     <h1>IV. Değerleme & Hedef Fiyat</h1>
 
+    {{#if target_price_blocked_banner_has}}{{&target_price_blocked_banner_html}}{{/if}}
+
     {{#if valuation_warnings}}
     <div class="note">
       {{#each valuation_warnings}}
@@ -718,8 +720,46 @@
     </div>
     {{/if}}
 
+    {{#if sotp_present}}
+    <h2>Parçaların Toplamı (SOTP / NAD)</h2>
+    {{#if sotp_source_banner_has}}{{&sotp_source_banner_html}}{{/if}}
+    <table>
+      <thead><tr><th>İştirak</th><th>Ticker</th><th class="num">Pay (%)</th><th class="num">Piyasa Değeri</th><th class="num">Etkin Pay (TL)</th><th>Yöntem</th></tr></thead>
+      <tbody>
+        {{#each sotp_listed}}
+        <tr><td class="label">{{subsidiary}}</td><td>{{ticker}}</td><td class="num">{{stake_pct_formatted}}</td><td class="num">{{market_cap_formatted}}</td><td class="num">{{effective_share_formatted}}</td><td>{{method}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{#if sotp_private_has}}
+    <h3 style="margin-top:14px;font-size:11pt;">Halka Açık Olmayan İştirakler</h3>
+    <table>
+      <thead><tr><th>İştirak</th><th class="num">Pay (%)</th><th class="num">NAV Katkısı</th><th>Yöntem</th></tr></thead>
+      <tbody>
+        {{#each sotp_private}}
+        <tr><td class="label">{{subsidiary}}</td><td class="num">{{stake_pct_formatted}}</td><td class="num">{{nav_contribution_formatted}}</td><td>{{method}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+    <table style="margin-top:10px;">
+      <thead><tr><th>NAV Köprüsü</th><th class="num">Değer</th></tr></thead>
+      <tbody>
+        <tr><td class="label">Brüt NAV (iştirakler toplamı)</td><td class="num">{{sotp_summary.gross_nav_formatted}}</td></tr>
+        <tr><td class="label">(−) Holding Net Borç</td><td class="num">{{sotp_summary.holding_net_debt_formatted}}</td></tr>
+        <tr><td class="label">Net NAV</td><td class="num">{{sotp_summary.net_nav_formatted}}</td></tr>
+        <tr><td class="label">(−) Holding İskontosu</td><td class="num">{{sotp_summary.holding_discount_formatted}}</td></tr>
+        <tr class="total"><td class="label">Düzeltilmiş NAV</td><td class="num">{{sotp_summary.adjusted_nav_formatted}}</td></tr>
+        <tr class="total"><td class="label">Hisse Başına NAV</td><td class="num">{{sotp_summary.per_share_nav_formatted}}</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:9pt;color:#64748b;margin-top:6px;font-style:italic;">
+      {{sotp_summary.total_count}} iştirak ({{sotp_summary.listed_count}} halka açık + {{sotp_summary.private_count}} özel). SOTP/NAV holding değerlemesinin board-grade asgarisidir; konsolide DCF yalnızca üst sınır referansı olarak okunmalıdır.
+    </div>
+    {{/if}}
+
     {{#if dcf_present}}
-    <h2>DCF Değerleme</h2>
+    <h2>DCF Değerleme {{#if target_price_publish_blocked}}<span style="font-size:9pt;color:#c53030;font-weight:normal;">(yalnızca üst sınır referansı — target_price publish bloke)</span>{{/if}}</h2>
     <table>
       <thead><tr><th>Kalem</th><th class="num">Değer</th></tr></thead>
       <tbody>

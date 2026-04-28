@@ -40,6 +40,7 @@ import {
 } from './auto_commentary.js';
 import { buildNarrativeBlocks, cleanupMarkdownForFallback } from './llm_narrative.js';
 import { resolvePeerBundle } from './peer_sets.js';
+import { loadOwnership, ownershipPieSlices } from '../../ownership/ownership-loader.js';
 import { resolveSwot } from './swot_analysis.js';
 import { barChart, columnChart, gaugeChart, horizontalBarChart, lineChart, pieChart, priceBandChart, radarChart, stackedAreaChart, timelineChart, waterfallChart } from './svg_charts.js';
 import { formatPct, formatRatio, formatTRY, type TemplateContext, type TemplateValue } from './template_engine.js';
@@ -517,10 +518,69 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const dcf: Record<string, unknown> | null = (dcfFromEngine ?? dcfFromTop) ?? null;
   const dcfPresent = !!dcf && dcf.per_share_value != null;
 
+  // Phase D — SOTP rendering. The valuation adapter already loaded the
+  // YAML and computed gate pass/fail. Build the holding-grade NAV table
+  // when data is present, and a publish-block banner when the gate fails.
+  const sotpData = (val?.sotp_data ?? null) as Record<string, unknown> | null;
+  const sotpGatePass = Boolean(val?.sotp_gate_pass);
+  const targetPriceBlocked = Boolean(val?.target_price_publish_blocked);
+  const sotpGateReason = String(val?.sotp_gate_reason ?? '');
+
+  const sotpListed = sotpData
+    ? arrayFrom(sotpData.listed_subsidiaries ?? []).map((s) => ({
+      subsidiary: String(s.subsidiary ?? ''),
+      ticker: String(s.ticker ?? ''),
+      stake_pct_formatted: s.stake_pct != null ? `%${Number(s.stake_pct).toFixed(1)}` : '—',
+      market_cap_formatted: s.market_cap_try != null ? `${(Number(s.market_cap_try) / 1e9).toFixed(1)} mlr TL` : '—',
+      effective_share_formatted: s.koc_effective_share_try != null ? `${(Number(s.koc_effective_share_try) / 1e9).toFixed(1)} mlr TL` : '—',
+      method: String(s.nav_method ?? ''),
+      notes: String(s.notes ?? ''),
+    }))
+    : [];
+
+  const sotpPrivate = sotpData
+    ? arrayFrom(sotpData.private_subsidiaries ?? []).map((s) => ({
+      subsidiary: String(s.subsidiary ?? ''),
+      stake_pct_formatted: s.stake_pct != null ? `%${Number(s.stake_pct).toFixed(1)}` : '—',
+      nav_contribution_formatted: s.nav_contribution_try != null ? `${(Number(s.nav_contribution_try) / 1e9).toFixed(1)} mlr TL` : '—',
+      method: String(s.nav_method ?? ''),
+      notes: String(s.notes ?? ''),
+    }))
+    : [];
+
+  const sotpComputed = (sotpData?.computed ?? null) as Record<string, unknown> | null;
+  const sotpSummary = sotpComputed ? {
+    gross_nav_formatted: `${(Number(sotpComputed.gross_nav_try ?? 0) / 1e9).toFixed(1)} mlr TL`,
+    holding_net_debt_formatted: `${(Number(sotpComputed.holding_net_debt_try ?? 0) / 1e9).toFixed(1)} mlr TL`,
+    net_nav_formatted: `${(Number(sotpComputed.net_nav_try ?? 0) / 1e9).toFixed(1)} mlr TL`,
+    holding_discount_formatted: `%${Number(sotpComputed.holding_discount_pct ?? 0).toFixed(1)}`,
+    adjusted_nav_formatted: `${(Number(sotpComputed.adjusted_nav_try ?? 0) / 1e9).toFixed(1)} mlr TL`,
+    per_share_nav_formatted: `${Number(sotpComputed.per_share_nav_try ?? 0).toFixed(2)} TL`,
+    listed_count: Number(sotpComputed.listed_count ?? 0),
+    private_count: Number(sotpComputed.private_count ?? 0),
+    total_count: Number(sotpComputed.total_subsidiary_count ?? 0),
+  } : null;
+
+  // SOTP source banner — distinguishes operator-verified from auto-curated.
+  const sotpSource = (sotpData?.source ?? null) as Record<string, unknown> | null;
+  const sotpVerification = String(sotpData?.verification_status ?? '');
+  const sotpVerified = sotpVerification === 'operator_verified';
+  const sotpSourceBanner = sotpData
+    ? (sotpVerified
+      ? `<div style="margin:10px 0;padding:8px 12px;background:#e6f4ea;border-left:4px solid #2f855a;border-radius:4px;font-size:11px;color:#1f3a26"><strong>✓ Doğrulanmış Kaynak:</strong> ${String(sotpSource?.source_filing ?? '')} · ${String(sotpSource?.as_of_date ?? '')}</div>`
+      : `<div style="margin:10px 0;padding:8px 12px;background:#fff3cd;border-left:4px solid #c6973f;border-radius:4px;font-size:11px;color:#5a4400"><strong>⚠ Operatör İncelemesi Bekliyor:</strong> ${String(sotpSource?.source_filing ?? '')} · ${String(sotpSource?.as_of_date ?? '')} — operatör doğrulaması tamamlanmadan target_price publish edilmemelidir.</div>`)
+    : '';
+
+  // Hard publish-block banner — fires when sector=holding AND gate failed.
+  const targetPriceBlockedBanner = targetPriceBlocked
+    ? `<div style="margin:14px 0;padding:12px 16px;background:#fde8e8;border-left:5px solid #c53030;border-radius:4px;font-size:13px;color:#5a1a1a"><strong>⛔ Hedef Fiyat Yayını Bloklandı (Holding SOTP Hard Gate):</strong> ${sotpGateReason || 'Holding şirket için curated SOTP YAML zorunludur.'}<br/>Bu raporda <strong>target_price / upside YAYINLANMAYACAKTIR</strong>. Konsolide DCF yalnızca bilgilendirme amaçlıdır; gerçek değer tespiti için SOTP/NAV iskeleti operatör tarafından <code>config/sotp/${ticker}.yaml</code> içinde curated edilmelidir.</div>`
+    : '';
+
   const valuationWarnings: string[] = [
     ...(val?.try_wacc_warning ? ['TRY WACC tuzağı: USD bazlı WACC kullanılmalı'] : []),
     ...(val?.holding_sotp_required ? ['Holding — SOTP analizi zorunlu, konsolide DCF üst sınır olarak kabul edilmeli'] : []),
     ...(val?.banking_sector_warning ? ['Banka filer — FCF-DCF uygulanabilir değil, DDM veya excess return modeli tercih edin'] : []),
+    ...(targetPriceBlocked ? [`SOTP gate FAIL — ${sotpGateReason}. target_price publish bloke edildi.`] : []),
     ...arrayFrom(val?.notes ?? []).map(String),
   ];
 
@@ -795,7 +855,11 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
   const baseDerivation = dcfWacc != null && dcfTg != null
     ? `WACC ${fmtWacc(dcfWacc)}, Terminal g ${fmtTg(dcfTg)}`
     : 'DCF değerleme (WACC/Terminal g detayı eksik)';
-  const scenarios = dcfPerShare != null ? {
+  // Phase D — when target_price publish is blocked (holding without SOTP),
+  // also suppress the Bear/Base/Bull scenarios since they would imply a
+  // publishable per_share target.
+  const scenariosAllowed = !targetPriceBlocked;
+  const scenarios = (scenariosAllowed && dcfPerShare != null) ? {
     bear_price: formatTRY(dcfPerShare * bearMultiplier, 2) + ' TL',
     bear_upside: lastClose != null ? `Fiyata ${formatPct(((dcfPerShare * bearMultiplier / lastClose - 1) * 100), 1)}` : '−25% DCF',
     bear_derivation: `DCF fair value × ${bearMultiplier.toFixed(2)} = ${formatTRY(dcfPerShare * bearMultiplier, 2)} TL (bear kötümser senaryo, stres varsayımları altında)`,
@@ -956,16 +1020,37 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     { label: 'Negatif', value: Number(sentimentDist.negative ?? 0), color: '#9b2c2c' },
   ], 'Haber Sentiment Dağılımı') : '';
 
-  // Sector-typical ownership pie (placeholder when context_extraction
-  // doesn't surface structured ownership data)
-  // Wave 4 (2026-04-28) — when the data comes from the static lookup
-  // (buildOwnershipPie returns hardcoded ticker breakdown), wrap the
-  // chart with an honest "static reference" rozet so the board reader
-  // knows this isn't from a live KAP filing parse.
-  const ownershipPie = buildOwnershipPie(ticker, sectorRaw);
-  const ownershipPieSvg = ownershipPie
-    ? `${pieChart(ownershipPie, 'Ortaklık Yapısı (Statik Referans)')}<div style="margin-top:8px;padding:6px 10px;background:#fff3cd;border-left:3px solid #c6973f;font-size:11px;color:#5a4400;border-radius:3px"><strong>ⓘ Statik referans verisi:</strong> Ortaklık yapısı hardcoded lookup'tan gelmektedir. Güncel KAP "Sermaye ve Pay Sahipleri" filing'inden parse edilmemiştir; küçük pay devirleri yansımayabilir. Wave-future: KAP-fed extractor.</div>`
-    : '';
+  // Pre-Core-4 Phase C (2026-04-28) — YAML-fed ownership loader.
+  // Replaces the hardcoded compose.ts:buildOwnershipPie() lookup
+  // with a config-driven loader. Each ticker can have a YAML at
+  // config/ownership/<TICKER>.yaml carrying source attribution +
+  // verification status. When verification_status is
+  // 'auto_curated_pending_operator_review', a yellow disclaim banner
+  // explains the data is curated from public IR/KAP and awaiting
+  // operator confirmation.
+  const ownershipFromYaml = loadOwnership(ticker);
+  let ownershipPieSvg: string;
+  if (ownershipFromYaml) {
+    const slices = ownershipPieSlices(ownershipFromYaml);
+    const verified = ownershipFromYaml.verification_status === 'operator_verified';
+    const titleSuffix = verified
+      ? `(Doğrulanmış Kaynak — ${ownershipFromYaml.source.as_of_date})`
+      : `(Operatör İncelemesi Bekliyor — ${ownershipFromYaml.source.as_of_date})`;
+    const disclaimColor = verified ? '#e6ffed' : '#fff3cd';
+    const borderColor = verified ? '#22863a' : '#c6973f';
+    const textColor = verified ? '#22543d' : '#5a4400';
+    const disclaimMessage = verified
+      ? `<strong>✓ Doğrulanmış kaynak:</strong> ${ownershipFromYaml.source.source_filing} — ${ownershipFromYaml.source.url}`
+      : `<strong>ⓘ Operator review pending:</strong> Ortaklık yapısı <code>config/ownership/${ticker}.yaml</code>'dan gelmektedir, kaynağı: ${ownershipFromYaml.source.source_filing} (${ownershipFromYaml.source.url}, as_of=${ownershipFromYaml.source.as_of_date}). Operatör KAP "Sermaye ve Pay Sahipleri" filing'i ile cross-check edip <code>verification_status: operator_verified</code>'e çevirmeden önce board-grade publish bunu primary source gibi kullanmamalıdır.`;
+    ownershipPieSvg = `${pieChart(slices, `Ortaklık Yapısı ${titleSuffix}`)}<div style="margin-top:8px;padding:6px 10px;background:${disclaimColor};border-left:3px solid ${borderColor};font-size:11px;color:${textColor};border-radius:3px">${disclaimMessage}</div>`;
+  } else {
+    // Fallback to legacy hardcoded lookup, but with explicit "Statik
+    // Referans" rozet (Wave 4 behaviour preserved).
+    const ownershipPie = buildOwnershipPie(ticker, sectorRaw);
+    ownershipPieSvg = ownershipPie
+      ? `${pieChart(ownershipPie, 'Ortaklık Yapısı (Statik Referans — YAML config yok)')}<div style="margin-top:8px;padding:6px 10px;background:#fff3cd;border-left:3px solid #c6973f;font-size:11px;color:#5a4400;border-radius:3px"><strong>ⓘ Statik referans verisi:</strong> ${ticker} için <code>config/ownership/${ticker}.yaml</code> mevcut değil; compose.ts hardcoded fallback kullanılmıştır. Operator: yaml config oluşturup verification_status'u operator_verified'e çekene kadar primary source olarak kullanmayın.</div>`
+      : '';
+  }
 
   // ESG Radar (E/S/G 3-axis) — sector-specific baseline profiles
   // Scores 0-100; adjusted by CBAM data availability and QA score
@@ -1357,6 +1442,19 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Section IV
     valuation_warnings: valuationWarnings,
     dcf_present: dcfPresent,
+
+    // Phase D — SOTP rendering
+    sotp_present: sotpData != null,
+    sotp_listed: sotpListed as unknown as TemplateValue,
+    sotp_private: sotpPrivate as unknown as TemplateValue,
+    sotp_private_has: sotpPrivate.length > 0,
+    sotp_summary: sotpSummary as unknown as TemplateValue,
+    sotp_source_banner_html: sotpSourceBanner,
+    sotp_source_banner_has: sotpSourceBanner.length > 0,
+    sotp_gate_pass: sotpGatePass,
+    target_price_blocked_banner_html: targetPriceBlockedBanner,
+    target_price_blocked_banner_has: targetPriceBlockedBanner.length > 0,
+    target_price_publish_blocked: targetPriceBlocked,
     dcf_ev_formatted: getDcfField(dcf, 'enterprise_value') != null ? formatTRY(getDcfField(dcf, 'enterprise_value') as number, 0) + ' mn TL' : '—',
     dcf_equity_formatted: getDcfField(dcf, 'equity_value') != null ? formatTRY(getDcfField(dcf, 'equity_value') as number, 0) + ' mn TL' : '—',
     dcf_per_share_formatted: getDcfField(dcf, 'per_share_value') != null ? formatTRY(getDcfField(dcf, 'per_share_value') as number, 2) + ' TL' : '—',

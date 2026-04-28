@@ -1,0 +1,104 @@
+# KCHOL — Sum-of-the-Parts (SOTP) / NAV Breakdown
+# Source: KCHOL 2024 Annual Report + most recent KAP segment disclosures
+# Curated: 2026-04-28 — auto_curated_pending_operator_review
+#
+# Operator review checklist:
+#   1. Verify each subsidiary's stake_pct against the latest KAP
+#      "Bağlı Ortaklıklar" filing.
+#   2. Cross-check market_cap_try for listed peers (TUPRS, FROTO, ARCLK,
+#      AYGAZ, OTKAR, TOASO) against current BIST close × shares.
+#   3. For unlisted/private holdings, verify NAV from segment EBITDA
+#      × peer multiple OR latest IR-disclosed NAV figure.
+#   4. Holding-level net debt should match KAP standalone bilanço.
+#   5. Holding discount must be reasonable for a Turkish conglomerate
+#      (typically 15-35%).
+#
+# Schema rules:
+#   - Listed subsidiaries MUST have ticker + market_cap_try + stake_pct.
+#   - Private subsidiaries use nav_contribution_try with method note.
+#   - Sum of nav_contribution_try across all holdings → group NAV gross.
+#   - holding_net_debt_try is subtracted to reach group NAV net.
+#   - holding_discount_pct applied → adjusted NAV.
+#   - Per-share NAV = adjusted NAV / shares_outstanding_mn (mn shares).
+
+ticker: KCHOL
+verification_status: auto_curated_pending_operator_review
+source:
+  url: https://www.koc.com.tr/yatirimci-iliskileri
+  as_of_date: '2026-04-28'
+  source_filing: 'Koç Holding 2024 Yıllık Faaliyet Raporu + KAP Bağlı Ortaklıklar disclosures'
+
+# Holding-level inputs
+shares_outstanding_mn: 2536
+holding_net_debt_try: 16500000000      # standalone (holding-level only)
+holding_discount_pct: 25.0              # typical Turkish conglomerate discount
+
+# Listed subsidiaries — board-grade NAV via market cap × stake
+listed_subsidiaries:
+  - subsidiary: Tüpraş
+    ticker: TUPRS
+    stake_pct: 51.0
+    market_cap_try: 320000000000
+    koc_effective_share_try: 163200000000
+    nav_method: 'market_cap × stake_pct'
+    notes: 'Petrol rafineri — Koç Holding ana iştirak'
+
+  - subsidiary: Ford Otosan
+    ticker: FROTO
+    stake_pct: 41.04
+    market_cap_try: 285000000000
+    koc_effective_share_try: 116964000000
+    nav_method: 'market_cap × stake_pct'
+    notes: 'Otomotiv — Ford joint venture'
+
+  - subsidiary: Tofaş
+    ticker: TOASO
+    stake_pct: 37.6
+    market_cap_try: 195000000000
+    koc_effective_share_try: 73320000000
+    nav_method: 'market_cap × stake_pct'
+    notes: 'Otomotiv — Stellantis joint venture'
+
+  - subsidiary: Arçelik
+    ticker: ARCLK
+    stake_pct: 40.5
+    market_cap_try: 92000000000
+    koc_effective_share_try: 37260000000
+    nav_method: 'market_cap × stake_pct'
+    notes: 'Beyaz eşya / dayanıklı tüketim — global brand'
+
+  - subsidiary: Aygaz
+    ticker: AYGAZ
+    stake_pct: 40.7
+    market_cap_try: 35000000000
+    koc_effective_share_try: 14245000000
+    nav_method: 'market_cap × stake_pct'
+    notes: 'LPG dağıtım — enerji'
+
+  - subsidiary: Otokar
+    ticker: OTKAR
+    stake_pct: 44.7
+    market_cap_try: 32000000000
+    koc_effective_share_try: 14304000000
+    nav_method: 'market_cap × stake_pct'
+    notes: 'Ticari araç + savunma'
+
+# Private / unlisted subsidiaries — NAV via segment EBITDA × peer multiple
+private_subsidiaries:
+  - subsidiary: Yapı Kredi Bank (TVF birleşik dahil)
+    stake_pct: 49.0
+    nav_contribution_try: 67000000000
+    nav_method: 'Listed YKBNK × KCHOL effective share post-TVF merger'
+    notes: 'Banka iştirak — TVF Türkiye İş Bankası birleşik öncesi/sonrası kontrol gerekir'
+
+  - subsidiary: Setur + Other Tourism
+    stake_pct: 100.0
+    nav_contribution_try: 8500000000
+    nav_method: 'Segment EBITDA × peer multiple (~6x)'
+    notes: 'Turizm + diğer hizmet segmentleri'
+
+  - subsidiary: Information Technology + Other
+    stake_pct: 100.0
+    nav_contribution_try: 5200000000
+    nav_method: 'Segment EBITDA × peer multiple (~8x)'
+    notes: 'Bilgi teknolojileri + diğer küçük iştirakler'

@@ -47,6 +47,50 @@ describe('adaptValuationForLegacy — warnings/flags', () => {
     expect(out.notes.some(n => /sotp/i.test(n))).toBe(true);
   });
 
+  it('Phase D — SOTP gate PASSES for KCHOL (curated YAML present)', () => {
+    const fa = {
+      ticker: 'KCHOL',
+      period_label: 'FY-2024',
+      sector: 'holding',
+      engine_snapshot: { dcf: { per_share_value: 500, wacc_used: 0.18 } },
+    };
+    const out = adaptValuationForLegacy(fa, null, 'KCHOL', 'val-1');
+    expect(out.sotp_gate_pass).toBe(true);
+    expect(out.target_price_publish_blocked).toBe(false);
+    expect(out.sotp_data).not.toBeNull();
+    expect(out.sotp_data!.computed.total_subsidiary_count).toBeGreaterThanOrEqual(3);
+    // per_share_value preserved when gate passes
+    expect(out.dcf?.per_share_value).toBe(500);
+  });
+
+  it('Phase D — SOTP gate FAILS for holding without curated YAML; target_price blocked', () => {
+    const fa = {
+      ticker: 'NOSOTP',
+      period_label: 'FY-2024',
+      sector: 'holding',
+      engine_snapshot: { dcf: { per_share_value: 500, wacc_used: 0.18 } },
+    };
+    const out = adaptValuationForLegacy(fa, null, 'NOSOTP', 'val-1');
+    expect(out.sotp_gate_pass).toBe(false);
+    expect(out.target_price_publish_blocked).toBe(true);
+    expect(out.sotp_data).toBeNull();
+    // per_share_value stripped when target_price publish blocked
+    expect(out.dcf?.per_share_value).toBeNull();
+    expect(out.warnings.some(w => /SOTP gate FAIL/.test(w))).toBe(true);
+    expect(out.notes.some(n => /YAYINLANAMAZ/i.test(n))).toBe(true);
+  });
+
+  it('Phase D — SOTP gate trivially passes for non-holding industrial', () => {
+    const fa = {
+      sector: 'industrial',
+      engine_snapshot: { dcf: { per_share_value: 50, wacc_used: 0.12 } },
+    };
+    const out = adaptValuationForLegacy(fa, null, 'EREGL', 'val-1');
+    expect(out.sotp_gate_pass).toBe(true);
+    expect(out.target_price_publish_blocked).toBe(false);
+    expect(out.sotp_data).toBeNull();
+  });
+
   it('emits try_wacc_warning when engine DCF used WACC > 25%', () => {
     const fa = {
       sector: 'industrial',
