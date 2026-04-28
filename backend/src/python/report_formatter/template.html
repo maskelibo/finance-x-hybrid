@@ -534,6 +534,10 @@
 
     <h2>Finansal Trend ({{multi_year_count}} dönem)</h2>
 
+    {{#if multi_year_missing_banner_has}}
+    {{&multi_year_missing_banner_html}}
+    {{/if}}
+
     {{#if chart_financial_trend_has}}
     <div style="margin: 14px 0; page-break-inside: avoid;">{{&chart_financial_trend}}</div>
     {{/if}}

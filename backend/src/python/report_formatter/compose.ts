@@ -1299,6 +1299,12 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     multi_year_dividends_has: multiYear.dividend_row.length > 0,
     multi_year_has_data: multiYear.has_data,
     multi_year_count: multiYear.years.length,
+    // Wave 5 (2026-04-28) — honest "no trend data" banner replaces the
+    // deceptive Q1/H1/Q3/FY/FY-2026-placeholder chart.
+    multi_year_missing_banner_html: multiYear.has_data
+      ? ''
+      : `<div style="margin:12px 0;padding:10px 14px;background:#fff3cd;border-left:4px solid #c6973f;border-radius:4px;font-size:12px;color:#5a4400"><strong>ⓘ 5 yıllık trend verisi henüz yok.</strong> Bu rapor için yalnızca tek dönem (${periodLabelRaw}) finansal raporu parse edilmiştir. CEO mandate'inin gerektirdiği 5 yıllık FY-2021 → FY-2025 trend analizi için ek annual filing'lerin pipeline'da fetch edilmesi gerekmektedir. Wave-future: multi-period extraction shipped olduğunda bu bölüm 5-yıllık trend chart'ı ile dolacaktır.</div>`,
+    multi_year_missing_banner_has: !multiYear.has_data,
 
     // İşletme Sermayesi
     working_capital_rows: workingCapitalTable.rows as unknown as TemplateValue,
@@ -1921,18 +1927,32 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
 
   if (annual.length === 0) return { years: [], revenue_row: [], balance_row: [], cashflow_row: [], ratio_row: [], dividend_row: [], has_data: false };
 
-  // Fix #26 — prefer yearly (FY) entries for the trend table. Previously
-  // slice(-5) picked Q1-2025/H1-2025/Q3-2025/FY-2025/FY-2026-placeholder,
-  // hiding FY-2020..FY-2024 real data. New logic: if ≥3 FY entries with
-  // non-zero revenue exist, use last 5 FY-only; otherwise fall back to
-  // the mixed-period recency behavior (e.g. newly listed companies).
+  // Wave 5 (2026-04-28) — period-strict trend chart logic.
+  //
+  // Old behaviour (Fix #26): if ≥3 real FY entries → use last 5 FY-only;
+  // otherwise FALL BACK to mixed-period (Q1-2025/H1-2025/Q3-2025/FY-2025/
+  // FY-2026-placeholder). The fallback was DECEPTIVE — it produced a
+  // chart whose X-axis mixed quarters with annual + a placeholder year,
+  // misleading board readers into thinking they were seeing 5-year history.
+  //
+  // New behaviour: if <3 real FY entries → return `has_data: false` so
+  // the chart isn't rendered. Caller surfaces "Tek dönem mevcut — 5
+  // yıllık trend için ek FY filing'ler gerekli" disclaimer.
   const isReal = (s: Record<string, unknown>) => {
     const rev = (s.income_statement as Record<string, unknown> | null)?.revenue;
     const n = rev == null ? 0 : Number(rev);
     return Number.isFinite(n) && n > 0;
   };
   const fyReal = annual.filter(s => String(s.period_label ?? '').startsWith('FY-') && isReal(s));
-  const recent = (fyReal.length >= 3 ? fyReal : annual).slice(-5);
+  if (fyReal.length < 3) {
+    // Honest "no trend data" return — caller renders disclaimer instead
+    // of a misleading mixed-period chart.
+    return {
+      years: [], revenue_row: [], balance_row: [], cashflow_row: [],
+      ratio_row: [], dividend_row: [], has_data: false,
+    };
+  }
+  const recent = fyReal.slice(-5);
   const years = recent.map(s => String(s.period_label ?? s.year ?? ''));
 
   const currentYear = new Date().getFullYear();
