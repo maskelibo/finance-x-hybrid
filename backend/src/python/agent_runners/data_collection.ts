@@ -12,9 +12,11 @@ import path from 'node:path';
 import { nanoid } from 'nanoid';
 
 import { db } from '../../db.js';
+import { mergeHistoricalIntoManifest } from '../../data/historical-pdf-loader.js';
 import { runDataCollect } from '../runners.js';
 import {
   adaptPythonDataCollectionForLegacy,
+  type PythonCollectedDocument,
   type PythonDataCollectionManifest,
 } from '../adapters/data_collection.js';
 
@@ -125,8 +127,23 @@ export async function runPythonDataCollection(
 
     if (prefetchedFile) try { unlinkSync(prefetchedFile); } catch { /* ignore */ }
 
+    // Phase A — augment KAP manifest with operator-curated historical
+    // PDFs from data/historical_pdfs/<TICKER>/. Years already in KAP
+    // output are skipped (live filing wins). Disk-only years fill the
+    // gap for the 5Y trend chart when KAP's window doesn't reach back
+    // far enough.
+    const manifest = (res.data ?? {}) as PythonDataCollectionManifest;
+    const docsBefore: PythonCollectedDocument[] = manifest.documents ?? [];
+    const merge = mergeHistoricalIntoManifest(ticker, docsBefore);
+    if (merge.addedFromDisk > 0) {
+      manifest.documents = merge.merged;
+      const warnMsg = `historical_disk_augment: +${merge.addedFromDisk} FY PDFs from data/historical_pdfs/ (years: ${merge.addedYears.join(', ')})`;
+      manifest.warnings = [...(manifest.warnings ?? []), warnMsg];
+      console.log(`[PYTHON:data_collection] ${warnMsg}`);
+    }
+
     const legacy = adaptPythonDataCollectionForLegacy(
-      (res.data ?? {}) as PythonDataCollectionManifest,
+      manifest,
       `dc-out-${nanoid()}`,
     );
     const outputJson = JSON.stringify(legacy, null, 2);

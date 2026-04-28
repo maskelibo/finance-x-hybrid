@@ -31,7 +31,11 @@ __pycache__/
 .vite/
 coverage/
 .DS_Store
-data/
+data/*
+!data/historical_pdfs/
+data/historical_pdfs/*
+!data/historical_pdfs/README.md
+!backend/src/data/
 tmp-*
 tmp/
 
