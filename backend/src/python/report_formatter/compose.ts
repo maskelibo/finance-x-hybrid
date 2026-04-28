@@ -463,10 +463,52 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     ['net_change_in_cash', 'Nakit Değişimi (Net)'],
   ]);
 
-  // ----- III-B. 5 Yıllık Trend Tablosu (parse_standardization) -----
+  // ----- III-B. 5 Yıllık Trend Tablosu (parse_standardization + Phase 7 historical) -----
 
   const standardizedStatements = arrayFrom(parsed?.standardized_statements ?? []);
-  const multiYear = buildMultiYearTrend(standardizedStatements);
+  // Phase 7 (2026-04-28) — also pull historical periods from FA's
+  // canonical_numbers.__historical__ block (parser-extracted comparative
+  // columns). Merged into the statement list so buildMultiYearTrend sees
+  // a richer multi-period feed when parse_standardization itself only
+  // produced one period.
+  const historicalStatements = (() => {
+    const hist = (canonicalNumbers as Record<string, unknown>)['__historical__'];
+    if (!hist || typeof hist !== 'object') return [];
+    const out: Array<Record<string, unknown>> = [];
+    for (const [label, block] of Object.entries(hist as Record<string, unknown>)) {
+      if (!label.startsWith('FY-') || !block || typeof block !== 'object') continue;
+      const b = block as Record<string, unknown>;
+      const year = Number(label.split('-')[1] ?? 0);
+      out.push({
+        period_label: label,
+        year,
+        income_statement: {
+          revenue: b['revenue'],
+          cost_of_sales: b['cost_of_sales'],
+          gross_profit: b['gross_profit'],
+          operating_income: b['operating_income'],
+          ebitda: b['ebitda'],
+          monetary_gain_loss: b['monetary_gain_loss'],
+          tax_expense: b['tax_expense'],
+          net_income: b['net_income'],
+        },
+        balance_sheet: {
+          total_assets: b['total_assets'],
+          total_equity: b['total_equity'],
+          total_liabilities: b['total_liabilities'],
+          trade_receivables: b['trade_receivables'],
+          inventories: b['inventories'],
+          trade_payables: b['trade_payables'],
+        },
+        cash_flow: (b['operating_cash_flow'] != null || b['capex'] != null) ? {
+          operating_cash_flow: b['operating_cash_flow'],
+          capex: b['capex'],
+        } : null,
+      });
+    }
+    return out;
+  })();
+  const multiYear = buildMultiYearTrend([...standardizedStatements, ...historicalStatements]);
 
   // ----- IV. Değerleme -----
 

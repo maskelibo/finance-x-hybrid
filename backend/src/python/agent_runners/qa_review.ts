@@ -51,11 +51,27 @@ function buildQaTruthContext(
     const canon = (fa as { canonical_numbers?: Record<string, unknown> }).canonical_numbers!;
     t.cfs_operating_cash_flow_parsed = canon['operating_cash_flow'] != null;
     t.cfs_capex_parsed = canon['capex'] != null;
+
+    // Phase 7 (2026-04-28) — count historical periods from canonical_numbers.__historical__
+    // Each entry needs a non-zero revenue to count as a "real" FY period.
+    const hist = canon['__historical__'];
+    if (hist && typeof hist === 'object') {
+      const histDict = hist as Record<string, Record<string, unknown>>;
+      let count = 0;
+      // current period itself counts as 1 if revenue is parsed
+      if (canon['revenue'] != null) count++;
+      for (const [label, block] of Object.entries(histDict)) {
+        if (label.startsWith('FY-') && block && block['revenue'] != null) {
+          const rev = Number(block['revenue']);
+          if (Number.isFinite(rev) && rev > 0) count++;
+        }
+      }
+      t.multi_year_periods = count;
+    } else {
+      // No historical block; only the current period.
+      t.multi_year_periods = canon['revenue'] != null ? 1 : 0;
+    }
   }
-  // Wave 3 — multi_year_periods from a future multi-period FA structure.
-  // Today FA is single-period; leave undefined → adapter mid-score 0.5.
-  // When Wave-future enables multi-period extraction, this can read
-  // (fa as any).multi_year_periods or count fa.standardized_statements.
 
   // multi_year_periods from financial_analysis (single-period today; will be
   // populated by Wave 3 schema migration). Leave undefined for now.

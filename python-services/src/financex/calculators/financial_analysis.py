@@ -338,12 +338,43 @@ def _canonical_numbers(pf: PeriodFinancials, eng: EngineOutput) -> dict[str, Dec
 # Public API
 # ---------------------------------------------------------------------
 
+def _historical_period_block(pf: PeriodFinancials) -> dict[str, Decimal | None]:
+    """Phase 7 (2026-04-28) — flat dict of an historical period's
+    canonical line items, suitable for embedding in
+    `canonical_numbers["historical"]["FY-YYYY"]`. Keys mirror the
+    current-period canonical_numbers (subset — only fields the parser
+    typically extracts from comparative columns).
+    """
+    bs = pf.balance_sheet
+    is_ = pf.income_statement
+    cf = pf.cash_flow
+    return {
+        "revenue": is_.revenue,
+        "cost_of_sales": getattr(is_, "cost_of_sales", None),
+        "gross_profit": getattr(is_, "gross_profit", None),
+        "operating_income": getattr(is_, "operating_income", None),
+        "ebitda": getattr(is_, "ebitda", None),
+        "monetary_gain_loss": getattr(is_, "monetary_gain_loss", None),
+        "tax_expense": getattr(is_, "tax_expense", None),
+        "net_income": is_.net_income,
+        "total_assets": bs.total_assets,
+        "total_equity": bs.total_equity,
+        "total_liabilities": getattr(bs, "total_liabilities", None),
+        "trade_receivables": getattr(bs, "trade_receivables", None),
+        "inventories": getattr(bs, "inventories", None),
+        "trade_payables": getattr(bs, "trade_payables", None),
+        "operating_cash_flow": getattr(cf, "operating_cash_flow", None) if cf else None,
+        "capex": getattr(cf, "capex", None) if cf else None,
+    }
+
+
 def analyze_financials(
     pf: PeriodFinancials,
     engine: EngineOutput,
     *,
     ticker: str,
     prior: tuple[PeriodFinancials, EngineOutput] | None = None,
+    historical: list[PeriodFinancials] | None = None,
 ) -> FinancialAnalysisOutput:
     if pf.sector == Sector.BANKING:
         highlights = _banking_highlights(pf, engine)
@@ -351,6 +382,17 @@ def analyze_financials(
     else:
         highlights = _industrial_highlights(pf, engine)
         flags = _industrial_red_flags(pf, engine)
+
+    canon = _canonical_numbers(pf, engine)
+    # Phase 7 — embed historical periods (if supplied) into canonical_numbers
+    # under "historical" key so downstream consumers (compose.ts buildMultiYearTrend,
+    # qa_review multi_year_periods) can read them without a schema migration.
+    if historical:
+        hist_block: dict[str, dict[str, Decimal | None]] = {}
+        for hp in historical:
+            label = f"{hp.period.value}-{hp.year}"
+            hist_block[label] = _historical_period_block(hp)
+        canon["__historical__"] = hist_block  # type: ignore[assignment]
 
     return FinancialAnalysisOutput(
         ticker=ticker,
@@ -361,5 +403,5 @@ def analyze_financials(
         highlights=highlights,
         red_flags=flags,
         trends=_trends_for(pf, engine, prior),
-        canonical_numbers=_canonical_numbers(pf, engine),
+        canonical_numbers=canon,
     )

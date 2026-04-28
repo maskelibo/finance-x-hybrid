@@ -110,6 +110,7 @@ class ColumnLayout:
     current_col: int
     previous_col: int | None
     current_period_end: date | None
+    previous_period_end: date | None = None  # Phase 7 (2026-04-28) — comparative column date
     currency_multiplier: Decimal = Decimal("1")
 
 
@@ -133,21 +134,28 @@ def _detect_columns(rows: list[list[str]]) -> ColumnLayout | None:
     current_col = dated_idx[0]
     previous_col = dated_idx[1] if len(dated_idx) > 1 else None
 
-    current_end: date | None = None
-    # Try to parse a date range first (OCF-style: "01.01.2024 - 30.09.2024")
-    range_match = _DATE_RANGE_RE.search(header[current_col])
-    if range_match:
-        current_end = date(int(range_match.group(4)), int(range_match.group(3)), int(range_match.group(2)))
-    else:
-        single = _DATE_RE.search(header[current_col])
+    def _parse_col_end(col_idx: int) -> date | None:
+        cell = header[col_idx]
+        # Try date-range first (OCF-style: "01.01.2024 - 30.09.2024")
+        rm = _DATE_RANGE_RE.search(cell)
+        if rm:
+            return date(int(rm.group(4)), int(rm.group(3)), int(rm.group(2)))
+        single = _DATE_RE.search(cell)
         if single:
             d, m, y = single.group(1).split(".")
-            current_end = date(int(y), int(m), int(d))
+            return date(int(y), int(m), int(d))
+        return None
+
+    current_end = _parse_col_end(current_col)
+    # Phase 7 (2026-04-28) — also parse previous column's period-end date
+    # so multi-period output can carry an authoritative date.
+    previous_end = _parse_col_end(previous_col) if previous_col is not None else None
 
     return ColumnLayout(
         current_col=current_col,
         previous_col=previous_col,
         current_period_end=current_end,
+        previous_period_end=previous_end,
     )
 
 
@@ -245,7 +253,14 @@ def _absorb_table(
     *,
     multiplier: Decimal = Decimal("1"),
     sector: str = "industrial",
+    prior_bag: _Bag | None = None,
 ) -> None:
+    """Absorb a single table's data into the current-period `bag`. When
+    `prior_bag` is provided AND the table layout exposes a previous-
+    period column, the previous column's data is absorbed into
+    `prior_bag` in parallel. Phase 7 (2026-04-28) — multi-period
+    extraction from KAP comparative-column PDFs.
+    """
     layout = _detect_columns(tbl.rows)
     target = {
         "balance_sheet": bag.balance,
@@ -255,6 +270,14 @@ def _absorb_table(
     }.get(kind)
     if target is None:
         return  # comprehensive_income etc. — nothing to map yet
+    prior_target = None
+    if prior_bag is not None:
+        prior_target = {
+            "balance_sheet": prior_bag.balance,
+            "income_statement": prior_bag.income,
+            "cash_flow": prior_bag.cashflow,
+            "equity_change": prior_bag.equity,
+        }.get(kind)
 
     # Column layout:
     #   - non-banking: first dated column (or first large-value column)
@@ -284,6 +307,13 @@ def _absorb_table(
         else:
             current_col = layout.current_col
 
+    # Phase 7 — pick prior column index when the layout supports it AND
+    # the caller wants prior absorption. Banking layouts use a derived
+    # current_col so prior is layout-relative.
+    prior_col: int | None = None
+    if prior_target is not None and layout is not None and layout.previous_col is not None:
+        prior_col = layout.previous_col
+
     for row in tbl.rows:
         if len(row) <= current_col:
             continue
@@ -301,6 +331,16 @@ def _absorb_table(
             target[field_name] += scaled
         else:
             target[field_name] = scaled
+
+        # Phase 7 — also absorb the prior column when available.
+        if prior_target is not None and prior_col is not None and len(row) > prior_col:
+            prior_value = _parse_tr_number(row[prior_col])
+            if prior_value is not None:
+                prior_scaled = (prior_value * multiplier).quantize(Decimal("1"))
+                if (kind, field_name) in _ACCUMULATE_FIELDS and field_name in prior_target:
+                    prior_target[field_name] += prior_scaled
+                else:
+                    prior_target[field_name] = prior_scaled
 
 
 def _has_wide_banking_layout(rows: list[list[str]]) -> bool:
@@ -360,6 +400,13 @@ class ParsedFinancials:
     flags: list[QualityFlag]
     current_period_end: date | None
     tables_seen: int
+    # Phase 7 (2026-04-28) — prior period extracted from comparative
+    # columns. KAP "Konsolide Finansal Tablolar" PDFs typically show
+    # FY-current and FY-prior side-by-side; prior_period is populated
+    # when the comparative column is parseable (cash_flow may be None
+    # if the CFS table's prior column is absent).
+    prior_period: PeriodFinancials | None = None
+    prior_period_end: date | None = None
 
 
 def parse_kap_pdf(
@@ -412,6 +459,10 @@ def parse_kap_pdf(
             except Exception:
                 break
 
+    # Phase 7 — also accumulate prior-period data side-by-side.
+    prior_bag = _Bag()
+    prior_end: date | None = None
+
     last_kind: str | None = None
     for tbl in tables:
         kind = _classify_table(tbl)
@@ -435,7 +486,12 @@ def parse_kap_pdf(
         layout = _detect_columns(tbl.rows)
         if layout and layout.current_period_end and current_end is None:
             current_end = layout.current_period_end
-        _absorb_table(bag, tbl, kind, multiplier=pdf_multiplier, sector=sector_value)
+        if layout and layout.previous_period_end and prior_end is None:
+            prior_end = layout.previous_period_end
+        _absorb_table(
+            bag, tbl, kind, multiplier=pdf_multiplier, sector=sector_value,
+            prior_bag=prior_bag,
+        )
 
     # ---- Build the nested schema objects --------------------------------
     balance_kwargs = _with_fallbacks_for_balance(bag.balance, sector=sector_value)
@@ -485,11 +541,59 @@ def parse_kap_pdf(
             detail=str(pdf_path),
         )],
     )
+
+    # Phase 7 — assemble prior-period if comparative columns yielded data.
+    prior_pf: PeriodFinancials | None = None
+    has_prior_data = (
+        prior_bag.balance.get("total_assets") is not None
+        or prior_bag.income.get("revenue") is not None
+        or prior_bag.income.get("net_income") is not None
+    )
+    if has_prior_data:
+        try:
+            prior_balance_kwargs = _with_fallbacks_for_balance(prior_bag.balance, sector=sector_value)
+            prior_balance = BalanceSheet(**prior_balance_kwargs)
+        except Exception:
+            prior_balance = BalanceSheet(
+                total_assets=Decimal("0"), total_liabilities=Decimal("0"), total_equity=Decimal("0"),
+            )
+        try:
+            prior_income_kwargs = _with_fallbacks_for_income(prior_bag.income)
+            prior_income = IncomeStatement(**prior_income_kwargs)
+        except Exception:
+            prior_income = IncomeStatement(revenue=Decimal("0"), net_income=Decimal("0"))
+        prior_cashflow = None
+        if prior_bag.cashflow.get("operating_cash_flow") is not None:
+            try:
+                prior_cashflow = CashFlowStatement(**prior_bag.cashflow)
+            except Exception:
+                prior_cashflow = None
+        prior_year, prior_period = _infer_period_from_date(prior_end)
+        if prior_year is not None:
+            prior_pf = PeriodFinancials(
+                period=prior_period,
+                year=prior_year,
+                currency=Currency.TRY,
+                sector=sector_obj,
+                balance_sheet=prior_balance,
+                income_statement=prior_income,
+                cash_flow=prior_cashflow,
+                equity_change=None,
+                sources=[SourceRef(
+                    source_id=source_id,
+                    url="",
+                    fetched_at=_now_utc(),
+                    detail=f"{pdf_path} [prior column]",
+                )],
+            )
+
     return ParsedFinancials(
         period=pf,
         flags=bag.flags,
         current_period_end=current_end,
         tables_seen=len(tables),
+        prior_period=prior_pf,
+        prior_period_end=prior_end,
     )
 
 
