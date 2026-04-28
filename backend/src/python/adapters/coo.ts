@@ -93,7 +93,29 @@ const TABLE_OPEN_RE = /<table\b/gi;
 const TABLE_CLOSE_RE = /<\/table>/gi;
 
 
-export function runDeliveryCheck(ticker: string, html: string): DeliveryReport {
+/**
+ * Phase F (2026-04-28) — QA gate context for delivery. When the QA truth
+ * gate produced a hard_fail or block_publish escalation, delivery
+ * decision must be 'blocked' regardless of HTML structural checks. The
+ * board reader sees the publish-block banner in the report itself; this
+ * gate ensures the COO/orchestrator agrees and refuses to mark the
+ * report as approved.
+ */
+export interface DeliveryQaContext {
+  qa_decision?: string;
+  escalation_recommendation?: string;
+  blocker_failures?: string[];
+  // Phase D — when target_price publish was blocked at the valuation
+  // layer (holding without curated SOTP YAML), delivery should also
+  // refuse 'approved' until the operator curates the SOTP file.
+  target_price_publish_blocked?: boolean;
+}
+
+export function runDeliveryCheck(
+  ticker: string,
+  html: string,
+  qa?: DeliveryQaContext,
+): DeliveryReport {
   const items: CheckItem[] = [];
   const lower = html.toLowerCase();
 
@@ -136,9 +158,36 @@ export function runDeliveryCheck(ticker: string, html: string): DeliveryReport {
     message: `${html.length} bytes`,
   });
 
+  // 5. Phase F — QA gate consistency. If QA produced hard_fail or
+  // escalation block_publish, delivery MUST not approve.
+  const qaDecision = String(qa?.qa_decision ?? '');
+  const qaEscalation = String(qa?.escalation_recommendation ?? '');
+  const qaHardFail = qaDecision === 'hard_fail' || qaEscalation === 'block_publish';
+  const qaGateOk = !qaHardFail;
+  items.push({
+    code: 'QA_GATE_PASS',
+    label: 'QA truth gate not hard-failed',
+    passed: qaGateOk,
+    message: qaGateOk
+      ? 'qa_decision passes (not hard_fail / block_publish)'
+      : `QA hard-fail (qa_decision=${qaDecision || 'n/a'}, escalation=${qaEscalation || 'n/a'}; blockers=${(qa?.blocker_failures ?? []).join(',') || 'n/a'})`,
+  });
+
+  // 6. Phase D — SOTP / target_price publish block. Holding without
+  // curated SOTP YAML must not deliver a publishable target price.
+  const sotpOk = !qa?.target_price_publish_blocked;
+  items.push({
+    code: 'SOTP_PUBLISH_GATE',
+    label: 'SOTP gate / target_price publishable',
+    passed: sotpOk,
+    message: sotpOk
+      ? 'target_price publish allowed (or non-holding)'
+      : 'target_price publish blocked (holding without curated SOTP)',
+  });
+
   let decision: DeliveryDecision;
-  if (!envelopeOk || !disclaimerOk) decision = 'blocked';
-  else if (!tablesOk || !sizeOk) decision = 'revision_needed';
+  if (!envelopeOk || !disclaimerOk || !qaGateOk) decision = 'blocked';
+  else if (!tablesOk || !sizeOk || !sotpOk) decision = 'revision_needed';
   else decision = 'approved';
 
   return {

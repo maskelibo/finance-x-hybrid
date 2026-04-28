@@ -88,6 +88,49 @@ describe('runDeliveryCheck', () => {
     expect(out.decision).toBe('revision_needed');
     expect(out.items.find(i => i.code === 'MIN_PAYLOAD_SIZE')?.passed).toBe(false);
   });
+
+  it('Phase F — blocked when QA hard_fail / block_publish escalation', () => {
+    const html = minimalHtml('x'.repeat(5_000));
+    const out = runDeliveryCheck('EREGL', html, {
+      qa_decision: 'hard_fail',
+      escalation_recommendation: 'block_publish',
+      blocker_failures: ['MULTI_YEAR_COVERAGE', 'OWNERSHIP_FRESHNESS'],
+    });
+    expect(out.decision).toBe('blocked');
+    const qaItem = out.items.find(i => i.code === 'QA_GATE_PASS');
+    expect(qaItem?.passed).toBe(false);
+    expect(qaItem?.message).toMatch(/MULTI_YEAR_COVERAGE/);
+  });
+
+  it('Phase F — passes QA gate when qa_decision=pass', () => {
+    const html = minimalHtml('x'.repeat(5_000));
+    const out = runDeliveryCheck('EREGL', html, {
+      qa_decision: 'pass',
+      escalation_recommendation: 'none',
+    });
+    expect(out.decision).toBe('approved');
+    expect(out.items.find(i => i.code === 'QA_GATE_PASS')?.passed).toBe(true);
+    expect(out.items.find(i => i.code === 'SOTP_PUBLISH_GATE')?.passed).toBe(true);
+  });
+
+  it('Phase D — revision_needed when target_price publish blocked', () => {
+    const html = minimalHtml('x'.repeat(5_000));
+    const out = runDeliveryCheck('KCHOL', html, {
+      qa_decision: 'pass',
+      escalation_recommendation: 'none',
+      target_price_publish_blocked: true,
+    });
+    expect(out.decision).toBe('revision_needed');
+    expect(out.items.find(i => i.code === 'SOTP_PUBLISH_GATE')?.passed).toBe(false);
+  });
+
+  it('falls open when no QA context supplied (legacy callers)', () => {
+    const html = minimalHtml('x'.repeat(5_000));
+    const out = runDeliveryCheck('EREGL', html);
+    expect(out.decision).toBe('approved');
+    expect(out.items.find(i => i.code === 'QA_GATE_PASS')?.passed).toBe(true);
+    expect(out.items.find(i => i.code === 'SOTP_PUBLISH_GATE')?.passed).toBe(true);
+  });
 });
 
 

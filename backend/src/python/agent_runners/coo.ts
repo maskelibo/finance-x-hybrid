@@ -40,7 +40,23 @@ export async function runPythonCoo(
       console.warn('[PYTHON:coo] delivery mode but no HTML in context');
       return 'failed';
     }
-    const report = runDeliveryCheck(ticker, html);
+    // Phase F — surface qa_review and valuation publish-block to delivery.
+    let qaCtx: { qa_decision?: string; escalation_recommendation?: string; blocker_failures?: string[]; target_price_publish_blocked?: boolean } | undefined;
+    try {
+      const qaRaw = accumulatedContext['qa_review_output'];
+      const valRaw = accumulatedContext['valuation_agent_output'];
+      const qa = qaRaw ? (typeof qaRaw === 'string' ? JSON.parse(qaRaw) : qaRaw) as Record<string, unknown> : null;
+      const val = valRaw ? (typeof valRaw === 'string' ? JSON.parse(valRaw) : valRaw) as Record<string, unknown> : null;
+      if (qa || val) {
+        qaCtx = {
+          qa_decision: qa ? String(qa.qa_decision ?? '') : undefined,
+          escalation_recommendation: qa ? String(qa.escalation_recommendation ?? '') : undefined,
+          blocker_failures: Array.isArray(qa?.blocker_failures) ? (qa!.blocker_failures as string[]) : undefined,
+          target_price_publish_blocked: Boolean(val?.target_price_publish_blocked),
+        };
+      }
+    } catch { /* qa_review_output / valuation_agent_output unparseable; gate falls open */ }
+    const report = runDeliveryCheck(ticker, html, qaCtx);
     legacy = adaptCooForLegacy(report, 'delivery', outputId);
     summary = `python:coo delivery (${report.decision}, ${report.items.length} checks, ${html.length}B)`;
   } else {

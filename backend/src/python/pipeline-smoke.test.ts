@@ -401,7 +401,24 @@ describe('Pipeline smoke — reshape-only Python runners', () => {
     expect(outcome).toBe('ok');
     const parsed = JSON.parse(readRunRow(runIds.coo_delivery).output_text!);
     expect(parsed.phase).toBe('delivery');
-    expect(parsed.decision).toBe('approved');
+    // Phase F (2026-04-28) — delivery decision now propagates QA hard_fail.
+    // With the smoke fixtures (peer_count=2 < 3 blocker, multi_year=1 < 3
+    // blocker), QA legitimately hard_fails → delivery blocks. The contract
+    // we test is: structural HTML checks pass (envelope/disclaimer/size)
+    // AND delivery never falsely approves when QA gates fail.
+    const qaParsed = JSON.parse(readRunRow(runIds.qa_review).output_text!);
+    if (qaParsed.qa_decision === 'hard_fail' || qaParsed.escalation_recommendation === 'block_publish') {
+      expect(parsed.decision).toBe('blocked');
+      expect(parsed.checks.find((c: { code: string }) => c.code === 'QA_GATE_PASS')?.passed).toBe(false);
+    } else {
+      expect(parsed.decision).toBe('approved');
+    }
+    // Structural checks must always pass with smoke HTML
+    const structural = ['HTML_ENVELOPE', 'SPK_DISCLAIMER', 'TABLE_BALANCE', 'MIN_PAYLOAD_SIZE'];
+    for (const code of structural) {
+      const check = parsed.checks.find((c: { code: string }) => c.code === code);
+      expect(check?.passed, `${code} must pass on smoke HTML`).toBe(true);
+    }
   });
 
 

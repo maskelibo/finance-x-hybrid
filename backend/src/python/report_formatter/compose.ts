@@ -1202,6 +1202,34 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     // Scorecards
     qa_score: qa?.overall_score != null ? Number(qa.overall_score).toFixed(2) : '—',
     qa_decision_label: translateDecision(qa?.qa_decision),
+
+    // Phase F (2026-04-28) — top-of-report publish-block banner. Fires
+    // when QA produced qa_decision='hard_fail' OR escalation
+    // 'block_publish'. Surfaces blocker_failures so the board reader
+    // can see WHICH dimension(s) failed, and lists the human-readable
+    // evidence string per failed dim.
+    qa_publish_block_html: (() => {
+      const decision = String(qa?.qa_decision ?? '');
+      const escalation = String(qa?.escalation_recommendation ?? '');
+      const blocked = decision === 'hard_fail' || escalation === 'block_publish';
+      if (!blocked) return '';
+      const blockers = arrayFrom(qa?.blocker_failures ?? []).map(String);
+      const dimMap: Record<string, string> = {};
+      for (const d of arrayFrom(qa?.dimension_scores ?? [])) {
+        const code = String((d as Record<string, unknown>).code ?? '');
+        const evidence = String((d as Record<string, unknown>).evidence ?? '');
+        if (code) dimMap[code] = evidence;
+      }
+      const blockerLines = blockers.length > 0
+        ? blockers.map(b => `<li><strong>${b}</strong> — ${dimMap[b] ?? 'kanıt mevcut değil'}</li>`).join('')
+        : '<li>QA hard_fail veya block_publish escalation tespit edildi (detay yok).</li>';
+      return `<div style="margin:14px 0;padding:14px 18px;background:#fde8e8;border-left:6px solid #c53030;border-radius:6px;font-size:13px;color:#5a1a1a"><strong style="font-size:14px;">⛔ QA Yayın Bloğu — Bu rapor board-grade publish için onaylanmamıştır.</strong><br/>QA truth gate aşağıdaki dimension'larda hard-fail verdi. Yatırımcı kararı bu metnin tamamı operatör tarafından review edilmeden alınmamalıdır.<ul style="margin:8px 0 4px 18px;padding:0;">${blockerLines}</ul><div style="font-size:11px;margin-top:6px;font-style:italic;">qa_decision=${decision}, escalation=${escalation}</div></div>`;
+    })(),
+    qa_publish_block_has: (() => {
+      const decision = String(qa?.qa_decision ?? '');
+      const escalation = String(qa?.escalation_recommendation ?? '');
+      return decision === 'hard_fail' || escalation === 'block_publish';
+    })(),
     convergence_score: ss?.convergence_score != null && Number(ss.convergence_score) !== 0
       ? (Number(ss.convergence_score) > 0 ? '+' : '') + Number(ss.convergence_score).toFixed(2) : '—',
     signal_confidence: translateConfidence(ss?.confidence),
