@@ -352,4 +352,24 @@ describe('orchestrator-governance — KCHOL replay (qJASnWiqC-3xomxzyLamS)', () 
       expect(after.status).toBe(before.status);
     },
   );
+
+  // -------------------------------------------------------------------------
+  // Pre-P5 Wave A2 — calibrated cap surfaces in the cost governor report
+  // -------------------------------------------------------------------------
+  it.skipIf(!exists?.x)(
+    'calibrated cap: KCHOL no longer false-aborts solely on default $5',
+    async () => {
+      const before = db.prepare(`SELECT total_cost_usd FROM analysis_sessions WHERE id = ?`)
+        .get(KCHOL_SESSION) as { total_cost_usd: number };
+      const ctx: Record<string, unknown> = {};
+      await recordSessionStartGovernance(KCHOL_SESSION, 'KCHOL', ctx);
+      await recordSessionEndGovernance(KCHOL_SESSION, 'KCHOL', before.total_cost_usd, ctx);
+      const cgrLog = ctx.cost_governor_report as Array<{ budget_status: string; reason_codes: string[] }>;
+      const cgr = cgrLog[cgrLog.length - 1];
+      // KCHOL actual cost ($6.21) < calibrated cap ($7.46) → governor must
+      // NOT report 'exhausted' (which is current >= cap). Pre-A2 baseline
+      // had budget_status='exhausted' for this exact session; A2 fixes it.
+      expect(cgr.budget_status).not.toBe('exhausted');
+    },
+  );
 });

@@ -49,6 +49,7 @@ import {
   runCircuitBreaker, recordCircuitBreakerPlan,
   type OperationInput,
 } from './execution/circuit-breaker.js';
+import { resolveCostCap } from './execution/cost-cap-resolver.js';
 
 import { computeQualityBudget, type QualityBudgetReport } from './quality-os/quality-budget.js';
 import { detectContradictions, type ContradictionReport } from './quality-os/contradiction-engine.js';
@@ -114,9 +115,15 @@ export async function recordSessionStartGovernance(
     // JSON.stringify inside recordTaskPlan. The copy preserves duplication-
     // detection signal (canonical-marker presence) without aliasing.
     const planCtx = { ...accumulatedContext };
+    // Pre-P5 Wave A2 — calibrated per-ticker cap (data-derived from
+    // commit e9124e0e). Pass to planner so its SKIP_BUDGET_FORECAST_EXCEEDS_CAP
+    // skip pathway is consistent with what the cost governor will see at
+    // session-end. Shadow-only — no enforcement.
+    const capResolution = resolveCostCap(ticker);
     taskPlan = await runTaskPlanner(sessionId, {
       ticker,
       accumulated_context: planCtx,
+      budget_cap_usd: capResolution.cap_usd,
     });
     recordTaskPlan(sessionId, taskPlan, accumulatedContext);
   } catch (err) {
@@ -152,6 +159,10 @@ export async function recordSessionEndGovernance(
   // 1) Resolve TaskPlan — reuse latest from accCtx if session-start ran;
   //    otherwise generate a fresh one (defensive — flag may have flipped
   //    mid-session).
+  // Pre-P5 Wave A2 — calibrated per-ticker cap. Resolved once and used by
+  // both task planner (when regenerated here) and cost governor below.
+  const capResolution = resolveCostCap(ticker);
+
   let taskPlan: TaskPlan | undefined = readLatestTaskPlan(accumulatedContext);
   if (!taskPlan) {
     try {
@@ -160,6 +171,7 @@ export async function recordSessionEndGovernance(
       taskPlan = await runTaskPlanner(sessionId, {
         ticker,
         accumulated_context: planCtx,
+        budget_cap_usd: capResolution.cap_usd,
       });
       recordTaskPlan(sessionId, taskPlan, accumulatedContext);
     } catch (err) {
@@ -180,12 +192,16 @@ export async function recordSessionEndGovernance(
     }
   }
 
-  // 3) Cost governor — uses real session-cumulative cost from caller.
+  // 3) Cost governor — uses real session-cumulative cost from caller +
+  //    calibrated per-ticker cap (Pre-P5 Wave A2). Shadow-only; the
+  //    governor's verdicts feed the escalation pipeline but no enforcement
+  //    is wired to the orchestrator's agent execution path.
   let costGovernorReport: CostGovernorReport | undefined;
   try {
     costGovernorReport = await runCostGovernor(sessionId, taskPlan, {
       ticker,
       current_session_cost_usd: totalCostUsd,
+      budget_cap_usd: capResolution.cap_usd,
       computation_plan: computationPlan,
     });
     recordCostGovernorReport(sessionId, costGovernorReport, accumulatedContext);
