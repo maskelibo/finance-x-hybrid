@@ -21,6 +21,7 @@ import { loadSecrets } from './security/secrets.js';
 import { registerHealthRoutes } from './observability/health.js';
 import { registerSseRoutes } from './streaming/sse.js';
 import { registerDagRoutes } from './observability/dag.js';
+import { registerLineageRoutes } from './observability/lineage-api.js';
 
 // P6A: pluggable secrets boot hook. SECRETS_MODE unset/'env' = no-op.
 loadSecrets().catch(err => {
@@ -53,6 +54,12 @@ if (process.env.SSE_ENABLED === '1') {
 if (process.env.DAG_ENABLED === '1') {
   try { registerDagRoutes(app); }
   catch (err) { console.warn('[dag-routes] register skipped:', err instanceof Error ? err.message : err); }
+}
+
+// P7D Wave 1: gated lineage trail route. Default OFF.
+if (process.env.LINEAGE_API_ENABLED === '1') {
+  try { registerLineageRoutes(app); }
+  catch (err) { console.warn('[lineage-routes] register skipped:', err instanceof Error ? err.message : err); }
 }
 
 // API Key authentication middleware
