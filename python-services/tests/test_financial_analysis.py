@@ -168,7 +168,9 @@ def test_output_schema_version_stable() -> None:
     pf = _healthy_industrial()
     engine = compute_for_period(pf)
     result = analyze_financials(pf, engine, ticker="TEST")
-    assert result.schema_version == "1.0.0"
+    # Phase 7 FULL (2026-04-28): bumped to 1.1.0 with the
+    # canonical_numbers nested-dict relaxation (__historical__ block).
+    assert result.schema_version == "1.1.0"
 
 
 def test_period_label_format() -> None:

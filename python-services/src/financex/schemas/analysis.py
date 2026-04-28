@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 
 from pydantic import Field
 
@@ -74,9 +75,14 @@ class FinancialAnalysisOutput(FinancexModel):
     trends: list[Trend] = Field(default_factory=list)
 
     # Carry the numbers used so the LLM can double-check or quote them.
-    canonical_numbers: dict[str, Decimal | None] = Field(
+    # Phase 7 FULL — values may be Decimal, None, OR a nested dict
+    # (used by `__historical__` to embed multi-period FY-YYYY blocks).
+    # Schema relaxed to `Any` to keep backward-compat while allowing
+    # multi-period embedding without a separate field.
+    canonical_numbers: dict[str, Any] = Field(
         default_factory=dict,
-        description="Flat dict of key-metric → latest value, for easy LLM quoting.",
+        description="Flat dict of key-metric → latest value, for easy LLM quoting. "
+                    "Phase 7+ may include __historical__: {FY-YYYY: {...}} for multi-period.",
     )
 
-    schema_version: str = "1.0.0"
+    schema_version: str = "1.1.0"

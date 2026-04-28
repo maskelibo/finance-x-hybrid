@@ -177,6 +177,36 @@ export function runAnalyzePdf(
   return runFinancexJson(args, runOpts);
 }
 
+/**
+ * Phase 7 FULL — multi-PDF historical analysis.
+ *
+ * Caller supplies chronologically-sorted historical KAP financial-
+ * report PDFs (e.g., FY2025/FY2023/FY2021 — each yields current +
+ * prior-column → 6 distinct annual years total). The Python side
+ * dedupes by year and rejects interim periods. Returns a
+ * FinancialAnalysisOutput whose canonical_numbers.__historical__
+ * embeds every distinct annual period.
+ *
+ * If <5 annual periods are extractable, the result still emits, but
+ * the formatter's Wave 5 trend banner + Wave 2 MULTI_YEAR_COVERAGE
+ * QA dimension will suppress the 5Y chart and surface "missing
+ * official annual coverage" honestly.
+ */
+export function runAnalyzeMultiPdf(
+  pdfPaths: string[],
+  ticker: string,
+  opts: AnalyzeOptions = {},
+  runOpts?: RunOptions,
+): Promise<FinancexJsonResult<unknown>> {
+  if (pdfPaths.length === 0) {
+    throw new Error('runAnalyzeMultiPdf: at least one PDF path required');
+  }
+  const args = ['analyze', 'multi-pdf', ...pdfPaths, '--ticker', ticker.toUpperCase()];
+  if (opts.marketCap) args.push('--market-cap', opts.marketCap);
+  if (opts.sharesOutstanding) args.push('--shares', opts.sharesOutstanding);
+  return runFinancexJson(args, runOpts);
+}
+
 // ---------------------------------------------------------------------
 // Re-exports — keep callers importing from one place.
 // ---------------------------------------------------------------------

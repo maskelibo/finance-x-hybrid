@@ -12,12 +12,39 @@
 import { nanoid } from 'nanoid';
 
 import { db } from '../../db.js';
-import { runAnalyzePdf } from '../runners.js';
+import { runAnalyzePdf, runAnalyzeMultiPdf } from '../runners.js';
 import {
   adaptPythonFinancialAnalysisForLegacy,
   type PythonFinancialAnalysisOutput,
 } from '../adapters/financial_analysis.js';
 import { extractPdfPathsFromManifest } from '../adapters/parse_standardization.js';
+
+
+/**
+ * Phase 7 FULL — collect historical financial-report PDF paths from
+ * upstream data_collection manifest. Returns chronologically-sorted
+ * paths (oldest → newest) when 2+ are available; null otherwise.
+ *
+ * When multiple historical filings are present, the financial_analysis
+ * runner switches from single-PDF to multi-PDF mode and the Python
+ * analyze_multi_pdf orchestrator dedupes annual periods + emits a
+ * canonical_numbers.__historical__ block that satisfies the directive's
+ * 5Y FY2021-FY2025 requirement.
+ *
+ * This collector is opt-in: when data_collection only fetches the
+ * latest filing (legacy behaviour), this returns null and the runner
+ * falls back to single-PDF analyze. The Wave 5 trend banner + Wave 2
+ * MULTI_YEAR_COVERAGE QA dim then honestly surface the missing data.
+ */
+function collectHistoricalFinancialPdfs(upstream: unknown): string[] | null {
+  const paths = extractPdfPathsFromManifest(upstream);
+  if (paths.length < 2) return null;
+  const financial = paths.filter((p) => p.includes('financial_report'));
+  if (financial.length < 2) return null;
+  // Sort lexicographically (filenames typically embed YYYYMMDD or fiscal
+  // period — sufficient for chronological ordering in BIST KAP filings).
+  return [...financial].sort();
+}
 
 
 export type RunOutcome = 'ok' | 'failed';
@@ -123,12 +150,26 @@ export async function runPythonFinancialAnalysis(
   const marketCap = process.env.PYTHON_FA_MARKET_CAP;
   const shares = process.env.PYTHON_FA_SHARES;
 
+  // Phase 7 FULL — multi-PDF mode when data_collection has fetched 2+
+  // historical financial-report PDFs. Yields multi-year canonical_numbers.
+  // Default ON when historical PDFs are present (no env flag); falls back
+  // to single-PDF when only one filing is available.
+  const historicalPdfs = collectHistoricalFinancialPdfs(upstream);
+  const useMultiPdf = historicalPdfs !== null && historicalPdfs.length >= 2;
+
   try {
-    const res = await runAnalyzePdf(
-      pdfPath, ticker,
-      { marketCap, sharesOutstanding: shares },
-      { timeoutMs: 180_000 },
-    );
+    const res = useMultiPdf
+      ? await runAnalyzeMultiPdf(
+          historicalPdfs!,
+          ticker,
+          { marketCap, sharesOutstanding: shares },
+          { timeoutMs: 240_000 }, // wider deadline — multi-PDF parse takes longer
+        )
+      : await runAnalyzePdf(
+          pdfPath, ticker,
+          { marketCap, sharesOutstanding: shares },
+          { timeoutMs: 180_000 },
+        );
 
     if (!res.success) {
       const completedAt = new Date().toISOString();
@@ -161,8 +202,9 @@ export async function runPythonFinancialAnalysis(
     );
 
     accumulatedContext['financial_analysis_output'] = outputJson;
+    const mode = useMultiPdf ? `multi-pdf×${historicalPdfs!.length}` : 'single-pdf';
     console.log(
-      `[PYTHON:financial_analysis] ok — ${legacy.metric_count} metrics, ${legacy.red_flags.length} flags (${legacy.critical_flag_count} critical), confidence=${legacy.confidence}`,
+      `[PYTHON:financial_analysis] ok [${mode}] — ${legacy.metric_count} metrics, ${legacy.red_flags.length} flags (${legacy.critical_flag_count} critical), confidence=${legacy.confidence}`,
     );
     return 'ok';
   } catch (err) {

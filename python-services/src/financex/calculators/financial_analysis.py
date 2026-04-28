@@ -344,27 +344,50 @@ def _historical_period_block(pf: PeriodFinancials) -> dict[str, Decimal | None]:
     `canonical_numbers["historical"]["FY-YYYY"]`. Keys mirror the
     current-period canonical_numbers (subset — only fields the parser
     typically extracts from comparative columns).
+
+    Phase 7 FULL — extended with cash + debt + capex + WC change so
+    every annual line-item the directive lists is round-tripped
+    through the historical block.
     """
     bs = pf.balance_sheet
     is_ = pf.income_statement
     cf = pf.cash_flow
+
+    # Pre-tax for historical periods: derive from net_income - tax_expense
+    pre_tax: Decimal | None = None
+    tax_exp = getattr(is_, "tax_expense", None)
+    if is_.net_income is not None and tax_exp is not None:
+        pre_tax = is_.net_income - tax_exp
+
     return {
+        # Income statement
         "revenue": is_.revenue,
         "cost_of_sales": getattr(is_, "cost_of_sales", None),
+        "cogs": getattr(is_, "cost_of_sales", None),  # alias
         "gross_profit": getattr(is_, "gross_profit", None),
         "operating_income": getattr(is_, "operating_income", None),
+        "operating_profit": getattr(is_, "operating_income", None),  # alias
         "ebitda": getattr(is_, "ebitda", None),
+        "depreciation_amortization": getattr(is_, "depreciation_amortization", None),
         "monetary_gain_loss": getattr(is_, "monetary_gain_loss", None),
-        "tax_expense": getattr(is_, "tax_expense", None),
+        "net_monetary_position_gain_loss": getattr(is_, "monetary_gain_loss", None),  # alias
+        "pre_tax_income": pre_tax,
+        "tax_expense": tax_exp,
         "net_income": is_.net_income,
+        # Balance sheet
         "total_assets": bs.total_assets,
+        "cash": getattr(bs, "cash", None),
         "total_equity": bs.total_equity,
         "total_liabilities": getattr(bs, "total_liabilities", None),
+        "short_term_debt": getattr(bs, "short_term_debt", None),
+        "long_term_debt": getattr(bs, "long_term_debt", None),
         "trade_receivables": getattr(bs, "trade_receivables", None),
         "inventories": getattr(bs, "inventories", None),
         "trade_payables": getattr(bs, "trade_payables", None),
+        # Cash flow statement
         "operating_cash_flow": getattr(cf, "operating_cash_flow", None) if cf else None,
         "capex": getattr(cf, "capex", None) if cf else None,
+        "working_capital_change_total": getattr(cf, "change_in_working_capital", None) if cf else None,
     }
 
 
@@ -404,4 +427,121 @@ def analyze_financials(
         red_flags=flags,
         trends=_trends_for(pf, engine, prior),
         canonical_numbers=canon,
+    )
+
+
+# ---------------------------------------------------------------------
+# Phase 7 FULL — multi-PDF historical aggregation
+# ---------------------------------------------------------------------
+
+def _period_score(pf: PeriodFinancials) -> int:
+    """Score a parsed period by how many populated line items it has.
+    Higher = better. Used for dedup when the same fiscal year shows up
+    in multiple PDFs (e.g. FY-2024 in both FY2025 PDF's prior column
+    and FY2024 PDF's current column).
+    """
+    bs = pf.balance_sheet
+    is_ = pf.income_statement
+    cf = pf.cash_flow
+    score = 0
+    for v in (bs.total_assets, bs.total_equity, getattr(bs, "total_liabilities", None),
+              getattr(bs, "trade_receivables", None), getattr(bs, "inventories", None),
+              getattr(bs, "trade_payables", None), getattr(bs, "short_term_debt", None),
+              getattr(bs, "long_term_debt", None)):
+        if v is not None and v != 0:
+            score += 1
+    for v in (is_.revenue, is_.net_income, getattr(is_, "gross_profit", None),
+              getattr(is_, "operating_income", None), getattr(is_, "ebitda", None),
+              getattr(is_, "monetary_gain_loss", None), getattr(is_, "tax_expense", None)):
+        if v is not None and v != 0:
+            score += 1
+    if cf is not None:
+        for v in (getattr(cf, "operating_cash_flow", None), getattr(cf, "capex", None),
+                  getattr(cf, "change_in_working_capital", None)):
+            if v is not None and v != 0:
+                score += 1
+    return score
+
+
+def collect_annual_periods(parsed_results: list) -> dict[int, PeriodFinancials]:
+    """Phase 7 FULL — given a list of ParsedFinancials (each with period
+    + optional prior_period), return a {fiscal_year: PeriodFinancials}
+    map containing ONLY annual periods (interim Q1/H1/Q3 rejected) with
+    deterministic dedup: when the same year appears in multiple sources,
+    the period with the highest _period_score wins.
+
+    The directive's hard rule:
+      - 5Y trend may use only annual fiscal periods.
+      - Interim periods (Q1, H1, Q3) cannot satisfy 5Y.
+    """
+    from financex.schemas.financials import ReportingPeriod
+    by_year: dict[int, PeriodFinancials] = {}
+    for parsed in parsed_results:
+        for pf in (getattr(parsed, "period", None), getattr(parsed, "prior_period", None)):
+            if pf is None:
+                continue
+            # Reject interim periods for the 5Y trend.
+            if pf.period != ReportingPeriod.FY:
+                continue
+            year = int(pf.year) if pf.year is not None else None
+            if year is None:
+                continue
+            existing = by_year.get(year)
+            if existing is None or _period_score(pf) > _period_score(existing):
+                by_year[year] = pf
+    return by_year
+
+
+def analyze_multi_pdf(
+    parsed_results: list,
+    engines: dict[int, EngineOutput],
+    *,
+    ticker: str,
+) -> FinancialAnalysisOutput:
+    """Phase 7 FULL — orchestrator entry point for multi-PDF analysis.
+
+    Args:
+      parsed_results: list of ParsedFinancials (one per source PDF). Each
+        contains a current `period` and an optional `prior_period` from
+        the comparative column.
+      engines: {fiscal_year: EngineOutput} for each annual period that
+        the caller has already run through compute_for_period.
+      ticker: the BIST ticker.
+
+    Returns:
+      FinancialAnalysisOutput with `canonical_numbers["__historical__"]`
+      populated for every distinct annual period (deduplicated by year).
+      The "current" period of the output is the most recent annual
+      period found.
+
+    Caller responsibilities:
+      - Parse each PDF via parse_kap_pdf() → ParsedFinancials.
+      - Run compute_for_period() for each annual period to produce the
+        engines map.
+      - This function does NOT call compute_for_period itself (engines
+        depend on sector overlays and prior-period data the caller
+        already orchestrates).
+
+    The FY-2025 < 5 years rule:
+      - If fewer than 5 annual periods are collected, the output still
+        embeds whatever WAS collected. The TRUTH GATE on the formatter
+        side (Wave 5 trend banner + Wave 2 MULTI_YEAR_COVERAGE QA
+        dimension) decides whether to render the 5Y chart.
+    """
+    annual_by_year = collect_annual_periods(parsed_results)
+    if not annual_by_year:
+        raise ValueError("analyze_multi_pdf: no annual periods could be extracted")
+    # Most recent annual = current
+    sorted_years = sorted(annual_by_year.keys())
+    current_year = sorted_years[-1]
+    current_pf = annual_by_year[current_year]
+    current_engine = engines.get(current_year)
+    if current_engine is None:
+        raise ValueError(f"analyze_multi_pdf: no engine output for current year {current_year}")
+    # Historical = all annual periods EXCEPT current, in chronological order.
+    historical_pfs = [annual_by_year[y] for y in sorted_years if y != current_year]
+    return analyze_financials(
+        current_pf, current_engine,
+        ticker=ticker,
+        historical=historical_pfs,
     )

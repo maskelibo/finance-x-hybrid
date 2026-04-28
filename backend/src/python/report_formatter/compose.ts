@@ -1341,11 +1341,13 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     multi_year_dividends_has: multiYear.dividend_row.length > 0,
     multi_year_has_data: multiYear.has_data,
     multi_year_count: multiYear.years.length,
-    // Wave 5 (2026-04-28) — honest "no trend data" banner replaces the
-    // deceptive Q1/H1/Q3/FY/FY-2026-placeholder chart.
+    // Phase 7 FULL (2026-04-28) — honest "5 yıllık resmi veri tamamlanamadı"
+    // banner replaces both the deceptive Q1/H1/Q3/FY/FY-2026-placeholder
+    // chart AND any partial-year (1-4 FY) chart. Directive: 5Y must be
+    // 5 distinct annual fiscal periods or it is suppressed entirely.
     multi_year_missing_banner_html: multiYear.has_data
       ? ''
-      : `<div style="margin:12px 0;padding:10px 14px;background:#fff3cd;border-left:4px solid #c6973f;border-radius:4px;font-size:12px;color:#5a4400"><strong>ⓘ 5 yıllık trend verisi henüz yok.</strong> Bu rapor için yalnızca tek dönem (${periodLabelRaw}) finansal raporu parse edilmiştir. CEO mandate'inin gerektirdiği 5 yıllık FY-2021 → FY-2025 trend analizi için ek annual filing'lerin pipeline'da fetch edilmesi gerekmektedir. Wave-future: multi-period extraction shipped olduğunda bu bölüm 5-yıllık trend chart'ı ile dolacaktır.</div>`,
+      : `<div style="margin:12px 0;padding:10px 14px;background:#fff3cd;border-left:4px solid #c6973f;border-radius:4px;font-size:12px;color:#5a4400"><strong>ⓘ 5 yıllık resmi veri tamamlanamadı.</strong> Direktif gereği 5-yıllık trend yalnızca FY2021-FY2025 gibi 5 distinct annual fiscal period mevcut olduğunda render edilir. Bu raporda mevcut FY dönem sayısı yetersizdir (${multiYear.years.length} dönem). 5-yıllık çoklu-PDF historical fetch shipped olunca (orchestrator data_collection refactor) 5Y trend chart'ı dolacaktır. Mevcut pipeline KAP financial-report PDF'inin comparative columns'ından otomatik FY-2024 (prior column) çıkarımı yapar; ek FY filing'leri için multi-PDF orchestration gerekmektedir.</div>`,
     multi_year_missing_banner_has: !multiYear.has_data,
 
     // İşletme Sermayesi
@@ -1986,9 +1988,13 @@ function buildMultiYearTrend(statements: Array<Record<string, unknown>>): MultiY
     return Number.isFinite(n) && n > 0;
   };
   const fyReal = annual.filter(s => String(s.period_label ?? '').startsWith('FY-') && isReal(s));
-  if (fyReal.length < 3) {
-    // Honest "no trend data" return — caller renders disclaimer instead
-    // of a misleading mixed-period chart.
+  // Phase 7 FULL (2026-04-28) — directive's 5Y hard gate.
+  // 5-year board-grade trend requires ≥5 distinct annual fiscal periods.
+  // Below that: trend chart suppressed; honest "missing official annual
+  // coverage" banner replaces it.
+  // Wave 5's previous threshold was 3 (allowing 3-year partial); the
+  // directive now requires the full 5.
+  if (fyReal.length < 5) {
     return {
       years: [], revenue_row: [], balance_row: [], cashflow_row: [],
       ratio_row: [], dividend_row: [], has_data: false,
