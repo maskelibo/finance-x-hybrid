@@ -50,10 +50,20 @@ describe('adaptQaReviewForLegacy — happy path', () => {
     ],
   };
 
-  it('scores all five dimensions', () => {
+  it('scores all 11 dimensions (5 legacy + 6 Wave 2 truth)', () => {
     const out = adaptQaReviewForLegacy(fa, rec, 'EREGL', 'qa-1');
     expect(out.dimension_scores.map(d => d.code).sort()).toEqual([
-      'COMPLETENESS', 'EVIDENCE_SUFFICIENCY', 'FLAG_ACKNOWLEDGEMENT', 'MATH_CONSISTENCY', 'NARRATIVE_COVERAGE',
+      'CFS_PARSED_NOT_ESTIMATED',
+      'COMPLETENESS',
+      'EVIDENCE_SUFFICIENCY',
+      'FLAG_ACKNOWLEDGEMENT',
+      'LANGUAGE_PURITY',
+      'MATH_CONSISTENCY',
+      'MULTI_YEAR_COVERAGE',
+      'NARRATIVE_COVERAGE',
+      'OWNERSHIP_FRESHNESS',
+      'PEER_COUNT_SUFFICIENT',
+      'PERIOD_CONSISTENCY',
     ]);
   });
 
@@ -142,5 +152,111 @@ describe('adaptQaReviewForLegacy — failure paths', () => {
     const out = adaptQaReviewForLegacy(fa, null, 'eregl', 'qa-1');
     expect(out.ticker).toBe('EREGL');
     expect(out.source).toBe('python');
+  });
+});
+
+
+describe('adaptQaReviewForLegacy — Wave 2 truth dimensions', () => {
+  const fa = {
+    ticker: 'KCHOL', period_label: 'FY-2025', sector: 'holding',
+    canonical_numbers: { gross_margin: '17.0', net_margin: '1.2', operating_cash_flow: null, capex: null },
+    highlights: [{ code: 'NET_MARGIN', narrative_hint: 'low' }, { code: 'ROE', narrative_hint: 'mid' }],
+    red_flags: [],
+  };
+  const rec = {
+    checks: [
+      { code: 'BS_IDENTITY', passed: true, message: 'skipped: totals are zero' },
+      { code: 'BS_EQUITY_SPLIT', passed: true, message: 'skipped: parent missing' },
+    ],
+  };
+
+  it('mid-score (0.5) for all 6 truth dims when context not supplied', () => {
+    const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1');
+    const truthCodes = ['MULTI_YEAR_COVERAGE', 'PEER_COUNT_SUFFICIENT', 'OWNERSHIP_FRESHNESS',
+      'CFS_PARSED_NOT_ESTIMATED', 'PERIOD_CONSISTENCY', 'LANGUAGE_PURITY'];
+    for (const code of truthCodes) {
+      const d = out.dimension_scores.find(x => x.code === code)!;
+      expect(d.score).toBe(0.5);
+    }
+  });
+
+  it('hard_fail when peer_count=0 (blocker)', () => {
+    const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { peer_count: 0 },
+    });
+    expect(out.qa_decision).toBe('hard_fail');
+    expect(out.escalation_recommendation).toBe('block_publish');
+    expect(out.blocker_failures).toContain('PEER_COUNT_SUFFICIENT');
+    expect(out.overall_pass).toBe(false);
+  });
+
+  it('hard_fail when CFS not parsed (blocker)', () => {
+    const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { cfs_operating_cash_flow_parsed: false, cfs_capex_parsed: false },
+    });
+    expect(out.qa_decision).toBe('hard_fail');
+    expect(out.blocker_failures).toContain('CFS_PARSED_NOT_ESTIMATED');
+  });
+
+  it('hard_fail when period mismatch (FA vs reconciliation)', () => {
+    const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { reconciliation_period: 'FY-2026' },
+    });
+    expect(out.qa_decision).toBe('hard_fail');
+    expect(out.blocker_failures).toContain('PERIOD_CONSISTENCY');
+  });
+
+  it('hard_fail when ownership is static_fallback (blocker)', () => {
+    const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { ownership_source: 'static_fallback' },
+    });
+    expect(out.qa_decision).toBe('hard_fail');
+    expect(out.blocker_failures).toContain('OWNERSHIP_FRESHNESS');
+  });
+
+  it('hard_fail when multi_year_periods < 3 (blocker)', () => {
+    const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { multi_year_periods: 1 },
+    });
+    expect(out.qa_decision).toBe('hard_fail');
+    expect(out.blocker_failures).toContain('MULTI_YEAR_COVERAGE');
+  });
+
+  it('PASS when all 11 dims clear thresholds', () => {
+    const recReal = {
+      checks: [
+        { code: 'BS_IDENTITY', passed: true, message: 'ok' },
+        { code: 'IS_NET_SPLIT', passed: true, message: 'ok' },
+      ],
+    };
+    const out = adaptQaReviewForLegacy(fa, recReal, 'KCHOL', 'qa-1', {
+      truthContext: {
+        multi_year_periods: 5,
+        peer_count: 4,
+        ownership_source: 'kap_filing',
+        ownership_age_days: 30,
+        cfs_operating_cash_flow_parsed: true,
+        cfs_capex_parsed: true,
+        reconciliation_period: 'FY-2025',
+        english_residue_count: 0,
+        estimate_judgment_rewrites: 0,
+      },
+    });
+    expect(out.qa_decision).toBe('pass');
+    expect(out.overall_pass).toBe(true);
+    expect(out.blocker_failures).toBeUndefined();
+  });
+
+  it('mathConsistency distinguishes skipped from truly_passed', () => {
+    const recAllSkipped = {
+      checks: [
+        { code: 'A', passed: true, message: 'skipped: data missing' },
+        { code: 'B', passed: true, message: 'skipped: totals are zero' },
+      ],
+    };
+    const out = adaptQaReviewForLegacy(fa, recAllSkipped, 'KCHOL', 'qa-1');
+    const math = out.dimension_scores.find(d => d.code === 'MATH_CONSISTENCY')!;
+    expect(math.score).toBe(0); // 0 / 0 = 0, all skipped = no real signal
+    expect(math.evidence).toContain('skipped');
   });
 });

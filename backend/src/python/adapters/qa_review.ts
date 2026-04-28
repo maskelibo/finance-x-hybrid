@@ -38,6 +38,7 @@ export interface DimensionScore {
   label: string;
   score: number;
   evidence: string;
+  is_blocker?: boolean;
 }
 
 
@@ -50,11 +51,28 @@ export interface LegacyQaOutput {
   quality_flags: string[];
   overall_score: number;
   overall_pass: boolean;
-  qa_decision: 'pass' | 'conditional_pass' | 'fail';
-  escalation_recommendation: 'none' | 'escalate_to_CEO' | 'deep_review_required';
+  qa_decision: 'pass' | 'conditional_pass' | 'fail' | 'hard_fail';
+  escalation_recommendation: 'none' | 'escalate_to_CEO' | 'deep_review_required' | 'block_publish';
+  blocker_failures?: string[];
   warnings: string[];
   review_status: string;
   source: 'python';
+}
+
+
+// Wave 2 (2026-04-28) — financial truth context. Adapter callers can
+// supply what they know; missing fields receive mid-score 0.5 (not 0)
+// to keep legacy callers from spurious hard-fails.
+export interface QaTruthContext {
+  multi_year_periods?: number;
+  peer_count?: number;
+  ownership_source?: 'kap_filing' | 'static_fallback' | 'context_extraction' | string;
+  ownership_age_days?: number;
+  cfs_operating_cash_flow_parsed?: boolean;
+  cfs_capex_parsed?: boolean;
+  reconciliation_period?: string;
+  english_residue_count?: number;
+  estimate_judgment_rewrites?: number;
 }
 
 
@@ -109,23 +127,30 @@ function mathConsistency(rec: UpstreamReconciliation | null): DimensionScore {
   if (!rec) {
     return {
       code: 'MATH_CONSISTENCY',
-      label: 'Reconciliation pass rate',
+      label: 'Reconciliation pass rate (excluding skipped)',
       score: 0,
       evidence: 'no reconciliation report supplied',
     };
   }
+  // Wave 2 (2026-04-28) — distinguish truly_passed from skipped.
+  // Old behaviour treated `passed=True (skipped: totals are zero)` as a
+  // pass, creating the "7/7 passed when 7 were skipped" false positive.
   const checks = rec.checks ?? rec.check_results ?? [];
   const total = checks.length;
-  const passed = checks.filter(c => c.passed).length;
-  const failedCodes = checks.filter(c => !c.passed).map(c => c.code);
-  const score = total > 0 ? passed / total : 0;
+  const isSkipped = (c: { passed?: boolean | null; message?: string | null }): boolean =>
+    Boolean(c.passed) && /^skipped\b/i.test(String(c.message ?? ''));
+  const truly_passed = checks.filter((c) => Boolean(c.passed) && !isSkipped(c)).length;
+  const skipped = checks.filter(isSkipped).length;
+  const failedCodes = checks.filter((c) => !c.passed).map((c) => c.code);
+  const real_total = total - skipped;
+  const score = real_total > 0 ? truly_passed / real_total : 0;
   return {
     code: 'MATH_CONSISTENCY',
-    label: 'Reconciliation pass rate',
+    label: 'Reconciliation pass rate (excluding skipped)',
     score: round2(score),
     evidence: total === 0
       ? 'no reconciliation checks to score'
-      : `${passed}/${total} reconciliation checks passed. ${failedCodes.length ? `Failures: ${failedCodes.join(', ')}` : 'All clean.'}`,
+      : `${truly_passed}/${real_total} truly passed; ${skipped} skipped (data missing); ${failedCodes.length ? `failures: ${failedCodes.join(', ')}` : 'no real failures'}`,
   };
 }
 
@@ -198,6 +223,180 @@ function narrativeCoverage(fa: UpstreamFinancialAnalysis): DimensionScore {
 }
 
 
+// ---------- Wave 2 truth dimension scorers ----------
+
+function multiYearCoverage(ctx: QaTruthContext | undefined): DimensionScore {
+  const n = ctx?.multi_year_periods;
+  if (n == null) {
+    return {
+      code: 'MULTI_YEAR_COVERAGE',
+      label: 'Multi-year FY coverage',
+      score: 0.5,
+      evidence: 'multi_year_periods not supplied — uncertain',
+    };
+  }
+  const score = n >= 5 ? 1 : n >= 3 ? 0.7 : 0;
+  return {
+    code: 'MULTI_YEAR_COVERAGE',
+    label: 'Multi-year FY coverage',
+    score: round2(score),
+    evidence: `${n} FY period(s) with revenue available`,
+    is_blocker: n < 3,
+  };
+}
+
+function peerCountSufficient(ctx: QaTruthContext | undefined): DimensionScore {
+  const n = ctx?.peer_count;
+  if (n == null) {
+    return {
+      code: 'PEER_COUNT_SUFFICIENT',
+      label: 'Peer benchmark count',
+      score: 0.5,
+      evidence: 'peer_count not supplied — uncertain',
+    };
+  }
+  const score = n >= 4 ? 1 : n >= 3 ? 0.6 : 0;
+  return {
+    code: 'PEER_COUNT_SUFFICIENT',
+    label: 'Peer benchmark count',
+    score: round2(score),
+    evidence: `peer_count=${n} — ${n >= 3 ? 'sufficient' : 'insufficient (need ≥3)'}`,
+    is_blocker: n === 0,
+  };
+}
+
+function ownershipFreshness(ctx: QaTruthContext | undefined): DimensionScore {
+  const src = ctx?.ownership_source;
+  const age = ctx?.ownership_age_days;
+  if (src == null) {
+    return {
+      code: 'OWNERSHIP_FRESHNESS',
+      label: 'Ownership data freshness',
+      score: 0.5,
+      evidence: 'ownership_source not supplied — uncertain',
+    };
+  }
+  if (src === 'kap_filing' || src === 'context_extraction') {
+    if (age == null || age <= 90) {
+      return {
+        code: 'OWNERSHIP_FRESHNESS',
+        label: 'Ownership data freshness',
+        score: 1,
+        evidence: `sourced from ${src}, age=${age ?? 'unknown'} days`,
+      };
+    }
+    return {
+      code: 'OWNERSHIP_FRESHNESS',
+      label: 'Ownership data freshness',
+      score: 0.4,
+      evidence: `${src} but stale (age=${age} days > 90)`,
+    };
+  }
+  return {
+    code: 'OWNERSHIP_FRESHNESS',
+    label: 'Ownership data freshness',
+    score: 0,
+    evidence: `source='${src}' — static fallback; not board-grade`,
+    is_blocker: true,
+  };
+}
+
+function cfsParsedNotEstimated(ctx: QaTruthContext | undefined): DimensionScore {
+  const ocf = ctx?.cfs_operating_cash_flow_parsed;
+  const capex = ctx?.cfs_capex_parsed;
+  if (ocf == null && capex == null) {
+    return {
+      code: 'CFS_PARSED_NOT_ESTIMATED',
+      label: 'Cash flow statement parsed',
+      score: 0.5,
+      evidence: 'cfs_*_parsed not supplied — uncertain',
+    };
+  }
+  if (ocf && capex) {
+    return {
+      code: 'CFS_PARSED_NOT_ESTIMATED',
+      label: 'Cash flow statement parsed',
+      score: 1,
+      evidence: 'OCF + CAPEX both parsed from source filing',
+    };
+  }
+  if (ocf || capex) {
+    return {
+      code: 'CFS_PARSED_NOT_ESTIMATED',
+      label: 'Cash flow statement parsed',
+      score: 0.5,
+      evidence: `partial: ocf_parsed=${ocf}, capex_parsed=${capex} — derived metrics will be incomplete`,
+      is_blocker: true,
+    };
+  }
+  return {
+    code: 'CFS_PARSED_NOT_ESTIMATED',
+    label: 'Cash flow statement parsed',
+    score: 0,
+    evidence: 'OCF + CAPEX not parsed — board-grade CFS analysis impossible',
+    is_blocker: true,
+  };
+}
+
+function periodConsistency(fa: UpstreamFinancialAnalysis, ctx: QaTruthContext | undefined): DimensionScore {
+  const recPeriod = ctx?.reconciliation_period;
+  if (recPeriod == null) {
+    return {
+      code: 'PERIOD_CONSISTENCY',
+      label: 'Period label consistency',
+      score: 0.5,
+      evidence: 'reconciliation_period not supplied — uncertain',
+    };
+  }
+  if (String(recPeriod) === String(fa.period_label)) {
+    return {
+      code: 'PERIOD_CONSISTENCY',
+      label: 'Period label consistency',
+      score: 1,
+      evidence: `FA + reconciliation both '${fa.period_label}'`,
+    };
+  }
+  return {
+    code: 'PERIOD_CONSISTENCY',
+    label: 'Period label consistency',
+    score: 0,
+    evidence: `mismatch: FA='${fa.period_label}' vs reconciliation='${recPeriod}'`,
+    is_blocker: true,
+  };
+}
+
+function languagePurity(ctx: QaTruthContext | undefined): DimensionScore {
+  const residue = ctx?.english_residue_count;
+  const rewrites = ctx?.estimate_judgment_rewrites;
+  if (residue == null && rewrites == null) {
+    return {
+      code: 'LANGUAGE_PURITY',
+      label: 'Language purity',
+      score: 0.5,
+      evidence: 'language metrics not supplied — uncertain',
+    };
+  }
+  const residueClean = residue == null || residue === 0;
+  const rewritesClean = rewrites == null || rewrites === 0;
+  if (residueClean && rewritesClean) {
+    return {
+      code: 'LANGUAGE_PURITY',
+      label: 'Language purity',
+      score: 1,
+      evidence: `english_residue=${residue ?? 0}, estimate_judgment_rewrites=${rewrites ?? 0} — clean`,
+    };
+  }
+  const score = (residue ?? 0) <= 3 ? 0.3 : 0;
+  return {
+    code: 'LANGUAGE_PURITY',
+    label: 'Language purity',
+    score,
+    evidence: `english_residue=${residue ?? 'n/a'}, estimate_judgment_rewrites=${rewrites ?? 'n/a'}`,
+    is_blocker: (residue != null && residue > 5),
+  };
+}
+
+
 // ---------- public entry point ----------
 
 export function adaptQaReviewForLegacy(
@@ -205,7 +404,7 @@ export function adaptQaReviewForLegacy(
   rec: UpstreamReconciliation | null,
   ticker: string,
   outputId: string,
-  opts: { llmMarkdownSource?: string | null } = {},
+  opts: { llmMarkdownSource?: string | null; truthContext?: QaTruthContext } = {},
 ): LegacyQaOutput {
   const warnings: string[] = [];
   const sectorResolution = resolveSector({
@@ -232,12 +431,21 @@ export function adaptQaReviewForLegacy(
     };
   }
 
+  const ctx = opts.truthContext;
   const dimensions: DimensionScore[] = [
+    // Legacy 5
     evidenceSufficiency(fa),
     mathConsistency(rec),
     completeness(fa, sectorResolution.sector),
     flagAcknowledgement(fa),
     narrativeCoverage(fa),
+    // Wave 2 truth (6)
+    multiYearCoverage(ctx),
+    peerCountSufficient(ctx),
+    ownershipFreshness(ctx),
+    cfsParsedNotEstimated(ctx),
+    periodConsistency(fa, ctx),
+    languagePurity(ctx),
   ];
   const overall = round2(dimensions.reduce((a, d) => a + d.score, 0) / dimensions.length);
 
@@ -248,11 +456,22 @@ export function adaptQaReviewForLegacy(
     }
   }
 
+  // Wave 2 hard-fail: any blocker dim with score == 0 → hard_fail.
+  const blockerFailures = dimensions
+    .filter((d) => d.is_blocker && d.score === 0)
+    .map((d) => d.code);
+
   let decision: LegacyQaOutput['qa_decision'];
   let escalation: LegacyQaOutput['escalation_recommendation'];
-  if (overall >= PASS_THRESHOLD) {
+  let overallPass = false;
+  if (blockerFailures.length > 0) {
+    decision = 'hard_fail';
+    escalation = 'block_publish';
+    overallPass = false;
+  } else if (overall >= PASS_THRESHOLD) {
     decision = flags.length === 0 ? 'pass' : 'conditional_pass';
     escalation = 'none';
+    overallPass = true;
   } else if (overall >= CONDITIONAL_THRESHOLD) {
     decision = 'conditional_pass';
     escalation = 'escalate_to_CEO';
@@ -269,9 +488,10 @@ export function adaptQaReviewForLegacy(
     dimension_scores: dimensions,
     quality_flags: flags,
     overall_score: overall,
-    overall_pass: overall >= PASS_THRESHOLD,
+    overall_pass: overallPass,
     qa_decision: decision,
     escalation_recommendation: escalation,
+    blocker_failures: blockerFailures.length > 0 ? blockerFailures : undefined,
     warnings,
     review_status: 'pending_ceo_review',
     source: 'python',
