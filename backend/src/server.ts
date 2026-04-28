@@ -20,6 +20,7 @@ import { ALLOWED_ORIGINS, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_IN
 import { loadSecrets } from './security/secrets.js';
 import { registerHealthRoutes } from './observability/health.js';
 import { registerSseRoutes } from './streaming/sse.js';
+import { registerDagRoutes } from './observability/dag.js';
 
 // P6A: pluggable secrets boot hook. SECRETS_MODE unset/'env' = no-op.
 loadSecrets().catch(err => {
@@ -46,6 +47,12 @@ if (process.env.METRICS_ENABLED === '1') {
 if (process.env.SSE_ENABLED === '1') {
   try { registerSseRoutes(app); }
   catch (err) { console.warn('[sse-routes] register skipped:', err instanceof Error ? err.message : err); }
+}
+
+// P7B Wave 1: gated DAG snapshot route. Default OFF.
+if (process.env.DAG_ENABLED === '1') {
+  try { registerDagRoutes(app); }
+  catch (err) { console.warn('[dag-routes] register skipped:', err instanceof Error ? err.message : err); }
 }
 
 // API Key authentication middleware
