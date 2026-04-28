@@ -1,0 +1,129 @@
+# Finance-X Hybrid — Continuous Integration
+#
+# Pre-P5 P6C, finance-x-polish phase id: P6C.
+#
+# Scope discipline (per PART2_EXECUTION_PLAN.md Pre-P5 reconciliation,
+# 2026-04-28):
+#   - Backend typecheck + unit tests + python service tests are ACTIVE.
+#   - All active jobs are FREE (no paid LLM calls, no live ticker runs,
+#     no deployment, no DB writes).
+#   - regression-eval is DISABLED (`if: false`) until an operator explicitly
+#     enables it with budget envelope authorization. The job exists as a
+#     placeholder so the toggle is visible to anyone reading this file.
+#
+# Local validation note: actionlint is NOT installed in this repo. YAML
+# syntax was validated via `npx js-yaml ci.yml` at author time. GitHub
+# Actions semantic validation (job dependencies, action versions, secret
+# references) happens on the first PR-after-merge.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+      - finance-x-execution
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1) Backend TypeScript typecheck — `npx tsc --noEmit`
+  # ---------------------------------------------------------------------------
+  backend-typecheck:
+    name: Backend typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies (ci, lockfile-strict)
+        working-directory: backend
+        run: npm ci
+
+      - name: TypeScript typecheck (no emit)
+        working-directory: backend
+        run: npx tsc --noEmit
+
+  # ---------------------------------------------------------------------------
+  # 2) Backend unit tests — `npx vitest run`
+  # ---------------------------------------------------------------------------
+  backend-tests:
+    name: Backend unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies (ci, lockfile-strict)
+        working-directory: backend
+        run: npm ci
+
+      - name: Run vitest (full suite)
+        working-directory: backend
+        run: npx vitest run
+
+  # ---------------------------------------------------------------------------
+  # 3) Python service unit tests — `uv run pytest`
+  # ---------------------------------------------------------------------------
+  # All python-services/tests/* use mocked httpx transports + fixture data;
+  # no live API calls. Safe for unattended CI execution.
+  python-tests:
+    name: Python service tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup uv (Python toolchain)
+        uses: astral-sh/setup-uv@v3
+
+      - name: Sync python-services dependencies
+        working-directory: python-services
+        run: uv sync
+
+      - name: Run pytest
+        working-directory: python-services
+        run: uv run pytest
+
+  # ---------------------------------------------------------------------------
+  # 4) Regression eval — DISABLED (`if: false`)
+  # ---------------------------------------------------------------------------
+  # ⛔ HARD-DISABLED per Pre-P5 reconciliation policy.
+  #
+  # Rationale: regression-eval invokes the full session pipeline against
+  # golden samples, which calls Anthropic LLM APIs. Running this on every
+  # PR would consume `ANTHROPIC_API_KEY` budget. Until an operator approves
+  # the cost envelope and the golden dataset (P5A) is populated with real
+  # ground-truth data, this job MUST stay disabled.
+  #
+  # To enable later (operator action required):
+  #   1. Confirm budget envelope for per-PR LLM spend.
+  #   2. Populate evals/golden_v2/reports/<TICKER>/*.json with real data.
+  #   3. Replace `if: false` below with a sensible gate (e.g.,
+  #      `if: github.event_name == 'pull_request' && github.event.pull_request.head.ref != 'main'`).
+  #   4. Add `ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}` to env.
+  regression-eval:
+    name: Regression eval (DISABLED — paid LLM runs)
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disabled marker
+        run: |
+          echo "regression-eval is intentionally disabled."
+          echo "See ci.yml comment block for the activation checklist."
+          exit 0
