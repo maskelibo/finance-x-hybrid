@@ -17,6 +17,12 @@ import { registerRefactorDashboardRoutes } from './refactor/dashboard-api.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ALLOWED_ORIGINS, AGENTS_ROOT, PORT, HEARTBEAT_INTERVAL_MIN, WATCHDOG_INTERVAL_MIN, NIGHT_TRAINING_HOUR_UTC, LLM_PRIMARY_PROVIDER } from './config.js';
+import { loadSecrets } from './security/secrets.js';
+
+// P6A: pluggable secrets boot hook. SECRETS_MODE unset/'env' = no-op.
+loadSecrets().catch(err => {
+  console.warn('[secrets-boot] loadSecrets failed (non-fatal):', err instanceof Error ? err.message : err);
+});
 
 console.log(`ℹ️  LLM provider: ${LLM_PRIMARY_PROVIDER}`);
 
