@@ -130,6 +130,43 @@ function buildQaTruthContext(
     t.reconciliation_period = recObj.period_label ?? recObj.period;
   }
 
+  // Phase E (2026-04-28) — visual coverage proxy. Each chart in
+  // compose.ts has a data-readiness gate; we count which would render
+  // given upstream signals and pass the count to the visualCoverage
+  // dimension. 13 charts total. Gate names mirror template.html:
+  //   1. chart_financial_health        — always ready (sector baseline)
+  //   2. chart_qa_gauge                — always ready post-self-score
+  //   3. chart_rec_gauge               — needs reconciliation rec
+  //   4. chart_ownership_pie           — needs ownership source (yaml/extract)
+  //   5. chart_waterfall (P&L)         — needs revenue + cogs + ebitda
+  //   6. chart_financial_trend         — needs ≥2 FY periods
+  //   7. chart_revenue_area            — needs ≥2 FY periods
+  //   8. chart_net_income_column       — needs ≥2 FY periods
+  //   9. chart_price_band              — needs last_close (technical)
+  //  10. chart_benchmark               — needs peer_count ≥ 1
+  //  11. chart_esg_radar               — always ready (sector baseline)
+  //  12. chart_sentiment_pie           — needs sentiment_news distribution
+  //  13. chart_event_timeline          — needs ≥2 events
+  let chartsReady = 2; // financial_health + esg_radar always render
+  if (rec) chartsReady++;                              // rec_gauge
+  if (fa) chartsReady++;                                // qa_gauge (after this run)
+  if (t.ownership_source) chartsReady++;                // ownership_pie
+  // Waterfall — needs canonical revenue + cogs + ebitda all parsed
+  if (fa && (fa as { canonical_numbers?: Record<string, unknown> }).canonical_numbers) {
+    const cn = (fa as { canonical_numbers?: Record<string, unknown> }).canonical_numbers!;
+    if (cn['revenue'] != null && cn['cost_of_sales'] != null) chartsReady++; // waterfall
+  }
+  if ((t.multi_year_periods ?? 0) >= 2) chartsReady += 3; // trend + area + net_income column
+  // Price band — proxy via technical_analysis_output presence
+  if (ctx['technical_analysis_output'] != null) chartsReady++;
+  if ((t.peer_count ?? 0) >= 1) chartsReady++;          // benchmark
+  // Sentiment — proxy via sentiment_news_agent_output
+  if (ctx['sentiment_news_agent_output'] != null) chartsReady++;
+  // Event timeline — proxy via event_classification_agent_output / kap_watch
+  if (ctx['event_classification_agent_output'] != null || ctx['event_impact_mapper_output'] != null) chartsReady++;
+  t.charts_ready_count = chartsReady;
+  t.charts_total_count = 13;
+
   // sanitizer counts (if a hygiene_sanitizer_report was injected)
   const san = ctx['hygiene_sanitizer_report'];
   if (san != null) {

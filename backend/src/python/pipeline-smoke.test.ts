@@ -300,8 +300,8 @@ describe('Pipeline smoke — reshape-only Python runners', () => {
     const outcome = await runPythonQaReview(sessionId, runIds.qa_review, ticker, ctx);
     expect(outcome).toBe('ok');
     const parsed = JSON.parse(readRunRow(runIds.qa_review).output_text!);
-    // Wave 2 (2026-04-28): 5 legacy + 6 truth dimensions = 11 total
-    expect(parsed.dimension_scores.length).toBe(11);
+    // Phase E (2026-04-28): 5 legacy + 6 Wave 2 truth + 1 visual = 12 total
+    expect(parsed.dimension_scores.length).toBe(12);
     expect(['pass', 'conditional_pass', 'fail', 'hard_fail']).toContain(parsed.qa_decision);
     const mc = parsed.dimension_scores.find((d: { code: string }) => d.code === 'MATH_CONSISTENCY');
     expect(mc.score).toBe(0.75); // 3/4 reconciliation checks passed

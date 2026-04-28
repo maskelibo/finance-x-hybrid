@@ -73,6 +73,12 @@ export interface QaTruthContext {
   reconciliation_period?: string;
   english_residue_count?: number;
   estimate_judgment_rewrites?: number;
+  // Phase E (2026-04-28) — visual coverage. Caller supplies the count
+  // of "ready" charts (data-availability proxy). compose.ts has 13
+  // distinct chart placeholders, all conditionally rendered. The QA
+  // gate flags board-grade insufficiency when fewer than 6 are ready.
+  charts_ready_count?: number;
+  charts_total_count?: number;
 }
 
 
@@ -365,6 +371,32 @@ function periodConsistency(fa: UpstreamFinancialAnalysis, ctx: QaTruthContext | 
   };
 }
 
+function visualCoverage(ctx: QaTruthContext | undefined): DimensionScore {
+  const ready = ctx?.charts_ready_count;
+  const total = ctx?.charts_total_count ?? 13;
+  if (ready == null) {
+    return {
+      code: 'VISUAL_COVERAGE',
+      label: 'Visual coverage (charts ready)',
+      score: 0.5,
+      evidence: 'charts_ready_count not supplied — uncertain',
+    };
+  }
+  const ratio = total > 0 ? ready / total : 0;
+  let score: number;
+  if (ratio >= 0.75) score = 1;
+  else if (ratio >= 0.55) score = 0.7;
+  else if (ratio >= 0.4) score = 0.5;
+  else score = 0;
+  return {
+    code: 'VISUAL_COVERAGE',
+    label: 'Visual coverage (charts ready)',
+    score: round2(score),
+    evidence: `${ready}/${total} charts data-ready (${(ratio * 100).toFixed(0)}%)`,
+    is_blocker: ready < 4,
+  };
+}
+
 function languagePurity(ctx: QaTruthContext | undefined): DimensionScore {
   const residue = ctx?.english_residue_count;
   const rewrites = ctx?.estimate_judgment_rewrites;
@@ -446,6 +478,8 @@ export function adaptQaReviewForLegacy(
     cfsParsedNotEstimated(ctx),
     periodConsistency(fa, ctx),
     languagePurity(ctx),
+    // Phase E truth (1) — visual coverage
+    visualCoverage(ctx),
   ];
   const overall = round2(dimensions.reduce((a, d) => a + d.score, 0) / dimensions.length);
 

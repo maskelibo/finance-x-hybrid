@@ -50,7 +50,7 @@ describe('adaptQaReviewForLegacy — happy path', () => {
     ],
   };
 
-  it('scores all 11 dimensions (5 legacy + 6 Wave 2 truth)', () => {
+  it('scores all 12 dimensions (5 legacy + 6 Wave 2 truth + 1 Phase E visual)', () => {
     const out = adaptQaReviewForLegacy(fa, rec, 'EREGL', 'qa-1');
     expect(out.dimension_scores.map(d => d.code).sort()).toEqual([
       'CFS_PARSED_NOT_ESTIMATED',
@@ -64,11 +64,17 @@ describe('adaptQaReviewForLegacy — happy path', () => {
       'OWNERSHIP_FRESHNESS',
       'PEER_COUNT_SUFFICIENT',
       'PERIOD_CONSISTENCY',
+      'VISUAL_COVERAGE',
     ]);
   });
 
   it('overall pass=true when all dimensions clear 0.7', () => {
-    const out = adaptQaReviewForLegacy(fa, rec, 'EREGL', 'qa-1');
+    // With Phase E adding VISUAL_COVERAGE (mid-score 0.5 by default), the
+    // happy-path mean drops below 0.7; provide a high chart_ready proxy
+    // so this test continues exercising the fully-passing branch.
+    const out = adaptQaReviewForLegacy(fa, rec, 'EREGL', 'qa-1', {
+      truthContext: { charts_ready_count: 12, charts_total_count: 13 },
+    });
     expect(out.overall_pass).toBe(true);
     expect(out.qa_decision).toBe('pass');
     expect(out.escalation_recommendation).toBe('none');
@@ -170,10 +176,10 @@ describe('adaptQaReviewForLegacy — Wave 2 truth dimensions', () => {
     ],
   };
 
-  it('mid-score (0.5) for all 6 truth dims when context not supplied', () => {
+  it('mid-score (0.5) for all 7 truth dims when context not supplied', () => {
     const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1');
     const truthCodes = ['MULTI_YEAR_COVERAGE', 'PEER_COUNT_SUFFICIENT', 'OWNERSHIP_FRESHNESS',
-      'CFS_PARSED_NOT_ESTIMATED', 'PERIOD_CONSISTENCY', 'LANGUAGE_PURITY'];
+      'CFS_PARSED_NOT_ESTIMATED', 'PERIOD_CONSISTENCY', 'LANGUAGE_PURITY', 'VISUAL_COVERAGE'];
     for (const code of truthCodes) {
       const d = out.dimension_scores.find(x => x.code === code)!;
       expect(d.score).toBe(0.5);
@@ -222,7 +228,7 @@ describe('adaptQaReviewForLegacy — Wave 2 truth dimensions', () => {
     expect(out.blocker_failures).toContain('MULTI_YEAR_COVERAGE');
   });
 
-  it('PASS when all 11 dims clear thresholds', () => {
+  it('PASS when all 12 dims clear thresholds', () => {
     const recReal = {
       checks: [
         { code: 'BS_IDENTITY', passed: true, message: 'ok' },
@@ -240,11 +246,41 @@ describe('adaptQaReviewForLegacy — Wave 2 truth dimensions', () => {
         reconciliation_period: 'FY-2025',
         english_residue_count: 0,
         estimate_judgment_rewrites: 0,
+        charts_ready_count: 12,
+        charts_total_count: 13,
       },
     });
     expect(out.qa_decision).toBe('pass');
     expect(out.overall_pass).toBe(true);
     expect(out.blocker_failures).toBeUndefined();
+  });
+
+  it('Phase E — VISUAL_COVERAGE scores by ratio of ready charts', () => {
+    const out12 = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { charts_ready_count: 12, charts_total_count: 13 },
+    });
+    const dim12 = out12.dimension_scores.find(d => d.code === 'VISUAL_COVERAGE')!;
+    expect(dim12.score).toBe(1);
+
+    const out8 = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { charts_ready_count: 8, charts_total_count: 13 },
+    });
+    const dim8 = out8.dimension_scores.find(d => d.code === 'VISUAL_COVERAGE')!;
+    expect(dim8.score).toBe(0.7); // 8/13 ≈ 0.62 → bucket [0.55, 0.75) → 0.7
+
+    const out6 = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { charts_ready_count: 6, charts_total_count: 13 },
+    });
+    const dim6 = out6.dimension_scores.find(d => d.code === 'VISUAL_COVERAGE')!;
+    expect(dim6.score).toBe(0.5); // 6/13 ≈ 0.46 → bucket [0.4, 0.55) → 0.5
+  });
+
+  it('Phase E — VISUAL_COVERAGE blocker when <4 charts ready', () => {
+    const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { charts_ready_count: 2, charts_total_count: 13 },
+    });
+    expect(out.qa_decision).toBe('hard_fail');
+    expect(out.blocker_failures).toContain('VISUAL_COVERAGE');
   });
 
   it('mathConsistency distinguishes skipped from truly_passed', () => {
