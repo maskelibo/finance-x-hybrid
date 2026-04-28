@@ -46,12 +46,16 @@ function buildQaTruthContext(
     }
   }
 
-  // CFS parsed flags from canonical_numbers
+  // CFS parsed flags from canonical_numbers (Wave 3 extended schema)
   if (fa && (fa as { canonical_numbers?: Record<string, unknown> }).canonical_numbers) {
     const canon = (fa as { canonical_numbers?: Record<string, unknown> }).canonical_numbers!;
     t.cfs_operating_cash_flow_parsed = canon['operating_cash_flow'] != null;
     t.cfs_capex_parsed = canon['capex'] != null;
   }
+  // Wave 3 — multi_year_periods from a future multi-period FA structure.
+  // Today FA is single-period; leave undefined → adapter mid-score 0.5.
+  // When Wave-future enables multi-period extraction, this can read
+  // (fa as any).multi_year_periods or count fa.standardized_statements.
 
   // multi_year_periods from financial_analysis (single-period today; will be
   // populated by Wave 3 schema migration). Leave undefined for now.

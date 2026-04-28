@@ -255,20 +255,78 @@ def _trends_for(
 # ---------------------------------------------------------------------
 
 def _canonical_numbers(pf: PeriodFinancials, eng: EngineOutput) -> dict[str, Decimal | None]:
+    """Flat canonical_numbers for LLM quoting + downstream truth gates.
+
+    Wave 3 (2026-04-28) — expanded from 14 ratio-only fields to include
+    raw line-item totals (gross_profit, pre_tax_income, NMP, OCF, CAPEX,
+    WC components) so the LLM isn't forced to back-compute amounts from
+    margins. Field names mirror IncomeStatement / BalanceSheet /
+    CashFlowStatement schemas.
+    """
     r = eng.ratios
     bs = pf.balance_sheet
     is_ = pf.income_statement
+    cf = pf.cash_flow
+
+    # Pre-tax income: derive from net_income + tax_expense when not explicit.
+    pre_tax: Decimal | None = None
+    tax_exp = getattr(is_, "tax_expense", None)
+    if is_.net_income is not None and tax_exp is not None:
+        # tax_expense is typically negative (expense); pre-tax = net - tax_expense
+        # (since net_income = pre_tax + tax_expense when tax_expense is signed
+        # negative, equivalently pre_tax = net_income - tax_expense).
+        pre_tax = is_.net_income - tax_exp
+
     out: dict[str, Decimal | None] = {
+        # Balance sheet totals
         "total_assets": bs.total_assets,
         "total_equity": bs.total_equity,
-        "net_income": is_.net_income,
+        "total_liabilities": getattr(bs, "total_liabilities", None),
+        # Income statement raw line items
         "revenue": is_.revenue,
+        "cost_of_sales": getattr(is_, "cost_of_sales", None),
+        "cogs": getattr(is_, "cost_of_sales", None),  # alias for board-friendly key
+        "gross_profit": getattr(is_, "gross_profit", None),
+        "opex": getattr(is_, "opex", None),
+        "operating_expenses": getattr(is_, "opex", None),  # alias
+        "operating_income": getattr(is_, "operating_income", None),
+        "operating_profit": getattr(is_, "operating_income", None),  # alias
+        "ebit": getattr(is_, "operating_income", None),
+        "ebitda": getattr(is_, "ebitda", None),
+        "depreciation_amortization": getattr(is_, "depreciation_amortization", None),
+        "financial_income": getattr(is_, "financial_income", None),
+        "financial_expense": getattr(is_, "financial_expense", None),
+        "interest_income": getattr(is_, "interest_income", None),
+        "interest_expense": getattr(is_, "interest_expense", None),
+        "monetary_gain_loss": getattr(is_, "monetary_gain_loss", None),
+        "net_monetary_position_gain_loss": getattr(is_, "monetary_gain_loss", None),  # alias for clarity
+        "pre_tax_income": pre_tax,
+        "tax_expense": tax_exp,
+        "net_income": is_.net_income,
+        "minority_net_income": getattr(is_, "minority_net_income", None),
+        "parent_net_income": getattr(is_, "parent_net_income", None),
+        # Working capital line items (from balance sheet)
+        "trade_receivables": getattr(bs, "trade_receivables", None),
+        "inventories": getattr(bs, "inventories", None),
+        "trade_payables": getattr(bs, "trade_payables", None),
+        # Cash flow statement raw line items (board-grade requirement)
+        "operating_cash_flow": getattr(cf, "operating_cash_flow", None) if cf else None,
+        "capex": getattr(cf, "capex", None) if cf else None,
+        "investing_cash_flow": getattr(cf, "investing_cash_flow", None) if cf else None,
+        "financing_cash_flow": getattr(cf, "financing_cash_flow", None) if cf else None,
+        "free_cash_flow_reported": getattr(cf, "free_cash_flow", None) if cf else None,
+        "dividends_paid": getattr(cf, "dividends_paid", None) if cf else None,
+        "net_change_in_cash": getattr(cf, "net_change_in_cash", None) if cf else None,
+        "cf_depreciation_amortization": getattr(cf, "depreciation_amortization", None) if cf else None,
+        "change_in_working_capital": getattr(cf, "change_in_working_capital", None) if cf else None,
+        "working_capital_change_total": getattr(cf, "change_in_working_capital", None) if cf else None,  # alias
     }
-    # Add applicable ratios
+    # Add applicable ratios (preserved from legacy schema)
     for key in (
         "gross_margin", "ebitda_margin", "net_margin",
         "roe", "roa", "roce", "current_ratio",
         "net_debt", "net_debt_to_ebitda", "fcf",
+        "normalized_fcf", "wc_release",
     ):
         rv = getattr(r, key, None)
         if rv is not None:
