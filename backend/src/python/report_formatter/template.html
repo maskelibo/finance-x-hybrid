@@ -729,7 +729,7 @@
       <thead><tr><th>İştirak</th><th>Ticker</th><th class="num">Pay (%)</th><th class="num">Piyasa Değeri</th><th class="num">Etkin Pay (TL)</th><th>Yöntem</th></tr></thead>
       <tbody>
         {{#each sotp_listed}}
-        <tr><td class="label">{{subsidiary}}</td><td>{{ticker}}</td><td class="num">{{stake_pct_formatted}}</td><td class="num">{{market_cap_formatted}}</td><td class="num">{{effective_share_formatted}}</td><td>{{method}}</td></tr>
+        <tr><td class="label">{{this.subsidiary}}</td><td>{{this.ticker}}</td><td class="num">{{this.stake_pct_formatted}}</td><td class="num">{{this.market_cap_formatted}}</td><td class="num">{{this.effective_share_formatted}}</td><td>{{this.method}}</td></tr>
         {{/each}}
       </tbody>
     </table>
@@ -739,7 +739,7 @@
       <thead><tr><th>İştirak</th><th class="num">Pay (%)</th><th class="num">NAV Katkısı</th><th>Yöntem</th></tr></thead>
       <tbody>
         {{#each sotp_private}}
-        <tr><td class="label">{{subsidiary}}</td><td class="num">{{stake_pct_formatted}}</td><td class="num">{{nav_contribution_formatted}}</td><td>{{method}}</td></tr>
+        <tr><td class="label">{{this.subsidiary}}</td><td class="num">{{this.stake_pct_formatted}}</td><td class="num">{{this.nav_contribution_formatted}}</td><td>{{this.method}}</td></tr>
         {{/each}}
       </tbody>
     </table>
