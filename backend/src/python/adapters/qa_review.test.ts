@@ -212,12 +212,32 @@ describe('adaptQaReviewForLegacy — Wave 2 truth dimensions', () => {
     expect(out.blocker_failures).toContain('PERIOD_CONSISTENCY');
   });
 
-  it('hard_fail when ownership is static_fallback (blocker)', () => {
+  it('hard_fail when ownership is static_fallback (blocker — hardcoded fallback only)', () => {
     const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
       truthContext: { ownership_source: 'static_fallback' },
     });
     expect(out.qa_decision).toBe('hard_fail');
     expect(out.blocker_failures).toContain('OWNERSHIP_FRESHNESS');
+  });
+
+  it('Phase I — curated_pending_review scores 0.5 (NOT blocker) for fresh YAML', () => {
+    const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { ownership_source: 'curated_pending_review', ownership_age_days: 30 },
+    });
+    const dim = out.dimension_scores.find(d => d.code === 'OWNERSHIP_FRESHNESS')!;
+    expect(dim.score).toBe(0.5);
+    expect(dim.is_blocker).toBeUndefined();
+    expect(out.blocker_failures ?? []).not.toContain('OWNERSHIP_FRESHNESS');
+  });
+
+  it('Phase I — curated_pending_review scores 0.3 when stale (>180d), still not blocker', () => {
+    const out = adaptQaReviewForLegacy(fa, rec, 'KCHOL', 'qa-1', {
+      truthContext: { ownership_source: 'curated_pending_review', ownership_age_days: 200 },
+    });
+    const dim = out.dimension_scores.find(d => d.code === 'OWNERSHIP_FRESHNESS')!;
+    expect(dim.score).toBe(0.3);
+    expect(dim.is_blocker).toBeUndefined();
+    expect(out.blocker_failures ?? []).not.toContain('OWNERSHIP_FRESHNESS');
   });
 
   it('hard_fail when multi_year_periods < 3 (blocker)', () => {

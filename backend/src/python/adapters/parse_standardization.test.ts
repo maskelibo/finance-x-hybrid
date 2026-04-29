@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   adaptParsedPeriodsForLegacy,
+  extractPdfPathsByKind,
   extractPdfPathsFromManifest,
   type PythonPeriodFinancials,
 } from './parse_standardization.js';
@@ -55,6 +56,63 @@ describe('extractPdfPathsFromManifest', () => {
     };
     const paths = extractPdfPathsFromManifest(upstream);
     expect(paths.sort()).toEqual(['/tmp/x.pdf', '/tmp/y.pdf']);
+  });
+});
+
+
+describe('extractPdfPathsByKind — Phase I kind-aware extractor', () => {
+  const upstream = {
+    data_manifest: {
+      financial_reports: [
+        { kind: 'financial_report', local_path: '/tmp/financial_a.pdf' },
+        { kind: 'financial_report', local_path: 'data/historical_pdfs/KCHOL/2021.pdf' },
+      ],
+      activity_reports: [
+        { kind: 'activity_report', local_path: '/tmp/activity_b.pdf' },
+      ],
+      other: [
+        { kind: 'other', local_path: '/tmp/random_c.pdf' },
+      ],
+    },
+  };
+
+  it('returns ONLY financial_report paths regardless of filesystem location', () => {
+    const paths = extractPdfPathsByKind(upstream, 'financial_report');
+    expect(paths.sort()).toEqual([
+      '/tmp/financial_a.pdf',
+      'data/historical_pdfs/KCHOL/2021.pdf',
+    ].sort());
+  });
+
+  it('disk-seeded historical PDFs (kind=financial_report) ARE returned even when path lacks "financial_report" substring', () => {
+    const paths = extractPdfPathsByKind(upstream, 'financial_report');
+    expect(paths).toContain('data/historical_pdfs/KCHOL/2021.pdf');
+  });
+
+  it('returns activity_report paths separately', () => {
+    expect(extractPdfPathsByKind(upstream, 'activity_report')).toEqual(['/tmp/activity_b.pdf']);
+  });
+
+  it('returns other paths separately', () => {
+    expect(extractPdfPathsByKind(upstream, 'other')).toEqual(['/tmp/random_c.pdf']);
+  });
+
+  it('rejects entries whose declared kind does not match the array key', () => {
+    const mixed = {
+      data_manifest: {
+        financial_reports: [
+          { kind: 'activity_report', local_path: '/tmp/wrong_kind.pdf' },
+          { kind: 'financial_report', local_path: '/tmp/correct.pdf' },
+        ],
+      },
+    };
+    expect(extractPdfPathsByKind(mixed, 'financial_report')).toEqual(['/tmp/correct.pdf']);
+  });
+
+  it('returns [] when manifest has no data_manifest', () => {
+    expect(extractPdfPathsByKind({}, 'financial_report')).toEqual([]);
+    expect(extractPdfPathsByKind('not json', 'financial_report')).toEqual([]);
+    expect(extractPdfPathsByKind(null, 'financial_report')).toEqual([]);
   });
 });
 

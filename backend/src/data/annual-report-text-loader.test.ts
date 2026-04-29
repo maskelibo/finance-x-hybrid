@@ -100,3 +100,43 @@ describe('loadAnnualReportExtracts — file-not-found', () => {
     expect(out).toBeNull();
   });
 });
+
+describe('Phase I — auditor-opinion document classification (real KCHOL KAP cover)', () => {
+  // Empirical observation from probe-kchol-annual-report.cjs against
+  // output/pdfs/KCHOL_activity_report_20260224_1561073.pdf:
+  //   - 6 pages, 5386 chars text
+  //   - text starts with "2025 yılı Faaliyet Raporu KOÇ HOLDİNG A.Ş."
+  //   - contains "BAĞIMSIZ DENETÇİ RAPORU"
+  //   - has firm "GÜNEY BAĞIMSIZ DENETİM..."
+  //   - has period "1/1/2025-31/12/2025"
+  //   - has result "Olumlu"
+  // None of chairman/CEO/risks/outlook anchors match (the text is the
+  // auditor's opinion, not the FAR itself).
+  const KCHOL_AUDITOR_TEXT = `
+2025 yılı Faaliyet Raporu
+KOÇ HOLDİNG A.Ş.
+Faaliyet Raporu (Konsolide)
+Bağımsız Denetim Kuruluşu GÜNEY BAĞIMSIZ DENETİM VE SERBEST MUHASEBECİ MALİ MÜŞAVİRLİK A.Ş.
+Denetim Türü Sürekli
+Denetim Sonucu Olumlu
+YÖNETİM KURULUNUN YILLIK FAALİYET RAPORUNA İLİŞKİN BAĞIMSIZ DENETÇİ RAPORU
+Koç Holding A.Ş. Genel Kurulu'na;
+1) Görüş
+Koç Holding A.Ş.'nin ("Şirket") ile bağlı ortaklıklarının ("Grup") 1/1/2025-31/12/2025 hesap dönemine ilişkin yıllık faaliyet raporunu denetlemiş bulunuyoruz.
+Görüşümüze göre, yönetim kurulunun yıllık faaliyet raporu içinde yer alan
+konsolide finansal bilgiler ile Yönetim Kurulu'nun Topluluk'un durumu hakkında
+yaptığı irdelemeler, tüm önemli yönleriyle, denetlenen tam set konsolide finansal
+tablolarla ve bağımsız denetim sırasında elde ettiğimiz bilgilerle tutarlıdır ve
+gerçeği yansıtmaktadır.
+2) Görüşün Dayanağı
+Yaptığımız bağımsız denetim...
+`;
+
+  it('chairman/CEO/risks/outlook anchors all MISS on auditor cover (no FAR sections in text)', () => {
+    expect(_sliceForTests(KCHOL_AUDITOR_TEXT, 'chairman_letter')).toBeNull();
+    expect(_sliceForTests(KCHOL_AUDITOR_TEXT, 'ceo_message')).toBeNull();
+    expect(_sliceForTests(KCHOL_AUDITOR_TEXT, 'risks_section')).toBeNull();
+    expect(_sliceForTests(KCHOL_AUDITOR_TEXT, 'outlook_section')).toBeNull();
+    expect(_sliceForTests(KCHOL_AUDITOR_TEXT, 'segments_overview')).toBeNull();
+  });
+});

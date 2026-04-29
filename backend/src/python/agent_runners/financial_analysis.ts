@@ -17,7 +17,7 @@ import {
   adaptPythonFinancialAnalysisForLegacy,
   type PythonFinancialAnalysisOutput,
 } from '../adapters/financial_analysis.js';
-import { extractPdfPathsFromManifest } from '../adapters/parse_standardization.js';
+import { extractPdfPathsByKind, extractPdfPathsFromManifest } from '../adapters/parse_standardization.js';
 
 
 /**
@@ -37,10 +37,24 @@ import { extractPdfPathsFromManifest } from '../adapters/parse_standardization.j
  * MULTI_YEAR_COVERAGE QA dim then honestly surface the missing data.
  */
 function collectHistoricalFinancialPdfs(upstream: unknown): string[] | null {
-  const paths = extractPdfPathsFromManifest(upstream);
-  if (paths.length < 2) return null;
-  const financial = paths.filter((p) => p.includes('financial_report'));
-  if (financial.length < 2) return null;
+  // Phase I (2026-04-29) — kind-aware extraction. Previously this used
+  // a path-substring filter (`p.includes('financial_report')`) which
+  // missed disk-seeded PDFs at data/historical_pdfs/<TICKER>/<year>.pdf
+  // because their filesystem paths don't contain the kind name. The
+  // new extractor reads `data_manifest.financial_reports[].local_path`
+  // directly so every entry the data_collection runner labelled as
+  // financial_report (KAP-fed OR disk-seeded via Phase A merge) flows
+  // through.
+  const financial = extractPdfPathsByKind(upstream, 'financial_report');
+  if (financial.length < 2) {
+    // Defensive fallback: if the manifest doesn't carry the structured
+    // shape (legacy LLM output), fall back to the old path-substring
+    // filter so we don't regress legacy callers.
+    const legacy = extractPdfPathsFromManifest(upstream);
+    const legacyFinancial = legacy.filter((p) => p.includes('financial_report'));
+    if (legacyFinancial.length < 2) return null;
+    return [...legacyFinancial].sort();
+  }
   // Sort lexicographically (filenames typically embed YYYYMMDD or fiscal
   // period — sufficient for chronological ordering in BIST KAP filings).
   return [...financial].sort();
@@ -51,10 +65,16 @@ export type RunOutcome = 'ok' | 'failed';
 
 
 function latestFinancialReportPath(upstream: unknown): string | null {
+  // Phase I — kind-aware first; legacy path-substring fallback.
+  const financial = extractPdfPathsByKind(upstream, 'financial_report');
+  if (financial.length > 0) {
+    const sorted = [...financial].sort();
+    return sorted[sorted.length - 1] ?? null;
+  }
   const paths = extractPdfPathsFromManifest(upstream);
   if (paths.length === 0) return null;
-  const financial = paths.filter(p => p.includes('financial_report'));
-  const list = financial.length > 0 ? financial : paths;
+  const legacyFinancial = paths.filter(p => p.includes('financial_report'));
+  const list = legacyFinancial.length > 0 ? legacyFinancial : paths;
   list.sort();
   return list[list.length - 1] ?? null;
 }

@@ -84,9 +84,13 @@ function buildQaTruthContext(
     if (typeof tk === 'string' && tk.length > 0) {
       const own = loadOwnership(tk);
       if (own) {
+        // Phase I three-tier mapping:
+        //  operator_verified              → kap_filing       (score 1.0)
+        //  auto_curated_pending_operator_review → curated_pending_review (score 0.5, NOT blocker)
+        //  no YAML loaded (own == null)   → keep static_fallback fall-through
         t.ownership_source = own.verification_status === 'operator_verified'
           ? 'kap_filing'
-          : 'static_fallback';
+          : 'curated_pending_review';
         t.ownership_age_days = own.age_days;
       }
     }

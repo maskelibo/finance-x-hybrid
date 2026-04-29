@@ -1229,6 +1229,20 @@
       Aşağıdaki bölümler şirketin Faaliyet Raporu PDF'inden ({{annual_report.page_count}} sayfa) doğrudan alınmıştır. Birincil kaynak — özet/parafraz değil, raporun kendi metni.
     </p>
 
+    {{#if annual_report_doc_type_banner_has}}{{&annual_report_doc_type_banner_html}}{{/if}}
+
+    {{#if annual_report_auditor_has}}
+    <h2>Bağımsız Denetçi Raporu Özeti</h2>
+    <table style="margin-bottom:8px;">
+      <tbody>
+        <tr><td class="label">Denetim Firması</td><td>{{annual_report.audit_firm}}</td></tr>
+        <tr><td class="label">Denetim Dönemi</td><td>{{annual_report.audit_period}}</td></tr>
+        <tr><td class="label">Denetim Sonucu</td><td><strong>{{annual_report.audit_result}}</strong></td></tr>
+      </tbody>
+    </table>
+    <blockquote style="border-left:3px solid #2f855a;padding:8px 12px;background:#f0fdf4;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.auditor_opinion}}</blockquote>
+    {{/if}}
+
     {{#if annual_report_executive_has}}
     <h2>Yönetici Özeti</h2>
     <blockquote style="border-left:3px solid #1e3a8a;padding:8px 12px;background:#f8fafc;font-size:10pt;line-height:1.6;white-space:pre-wrap;">{{annual_report.executive_summary}}</blockquote>

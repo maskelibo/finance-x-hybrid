@@ -24,6 +24,13 @@ export interface AnnualReportExtracts {
   page_count: number;
   byte_count: number;
   raw_text_preview: string;          // first 500 chars for diagnostic
+  // Phase I (2026-04-29) — document_type discrimination. Many BIST KAP
+  // "activity_report" filings are short (2-6 pages) auditor-opinion
+  // covers attached to the FAR, NOT the FAR itself. The loader detects
+  // this and labels accordingly so compose can render the auditor
+  // opinion section instead of silently omitting.
+  document_type: 'full_far' | 'auditor_opinion_cover' | 'kap_cover_only' | 'unknown';
+  // Sections populated from a full FAR
   executive_summary: string | null;
   chairman_letter: string | null;
   ceo_message: string | null;
@@ -32,6 +39,11 @@ export interface AnnualReportExtracts {
   outlook_section: string | null;
   sustainability_section: string | null;
   human_resources_section: string | null;
+  // Phase I — sections populated from an auditor-opinion cover
+  auditor_opinion: string | null;
+  audit_firm: string | null;
+  audit_period: string | null;
+  audit_result: string | null;        // 'Olumlu' / 'Olumsuz' / 'Şartlı' / etc.
   warnings: string[];
 }
 
@@ -145,6 +157,7 @@ export async function loadAnnualReportExtracts(
       page_count: 0,
       byte_count: 0,
       raw_text_preview: '',
+      document_type: 'unknown',
       executive_summary: null,
       chairman_letter: null,
       ceo_message: null,
@@ -153,6 +166,10 @@ export async function loadAnnualReportExtracts(
       outlook_section: null,
       sustainability_section: null,
       human_resources_section: null,
+      auditor_opinion: null,
+      audit_firm: null,
+      audit_period: null,
+      audit_result: null,
       warnings,
     };
   }
@@ -169,12 +186,29 @@ export async function loadAnnualReportExtracts(
     warnings.push(`pdf_parse_failed: ${(e as Error).message}`);
   }
 
+  // Phase I — classify document type. BIST KAP "activity_report"
+  // filings are frequently short auditor-opinion covers, not the full
+  // Faaliyet Raporu. We detect this so compose.ts can render auditor
+  // sections instead of silently rendering nothing.
+  const docType = classifyDocumentType(text, pageCount);
+  if (docType === 'auditor_opinion_cover' || docType === 'kap_cover_only') {
+    warnings.push(
+      `document_type=${docType}: this PDF is a ${docType === 'auditor_opinion_cover' ? 'KAP auditor-opinion cover' : 'KAP cover sheet'} — chairman/CEO/risks/outlook sections will not populate. The full Faaliyet Raporu is published separately at the issuer's IR site.`,
+    );
+  }
+
+  // Auditor opinion extraction (only meaningful for auditor_opinion_cover)
+  const auditor = docType === 'auditor_opinion_cover'
+    ? extractAuditorOpinion(text)
+    : { opinion: null, firm: null, period: null, result: null };
+
   return {
     ticker: tk,
     source_path: pdfPath,
     page_count: pageCount,
     byte_count: buffer.length,
     raw_text_preview: text.slice(0, 500),
+    document_type: docType,
     executive_summary: sliceForAnchors(text, ANCHORS.executive_summary),
     chairman_letter: sliceForAnchors(text, ANCHORS.chairman_letter),
     ceo_message: sliceForAnchors(text, ANCHORS.ceo_message),
@@ -183,8 +217,61 @@ export async function loadAnnualReportExtracts(
     outlook_section: sliceForAnchors(text, ANCHORS.outlook_section),
     sustainability_section: sliceForAnchors(text, ANCHORS.sustainability_section),
     human_resources_section: sliceForAnchors(text, ANCHORS.human_resources_section),
+    auditor_opinion: auditor.opinion,
+    audit_firm: auditor.firm,
+    audit_period: auditor.period,
+    audit_result: auditor.result,
     warnings,
   };
+}
+
+/**
+ * Phase I — classify the PDF based on text content + page count.
+ * Auditor-opinion covers are typically 4-8 pages and contain the phrase
+ * "BAĞIMSIZ DENETÇİ RAPORU" near the start. KAP cover sheets are 2-3
+ * pages with mostly metadata. Anything else with chairman/CEO/risks
+ * anchors is treated as a full FAR.
+ */
+function classifyDocumentType(
+  text: string,
+  pageCount: number,
+): AnnualReportExtracts['document_type'] {
+  const lower = text.toLocaleLowerCase('tr-TR');
+  const hasAuditorMarker = /bağımsız denetçi raporu|bağımsız denetim kuruluşu/i.test(lower);
+  const hasFarSection = /(?:^|\n)\s*(?:yönetim kurulu başkan|genel müdür|risk yönetimi|faaliyet (?:konuları|alanları))/i
+    .test(lower);
+  if (hasFarSection && pageCount >= 30) return 'full_far';
+  if (hasAuditorMarker && pageCount <= 12) return 'auditor_opinion_cover';
+  if (pageCount <= 4 && !hasFarSection) return 'kap_cover_only';
+  if (hasFarSection) return 'full_far';
+  return 'unknown';
+}
+
+/**
+ * Phase I — auditor-opinion extractor. Pulls a structured summary
+ * from the short KAP audit cover PDFs:
+ *   - opinion: the "Görüş" paragraph (1-2 sentences)
+ *   - firm: e.g. "GÜNEY BAĞIMSIZ DENETİM"
+ *   - period: e.g. "1/1/2025-31/12/2025"
+ *   - result: "Olumlu" / "Olumsuz" / "Şartlı"
+ */
+function extractAuditorOpinion(text: string): {
+  opinion: string | null;
+  firm: string | null;
+  period: string | null;
+  result: string | null;
+} {
+  const firmMatch = text.match(/Bağımsız Denetim Kuruluşu\s+([A-ZÇĞİÖŞÜ][A-ZÇĞİÖŞÜa-zçğıöşü .&]+)(?:\s+Denetim|\n)/);
+  const firm = firmMatch ? firmMatch[1].trim() : null;
+  const periodMatch = text.match(/(\d{1,2}\/\d{1,2}\/\d{4}\s*-\s*\d{1,2}\/\d{1,2}\/\d{4})/);
+  const period = periodMatch ? periodMatch[1].replace(/\s+/g, '') : null;
+  const resultMatch = text.match(/Denetim Sonucu\s+(Olumlu|Olumsuz|Şartlı(?:\s+olumlu)?|Görüş bildirmekten kaçınma)/i);
+  const result = resultMatch ? resultMatch[1] : null;
+  // Opinion paragraph: from "Görüşümüze göre" up to ~600 chars or next
+  // numbered section.
+  const opinionMatch = text.match(/Görüşümüze göre[\s\S]{0,600}?(?=\d\)|$)/);
+  const opinion = opinionMatch ? opinionMatch[0].replace(/\s+/g, ' ').trim() : null;
+  return { opinion, firm, period, result };
 }
 
 /**

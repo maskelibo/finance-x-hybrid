@@ -1476,7 +1476,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     valuation_warnings: valuationWarnings,
     dcf_present: dcfPresent,
 
-    // Phase G — Annual Report (Faaliyet Raporu) narrative extracts
+    // Phase G + Phase I — Annual Report (Faaliyet Raporu) narrative extracts
     annual_report_present: annualReport != null && (
       annualReport.chairman_letter != null
       || annualReport.ceo_message != null
@@ -1485,6 +1485,7 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
       || annualReport.outlook_section != null
       || annualReport.segments_overview != null
       || annualReport.sustainability_section != null
+      || annualReport.auditor_opinion != null
     ),
     annual_report: annualReport ? {
       chairman_letter: String(annualReport.chairman_letter ?? '').trim(),
@@ -1495,6 +1496,11 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
       outlook_section: String(annualReport.outlook_section ?? '').trim(),
       sustainability_section: String(annualReport.sustainability_section ?? '').trim(),
       human_resources_section: String(annualReport.human_resources_section ?? '').trim(),
+      auditor_opinion: String(annualReport.auditor_opinion ?? '').trim(),
+      audit_firm: String(annualReport.audit_firm ?? '').trim(),
+      audit_period: String(annualReport.audit_period ?? '').trim(),
+      audit_result: String(annualReport.audit_result ?? '').trim(),
+      document_type: String(annualReport.document_type ?? 'unknown'),
       page_count: Number(annualReport.page_count ?? 0),
       source_path: String(annualReport.source_path ?? ''),
     } as unknown as TemplateValue : null,
@@ -1506,6 +1512,18 @@ export function composeReportContext(inputs: ComposeInputs): TemplateContext {
     annual_report_outlook_has: annualReport != null && typeof annualReport.outlook_section === 'string' && annualReport.outlook_section.trim().length > 0,
     annual_report_sustainability_has: annualReport != null && typeof annualReport.sustainability_section === 'string' && annualReport.sustainability_section.trim().length > 0,
     annual_report_human_resources_has: annualReport != null && typeof annualReport.human_resources_section === 'string' && annualReport.human_resources_section.trim().length > 0,
+    annual_report_auditor_has: annualReport != null && typeof annualReport.auditor_opinion === 'string' && annualReport.auditor_opinion.trim().length > 0,
+    annual_report_doc_type_banner_html: (() => {
+      const dt = annualReport ? String(annualReport.document_type ?? 'unknown') : '';
+      if (dt === 'auditor_opinion_cover') {
+        return `<div style="margin:8px 0;padding:8px 12px;background:#fff3cd;border-left:4px solid #c6973f;border-radius:4px;font-size:11px;color:#5a4400"><strong>ⓘ KAP cover dokümanı:</strong> Bu PDF, Faaliyet Raporuna ilişkin <strong>Bağımsız Denetçi Raporu</strong>'dur. Tam Faaliyet Raporu metni KAP eklerinde veya kurumsal IR sitesinde ayrı yayınlanır; chairman/CEO/risk/görünüm bölümleri bu kaynakta yer almaz.</div>`;
+      }
+      if (dt === 'kap_cover_only') {
+        return `<div style="margin:8px 0;padding:8px 12px;background:#fff3cd;border-left:4px solid #c6973f;border-radius:4px;font-size:11px;color:#5a4400"><strong>ⓘ KAP başlık sayfası:</strong> Bu PDF yalnızca KAP duyurusu kapağıdır; tam rapor içeriği eklerde yer alır.</div>`;
+      }
+      return '';
+    })(),
+    annual_report_doc_type_banner_has: annualReport != null && (annualReport.document_type === 'auditor_opinion_cover' || annualReport.document_type === 'kap_cover_only'),
 
     // Phase D — SOTP rendering
     sotp_present: sotpData != null,

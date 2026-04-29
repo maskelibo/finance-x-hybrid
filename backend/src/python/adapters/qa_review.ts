@@ -66,7 +66,7 @@ export interface LegacyQaOutput {
 export interface QaTruthContext {
   multi_year_periods?: number;
   peer_count?: number;
-  ownership_source?: 'kap_filing' | 'static_fallback' | 'context_extraction' | string;
+  ownership_source?: 'kap_filing' | 'static_fallback' | 'context_extraction' | 'curated_pending_review' | string;
   ownership_age_days?: number;
   cfs_operating_cash_flow_parsed?: boolean;
   cfs_capex_parsed?: boolean;
@@ -296,6 +296,31 @@ function ownershipFreshness(ctx: QaTruthContext | undefined): DimensionScore {
       label: 'Ownership data freshness',
       score: 0.4,
       evidence: `${src} but stale (age=${age} days > 90)`,
+    };
+  }
+  // Phase I (2026-04-29) — third tier between operator-verified and
+  // hardcoded fallback. A YAML config under config/ownership/<TICKER>.yaml
+  // with verification_status='auto_curated_pending_operator_review' is
+  // materially better than the legacy compose hardcoded lookup: it
+  // carries explicit source attribution + as_of_date + a structured
+  // shareholders list. The board reader sees an honest "Operatör
+  // İncelemesi Bekliyor" banner; QA flags the dim as conditional but
+  // does NOT hard-fail. Operator can flip to 'operator_verified' to
+  // graduate to score=1.0.
+  if (src === 'curated_pending_review') {
+    if (age == null || age <= 180) {
+      return {
+        code: 'OWNERSHIP_FRESHNESS',
+        label: 'Ownership data freshness',
+        score: 0.5,
+        evidence: `curated YAML pending operator review, age=${age ?? 'unknown'} days — conditional (not blocker)`,
+      };
+    }
+    return {
+      code: 'OWNERSHIP_FRESHNESS',
+      label: 'Ownership data freshness',
+      score: 0.3,
+      evidence: `curated YAML stale (age=${age} days > 180) and not operator-verified`,
     };
   }
   return {

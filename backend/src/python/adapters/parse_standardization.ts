@@ -93,6 +93,63 @@ export function extractPdfPathsFromManifest(upstream: unknown): string[] {
 }
 
 
+/**
+ * Phase I (2026-04-29) — kind-aware PDF path extractor.
+ *
+ * The legacy `extractPdfPathsFromManifest` walks the manifest blindly
+ * and returns every .pdf path it sees; downstream code then filters by
+ * path-substring (`p.includes('financial_report')`) which fails for
+ * disk-seeded historical PDFs at `data/historical_pdfs/<TICKER>/<year>.pdf`
+ * (their paths don't contain the kind name).
+ *
+ * This helper reads the structured manifest fields directly:
+ *   - data_manifest.financial_reports[].local_path
+ *   - data_manifest.activity_reports[].local_path
+ *   - data_manifest.other[].local_path
+ * and returns only the paths whose entries match the requested kind.
+ */
+export function extractPdfPathsByKind(
+  upstream: unknown,
+  kind: 'financial_report' | 'activity_report' | 'other',
+): string[] {
+  let parsed: unknown = upstream;
+  if (typeof upstream === 'string') {
+    try {
+      parsed = JSON.parse(upstream);
+    } catch {
+      return [];
+    }
+  }
+  if (!parsed || typeof parsed !== 'object') return [];
+  const manifest = (parsed as Record<string, unknown>)['data_manifest'] as
+    Record<string, unknown> | undefined;
+  if (!manifest || typeof manifest !== 'object') return [];
+
+  // Map kind → array key in data_manifest
+  const arrayKey = kind === 'financial_report'
+    ? 'financial_reports'
+    : kind === 'activity_report'
+      ? 'activity_reports'
+      : 'other';
+  const arr = manifest[arrayKey];
+  if (!Array.isArray(arr)) return [];
+
+  const paths: string[] = [];
+  for (const entry of arr) {
+    if (!entry || typeof entry !== 'object') continue;
+    const rec = entry as Record<string, unknown>;
+    // Trust the entry's `kind` field if present; the array key already
+    // implies kind, but a defensive check keeps stale manifests honest.
+    if (rec.kind != null && rec.kind !== kind) continue;
+    const lp = rec['local_path'];
+    if (typeof lp === 'string' && lp.toLowerCase().endsWith('.pdf')) {
+      paths.push(lp);
+    }
+  }
+  return paths;
+}
+
+
 export function adaptParsedPeriodsForLegacy(
   periods: Array<{ pdf: string; parsed: PythonPeriodFinancials }>,
   ticker: string,
